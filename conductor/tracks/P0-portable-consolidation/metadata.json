@@ -13,7 +13,7 @@
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Installed Dapane/Voiage, Gemini runtime qualification and original PR reconciliation remain outstanding; repository location is resolved.",
+  "blocker": "Hosted Actions jobs cannot start due to account billing/spending-limit availability. Native Dapane/Voiage, Gemini runtime and original PR reconciliation remain separately outstanding.",
   "dependencies": [],
   "external_dependencies": [
     {
@@ -32,5 +32,7 @@
   ],
   "updated_at": "2026-11-19",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "current_task": "P0.4 initial source import and hosted CI"
+  "current_task": "P0.4 hosted CI awaiting account runner availability; initial source push complete",
+  "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
+  "imported_source_head": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d"
 }

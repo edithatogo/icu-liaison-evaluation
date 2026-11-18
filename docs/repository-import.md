@@ -51,3 +51,13 @@ saving or investment readiness is established by the initial source import.
 
 The original CareOps Sim PR #215 is preserved. Its closure requires a separate
 source comparison and accepted migration record.
+
+## Initial push outcome
+
+The source is pushed in [PR #1](https://github.com/edithatogo/icu-liaison-evaluation/pull/1).
+All 314 local tests and the synthetic CLI workflow passed. The first push and
+pull-request Actions runs were blocked before any job step by account billing
+or spending-limit availability. This is recorded in the [hosted attempt receipt](../verification/hosted-ci-2026-11-19.json).
+The PR remains open; rerun hosted checks after runner availability is restored
+and inspect the latest head before integration. Source-only review and local
+validation do not replace that hosted result.

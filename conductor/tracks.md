@@ -10,7 +10,8 @@ until content is faithfully reconciled and a replacement is verified.
    [plan](tracks/P0-portable-consolidation/plan.md)).
   Source, curated evidence, scenario and tested local adapters are preserved;
   The private destination is provided and the reviewed Conductor gitlink is
-  registered. Initial import verification is recorded separately; installed
+  registered. Source is pushed in PR #1; hosted CI is blocked before steps
+  by account runner availability. Import verification is recorded separately; installed
   providers, Gemini runtime qualification and parent PR closeout remain pending.
 - [~] **P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),

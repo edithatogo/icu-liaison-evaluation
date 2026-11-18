@@ -94,5 +94,12 @@
   },
   "updated_on": "2026-11-19",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "historical_increment_note": "Dated increment records below retain the repository and runtime status at their original checkpoint; current status is defined above and in repository-import-2026-11-19.json."
+  "historical_increment_note": "Dated increment records below retain the repository and runtime status at their original checkpoint; current status is defined above and in repository-import-2026-11-19.json.",
+  "initial_import": {
+    "pull_request": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
+    "source_head": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d",
+    "source_pushed": true,
+    "hosted_ci": "blocked_before_job_steps_account_billing_or_spending_limit",
+    "merged": false
+  }
 }

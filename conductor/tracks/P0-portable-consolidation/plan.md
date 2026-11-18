@@ -24,7 +24,11 @@
 ## P0.4 — Initial private repository import and remaining qualification
 - [x] Resolve the user-selected private repository and recover the P8.4 and P7
   placeholder source checkpoints without replacing either branch of work.
-- [~] Import the reconciled source via a scoped branch and verify hosted CI.
+- [x] Push the reconciled source on the scoped import branch and open PR #1.
+  Imported head: `ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d`; remote tree matches the reviewed local tree.
+- [!] Complete hosted CI before integration. Both initial jobs were blocked
+  before any step by account billing/spending-limit availability. See
+  [hosted receipt](../../../verification/hosted-ci-2026-11-19.json).
 - [x] Register and check out Conductor at the reviewed SHA as a Git submodule.
 - [ ] Qualify the installed Gemini extension commands and permissions.
 - [ ] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
