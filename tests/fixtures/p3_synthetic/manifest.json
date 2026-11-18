@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic_example",
+  "site": "fictional_test_facility",
+  "source_system": "synthetic_conformance_fixture",
+  "governance_reference": null,
+  "approval_reference": null,
+  "extract_owner_role": null,
+  "clock_timezone": "Australia/Brisbane",
+  "capture_status": {
+    "ANZICS_APD": "synthetic_partial",
+    "CHHHS_hospital_movements": "synthetic_partial",
+    "CHHHS_liaison_activity": "synthetic_partial",
+    "CHHHS_incident_MET": "synthetic_partial",
+    "CHHHS_costing": "synthetic_partial"
+  },
+  "tables": {
+    "episodes": {
+      "file": "episodes.csv",
+      "sha256": "61e2541aabff0f8a8fc4a22e671dfe78a916dabe7c5e8bc20392ea5d3152b923",
+      "column_map": {}
+    },
+    "returns": {
+      "file": "returns.csv",
+      "sha256": "df6aeba0839e6285001f2b8349ea602375cfa8820c90b2948ca7f89a4cfa2eb7",
+      "column_map": {}
+    },
+    "contacts": {
+      "file": "contacts.csv",
+      "sha256": "29fd29738ca2f466d5ca536db223b36f46ac1ff863a500a21f520549565ae83f",
+      "column_map": {}
+    },
+    "safety_events": {
+      "file": "safety_events.csv",
+      "sha256": "0c64bf3c6e58f29dafbecdc4bf8e6d2fb488234d20beccc2ec55e0bc76e14729",
+      "column_map": {}
+    },
+    "cost_lines": {
+      "file": "cost_lines.csv",
+      "sha256": "abf676757a2bdb758cda8e5b07f01f06f054009992b4c5d2f39a5dbd4a449c31",
+      "column_map": {}
+    }
+  }
+}

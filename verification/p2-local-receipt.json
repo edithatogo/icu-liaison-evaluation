@@ -1,0 +1,131 @@
+{
+  "checks": {
+    "compileall": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "src",
+        "tests"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "conductor_local_links": {
+      "links_scanned": "P2 index, global track registry, Conductor index",
+      "passed": true
+    },
+    "full_test_suite": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stderr_tail": "",
+      "stdout_tail": "...............................................................          [100%]\n63 passed in 7.03s\n"
+    },
+    "no_premature_clinical_or_budget_claim": {
+      "passed": true
+    },
+    "p1_original_model_cli": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "icu_liaison.cli",
+        "model-inputs/illustrative.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stderr_tail": "",
+      "stdout_tail": "\": 7.846681149745213,\n    \"p05\": 2.8264807863099204,\n    \"p50\": 7.18911272231658,\n    \"p95\": 15.147222497076168\n  },\n  \"input_digest_sha256\": \"ec3777ad8cd3c8e90b85cb76e9796b7380b0457443c3030830387a7649717aed\",\n  \"interpretation\": \"annual economic resource scenario; not a claim of budget savings, health gain, or staffed ICU capacity\",\n  \"iterations\": 5000,\n  \"net_resource_benefit_aud\": {\n    \"mean\": -188102.40443536415,\n    \"p05\": -303678.9653628219,\n    \"p50\": -194984.10294313647,\n    \"p95\": -50964.94458328358\n  },\n  \"probability_net_resource_benefit_nonnegative\": 0.019,\n  \"readmissions_avoided\": {\n    \"mean\": 3.8920869273064453,\n    \"p05\": -0.890215696136443,\n    \"p50\": 3.697227359370116,\n    \"p95\": 9.462627729096447\n  },\n  \"result_class\": \"illustrative_not_chhhs_observed\",\n  \"scenario_id\": \"public-anzics-plus-explicit-illustrative-assumptions-2026-11\",\n  \"schema_version\": 1,\n  \"seed\": 20261117,\n  \"uncertainty\": \"independent_triangular_parameter_uncertainty_not_predictive_interval\"\n}\n"
+    },
+    "p1_source_unchanged": {
+      "files": {
+        "model-inputs/illustrative.json": true,
+        "providers.lock.json": true,
+        "src/icu_liaison/adapters/dapane.py": true,
+        "src/icu_liaison/adapters/voiage.py": true,
+        "src/icu_liaison/model.py": true,
+        "src/icu_liaison/schemas.py": true
+      },
+      "passed": true
+    },
+    "p2_admission": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "icu_liaison.protocol_cli",
+        "model-inputs/clinical-economic-protocol.json",
+        "model-inputs/illustrative.json",
+        "--data-dictionary",
+        "model-inputs/clinical-data-dictionary.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stderr_tail": "",
+      "stdout_tail": "avoidable_cost_per_icu_day_aud\",\n    \"relative_readmission_reduction\",\n    \"unplanned_72h_readmission_risk\"\n  ],\n  \"protocol_id\": \"chhhs-icu-liaison-inpatient-evaluation-draft-v1\",\n  \"protocol_sha256\": \"49f6183180ef31a1a69e0d3ebdbe7c28067d47aa273f60ab9a63e2d80d5daa4e\",\n  \"public_rate_role\": \"external_comparator_not_CHHHS_observed\",\n  \"ready_for_cash_savings_claim\": false,\n  \"ready_for_clinical_safety_claim\": false,\n  \"ready_for_local_claims\": false,\n  \"reasons\": [\n    \"local cohort, staffing, discharge delay and costs have not been validated\",\n    \"intervention causal effects and early unplanned return risk are illustrative\",\n    \"safety guardrails and care-plan appropriateness are unmeasured\",\n    \"Dapane/Voiage installed-provider qualification remains separate\",\n    \"released index ICU hours are not evidence of realised cash savings\"\n  ],\n  \"scenario_id\": \"public-anzics-plus-explicit-illustrative-assumptions-2026-11\",\n  \"schema_version\": 1,\n  \"status\": \"ADMITTED_ILLUSTRATIVE_ONLY\"\n}\n"
+    },
+    "p2_require_local_ready": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "icu_liaison.protocol_cli",
+        "model-inputs/clinical-economic-protocol.json",
+        "model-inputs/illustrative.json",
+        "--data-dictionary",
+        "model-inputs/clinical-data-dictionary.json",
+        "--require-local-ready"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "stderr_tail": "UNVERIFIED: CHHHS observed inputs, causal effects, safety and budget qualification required\n",
+      "stdout_tail": "avoidable_cost_per_icu_day_aud\",\n    \"relative_readmission_reduction\",\n    \"unplanned_72h_readmission_risk\"\n  ],\n  \"protocol_id\": \"chhhs-icu-liaison-inpatient-evaluation-draft-v1\",\n  \"protocol_sha256\": \"49f6183180ef31a1a69e0d3ebdbe7c28067d47aa273f60ab9a63e2d80d5daa4e\",\n  \"public_rate_role\": \"external_comparator_not_CHHHS_observed\",\n  \"ready_for_cash_savings_claim\": false,\n  \"ready_for_clinical_safety_claim\": false,\n  \"ready_for_local_claims\": false,\n  \"reasons\": [\n    \"local cohort, staffing, discharge delay and costs have not been validated\",\n    \"intervention causal effects and early unplanned return risk are illustrative\",\n    \"safety guardrails and care-plan appropriateness are unmeasured\",\n    \"Dapane/Voiage installed-provider qualification remains separate\",\n    \"released index ICU hours are not evidence of realised cash savings\"\n  ],\n  \"scenario_id\": \"public-anzics-plus-explicit-illustrative-assumptions-2026-11\",\n  \"schema_version\": 1,\n  \"status\": \"ADMITTED_ILLUSTRATIVE_ONLY\"\n}\n"
+    }
+  },
+  "chhhs_observed_data": false,
+  "clinical_approval": false,
+  "created_utc": "2026-11-18T03:10:00.358790+00:00",
+  "dedicated_github_integration": false,
+  "finance_approval": false,
+  "native_dapane_qualification": false,
+  "native_voiage_qualification": false,
+  "open_gates": [
+    "P1 native Dapane/Voiage qualification",
+    "P0 dedicated repository creation/reconciliation",
+    "P2.5 CHHHS ICU/Nursing/Finance stakeholder review",
+    "HREC/SSA or local quality/governance determination",
+    "P3 local data linkage, completeness, cost and effect qualification",
+    "P4 causal and economic model validity; clinical safety margins/approval"
+  ],
+  "protocol_admission": "verification/p2-protocol-admission.json",
+  "result": "P2_PORTABLE_SOURCE_VERIFIED_SITE_AND_NATIVE_PROVIDER_GATES_UNVERIFIED",
+  "runtime": {
+    "dependencies": {
+      "dapane": null,
+      "jsonschema": "4.26.0",
+      "numpy": "2.3.5",
+      "pydantic": "2.13.5",
+      "pytest": "9.0.2",
+      "scipy": "1.17.0",
+      "voiage": null
+    },
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.13.5"
+  },
+  "schema_version": 1,
+  "source_baseline": "ICU_Liaison_Economic_Evaluation_Portable_P1_2026-11-18.zip",
+  "source_baseline_sha256": "bf60747226d36ad176495606cc0975995c83d863415c89b21edc6d24829f25de",
+  "source_checksums": "verification/p2-source-checksums.json",
+  "track_id": "P2-clinical-economic-protocol"
+}

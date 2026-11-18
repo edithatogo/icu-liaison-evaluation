@@ -1,0 +1,59 @@
+{
+  "CHHHS_empirical_effect_claim": false,
+  "P5": {
+    "dapane_native_execution": "UNVERIFIED_not_installed",
+    "dapane_provider_optional": "implemented and fail_closed",
+    "external_clinical_finance_approval": false,
+    "independent_draws_checked": 5000,
+    "report_hashes_verified": true,
+    "semantic_review_status": "self_consistency_verified_not_empirically_accepted",
+    "strategy_count": 3,
+    "voiage_native_execution": "UNVERIFIED_not_installed"
+  },
+  "P6": {
+    "accepted_local_phases": [
+      "P6.1 synthetic event contract",
+      "P6.2 temporal capacity and paired-demand conformance"
+    ],
+    "clinical_safety_evaluated": false,
+    "hypothetical_wait_reduction_minutes": 30.0,
+    "local_CHHHS_calibration": "NOT_PERFORMED",
+    "native_Kairos_DES": "NOT_EXECUTED",
+    "occupied_bed_minutes_current_care": 180,
+    "occupied_bed_minutes_liaison_trace": 150,
+    "trace_sha256": "d32404128413baf8184c589f2e70f89d50a78d979d6321c161cf03fc3220dbfb"
+  },
+  "as_of_date": "2026-11-18",
+  "external_gates": [
+    "Publisher binary/source authentication for 2024/25 ANZICS 20.4% benchmark",
+    "Installed and attested Dapane/Voiage native providers in their supported runtime",
+    "Dedicated repository source, hosted CI, dependency bill and independent review",
+    "CHHHS-approved clinical/staffing/Finance data, causal effect and safety adjudication",
+    "P6 native Kairos event producer plus timed queue/calibration empirical validation"
+  ],
+  "investment_ready": false,
+  "packages": {
+    "jsonschema": "4.26.0",
+    "matplotlib": "3.10.8",
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "scipy": "1.17.0"
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "schema_version": 1,
+  "scope": "portable P5 source completion and P6.1/P6.2 synthetic trace acceptance only",
+  "source_continuity": {
+    "p4_engine_same_as_prior": true,
+    "p4_engine_sha256": "ce63accb416f4c40e02b87b3be086c52b1dd038f70e0374f2e8a7a1a75ffb63b"
+  },
+  "tests": {
+    "focused_command": "PYTHONPATH=src pytest -q tests/test_p5_reporting.py tests/test_p5_semantic_review.py tests/test_p5_provider_execution.py tests/test_p6_capacity_trace.py --disable-warnings",
+    "focused_tests_passed": 32,
+    "full_command": "PYTHONPATH=src pytest -q --disable-warnings",
+    "full_failed": 0,
+    "full_test_count": 175,
+    "python_compileall": "passed"
+  }
+}

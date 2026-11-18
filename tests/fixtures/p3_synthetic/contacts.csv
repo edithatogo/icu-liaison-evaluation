@@ -1,0 +1,3 @@
+hospitalisation_pseudonym,index_icu_episode_id,contact_id,liaison_contact_at,liaison_intervention_type
+synthetic_case_A,synthetic_A_i1,synthetic_contact_A1,2026-07-01T21:00:00+10:00,ward_review
+synthetic_case_B,synthetic_B_i1,synthetic_contact_B1,2026-07-01T08:30:00+10:00,handover_support

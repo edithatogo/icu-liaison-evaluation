@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-18",
+  "scope": "P8 source-only interoperability planning, no real provider execution",
+  "inherited_python_tests": {
+    "p0_p4_p7": 153,
+    "p5": 20,
+    "p6": 36
+  },
+  "new_p8_tests": 11,
+  "tests_total": 220,
+  "failures_observed": 0,
+  "commands": {
+    "p0_p4_p7": "PYTHONPATH=src python -m pytest -q [explicit files in verification/p8-test-partitions.json]",
+    "p5": "PYTHONPATH=src python -m pytest -q tests/test_p5_*.py",
+    "p6": "PYTHONPATH=src python -m pytest -q tests/test_p6_*.py",
+    "p8": "PYTHONPATH=src python -m pytest -q tests/test_p8_provider_roadmap.py"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "pytest": "9.0.2",
+    "jsonschema": "4.26.0"
+  },
+  "source_verification": {
+    "mchs": "live source read",
+    "workforce": "live source read",
+    "dapane": "live source read",
+    "voiage": "live source read",
+    "kairos": "live source read"
+  },
+  "p8_contract_and_negative_tests": "passed",
+  "p0_p7_numerical_sources_unchanged": true,
+  "provider_repositories_modified": false,
+  "installed_provider_qualification": false,
+  "ANZICS_2024_25_publisher_authentication": "still_pending",
+  "CHHHS_local_records_used": false,
+  "clinical_validation": false,
+  "finance_approval": false,
+  "hosted_destination_CI": false,
+  "investment_ready": false,
+  "remaining": "P8.2\u2013P8.5 and previously open P1/P7 external gates remain pending"
+}

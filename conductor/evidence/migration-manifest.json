@@ -1,0 +1,98 @@
+{
+  "conductor": {
+    "installation": "gitlink_registered_at_reviewed_pin_gemini_runtime_not_qualified",
+    "reviewed_ref": "7a5c560a4fdf5297be58594cc37527eb12790272",
+    "upstream": "https://github.com/gemini-cli-extensions/conductor",
+    "version": "0.4.1",
+    "path": "extensions/conductor"
+  },
+  "created_on": "2026-11-18",
+  "not_copied": [
+    "Raw ChatGPT conversations",
+    "Private CHHHS clinical episodes or costing",
+    "The workbook binary",
+    "Publisher report PDFs",
+    "Any connected-source secrets or credentials"
+  ],
+  "numerical_change": {
+    "central_input_accounting_identity_expected": true,
+    "from": "exploratory hand-coded Rust triangular inverse-CDF and quantiles",
+    "same_seed_byte_parity_expected": false,
+    "to": "SciPy triang.rvs and NumPy quantile via portable Python scientific consumer"
+  },
+  "p1_increment": {
+    "binary_provenance": "not_collected",
+    "conductor_track": "conductor/tracks/P1-provider-reuse/",
+    "date": "2026-11-18",
+    "destination_repository": "not_provided",
+    "nominal_dapane_example": "verification/p1-nominal-dapane-requests.json",
+    "original_careops_sim_pr215": "preserved_unmerged",
+    "provider_runtime_gate": "tools/qualify_providers.py --provider all",
+    "provider_source_lock": "providers.lock.json",
+    "status": "portable_source_and_contract_tests_complete_native_providers_unverified"
+  },
+  "p3_increment": {
+    "clinical_data": "synthetic_fixture_only",
+    "conductor": "portable_files_only_no_submodule_created",
+    "date": "2026-11-18",
+    "installed_dapane_voiage": "pending_P1_native_qualification",
+    "original_careops_sim_pr215": "preserved_unmerged",
+    "provided_repo": "not_provided",
+    "public_2023_24_report_status": "publisher_text_checked_19_8_exit_block_18_8_after_hours_no_pdf_sha",
+    "public_2024_25_report_status": "previously_transcribed_document_not_independently_reverified_in_P3",
+    "restricted_data_access": "not_obtained",
+    "status": "portable_public_provenance_and_synthetic_local_adapter_implemented_not_empirically_validated",
+    "track": "conductor/tracks/P3-evidence-data-infrastructure/"
+  },
+  "p6_increment": {
+    "chhhs_site_calibration": "BLOCKED_no_approved_data",
+    "dedicated_repo": "not_provided",
+    "holdout_scope": "synthetic_admitted_only",
+    "native_execution": "NOT_EXECUTED_no_Rust_compiler_or_Cargo_lock",
+    "native_provider_pin": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+    "privacy": "synthetic_only",
+    "provider_api": "kairo-ecs-des::StagedResourceRuntime",
+    "source_lock": "model-inputs/p6/kairos-provider-lock.json",
+    "status": "native_kairos_source_and_synthetic_holdout_implemented_binary_and_site_unverified"
+  },
+  "p8_2_3_increment": {
+    "actual_cash_or_revenue": "unknown",
+    "cli": "src/icu_liaison/p8_cli.py",
+    "date": "2026-11-18",
+    "github_push": false,
+    "github_repository": "not_provided",
+    "official_annual_parity": false,
+    "paired_annual_mchs": "src/icu_liaison/adapters/p8_mchs.py",
+    "qualifying_nursing_agreement": false,
+    "status": "consumer_source_only_contract_tests_passed_native_parity_unverified",
+    "workforce_quoted_roster": "src/icu_liaison/adapters/p8_workforce.py"
+  },
+  "prior_implementation": {
+    "carryforward_boundary": "Preserve original PR until dedicated repository migration accepted; do not merge its economic model into CareOps Sim",
+    "draft_pull_request": "https://github.com/edithatogo/careops-sim/pull/215",
+    "inspected_head_sha": "e6caa16c5b87cbfadd2b10588ed10b7c6d60b637",
+    "repository": "https://github.com/edithatogo/careops-sim",
+    "status_at_inspection": "open_draft_unmerged"
+  },
+  "remaining": [
+    "Hosted import verification and independent migration review",
+    "Gemini extension runtime qualification",
+    "Exact installed Dapane and Voiage integration tests",
+    "Local CHHHS source completeness, outcomes and costing",
+    "Independent economic methods and clinical safety evaluation",
+    "Exact comparison and subsequent authorised retirement of exploratory PR #215"
+  ],
+  "schema_version": 1,
+  "status": "dedicated_repository_initial_import",
+  "workbook": {
+    "file_name": "ANZICS_CHHHS_ICU_liaison_starting_model.xlsx",
+    "library_file_id": "libfile_ec569466b2c08191908e892dfabf56d8",
+    "location": "ChatGPT Library, root; preserved separately, not embedded",
+    "not_a_local_chhhs_data_source": true,
+    "sha256": "da9699f36affef4fdbd444f40ce5d8b138c576fde3bf33363b4bebe908a44844",
+    "source_kind": "derived_public_report_starting_model"
+  },
+  "updated_on": "2026-11-19",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "historical_increment_note": "Dated increment records below retain the repository and runtime status at their original checkpoint; current status is defined above and in repository-import-2026-11-19.json."
+}

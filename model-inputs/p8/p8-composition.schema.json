@@ -1,0 +1,279 @@
+{
+  "$defs": {
+    "MchsShadow": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_revenue_aud": {
+          "default": null,
+          "title": "Actual Revenue Aud",
+          "type": "null"
+        },
+        "annual_calculator_parity": {
+          "const": "unverified",
+          "default": "unverified",
+          "title": "Annual Calculator Parity",
+          "type": "string"
+        },
+        "case_change_nwau": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Case Change Nwau"
+        },
+        "drg_edition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Drg Edition"
+        },
+        "episode_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Episode Id"
+        },
+        "pricing_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pricing Year"
+        },
+        "scope": {
+          "const": "one_synthetic_episode_not_programme_total",
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_bundle_sha256_declared": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Bundle Sha256 Declared"
+        },
+        "status": {
+          "enum": [
+            "unavailable",
+            "unqualified_annual_calculation"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope",
+        "status"
+      ],
+      "title": "MchsShadow",
+      "type": "object"
+    },
+    "WorkforceShadow": {
+      "additionalProperties": false,
+      "properties": {
+        "annual_labour_cost_aud": {
+          "default": null,
+          "title": "Annual Labour Cost Aud",
+          "type": "null"
+        },
+        "financial_cost_status": {
+          "enum": [
+            "unavailable",
+            "not_valued"
+          ],
+          "title": "Financial Cost Status",
+          "type": "string"
+        },
+        "financial_price_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Financial Price Year"
+        },
+        "reconciliation_to_p4_cost_prior": {
+          "const": "not_reconciled",
+          "default": "not_reconciled",
+          "title": "Reconciliation To P4 Cost Prior",
+          "type": "string"
+        },
+        "request_line_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Line Count"
+        },
+        "roster_scenario_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roster Scenario Id"
+        },
+        "source_evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Evidence"
+        }
+      },
+      "required": [
+        "financial_cost_status"
+      ],
+      "title": "WorkforceShadow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actual_hospital_revenue_change_aud": {
+      "default": null,
+      "title": "Actual Hospital Revenue Change Aud",
+      "type": "null"
+    },
+    "admission": {
+      "const": "planning_only",
+      "default": "planning_only",
+      "title": "Admission",
+      "type": "string"
+    },
+    "clinical_investment_approval": {
+      "const": false,
+      "default": false,
+      "title": "Clinical Investment Approval",
+      "type": "boolean"
+    },
+    "data_class": {
+      "const": "synthetic",
+      "default": "synthetic",
+      "title": "Data Class",
+      "type": "string"
+    },
+    "extra_workforce_cost_applied_to_p4": {
+      "const": false,
+      "default": false,
+      "title": "Extra Workforce Cost Applied To P4",
+      "type": "boolean"
+    },
+    "finance_authorisation": {
+      "const": false,
+      "default": false,
+      "title": "Finance Authorisation",
+      "type": "boolean"
+    },
+    "mchs": {
+      "$ref": "#/$defs/MchsShadow"
+    },
+    "modelled_financial_basis": {
+      "const": "illustrative_P4_uncalibrated",
+      "default": "illustrative_P4_uncalibrated",
+      "title": "Modelled Financial Basis",
+      "type": "string"
+    },
+    "net_modelled_nwau_aud": {
+      "default": null,
+      "title": "Net Modelled Nwau Aud",
+      "type": "null"
+    },
+    "p4_annual_incremental_service_cost_prior_aud_nominal": {
+      "title": "P4 Annual Incremental Service Cost Prior Aud Nominal",
+      "type": "number"
+    },
+    "p4_illustrative_net_budget_impact_aud_mean": {
+      "title": "P4 Illustrative Net Budget Impact Aud Mean",
+      "type": "number"
+    },
+    "p4_illustrative_net_resource_benefit_aud_mean": {
+      "title": "P4 Illustrative Net Resource Benefit Aud Mean",
+      "type": "number"
+    },
+    "p4_input_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "P4 Input Sha256",
+      "type": "string"
+    },
+    "p4_price_year": {
+      "title": "P4 Price Year",
+      "type": "integer"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "strategy_id": {
+      "title": "Strategy Id",
+      "type": "string"
+    },
+    "workforce": {
+      "$ref": "#/$defs/WorkforceShadow"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "strategy_id",
+    "p4_input_sha256",
+    "p4_price_year",
+    "p4_annual_incremental_service_cost_prior_aud_nominal",
+    "p4_illustrative_net_resource_benefit_aud_mean",
+    "p4_illustrative_net_budget_impact_aud_mean",
+    "mchs",
+    "workforce"
+  ],
+  "title": "P8Composition",
+  "type": "object"
+}

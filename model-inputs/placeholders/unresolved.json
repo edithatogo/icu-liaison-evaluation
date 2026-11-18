@@ -1,0 +1,14 @@
+{
+  "clinical_safety_approval": null,
+  "data_class": "synthetic_placeholder_contract",
+  "dedicated_repository_ci_receipt": null,
+  "dedicated_repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "finance_investment_approval": null,
+  "first_nations_data_governance_approval": null,
+  "independent_economic_review": null,
+  "independent_service_effect_estimate": null,
+  "local_case_mix_risk_adjustment": null,
+  "local_ward_staffed_beds": null,
+  "notes": "These are null because no observed CHHHS data or approval exists. Never turn null into presumed acceptance.",
+  "schema_version": 1
+}

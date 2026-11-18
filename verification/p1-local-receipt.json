@@ -1,0 +1,107 @@
+{
+  "blockers": [
+    "Dapane native distribution absent",
+    "Voiage installed distribution absent; CPython 3.15.2 unavailable",
+    "No Rust toolchain",
+    "No network access from local container",
+    "No dedicated GitHub repository provided"
+  ],
+  "checks": {
+    "clinical_data_validation": false,
+    "compile": true,
+    "dapane_native": false,
+    "destination_repository_integration": false,
+    "same_psa_results_as_P0": true,
+    "test_suite": true,
+    "voiage_native": false,
+    "wheel_artifact_attestation": false
+  },
+  "created_utc": "2026-11-18T01:31:16.163085+00:00",
+  "result": "P1_SOURCE_TESTS_PASSED_NATIVE_PROVIDER_GATES_UNVERIFIED",
+  "runtime": {
+    "dependency_versions": {
+      "dapane": null,
+      "jsonschema": "4.26.0",
+      "numpy": "2.3.5",
+      "pydantic": "2.13.5",
+      "pytest": "9.0.2",
+      "scipy": "1.17.0",
+      "voiage": null
+    },
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.13.5"
+  },
+  "schema_version": 1,
+  "source_baseline": "ICU_Liaison_Economic_Evaluation_Portable_P0_2026-11-18.zip",
+  "verification": {
+    "all": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "tools/qualify_providers.py",
+        "--provider",
+        "all"
+      ],
+      "exit_code": 2,
+      "stderr_tail": "{\"environment\": {\"platform\": \"Linux-6.18.57-x86_64-with-glibc2.41\", \"python\": \"3.13.5\", \"python_implementation\": \"CPython\"}, \"providers_requested\": [\"dapane\", \"voiage\"], \"reason\": \"dapane: installed distribution unavailable\", \"status\": \"UNVERIFIED\"}\n",
+      "stdout_tail": ""
+    },
+    "compileall": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "src",
+        "tools",
+        "tests"
+      ],
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "complete_test_suite": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...................................                                      [100%]\n35 passed in 2.45s\n"
+    },
+    "dapane": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "tools/qualify_providers.py",
+        "--provider",
+        "dapane"
+      ],
+      "exit_code": 2,
+      "stderr_tail": "{\"environment\": {\"platform\": \"Linux-6.18.57-x86_64-with-glibc2.41\", \"python\": \"3.13.5\", \"python_implementation\": \"CPython\"}, \"providers_requested\": [\"dapane\"], \"reason\": \"dapane: installed distribution unavailable\", \"status\": \"UNVERIFIED\"}\n",
+      "stdout_tail": ""
+    },
+    "example": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "icu_liaison.cli",
+        "model-inputs/illustrative.json"
+      ],
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "\": \"public-anzics-plus-explicit-illustrative-assumptions-2026-11\",\n  \"schema_version\": 1,\n  \"seed\": 20261117,\n  \"uncertainty\": \"independent_triangular_parameter_uncertainty_not_predictive_interval\"\n}\n"
+    },
+    "voiage": {
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "tools/qualify_providers.py",
+        "--provider",
+        "voiage"
+      ],
+      "exit_code": 2,
+      "stderr_tail": "{\"environment\": {\"platform\": \"Linux-6.18.57-x86_64-with-glibc2.41\", \"python\": \"3.13.5\", \"python_implementation\": \"CPython\"}, \"providers_requested\": [\"voiage\"], \"reason\": \"Voiage 3.1.0 requires Python 3.15.2 through 3.15.x\", \"status\": \"UNVERIFIED\"}\n",
+      "stdout_tail": ""
+    }
+  }
+}

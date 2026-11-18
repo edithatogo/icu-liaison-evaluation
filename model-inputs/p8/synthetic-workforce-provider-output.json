@@ -1,0 +1,37 @@
+{
+  "annual_workforce_cost_aud": null,
+  "classification_eligibility": "unverified",
+  "financial_cost_status": "not_valued",
+  "provider_evidence": "injected_contract_test_only",
+  "request": {
+    "policy": {
+      "basis": "financial_cost",
+      "currency": "AUD",
+      "price_year": 2026
+    },
+    "quotes": [
+      {
+        "basis": "financial_cost",
+        "components": [
+          "base_salary"
+        ],
+        "currency": "AUD",
+        "id": "q1",
+        "price_year": 2026,
+        "unit": "hour"
+      }
+    ],
+    "run_id": "synthetic-nurse-roster",
+    "schema_version": "0.1",
+    "usage": [
+      {
+        "id": "u1",
+        "quote_id": "q1",
+        "service_date": "2026-10-01",
+        "unit": "hour"
+      }
+    ]
+  },
+  "roster_completeness": "partial",
+  "scenario_id": "synthetic-nurse-roster"
+}

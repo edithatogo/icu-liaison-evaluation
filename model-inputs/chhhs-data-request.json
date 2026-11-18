@@ -1,0 +1,958 @@
+{
+  "schema_version": 1,
+  "status": "request_only_no_local_data_obtained",
+  "intended_facility": "Cairns Hospital / CHHHS",
+  "requested_time_window": "01 July 2024–30 June 2026 complete 24-month baseline; split by fiscal year and month, include later data where governed and complete",
+  "extra_followup_period": "Capture at least 72 hours after each index discharge; allow observed hospital separation and cross-site capture limits",
+  "planned_price_year": 2026,
+  "intended_evaluation": "Prospective health service decision: incremental ICU liaison model versus actual current care; capacity, safety, resource and financial consequences",
+  "privacy_boundary": "Request analysis within an approved CHHHS secure environment. Supply the project only governed aggregate QA receipts or authorised pseudonymised restricted extracts. Do not upload raw patient data, staff identifiers, site salaries or confidential hospital data to ChatGPT or public GitHub.",
+  "admission_conditions": [
+    "Confirm study classification (approved routine quality activity vs research) and authorised uses/custodians before linkage or extraction.",
+    "Use consistent hospitalisation and ICU-episode pseudonyms generated inside CHHHS; retain reidentification keys within the designated custodian.",
+    "Obtain source schema/codebook, timestamp timezone, data extract cutoff, expected row counts and source-system version.",
+    "Include all ICU admissions (including returns) to reconstruct the eligible index discharges; preserve excluded patients and exclusion reasons for reconciliation.",
+    "Provide both the ANZICS CCR all-live-ward/home-denominator and the study first-eligible-ward-discharge-per-hospitalisation denominator.",
+    "Keep unknown readiness, competing death, transfer, unplanned-return status and cost source missingness as explicit categories.",
+    "Prespecify independent safety, Finance, patient-experience and First Nations governance reviews and access rights."
+  ],
+  "datasets": [
+    {
+      "id": "icu_episodes",
+      "delivery_tier": "minimal",
+      "owner_role": "ICU clinical information / ANZICS CORE data custodian",
+      "likely_source": "ICU EHR, local ANZICS APD extract and hospital episode movements",
+      "grain": "One ICU admission episode",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "hospitalisation_pseudonym + icu_episode_id",
+      "use_and_validation": "Reconcile all ICU admissions, live discharge destinations and readiness-to-departure intervals; include HDU status and return episodes.",
+      "fields": [
+        {
+          "name": "hospitalisation_pseudonym",
+          "unit_or_type": "site-generated stable pseudonym",
+          "purpose": "Link ICU episodes and hospital ward movements",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_episode_id",
+          "unit_or_type": "site-generated stable pseudonym",
+          "purpose": "Distinct ICU episode across readmissions",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "source_system",
+          "unit_or_type": "system/version",
+          "purpose": "Provenance",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "source_record_version",
+          "unit_or_type": "version",
+          "purpose": "Track corrections",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "facility_code",
+          "unit_or_type": "site code",
+          "purpose": "Separate Cairns from transferred/other sites",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_admission_at",
+          "unit_or_type": "ISO 8601 timezone-aware datetime",
+          "purpose": "Start ICU episode",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_medically_ready_at",
+          "unit_or_type": "ISO 8601 timezone-aware datetime",
+          "purpose": "Clinical readiness; distinguish entry vs revision",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_actual_departure_at",
+          "unit_or_type": "ISO 8601 timezone-aware datetime",
+          "purpose": "Physical departure from ICU",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "destination_category",
+          "unit_or_type": "coded discharge destination",
+          "purpose": "Ward, home, ICU, other hospital, death",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "hdu_or_icu_class",
+          "unit_or_type": "coded class",
+          "purpose": "Exclude inappropriate transfers and non-ICU classes",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "adult_age_at_icu_admission_years",
+          "unit_or_type": "years",
+          "purpose": "Protocol adult eligibility (>15 completed years)",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "readmission_planned_status",
+          "unit_or_type": "planned / unplanned / unknown",
+          "purpose": "Adjudicate subsequent returns",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "diagnostic_group",
+          "unit_or_type": "case-mix code",
+          "purpose": "Risk adjustment and pathway segmentation",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "anzrod_predicted_mortality",
+          "unit_or_type": "0–1",
+          "purpose": "Optional case-mix calibration; check score availability",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "invasive_ventilation_days",
+          "unit_or_type": "days",
+          "purpose": "Severity/resource case mix",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "hospital_outcomes",
+      "delivery_tier": "minimal",
+      "owner_role": "Clinical coding, hospital data warehouse and health information management",
+      "likely_source": "Hospital encounter master and ward movement records",
+      "grain": "One hospitalisation plus timestamped transfers",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "hospitalisation_pseudonym",
+      "use_and_validation": "Ensure 72-hour observation windows and discharge/death/transfer censoring are correctly defined.",
+      "fields": [
+        {
+          "name": "hospitalisation_pseudonym",
+          "unit_or_type": "site-generated stable pseudonym",
+          "purpose": "Join all ICU and ward episodes",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "hospital_admitted_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Hospital entry",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "hospital_separated_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Hospital end follow-up",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "hospital_separation_destination",
+          "unit_or_type": "coded destination",
+          "purpose": "Home, other hospital, death",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "hospital_death_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Competing risk and hospital mortality",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "followup_observation_end_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "True ascertainment window",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "followup_censor_reason",
+          "unit_or_type": "completed_72h / death / hospital_discharge / transfer / unknown",
+          "purpose": "Retain competing event or missing status",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_transfer_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Actual arrival to first ward",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_category",
+          "unit_or_type": "categorical",
+          "purpose": "Receiving ward and specialty",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "interhospital_followup_available",
+          "unit_or_type": "boolean/unknown",
+          "purpose": "Identifies cross-site 72h gaps",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "followup_external_return_status",
+          "unit_or_type": "yes/no/unknown",
+          "purpose": "Only if permitted and linked across health service",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "ward_flow",
+      "delivery_tier": "minimal",
+      "owner_role": "Patient flow / bed management and ward nurse leaders",
+      "likely_source": "Ward bed management, transport and movement event logs",
+      "grain": "One ICU-to-ward request plus milestones",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "hospitalisation_pseudonym + icu_episode_id",
+      "use_and_validation": "Identify avoidable versus non-addressable delay causes and realistic liaison mechanisms.",
+      "fields": [
+        {
+          "name": "hospitalisation_pseudonym",
+          "unit_or_type": "site pseudonym",
+          "purpose": "Link to ICU episode",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_episode_id",
+          "unit_or_type": "site pseudonym",
+          "purpose": "Link request",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_referral_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "When ward transfer first requested",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "receiving_ward_accepted_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "When ward clinically accepted",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "bed_identified_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Ward bed allocation",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_bed_ready_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Actual ward readiness",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "transport_called_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Transport demand",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "transport_arrived_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Transport turnaround",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "reason_for_transfer_delay",
+          "unit_or_type": "coded cause and unknown category",
+          "purpose": "Clinical, ward capacity, nursing, transport, cleaning, administrative",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "delay_cause_amenable_to_liaison",
+          "unit_or_type": "yes/no/uncertain",
+          "purpose": "Needs prospective blinded/adjudicated classification",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_occupancy_at_referral",
+          "unit_or_type": "beds occupied / staffed",
+          "purpose": "Ward capacity confounder",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "bed_capacity",
+      "delivery_tier": "minimal",
+      "owner_role": "ICU NUM / critical-care operations analytics",
+      "likely_source": "ICU bed board + staffing establishment/actual availability",
+      "grain": "One ICU or ward staffed-capacity interval; no individuals",
+      "data_class": "aggregate_only",
+      "linkage_key": "facility_code + capacity_window_start",
+      "use_and_validation": "Time-indexed staffed effective capacity rather than annual physical bed counts.",
+      "fields": [
+        {
+          "name": "facility_code",
+          "unit_or_type": "coded",
+          "purpose": "Facility/ICU unit identity",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "capacity_window_start",
+          "unit_or_type": "aware datetime",
+          "purpose": "Shift or finer timestamp",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "capacity_window_end",
+          "unit_or_type": "aware datetime",
+          "purpose": "Interval end",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "physical_icu_beds",
+          "unit_or_type": "integer",
+          "purpose": "Physical beds",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "operational_open_icu_beds",
+          "unit_or_type": "integer",
+          "purpose": "Open operational beds",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "staffed_icu_beds",
+          "unit_or_type": "integer",
+          "purpose": "Maximum supported contemporaneous admissions",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "actual_occupied_icu_beds",
+          "unit_or_type": "integer",
+          "purpose": "Contemporaneous occupancy; quality comparison",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "critical_nursing_shortfall_beds",
+          "unit_or_type": "integer/unknown",
+          "purpose": "Physical beds unavailable due to staffing",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "bed_closure_reason",
+          "unit_or_type": "categorical/unknown",
+          "purpose": "Differentiate staffing, infection, maintenance",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_open_beds",
+          "unit_or_type": "integer/unknown",
+          "purpose": "Downstream availability",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "icu_access_demand",
+      "delivery_tier": "enhanced",
+      "owner_role": "Critical care referrals / ED / patient flow / operating theatres",
+      "likely_source": "ICU admission requests, refusals/cancellations and transfer logs",
+      "grain": "One attempted ICU referral or admission request",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "request_pseudonym",
+      "use_and_validation": "Capture queued/declined demand, not only admitted ICU patients; no patient identities in public artefacts.",
+      "fields": [
+        {
+          "name": "request_pseudonym",
+          "unit_or_type": "site-generated token",
+          "purpose": "Unique demand request",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "requested_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Request time",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "clinical_approval_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Decision time",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "actual_icu_admission_at",
+          "unit_or_type": "aware datetime or null",
+          "purpose": "Waiting interval",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "request_origin",
+          "unit_or_type": "ED / ward / theatres / interhospital / other",
+          "purpose": "Demand class",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "urgency_or_triage_code",
+          "unit_or_type": "coded",
+          "purpose": "Case mix and prioritisation",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "request_disposition",
+          "unit_or_type": "admitted / declined / cancelled / diverted / other",
+          "purpose": "Denied demand handling",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "reason_not_admitted",
+          "unit_or_type": "capacity / clinical / others / unknown",
+          "purpose": "Capacity attribution",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "linked_hospitalisation_pseudonym",
+          "unit_or_type": "site pseudonym/unknown",
+          "purpose": "Join outcomes where permitted",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "liaison_activity",
+      "delivery_tier": "minimal",
+      "owner_role": "ICU nurse manager / liaison service lead",
+      "likely_source": "Existing liaison, outreach, ICU discharge coordination, MET logs",
+      "grain": "One contact, shift or intervention category",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "activity_pseudonym",
+      "use_and_validation": "Determine baseline comparator service, incremental reach, staffing and contamination.",
+      "fields": [
+        {
+          "name": "activity_pseudonym",
+          "unit_or_type": "stable event pseudonym",
+          "purpose": "Unique intervention",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_episode_id",
+          "unit_or_type": "site-generated pseudonym or unknown",
+          "purpose": "Exposure episode",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "contact_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Temporal intervention exposure",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "contact_type",
+          "unit_or_type": "categorical",
+          "purpose": "Discharge coordination, ward followup, bedside review, escalation",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "minutes_personnel",
+          "unit_or_type": "minutes / unknown",
+          "purpose": "Labour activity",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "staff_role",
+          "unit_or_type": "role, not names",
+          "purpose": "Skill classification",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "covered_roster_period",
+          "unit_or_type": "shift category",
+          "purpose": "Service availability",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "contact_outcome",
+          "unit_or_type": "coded",
+          "purpose": "Discharge hastened, escalation, training, no effect, unknown",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "service_model_version",
+          "unit_or_type": "id",
+          "purpose": "Changes in service definition",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "clinical_safety",
+      "delivery_tier": "minimal",
+      "owner_role": "Clinical Governance / MET / ward leadership / clinical coding",
+      "likely_source": "MET and cardiac arrest call database, ICU/hospital outcomes, incident systems",
+      "grain": "One deterioration/rescue/outcome event per hospitalisation",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "hospitalisation_pseudonym + safety_event_id",
+      "use_and_validation": "Safety balancing: readmissions cannot be interpreted as harm reduction without appropriateness and severity.",
+      "fields": [
+        {
+          "name": "hospitalisation_pseudonym",
+          "unit_or_type": "site pseudonym",
+          "purpose": "Join outcome to cohort",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "safety_event_id",
+          "unit_or_type": "site-generated token",
+          "purpose": "Distinct event",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "event_at",
+          "unit_or_type": "aware datetime",
+          "purpose": "Event timing",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "event_type",
+          "unit_or_type": "MET / cardiac_arrest / death / missed_escalation / other",
+          "purpose": "Safety endpoint",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "patient_deterioration_severity",
+          "unit_or_type": "coded/unknown",
+          "purpose": "Clinical deterioration severity",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "escalation_request_at",
+          "unit_or_type": "aware datetime/unknown",
+          "purpose": "Escalation delay",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "critical_response_at",
+          "unit_or_type": "aware datetime/unknown",
+          "purpose": "Time to care",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "return_appropriateness",
+          "unit_or_type": "adjudicated appropriate / avoidable / unknown",
+          "purpose": "Avoid penalising clinically appropriate rescue",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "treatment_limitation_status",
+          "unit_or_type": "coded/unknown",
+          "purpose": "Goals-of-care and mortality risk adjustment",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "ward_workload_metric",
+          "unit_or_type": "validated measure/unknown",
+          "purpose": "Displaced burden of care",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "staffing_costs",
+      "delivery_tier": "minimal",
+      "owner_role": "ICU Nursing executive / Workforce Finance / Payroll",
+      "likely_source": "Approved establishment, payroll, staffing rosters and cost assumptions",
+      "grain": "One cost component per role, shift, service model and price year",
+      "data_class": "aggregate_only",
+      "linkage_key": "service_model_id + cost_component_id",
+      "use_and_validation": "Produce fully loaded annual incremental liaison cost, inclusive of backfill, leave and training, from comparator.",
+      "fields": [
+        {
+          "name": "service_model_id",
+          "unit_or_type": "current / proposed option ID",
+          "purpose": "Comparative roster",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "role_or_grade",
+          "unit_or_type": "role/pay classification",
+          "purpose": "No named worker",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "weekday_or_weekend",
+          "unit_or_type": "shift category",
+          "purpose": "Coverage",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "coverage_hours_per_week",
+          "unit_or_type": "hours",
+          "purpose": "Required staffing coverage",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "productive_hours_per_fte",
+          "unit_or_type": "hours / year",
+          "purpose": "Relief factor, leave and training",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "rostered_fte",
+          "unit_or_type": "FTE",
+          "purpose": "Establishment and incremental requirement",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "annual_base_pay_aud",
+          "unit_or_type": "AUD per FTE, specified FY",
+          "purpose": "Gross base annual salary",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "oncost_percentage",
+          "unit_or_type": "proportion",
+          "purpose": "Superannuation/payroll/other oncosts",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "penalty_and_shift_loading_aud",
+          "unit_or_type": "AUD/year",
+          "purpose": "Allowances and penalties",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "backfill_and_agency_cost_aud",
+          "unit_or_type": "AUD/year",
+          "purpose": "Leave and recruitment",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "training_implementation_cost_aud",
+          "unit_or_type": "AUD once-off",
+          "purpose": "Setup/training",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "service_cost_price_year",
+          "unit_or_type": "year",
+          "purpose": "Align price year",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "roster_effective_from",
+          "unit_or_type": "ISO date",
+          "purpose": "Contamination/staffing rollout",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "cost_resource_ledger",
+      "delivery_tier": "minimal",
+      "owner_role": "Clinical Costing / Finance business partner",
+      "likely_source": "Patient-level cost allocation linked to admitted episode (approved environment)",
+      "grain": "One unique valued resource-use component by episode and time",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "hospitalisation_pseudonym + resource_use_id",
+      "use_and_validation": "Exact price-year/ledger decomposition, distinct INDEX ICU ready-to-depart vs POST return costs; no ABF-to-marginal conversion without evidence.",
+      "fields": [
+        {
+          "name": "hospitalisation_pseudonym",
+          "unit_or_type": "site pseudonym",
+          "purpose": "Join outcomes",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "icu_episode_id",
+          "unit_or_type": "site pseudonym",
+          "purpose": "Discharge and readmission segment",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "resource_use_id",
+          "unit_or_type": "unique resource token",
+          "purpose": "Conservation key",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "resource_component",
+          "unit_or_type": "salary / disposable / ward / diagnostics / overhead / other",
+          "purpose": "Prevent duplicate quotation",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "cost_segment",
+          "unit_or_type": "index_ready_to_departure / post_departure_return / usual_care",
+          "purpose": "Prevent overlapping episode effects",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "resource_quantity",
+          "unit_or_type": "nonnegative decimal",
+          "purpose": "Actual use",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "resource_unit",
+          "unit_or_type": "icu_bed_hour / ward_bed_hour / nurse_hour / test / other",
+          "purpose": "Unit cost input",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "quoted_unit_cost_aud",
+          "unit_or_type": "decimal AUD",
+          "purpose": "Source quote",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "cost_basis",
+          "unit_or_type": "economic_cost / financial_cost / ABF_funding",
+          "purpose": "Do not combine valuations/transfers",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "price_year",
+          "unit_or_type": "YYYY",
+          "purpose": "Inflation/financial perspective",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "cost_date",
+          "unit_or_type": "YYYY-MM-DD",
+          "purpose": "Temporal cost adjustment",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "avoidable_fraction",
+          "unit_or_type": "0..1 / unknown",
+          "purpose": "Marginal cost estimate not fully allocated average",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "realised_cash_reduction_fraction",
+          "unit_or_type": "0..1 / unknown",
+          "purpose": "Cash savings require actual budget response",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "implementation_confounders",
+      "delivery_tier": "enhanced",
+      "owner_role": "ICU medical/nursing leadership and health service performance",
+      "likely_source": "Service rollout records and contemporaneous hospital change log",
+      "grain": "One operational change period, role and site",
+      "data_class": "approved_pseudonymised",
+      "linkage_key": "change_id",
+      "use_and_validation": "Identify service exposure, other simultaneous changes and external comparison wards/sites for causal analysis.",
+      "fields": [
+        {
+          "name": "change_id",
+          "unit_or_type": "stable token",
+          "purpose": "Unique change record",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "effective_from",
+          "unit_or_type": "aware date/time",
+          "purpose": "Intervention time zero",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "effective_to",
+          "unit_or_type": "aware date/time/unknown",
+          "purpose": "Exposure window",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "service_model_id",
+          "unit_or_type": "id",
+          "purpose": "Which model implemented",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "coverage_fraction_realised",
+          "unit_or_type": "0..1 / unknown",
+          "purpose": "Actual implementation reach",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "other_icu_or_ward_changes",
+          "unit_or_type": "structured categories",
+          "purpose": "Policy, beds, staffing, surge changes",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "concurrent_control_available",
+          "unit_or_type": "yes/no/unknown",
+          "purpose": "Control definition",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "case_mix_or_season_indicator",
+          "unit_or_type": "code",
+          "purpose": "Time adjustment",
+          "priority": "desirable",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    },
+    {
+      "id": "equity_experience",
+      "delivery_tier": "optional",
+      "owner_role": "Clinical research / Patient Experience / First Nations Health governance",
+      "likely_source": "Approved patient/family experience sources and separately authorised equity stratifiers",
+      "grain": "Governed aggregate reporting group; never raw identity",
+      "data_class": "aggregate_only",
+      "linkage_key": "approved_summary_group_id",
+      "use_and_validation": "Only after approved First Nations and consumer data-governance design; small-cell thresholds and reporting review.",
+      "fields": [
+        {
+          "name": "approved_summary_group_id",
+          "unit_or_type": "governed summary group token",
+          "purpose": "No person-level identity",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "population_group_label",
+          "unit_or_type": "approved deidentified category",
+          "purpose": "Equity reporting",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "reported_metric",
+          "unit_or_type": "PROM / experience / communication quality",
+          "purpose": "Patient/family outcomes",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "aggregate_n",
+          "unit_or_type": "integer with disclosure controls",
+          "purpose": "Rate denominator",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "aggregate_value",
+          "unit_or_type": "aggregate metric/unknown",
+          "purpose": "Difference in care experience",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        },
+        {
+          "name": "small_cell_suppressed",
+          "unit_or_type": "boolean",
+          "purpose": "Disclosure-control flag",
+          "priority": "essential",
+          "null_handling": "Retain null and report completeness"
+        }
+      ]
+    }
+  ]
+}

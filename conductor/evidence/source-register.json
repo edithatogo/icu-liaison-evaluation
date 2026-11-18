@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-18",
+  "data_status": "public_reported_or_historical_study_only",
+  "sources": [
+    {
+      "id": "ANZICS-CCR-2024-25",
+      "title": "Intensive Care Resources and Activity Report 2024/25",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf",
+      "period": "2024-07-01/2025-06-30",
+      "publication": "2026-07",
+      "outcomes": [
+        {
+          "name": "live_ward_home_discharge_delay_ge12h",
+          "value": 0.204,
+          "unit": "proportion",
+          "denominator": "live ward/home discharges",
+          "contributors": 162,
+          "page": 20
+        },
+        {
+          "name": "live_ward_home_after_hours_discharge",
+          "value": 0.184,
+          "unit": "proportion",
+          "denominator": "live ward/home discharges",
+          "contributors": 167,
+          "page": 19
+        },
+        {
+          "name": "return_icu_hdu_admission_episodes",
+          "value": 0.045,
+          "unit": "proportion",
+          "denominator": "all ICU/HDU admissions",
+          "contributors": 168,
+          "page": 19
+        },
+        {
+          "name": "rural_regional_occupancy_matched",
+          "value": 0.742,
+          "unit": "proportion",
+          "denominator": "available staffed bed days, 38 consistent rural/regional ICUs",
+          "page": 23
+        },
+        {
+          "name": "queensland_occupancy_matched",
+          "value": 0.724,
+          "unit": "proportion",
+          "denominator": "available staffed bed days, 31 consistent Queensland ICUs",
+          "page": 23
+        },
+        {
+          "name": "average_expenditure_per_available_bed",
+          "value": 1524354,
+          "unit": "reported_dollars_per_bed_year",
+          "denominator": "104 contributing ICUs (94 Australian, 10 New Zealand)",
+          "page": 36,
+          "restriction": "Do not treat as AUD marginal avoidable ICU-day cost or combine with unrelated occupancy denominators"
+        }
+      ],
+      "interpretation": "Mixed adult/paediatric reporting pool; Cairns appears in rural/regional contributors; not an observed Cairns trend.",
+      "verification_status": "previous_transcription_not_independently_reverified"
+    },
+    {
+      "id": "ANZICS-CORE-2024",
+      "title": "ANZICS CORE 2024 Report",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/public/311/files/PDFs/CORE/2024-CORE-Report.pdf",
+      "data_period": "2023/24",
+      "publication": "2026-06",
+      "outcomes": [
+        {
+          "name": "adult_readmitted_patients",
+          "value": 0.04,
+          "unit": "proportion",
+          "denominator": "adult patients surviving their first ICU admission; Australia",
+          "page": 37
+        },
+        {
+          "name": "adult_icu_los_median",
+          "value": 1.8,
+          "unit": "days",
+          "denominator": "adult ICU admissions; Australia",
+          "page": 20
+        },
+        {
+          "name": "icu_mortality_adults",
+          "value": 0.051,
+          "unit": "proportion",
+          "denominator": "known outcome adult admissions; Australia",
+          "page": 20
+        },
+        {
+          "name": "hospital_mortality_adults",
+          "value": 0.077,
+          "unit": "proportion",
+          "denominator": "initial adult admissions; known hospital outcome",
+          "page": 20
+        }
+      ],
+      "interpretation": "APD adult patient readmissions differ from CCR return-admission episode metric; neither is unplanned 72-hour returns.",
+      "verification_status": "previous_transcription_not_independently_reverified"
+    },
+    {
+      "id": "ANZICS-APD-DICT-V7",
+      "title": "Adult Patient Database Data Dictionary, version 7",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/public/311/files/PDFs/CORE/ANZICS-APD-Data-Dictionary-Version-7.pdf",
+      "publication": "2026-10",
+      "interpretation": "Admission, decision to discharge, physical discharge and discharge destinations; historical completeness and CHHHS reporting must be checked."
+    },
+    {
+      "id": "ANZICS-CCR-DICT-V1",
+      "title": "Critical Care Resources Data Dictionary version 1.0",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/public/311/files/PDFs/CORE/ANZICS-CCR-Data-Dictionary-Version-1_0.pdf",
+      "publication": "2026-08",
+      "interpretation": "Expenditure may be collected in AUD or NZD; binational reported aggregate is not an avoidable daily cost."
+    },
+    {
+      "id": "SO-2019",
+      "title": "A nurse-led critical care outreach program to reduce readmission to the intensive care unit",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/30595418/",
+      "type": "observational_historical_control",
+      "reported_value": "US$145,614 estimated saving over 13 months",
+      "restriction": "Cannot assume net-of-all-staffing costs from abstract; intervention in selected respiratory post-ICU cohort; not transferable effect estimate."
+    },
+    {
+      "id": "NIHR-ICNARC-CRITICAL-CARE-OUTREACH",
+      "title": "Evaluation of outreach services in critical care",
+      "url": "https://njl-admin.nihr.ac.uk/document/download/2008763",
+      "type": "matched_observational_economic_analysis",
+      "reported_value": "Some comparisons favour lower subsequent hospital cost; effect differs by matching method",
+      "restriction": "Historical UK outreach, not dedicated CHHHS liaison staffing; not a verified local marginal cost."
+    },
+    {
+      "id": "GUPTA-2025",
+      "title": "A propensity matched cost analysis of medical emergency team calls led by nurse practitioners versus intensive care registrars",
+      "url": "https://doi.org/10.1016/j.iccn.2024.103819",
+      "type": "observational_cost_analysis_alternative_model",
+      "reported_value": "A$5,072 lower inpatient episode cost in propensity-matched NP-led MET cohort",
+      "restriction": "NP-led vs registrar MET staffing, not generic ICU liaison contact; do not assign per-review savings."
+    },
+    {
+      "id": "CHEERS-2022",
+      "title": "Consolidated Health Economic Evaluation Reporting Standards 2022",
+      "publisher": "ISPOR / EQUATOR",
+      "url": "https://www.ispor.org/heor-resources/good-practices/cheers",
+      "type": "reporting_guideline",
+      "interpretation": "Reporting population, comparator, perspective, outcome, horizon, valuation and uncertainty; not a methodological validity score or clinical approval."
+    },
+    {
+      "id": "ISPOR-BIA-2014",
+      "title": "Budget Impact Analysis Principles of Good Practice, second task force",
+      "publisher": "ISPOR",
+      "url": "https://www.ispor.org/heor-resources/good-practices",
+      "type": "budget_impact_reporting_and_methodological_guidance",
+      "interpretation": "Local population, real expenditure and financing changes must be distinguished from wider economic resource savings."
+    },
+    {
+      "id": "ANZICS-APD-REGISTRY",
+      "title": "Adult Patient Database dataset and contributor reporting",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/advocacy/core-icu-registries/registry-datasets/adult-patient-database/",
+      "type": "registry_specification",
+      "interpretation": "Unit-specific APD indicators go to contributors through the CORE Portal; patient-level local inputs not public."
+    },
+    {
+      "id": "ANZICS-CCR-2023-24",
+      "title": "Intensive Care Resources and Activity Report 2023/24",
+      "publisher": "ANZICS CORE",
+      "url": "https://www.anzics.org/wp-content/uploads/2025/05/2023_24-CCR-Activity-Report-1.pdf",
+      "period": "2023-07-01/2024-06-30",
+      "publication": "2025-07",
+      "verification_status": "publisher_text_and_page_image_inspected_no_pdf_sha",
+      "interpretation": "The retained P7 review records inspection of publisher-hosted text and rendered 2023/24 pages on 18 November 2026, superseding the earlier P3 screenshot retrieval failure. No publisher PDF bytes/SHA-256 were retained, so this is not binary-attested document admission. Different period and reporting populations from 2024/25; not a CHHHS estimate.",
+      "outcomes": [
+        {
+          "name": "live_ward_home_discharge_delay_ge12h",
+          "value": 0.198,
+          "unit": "proportion",
+          "denominator": "live ward/home discharges",
+          "contributors": 154,
+          "page": 17
+        },
+        {
+          "name": "live_ward_home_after_hours_discharge",
+          "value": 0.188,
+          "unit": "proportion",
+          "denominator": "live ward/home discharges",
+          "contributors": 164,
+          "page": 16
+        }
+      ],
+      "primary_page_review": {
+        "url": "https://www.anzics.org/wp-content/uploads/2025/05/2023_24-CCR-Activity-Report-1.pdf",
+        "pdf_page_zero_indexed": [
+          17,
+          18
+        ],
+        "printed_pages": [
+          16,
+          17
+        ],
+        "inspected_metrics": {
+          "return_icu_hdu_admissions_all_episodes": {
+            "rate": 0.043,
+            "contributors": 168,
+            "printed_page": 16
+          },
+          "after_hours_live_discharge": {
+            "rate": 0.188,
+            "contributors": 164,
+            "printed_page": 16
+          },
+          "exit_block_live_discharge_ge12h": {
+            "rate": 0.198,
+            "contributors": 154,
+            "printed_page": 17
+          }
+        },
+        "document_sha256": null,
+        "review_status": "publisher_PDF_text_and_rendered_pages_reviewed_no_downloaded_binary_sha"
+      }
+    }
+  ]
+}

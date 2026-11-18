@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "data_class": "public_aggregated_only",
+  "source_transcription": "previously_curated_public_report_values",
+  "document_verification": {
+    "status": "publisher_pdf_sha256_unavailable",
+    "publisher_file_sha256": null,
+    "claim": "Transcription reconciled against the existing source register; exact 2024/25 PDF bytes not authenticated by this P3 offline build."
+  },
+  "observations": [
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "live_ward_home_discharge_delay_ge12h",
+      "value": 0.204,
+      "unit": "proportion",
+      "denominator": "live ward/home discharges",
+      "page": 20,
+      "contributors": 162,
+      "population": "binational_all_age_mixed",
+      "local_use": "illustrative_exit_block_proxy"
+    },
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "live_ward_home_after_hours_discharge",
+      "value": 0.184,
+      "unit": "proportion",
+      "denominator": "live ward/home discharges",
+      "page": 19,
+      "contributors": 167,
+      "population": "binational_all_age_mixed",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "return_icu_hdu_admission_episodes",
+      "value": 0.045,
+      "unit": "proportion",
+      "denominator": "all ICU/HDU admissions",
+      "page": 19,
+      "contributors": 168,
+      "population": "binational_all_age_mixed",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "rural_regional_occupancy_matched",
+      "value": 0.742,
+      "unit": "proportion",
+      "denominator": "available staffed bed days, 38 consistent rural/regional ICUs",
+      "page": 23,
+      "contributors": null,
+      "population": "binational_all_age_mixed",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "queensland_occupancy_matched",
+      "value": 0.724,
+      "unit": "proportion",
+      "denominator": "available staffed bed days, 31 consistent Queensland ICUs",
+      "page": 23,
+      "contributors": null,
+      "population": "binational_all_age_mixed",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CCR-2024-25",
+      "name": "average_expenditure_per_available_bed",
+      "value": 1524354,
+      "unit": "reported_dollars_per_bed_year",
+      "denominator": "104 contributing ICUs (94 Australian, 10 New Zealand)",
+      "page": 36,
+      "contributors": null,
+      "population": "binational_all_age_mixed",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CORE-2024",
+      "name": "adult_readmitted_patients",
+      "value": 0.04,
+      "unit": "proportion",
+      "denominator": "adult patients surviving their first ICU admission; Australia",
+      "page": 37,
+      "contributors": null,
+      "population": "australia_adult",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CORE-2024",
+      "name": "adult_icu_los_median",
+      "value": 1.8,
+      "unit": "days",
+      "denominator": "adult ICU admissions; Australia",
+      "page": 20,
+      "contributors": null,
+      "population": "australia_adult",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CORE-2024",
+      "name": "icu_mortality_adults",
+      "value": 0.051,
+      "unit": "proportion",
+      "denominator": "known outcome adult admissions; Australia",
+      "page": 20,
+      "contributors": null,
+      "population": "australia_adult",
+      "local_use": "external_context_only"
+    },
+    {
+      "source_id": "ANZICS-CORE-2024",
+      "name": "hospital_mortality_adults",
+      "value": 0.077,
+      "unit": "proportion",
+      "denominator": "initial adult admissions; known hospital outcome",
+      "page": 20,
+      "contributors": null,
+      "population": "australia_adult",
+      "local_use": "external_context_only"
+    }
+  ],
+  "forbidden_uses": [
+    "local_CHHHS_rate",
+    "unplanned_72h_return",
+    "incremental_cost_per_readmission_aud",
+    "net_avoidable_cost_per_icu_day_aud"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "track_id": "P4-economic-decision-model",
+  "title": "ICU liaison probabilistic multi-strategy economic decision model",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": ["P4.1-source-reuse", "P4.2-source-admission", "P4.3-local-testing"],
+  "blocked_phases": ["P4.4-empirical-clinical-validation", "P4.4-native-provider-qualification", "P4.4-hosted-independent-review"],
+  "dependencies": ["P2-clinical-economic-protocol", "P3-evidence-data-infrastructure", "P1-provider-reuse"]
+}

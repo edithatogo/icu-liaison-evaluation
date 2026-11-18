@@ -1,0 +1,471 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:funding-workforce-shadow:1",
+  "title": "ICU liaison optional MCHS/workforce/Dapane data-contract separation",
+  "description": "Structural planning gate only. Provider outputs, source permissions and clinical validity must be independently verified. Values are not operational estimates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "data_class",
+    "admission",
+    "scenario_id",
+    "funding",
+    "workforce",
+    "resource_valuation",
+    "budget_realisation",
+    "decision_analysis"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "data_class": {
+      "const": "synthetic"
+    },
+    "admission": {
+      "const": "planning_only"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "funding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "basis",
+        "unit",
+        "qualification_status",
+        "price_year",
+        "drg_edition",
+        "case_mix_status",
+        "comparator_case_nwau",
+        "intervention_case_nwau",
+        "shadow_modelled_nwau_change",
+        "actual_incremental_revenue_aud",
+        "formula_parity_receipt",
+        "calculator_year",
+        "financial_year_label"
+      ],
+      "properties": {
+        "provider": {
+          "const": "mchs"
+        },
+        "basis": {
+          "const": "weighted_activity"
+        },
+        "unit": {
+          "const": "NWAU"
+        },
+        "qualification_status": {
+          "enum": [
+            "unavailable",
+            "calculated_paired"
+          ]
+        },
+        "price_year": {
+          "type": "integer",
+          "minimum": 2020,
+          "maximum": 2100
+        },
+        "drg_edition": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          ]
+        },
+        "case_mix_status": {
+          "enum": [
+            "unverified",
+            "verified"
+          ]
+        },
+        "comparator_case_nwau": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+              "maxLength": 80
+            }
+          ]
+        },
+        "intervention_case_nwau": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+              "maxLength": 80
+            }
+          ]
+        },
+        "shadow_modelled_nwau_change": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+              "maxLength": 80
+            }
+          ]
+        },
+        "actual_incremental_revenue_aud": {
+          "type": "null"
+        },
+        "formula_parity_receipt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 300
+            }
+          ]
+        },
+        "calculator_year": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 2024,
+              "maximum": 2100
+            }
+          ]
+        },
+        "financial_year_label": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}$"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "qualification_status": {
+                "const": "unavailable"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparator_case_nwau": {
+                "type": "null"
+              },
+              "intervention_case_nwau": {
+                "type": "null"
+              },
+              "shadow_modelled_nwau_change": {
+                "type": "null"
+              },
+              "formula_parity_receipt": {
+                "type": "null"
+              },
+              "calculator_year": {
+                "type": "null"
+              },
+              "financial_year_label": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualification_status": {
+                "const": "calculated_paired"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "drg_edition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "case_mix_status": {
+                "const": "verified"
+              },
+              "comparator_case_nwau": {
+                "type": "string"
+              },
+              "intervention_case_nwau": {
+                "type": "string"
+              },
+              "shadow_modelled_nwau_change": {
+                "type": "string"
+              },
+              "formula_parity_receipt": {
+                "type": "string",
+                "minLength": 4
+              },
+              "calculator_year": {
+                "type": "integer",
+                "minimum": 2024
+              },
+              "financial_year_label": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{2}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "workforce": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "basis",
+        "jurisdiction",
+        "qualification_status",
+        "classification_status",
+        "source_release_digest",
+        "incremental_annual_labour_cost_aud",
+        "components_included"
+      ],
+      "properties": {
+        "provider": {
+          "const": "microcosting_healthworkforce"
+        },
+        "basis": {
+          "const": "financial_cost"
+        },
+        "jurisdiction": {
+          "const": "Queensland"
+        },
+        "qualification_status": {
+          "enum": [
+            "unavailable",
+            "rate_and_roster_qualified"
+          ]
+        },
+        "classification_status": {
+          "enum": [
+            "unverified",
+            "confirmed"
+          ]
+        },
+        "source_release_digest": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "incremental_annual_labour_cost_aud": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+              "maxLength": 80
+            }
+          ]
+        },
+        "components_included": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maxItems": 30
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "qualification_status": {
+                "const": "unavailable"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "incremental_annual_labour_cost_aud": {
+                "type": "null"
+              },
+              "classification_status": {
+                "const": "unverified"
+              },
+              "source_release_digest": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualification_status": {
+                "const": "rate_and_roster_qualified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "incremental_annual_labour_cost_aud": {
+                "type": "string"
+              },
+              "classification_status": {
+                "const": "confirmed"
+              },
+              "source_release_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "components_included": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "resource_valuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "basis",
+        "status",
+        "incremental_resource_cost_aud"
+      ],
+      "properties": {
+        "provider": {
+          "const": "dapane"
+        },
+        "basis": {
+          "const": "economic_cost"
+        },
+        "status": {
+          "enum": [
+            "unavailable",
+            "qualified"
+          ]
+        },
+        "incremental_resource_cost_aud": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+              "maxLength": 80
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unavailable"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "incremental_resource_cost_aud": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "qualified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "incremental_resource_cost_aud": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "budget_realisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "actual_net_cash_change_aud"
+      ],
+      "properties": {
+        "status": {
+          "const": "not_authorised"
+        },
+        "actual_net_cash_change_aud": {
+          "type": "null"
+        }
+      }
+    },
+    "decision_analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "status",
+        "net_benefit_includes_funding"
+      ],
+      "properties": {
+        "provider": {
+          "const": "voiage"
+        },
+        "status": {
+          "enum": [
+            "unavailable",
+            "source_contract_only"
+          ]
+        },
+        "net_benefit_includes_funding": {
+          "const": false
+        }
+      }
+    }
+  }
+}

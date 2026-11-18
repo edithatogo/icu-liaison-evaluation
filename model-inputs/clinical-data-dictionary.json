@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "status": "unvalidated_local_source_mapping",
+  "purpose": "Schema and source requirements only; does not contain any patient, roster, facility financial or identifiable observations",
+  "fields": [
+    {
+      "name": "hospitalisation_pseudonym",
+      "type": "string",
+      "grain": "hospitalisation",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "reject_duplicate_or_missing",
+      "use": "Join ICU episodes, ward movement and costs without direct identifiers"
+    },
+    {
+      "name": "index_icu_episode_id",
+      "type": "string",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "reject_duplicate_or_missing",
+      "use": "Link repeated episodes, select one index discharge per hospitalisation"
+    },
+    {
+      "name": "icu_admission_at",
+      "type": "datetime_tz",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "ICU length of stay and exposure chronology"
+    },
+    {
+      "name": "icu_medically_ready_at",
+      "type": "datetime_tz",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Start of exit-block clock"
+    },
+    {
+      "name": "icu_actual_departure_at",
+      "type": "datetime_tz",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "reject_duplicate_or_missing",
+      "use": "End of exit-block clock, readmission start"
+    },
+    {
+      "name": "destination_category",
+      "type": "enum",
+      "grain": "icu_episode",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Eligible ward vs direct home, death and transfer"
+    },
+    {
+      "name": "adult_age_at_icu_admission_years",
+      "type": "integer",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Adult analysis eligibility and case mix"
+    },
+    {
+      "name": "hospitalisation_final_departure_at",
+      "type": "datetime_tz",
+      "grain": "hospitalisation",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "End of inpatient cost/outcome follow-up"
+    },
+    {
+      "name": "followup_observation_end_at",
+      "type": "datetime_tz",
+      "grain": "index_episode",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Censor short observation rather than false negatives"
+    },
+    {
+      "name": "censor_reason",
+      "type": "enum",
+      "grain": "index_episode",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Document discharge, transfer, death or full observation"
+    },
+    {
+      "name": "icu_readmission_at",
+      "type": "datetime_tz",
+      "grain": "return_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "All subsequent ICU admissions in same hospitalisation"
+    },
+    {
+      "name": "readmission_planned_status",
+      "type": "enum",
+      "grain": "return_episode",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Unplanned 72h return endpoint; unknown not treated as false"
+    },
+    {
+      "name": "hospital_death_at",
+      "type": "datetime_tz",
+      "grain": "hospitalisation",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Death after index discharge; competing risk, treatment limitation context"
+    },
+    {
+      "name": "ward_cardiac_arrest_at",
+      "type": "datetime_tz",
+      "grain": "event",
+      "source_class": "CHHHS_incident_MET",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Ward arrest safety outcome"
+    },
+    {
+      "name": "deterioration_recognised_at",
+      "type": "datetime_tz",
+      "grain": "event",
+      "source_class": "CHHHS_incident_MET",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Start of escalation timing"
+    },
+    {
+      "name": "escalation_responded_at",
+      "type": "datetime_tz",
+      "grain": "event",
+      "source_class": "CHHHS_incident_MET",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "End of escalation timing"
+    },
+    {
+      "name": "return_severity",
+      "type": "scored_or_review",
+      "grain": "return_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Severity on ICU return; quantify only with validated instrument"
+    },
+    {
+      "name": "return_appropriateness_review",
+      "type": "enum",
+      "grain": "return_episode",
+      "source_class": "CHHHS_incident_MET",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Appropriate rescue, not simply low readmission counts"
+    },
+    {
+      "name": "treatment_goals_at_discharge",
+      "type": "enum",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Resuscitation/goals context, historic availability uncertain"
+    },
+    {
+      "name": "icu_admission_severity",
+      "type": "scored",
+      "grain": "icu_episode",
+      "source_class": "ANZICS_APD",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Risk adjustment and case mix"
+    },
+    {
+      "name": "ward_staffed_bed_count",
+      "type": "count",
+      "grain": "shift",
+      "source_class": "CHHHS_hospital_movements",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Ward receiving capacity and confounding"
+    },
+    {
+      "name": "icu_staffed_bed_count",
+      "type": "count",
+      "grain": "shift",
+      "source_class": "CHHHS_workforce",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Realised resource release and ICU constraint"
+    },
+    {
+      "name": "ward_workload_minutes",
+      "type": "decimal",
+      "grain": "hospitalisation",
+      "source_class": "CHHHS_workforce",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Additional ward work/cost displacement"
+    },
+    {
+      "name": "liaison_contact_at",
+      "type": "datetime_tz",
+      "grain": "contact",
+      "source_class": "CHHHS_liaison_activity",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Service exposure timing"
+    },
+    {
+      "name": "liaison_intervention_type",
+      "type": "enum",
+      "grain": "contact",
+      "source_class": "CHHHS_liaison_activity",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Mechanism and service fidelity"
+    },
+    {
+      "name": "liaison_roster_coverage_hours",
+      "type": "decimal",
+      "grain": "week",
+      "source_class": "CHHHS_workforce",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Reach and incremental FTE"
+    },
+    {
+      "name": "liaison_incremental_fte",
+      "type": "decimal",
+      "grain": "service_year",
+      "source_class": "CHHHS_workforce",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Funded and relief staffing vs existing"
+    },
+    {
+      "name": "cost_ledger_entry_id",
+      "type": "string",
+      "grain": "resource_line",
+      "source_class": "CHHHS_costing",
+      "availability": "not_verified",
+      "missing_policy": "reject_duplicate_or_missing",
+      "use": "De-duplicate use across index, return and service segments"
+    },
+    {
+      "name": "cost_resource_segment",
+      "type": "enum",
+      "grain": "resource_line",
+      "source_class": "CHHHS_costing",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Nonoverlapping index / return / incremental service tagging"
+    },
+    {
+      "name": "cost_resource_quantity",
+      "type": "decimal",
+      "grain": "resource_line",
+      "source_class": "CHHHS_costing",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Physical consumed resources for Dapane valuation"
+    },
+    {
+      "name": "cost_unit_quotation",
+      "type": "decimal_AUD",
+      "grain": "resource_line",
+      "source_class": "CHHHS_costing",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Approved local rate, source/date/currency/price-year required"
+    },
+    {
+      "name": "patient_family_transition_experience",
+      "type": "survey",
+      "grain": "index_episode",
+      "source_class": "CHHHS_patient_experience",
+      "availability": "not_verified",
+      "missing_policy": "unknown_if_missing",
+      "use": "Patient/family process consequences, optional prespecified measure"
+    }
+  ]
+}

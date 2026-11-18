@@ -1,0 +1,3 @@
+hospitalisation_pseudonym,index_icu_episode_id,liaison_contact_at,liaison_intervention_type
+SYNHOSP001,SYNICU001,2026-01-01T11:00:00+10:00,ward_followup
+SYNHOSP003,SYNICU004,2026-03-10T14:00:00+10:00,discharge_preparation

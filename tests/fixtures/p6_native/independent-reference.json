@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "source_engine": "kairos",
+  "data_class": "synthetic",
+  "producer": "icu-liaison-kairos-consumer",
+  "producer_contract_version": "0.1.0",
+  "provider": {
+    "repository": "https://github.com/edithatogo/kairos",
+    "source_commit": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+    "api": "kairo-ecs-des::StagedResourceRuntime"
+  },
+  "scenario_id": "syn-icu-liaison-kairos-4h-1bed-fixture",
+  "seed": 20261118,
+  "horizon_minutes": 240,
+  "capacity": [
+    {
+      "start_minute": 0,
+      "end_minute": 240,
+      "staffed_beds": 1
+    }
+  ],
+  "strategies": [
+    {
+      "strategy_id": "current_care",
+      "occupancies": [
+        {
+          "episode_id": "syn-index-1",
+          "start_minute": 0,
+          "end_minute": 120
+        },
+        {
+          "episode_id": "syn-demand-1",
+          "start_minute": 120,
+          "end_minute": 180
+        }
+      ],
+      "requests": [
+        {
+          "request_id": "syn-demand-1",
+          "request_minute": 60,
+          "disposition": "admitted",
+          "admitted_minute": 120
+        }
+      ]
+    },
+    {
+      "strategy_id": "liaison_service",
+      "occupancies": [
+        {
+          "episode_id": "syn-index-1",
+          "start_minute": 0,
+          "end_minute": 90
+        },
+        {
+          "episode_id": "syn-demand-1",
+          "start_minute": 90,
+          "end_minute": 150
+        }
+      ],
+      "requests": [
+        {
+          "request_id": "syn-demand-1",
+          "request_minute": 60,
+          "disposition": "admitted",
+          "admitted_minute": 90
+        }
+      ]
+    }
+  ]
+}

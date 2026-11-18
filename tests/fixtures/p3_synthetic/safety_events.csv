@@ -1,0 +1,2 @@
+hospitalisation_pseudonym,index_icu_episode_id,event_id,event_type,ward_cardiac_arrest_at,deterioration_recognised_at,escalation_responded_at
+synthetic_case_A,synthetic_A_i1,synthetic_event_A1,ward_cardiac_arrest,2026-07-02T12:00:00+10:00,2026-07-02T11:45:00+10:00,2026-07-02T11:55:00+10:00

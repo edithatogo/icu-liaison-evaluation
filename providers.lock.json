@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-11-18",
+  "purpose": "Source reference and interface lock; NOT an installed binary or wheel-hash lock",
+  "providers": {
+    "dapane": {
+      "distribution": "dapane",
+      "repository": "https://github.com/edithatogo/dapane",
+      "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+      "version": "0.1.0",
+      "contract": "0.1",
+      "method_version": "dapane-exact-v0.1.0",
+      "type": "unpublished_source_built_python_wheel",
+      "build_guide": "https://github.com/edithatogo/dapane/blob/main/docs/quickstart.md",
+      "binary_sha256": null,
+      "status": "source_contract_inspected_native_artifact_unverified"
+    },
+    "voiage": {
+      "distribution": "voiage",
+      "repository": "https://github.com/edithatogo/voiage",
+      "release_tag": "v3.1.0",
+      "tag_object": "0540cf79c4dae77144ab25a08a650c8967a506f7",
+      "tag_commit": "d40af0276019a7d63657349b53dad96845e2b4c1",
+      "version": "3.1.0",
+      "requires_python": ">=3.15.2,<3.16",
+      "type": "pypi_released_distribution",
+      "binary_sha256": null,
+      "status": "release_contract_inspected_installed_provider_unverified"
+    }
+  }
+}

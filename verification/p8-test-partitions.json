@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-18",
+  "partitions": {
+    "p0_p4_p7": {
+      "files": [
+        "tests/test_adapters.py",
+        "tests/test_data_request_pack.py",
+        "tests/test_model.py",
+        "tests/test_p1_runtime_contracts.py",
+        "tests/test_p2_cli.py",
+        "tests/test_p2_protocol.py",
+        "tests/test_p3_cli.py",
+        "tests/test_p3_data_adapter.py",
+        "tests/test_p3_evidence.py",
+        "tests/test_p3_public_evidence.py",
+        "tests/test_p3_quality.py",
+        "tests/test_p4_admission.py",
+        "tests/test_p4_cli.py",
+        "tests/test_p4_dapane_bridge.py",
+        "tests/test_p4_economic_model.py",
+        "tests/test_qualification_independent.py",
+        "tests/test_qualification_runner.py",
+        "tests/test_sources_and_migration.py"
+      ],
+      "passed": 153,
+      "log_sha256": "2b7742b6757bfc667e89ba9a77ac23cae75b541c0a9c11fb77ae6acc8e53763e"
+    },
+    "p5": {
+      "files": [
+        "tests/test_p5_provider_execution.py",
+        "tests/test_p5_reporting.py",
+        "tests/test_p5_semantic_review.py"
+      ],
+      "passed": 20,
+      "log_sha256": "eaffe21abb90c23562b99824388f71ea83dc5a359b2fd5f3d6a908f442033a36"
+    },
+    "p6": {
+      "files": [
+        "tests/test_p6_capacity_trace.py",
+        "tests/test_p6_handoff_contract.py",
+        "tests/test_p6_holdout.py",
+        "tests/test_p6_independent_capacity_oracle.py",
+        "tests/test_p6_native_contract.py",
+        "tests/test_p6_native_source_boundary.py",
+        "tests/test_p6_qualification_gates.py"
+      ],
+      "passed": 36,
+      "log_sha256": "df92c707e0e0fe0d4ed281d7d648cdb75d2c00eb2ec7f81e5f81479e589ce4d4"
+    },
+    "p8": {
+      "files": [
+        "tests/test_p8_provider_roadmap.py"
+      ],
+      "passed": 11,
+      "log_sha256": "b9d8d7f7c1f9e6715a34eea9063113fd94af1edbd74e57afe55b21600f0fd3cc"
+    }
+  }
+}

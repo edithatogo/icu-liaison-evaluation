@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "track_id": "P6-kairos-capacity-validation",
+  "title": "Time-aware ICU capacity trace qualification and optional Kairos DES",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": [
+    "P6.1-neutral-trace",
+    "P6.2-synthetic-conformance",
+    "P6.3-provider-source-and-trace-contract",
+    "P6.4-synthetic-holdout-diagnostics"
+  ],
+  "blocked_phases": [
+    "P6.3-installed-native-Kairos-producer-and-replay",
+    "P6.3-ward-costing-and-safety-integration",
+    "P6.4-CHHHS-calibration",
+    "P6.4-independent-clinical-Finance-governance-review",
+    "dedicated-repository-hosted-CI"
+  ],
+  "dependencies": [
+    "P4-economic-decision-model",
+    "P3-evidence-data-infrastructure"
+  ],
+  "source_provider_revision": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+  "native_execution": "not_executed_no_rust_toolchain",
+  "clinical_validation": false
+}

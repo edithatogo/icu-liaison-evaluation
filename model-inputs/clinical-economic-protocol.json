@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+  "status": "draft_unapproved",
+  "setting": "Cairns Hospital adult ICU and receiving CHHHS wards; exact service catchment to verify before site-specific evaluation",
+  "decision_maker": "Cairns_and_Hinterland_HHS",
+  "target_decision": "incremental_icu_liaison_service_investment",
+  "eligibility": {
+    "target_site": "Cairns Hospital adult ICU, actual service geography to be approved",
+    "minimum_age_years": 16,
+    "analysis_unit": "first_eligible_live_ward_discharge_per_hospitalisation",
+    "eligible_destinations": [
+      "ward_same_hospital",
+      "ward_same_hhs"
+    ],
+    "excluded_dispositions": [
+      "icu_death",
+      "icu_to_icu_transfer",
+      "direct_home",
+      "interhospital_transfer_without_followup"
+    ],
+    "repeat_episode_handling": "first_index_discharge_for_primary_analysis_all_episodes_for_costing",
+    "hospitalisation_linkage": "pseudonymous_hospitalisation_identifier_required"
+  },
+  "strategies": [
+    {
+      "id": "current_care",
+      "role": "observed_comparator",
+      "evidence_status": "not_verified",
+      "activities": [
+        "Existing ICU discharge coordination, ward escalation and MET pathways must be mapped rather than assumed absent"
+      ],
+      "funded_fte": null,
+      "hours_of_coverage_per_week": null,
+      "current_work_absorbed_or_displaced": "Not yet measured; obtain rosters and actual activity.",
+      "site_source_reference": null
+    },
+    {
+      "id": "liaison_service",
+      "role": "proposed_incremental",
+      "evidence_status": "not_verified",
+      "activities": [
+        "Discharge readiness and handover support",
+        "Time-limited post-discharge review",
+        "Ward clinical escalation support",
+        "Staff education and transition support"
+      ],
+      "funded_fte": null,
+      "hours_of_coverage_per_week": null,
+      "current_work_absorbed_or_displaced": "Incremental over existing practice; advanced NP/MET variant requires a separate comparator.",
+      "site_source_reference": null
+    }
+  ],
+  "endpoints": {
+    "ready_to_physical_departure_hours": {
+      "id": "ready_to_physical_departure_hours",
+      "role": "primary_operational",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "clinical_discharge_readiness",
+      "end_event": "physical_icu_departure",
+      "unit": "hours",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Individual elapsed readiness-to-physical-departure hours; not whole ICU length of stay or automatically avoidable."
+    },
+    "exit_block_ge12h": {
+      "id": "exit_block_ge12h",
+      "role": "secondary_operational",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "clinical_discharge_readiness",
+      "end_event": "physical_icu_departure",
+      "unit": "proportion",
+      "threshold_hours": 12,
+      "window_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Within the local index-live-ward cohort, >=12 h. Compare to CCR >=12 h only with explicit denominator differences (CCR all live ward/home)."
+    },
+    "unplanned_72h_return": {
+      "id": "unplanned_72h_return",
+      "role": "primary_operational",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "any_unplanned_icu_return_same_hospital_stay",
+      "unit": "proportion",
+      "window_hours": 72,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "ANY unplanned ICU return <72 h after actual departure, per index live ward discharge. Not the APD patient rate or CCR all-admission episode rate."
+    },
+    "after_hours_icu_discharge": {
+      "id": "after_hours_icu_discharge",
+      "role": "secondary_operational",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "local_time_1800_through_0559",
+      "unit": "proportion",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Physical ICU departure at 18:00:00-05:59:59 local Brisbane time; denominator differs from CCR ward/home."
+    },
+    "post_icu_death": {
+      "id": "post_icu_death",
+      "role": "safety",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "death_before_final_hospital_discharge",
+      "unit": "proportion",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Hospital mortality after live index ICU discharge; deaths before adequate surveillance are competing events."
+    },
+    "ward_cardiac_arrest": {
+      "id": "ward_cardiac_arrest",
+      "role": "safety",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "ward_cardiac_arrest_before_final_hospital_discharge",
+      "unit": "proportion",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Ward arrests after ICU departure; adjudicate resuscitation eligibility and goals of care."
+    },
+    "delayed_escalation": {
+      "id": "delayed_escalation",
+      "role": "safety",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "ward_deterioration_recognised",
+      "end_event": "appropriate_escalation",
+      "unit": "hours",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Time from documented ward deterioration/recognition to appropriate escalation; avoid excluding unrecognised deterioration."
+    },
+    "return_severity_and_appropriateness": {
+      "id": "return_severity_and_appropriateness",
+      "role": "safety",
+      "denominator": "observed_icu_returns_after_index",
+      "start_event": "icu_return",
+      "end_event": "documented_rescue_and_severity_review",
+      "unit": "clinical_review",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Independent review of severity at return, rescue appropriateness and treatment limitations; higher readmission alone does not imply harm."
+    },
+    "ward_workload": {
+      "id": "ward_workload",
+      "role": "safety",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "ward_care_until_hospital_discharge",
+      "unit": "staff_time",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Measure nursing/medical workload displaced from ICU to receiving ward, with appropriate perspective and coverage."
+    },
+    "treatment_limitations": {
+      "id": "treatment_limitations",
+      "role": "safety",
+      "denominator": "eligible_index_live_ward_discharges",
+      "start_event": "physical_icu_departure",
+      "end_event": "treatment_goals_reconciled",
+      "unit": "clinical_review",
+      "window_hours": null,
+      "threshold_hours": null,
+      "missing_data_policy": "retain_unknown_and_report_completeness",
+      "interpretation": "Explicit treatment goals, escalation plans and documentation on transfer; do not interpret planned no-reintubation as missed rescue."
+    }
+  },
+  "safety": {
+    "required_endpoints": [
+      "delayed_escalation",
+      "post_icu_death",
+      "return_severity_and_appropriateness",
+      "treatment_limitations",
+      "ward_cardiac_arrest",
+      "ward_workload"
+    ],
+    "approved_noninferiority_margins": {},
+    "measurements_status": "unmeasured",
+    "decision_gate": "safety_review_required_prior_to_investment_claim"
+  },
+  "economics": {
+    "primary_perspective": "CHHHS_provider_cost_consequence",
+    "secondary_perspective": "CHHHS_budget_impact_separate",
+    "currency": "AUD",
+    "price_year": 2026,
+    "reference_input_price_year": 2026,
+    "evaluation_horizon_months": 12,
+    "episode_followup": "from_index_discharge_to_final_hospital_separation",
+    "apply_discounting_within_12_months": false,
+    "future_long_horizon_discount_rate_status": "not_applicable_until_long_horizon_defined",
+    "index_delay_valuation": "marginal_icu_less_incremental_ward_not_average_bed_cost",
+    "capacity_monetisation": "physical_hours_only_until_actual_demand_and_cash_realisability_qualified",
+    "opportunity_cost_rule": "count_once_separate_from_financial_cash",
+    "cost_components": [
+      {
+        "id": "release_index_delay",
+        "resource_segment": "index_ready_to_departure",
+        "calculation_role": "avoided_index_delay",
+        "valuation": "incremental_net_of_ward",
+        "price_basis": "economic_cost",
+        "cash_status": "not_assumed_realisable"
+      },
+      {
+        "id": "incremental_early_return",
+        "resource_segment": "post_departure_return",
+        "calculation_role": "avoided_readmission",
+        "valuation": "incremental_net_of_otherwise_care",
+        "price_basis": "economic_cost",
+        "cash_status": "not_assumed_realisable"
+      },
+      {
+        "id": "new_liaison_resource",
+        "resource_segment": "incremental_service",
+        "calculation_role": "incremental_liaison_cost",
+        "valuation": "additional_workforce_and_operations",
+        "price_basis": "economic_cost",
+        "cash_status": "actual_incremental_expenditure"
+      }
+    ]
+  },
+  "design": {
+    "proposed_design": "controlled_interrupted_time_series_or_phased_comparison",
+    "approval_status": "candidate_unapproved",
+    "preferred_baseline_months": 24,
+    "preferred_followup_months": 12,
+    "confounders_to_measure": [
+      "ICU case-mix and illness severity",
+      "admission/discharge volume and seasonal demand",
+      "staffed ICU and ward capacity",
+      "ward staffing and bed availability",
+      "concurrent MET and outreach changes",
+      "secular trends and hospital-level interventions",
+      "treatment limitations and care intensity"
+    ],
+    "minimum_data_completeness_approved": null,
+    "governance_status": "local_approval_not_established",
+    "equity_axes": [
+      "rural and remote patients and interhospital transfers",
+      "Aboriginal and Torres Strait Islander patients where governance permits",
+      "language/accessibility needs",
+      "high clinical complexity and diagnosis groups"
+    ]
+  },
+  "required_local_scenario_inputs": [
+    "annual_eligible_discharges",
+    "delayed_discharge_ge12h_rate",
+    "delayed_cases_addressable_fraction",
+    "addressable_cases_improved_fraction",
+    "hours_released_per_improved_case",
+    "unplanned_72h_readmission_risk",
+    "relative_readmission_reduction",
+    "additional_cost_per_readmission_aud",
+    "net_avoidable_cost_per_icu_day_aud",
+    "annual_incremental_service_cost_aud"
+  ],
+  "external_benchmark_role": "external_comparator_not_CHHHS_observed",
+  "source_register": "conductor/evidence/source-register.json",
+  "reference_benchmark": {
+    "source_id": "ANZICS-CCR-2024-25",
+    "measure": "exit_block_ge12h",
+    "value": 0.204,
+    "unit": "proportion",
+    "denominator": "all_live_ward_home_discharges",
+    "population": "pooled_all_ages_Australia_New_Zealand",
+    "period": "2024-07-01/2025-06-30",
+    "url": "https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf",
+    "role": "external_proxy_never_CHHHS_rate"
+  }
+}

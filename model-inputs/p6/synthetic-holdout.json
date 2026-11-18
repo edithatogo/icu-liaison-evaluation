@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "scenario_id": "syn-p6-holdout-reference",
+  "endpoint": "admission_wait_minutes_among_admitted",
+  "training": [
+    {"sample_id": "syn-cal-1", "observed_wait_minutes": 10, "predicted_wait_minutes": 12},
+    {"sample_id": "syn-cal-2", "observed_wait_minutes": 20, "predicted_wait_minutes": 19},
+    {"sample_id": "syn-cal-3", "observed_wait_minutes": 30, "predicted_wait_minutes": 27}
+  ],
+  "holdout": [
+    {"sample_id": "syn-val-1", "observed_wait_minutes": 20, "predicted_wait_minutes": 15},
+    {"sample_id": "syn-val-2", "observed_wait_minutes": 30, "predicted_wait_minutes": 25},
+    {"sample_id": "syn-val-3", "observed_wait_minutes": 40, "predicted_wait_minutes": 35}
+  ],
+  "note": "Illustrative paired admitted patients only; patients censored or declined require separate survival/competing-risk models."
+}

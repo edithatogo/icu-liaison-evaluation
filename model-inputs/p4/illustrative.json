@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "scenario_id": "icu-liaison-p4-public-proxy-synthetic",
+  "data_class": "synthetic",
+  "currency": "AUD",
+  "price_year": 2026,
+  "horizon_months": 12,
+  "annual_eligible_discharges": 1000,
+  "annual_volume_provenance": "Hypothetical cohort, not CHHHS volume",
+  "seed": 20261118,
+  "iterations": 5000,
+  "baseline": {
+    "exit_block_rate": {
+      "family": "fixed",
+      "params": {
+        "value": 0.204
+      },
+      "unit": "proportion",
+      "evidence_status": "public_proxy",
+      "source_ref": "CCR_2024_25_EXIT_BLOCK"
+    },
+    "unplanned_72h_return_rate": {
+      "family": "beta",
+      "params": {
+        "alpha": 3,
+        "beta": 97
+      },
+      "unit": "proportion",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    }
+  },
+  "resource": {
+    "addressable_delay_fraction": {
+      "family": "triangular",
+      "params": {
+        "low": 0.2,
+        "mode": 0.45,
+        "high": 0.65
+      },
+      "unit": "proportion",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "hours_released_per_improved_case": {
+      "family": "triangular",
+      "params": {
+        "low": 1,
+        "mode": 4,
+        "high": 8
+      },
+      "unit": "hours_per_case",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "net_index_delay_cost_aud_per_day": {
+      "family": "lognormal",
+      "params": {
+        "median": 1800,
+        "log_sigma": 0.45
+      },
+      "unit": "AUD_per_icu_day",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "incremental_return_cost_aud_per_return": {
+      "family": "lognormal",
+      "params": {
+        "median": 15000,
+        "log_sigma": 0.35
+      },
+      "unit": "AUD_per_readmission",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "usable_released_capacity_fraction": {
+      "family": "beta",
+      "params": {
+        "alpha": 8,
+        "beta": 2
+      },
+      "unit": "proportion",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "index_cash_realisability_fraction": {
+      "family": "beta",
+      "params": {
+        "alpha": 2,
+        "beta": 8
+      },
+      "unit": "proportion",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    },
+    "return_cash_realisability_fraction": {
+      "family": "beta",
+      "params": {
+        "alpha": 4,
+        "beta": 6
+      },
+      "unit": "proportion",
+      "evidence_status": "illustrative_assumption",
+      "source_ref": "P4-ILLUSTRATIVE"
+    }
+  },
+  "strategies": [
+    {
+      "id": "current_care",
+      "role": "comparator",
+      "coverage_fraction": {
+        "family": "fixed",
+        "params": {
+          "value": 0
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "delay_success_fraction": {
+        "family": "fixed",
+        "params": {
+          "value": 0
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "relative_return_effect": {
+        "family": "fixed",
+        "params": {
+          "value": 0
+        },
+        "unit": "signed_proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "annual_incremental_cost_aud": {
+        "family": "fixed",
+        "params": {
+          "value": 0
+        },
+        "unit": "AUD_per_year",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      }
+    },
+    {
+      "id": "liaison_service",
+      "role": "proposed",
+      "coverage_fraction": {
+        "family": "fixed",
+        "params": {
+          "value": 1
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "delay_success_fraction": {
+        "family": "triangular",
+        "params": {
+          "low": 0.2,
+          "mode": 0.5,
+          "high": 0.8
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "relative_return_effect": {
+        "family": "triangular",
+        "params": {
+          "low": -0.1,
+          "mode": 0.15,
+          "high": 0.3
+        },
+        "unit": "signed_proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "annual_incremental_cost_aud": {
+        "family": "triangular",
+        "params": {
+          "low": 200000,
+          "mode": 250000,
+          "high": 380000
+        },
+        "unit": "AUD_per_year",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      }
+    },
+    {
+      "id": "extended_cover",
+      "role": "proposed",
+      "coverage_fraction": {
+        "family": "triangular",
+        "params": {
+          "low": 0.75,
+          "mode": 0.9,
+          "high": 1
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "delay_success_fraction": {
+        "family": "triangular",
+        "params": {
+          "low": 0.2,
+          "mode": 0.55,
+          "high": 0.85
+        },
+        "unit": "proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "relative_return_effect": {
+        "family": "triangular",
+        "params": {
+          "low": -0.1,
+          "mode": 0.18,
+          "high": 0.35
+        },
+        "unit": "signed_proportion",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      },
+      "annual_incremental_cost_aud": {
+        "family": "triangular",
+        "params": {
+          "low": 260000,
+          "mode": 330000,
+          "high": 450000
+        },
+        "unit": "AUD_per_year",
+        "evidence_status": "illustrative_assumption",
+        "source_ref": "P4-ILLUSTRATIVE"
+      }
+    }
+  ],
+  "dependence_groups": [
+    {
+      "variables": [
+        "baseline.unplanned_72h_return_rate",
+        "resource.incremental_return_cost_aud_per_return"
+      ],
+      "gaussian_correlation": [
+        [
+          1,
+          0.3
+        ],
+        [
+          0.3,
+          1
+        ]
+      ]
+    },
+    {
+      "variables": [
+        "resource.addressable_delay_fraction",
+        "strategy.liaison_service.delay_success_fraction"
+      ],
+      "gaussian_correlation": [
+        [
+          1,
+          0.2
+        ],
+        [
+          0.2,
+          1
+        ]
+      ]
+    }
+  ],
+  "safety": {
+    "assessment_status": "unmeasured",
+    "required_outcomes": [
+      "post_icu_death",
+      "ward_cardiac_arrest",
+      "delayed_escalation",
+      "return_severity_and_appropriateness",
+      "ward_workload",
+      "treatment_limitations"
+    ],
+    "noninferiority_margins": "not_defined",
+    "safety_not_monetised": true
+  },
+  "decision_claim": "illustrative_only_no_investment_or_clinical_claim",
+  "notes": "Scenarios, correlations and all non-ANZICS values are hypothetical. Synthetic money is NOT CHHHS budget impact."
+}

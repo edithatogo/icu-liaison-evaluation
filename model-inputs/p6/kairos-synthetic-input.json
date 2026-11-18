@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "scenario_id": "syn-icu-liaison-kairos-4h-1bed-fixture",
+  "seed": 20261118,
+  "horizon_minutes": 240,
+  "staffed_beds": 1,
+  "strategies": [
+    {
+      "strategy_id": "current_care",
+      "initial_departure_minute": 120
+    },
+    {
+      "strategy_id": "liaison_service",
+      "initial_departure_minute": 90
+    }
+  ],
+  "arrivals": [
+    {
+      "request_id": "syn-demand-1",
+      "request_minute": 60,
+      "occupied_duration_minutes": 60
+    }
+  ]
+}

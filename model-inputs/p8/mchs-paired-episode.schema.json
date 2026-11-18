@@ -1,0 +1,124 @@
+{
+  "$id": "urn:icu-liaison:p8:mchs:1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "context": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Context",
+      "type": "object"
+    },
+    "data_class": {
+      "const": "synthetic",
+      "title": "Data Class",
+      "type": "string"
+    },
+    "drg": {
+      "maxLength": 20,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+$",
+      "title": "Drg",
+      "type": "string"
+    },
+    "drg_edition": {
+      "const": "v11.0",
+      "title": "Drg Edition",
+      "type": "string"
+    },
+    "episode_id": {
+      "maxLength": 128,
+      "minLength": 11,
+      "pattern": "^synthetic-[a-zA-Z0-9_-]+$",
+      "title": "Episode Id",
+      "type": "string"
+    },
+    "hospital_los_days": {
+      "exclusiveMinimum": 0,
+      "maximum": 3650,
+      "title": "Hospital Los Days",
+      "type": "integer"
+    },
+    "icu_hours_current": {
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+      "title": "Icu Hours Current",
+      "type": "string"
+    },
+    "icu_hours_intervention": {
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+      "title": "Icu Hours Intervention",
+      "type": "string"
+    },
+    "icu_other_hours": {
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+      "title": "Icu Other Hours",
+      "type": "string"
+    },
+    "pat_private_flag": {
+      "enum": [
+        0,
+        1
+      ],
+      "title": "Pat Private Flag",
+      "type": "integer"
+    },
+    "pat_sameday_flag": {
+      "enum": [
+        0,
+        1
+      ],
+      "title": "Pat Sameday Flag",
+      "type": "integer"
+    },
+    "pricing_year": {
+      "enum": [
+        2024,
+        2025
+      ],
+      "title": "Pricing Year",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_bundle_id": {
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Source Bundle Id",
+      "type": "string"
+    },
+    "source_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Bundle Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "data_class",
+    "episode_id",
+    "pricing_year",
+    "drg",
+    "drg_edition",
+    "hospital_los_days",
+    "icu_hours_current",
+    "icu_hours_intervention",
+    "icu_other_hours",
+    "pat_sameday_flag",
+    "pat_private_flag",
+    "source_bundle_sha256",
+    "source_bundle_id"
+  ],
+  "title": "MchsPair",
+  "type": "object"
+}

@@ -1,0 +1,5 @@
+hospitalisation_pseudonym,followup_observation_end_at,censor_reason,hospitalisation_final_departure_at,hospital_death_at
+SYNHOSP001,2026-01-06T12:00:00+10:00,hospital_discharge,2026-01-06T12:00:00+10:00,
+SYNHOSP002,2026-02-05T04:00:00+10:00,death,2026-02-05T04:00:00+10:00,2026-02-05T04:00:00+10:00
+SYNHOSP003,2026-03-15T12:00:00+10:00,hospital_discharge,2026-03-15T12:00:00+10:00,
+SYNHOSP004,2026-04-02T13:00:00+10:00,hospital_discharge,2026-04-02T13:00:00+10:00,

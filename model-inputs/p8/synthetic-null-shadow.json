@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "data_class": "synthetic",
+  "admission": "planning_only",
+  "scenario_id": "synthetic-null-optional-views",
+  "funding": {
+    "provider": "mchs",
+    "basis": "weighted_activity",
+    "unit": "NWAU",
+    "qualification_status": "unavailable",
+    "price_year": 2026,
+    "drg_edition": null,
+    "case_mix_status": "unverified",
+    "comparator_case_nwau": null,
+    "intervention_case_nwau": null,
+    "shadow_modelled_nwau_change": null,
+    "actual_incremental_revenue_aud": null,
+    "formula_parity_receipt": null,
+    "calculator_year": null,
+    "financial_year_label": null
+  },
+  "workforce": {
+    "provider": "microcosting_healthworkforce",
+    "basis": "financial_cost",
+    "jurisdiction": "Queensland",
+    "qualification_status": "unavailable",
+    "classification_status": "unverified",
+    "source_release_digest": null,
+    "incremental_annual_labour_cost_aud": null,
+    "components_included": []
+  },
+  "resource_valuation": {
+    "provider": "dapane",
+    "basis": "economic_cost",
+    "status": "unavailable",
+    "incremental_resource_cost_aud": null
+  },
+  "budget_realisation": {
+    "status": "not_authorised",
+    "actual_net_cash_change_aud": null
+  },
+  "decision_analysis": {
+    "provider": "voiage",
+    "status": "source_contract_only",
+    "net_benefit_includes_funding": false
+  }
+}

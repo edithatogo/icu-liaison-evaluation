@@ -1,0 +1,101 @@
+{
+  "artifact": "icu-liaison portable P4+P5 independent consumer candidate",
+  "baseline": "/mnt/data/icu_liaison_p4_final (existing P4)",
+  "causal_effect_established": false,
+  "code_source_sha256": {
+    "src/icu_liaison/__init__.py": "f5cc5d8137732094bcec6ff0c7c481875bbca8b11d55f0fddc1af142975a0144",
+    "src/icu_liaison/adapters/__init__.py": "c042fcd8790cfb665ed11f1eb12f31284e1c1e7eec108a5c873b9a5fdf04adf2",
+    "src/icu_liaison/adapters/dapane.py": "2879a166eb972eca02f37dfde6efdea12a104c81fd9739b805342a45dae4f80e",
+    "src/icu_liaison/adapters/p4_dapane.py": "a09f443a42a38b66747f6b1ccd0fa231ee4144d1434c1cf9cefde539fa2f3d04",
+    "src/icu_liaison/adapters/voiage.py": "825ce273ca3120fa61b663779ea664d93eb95d4e21b9f38a01416e740d44186b",
+    "src/icu_liaison/cli.py": "ffc4b5bf1af67a661f300fc950970e5a9ae2b9467335094d4a7147ce4d086fb6",
+    "src/icu_liaison/data_quality.py": "d4bef1104d9d3bcc020cb93f3b8249a138168ca7cb77626f149d8e83965d4585",
+    "src/icu_liaison/endpoints.py": "841e4a858bdd2119995f1e6b408f5ef4d2f4d7f439bdc450f86bac6fe6e700a2",
+    "src/icu_liaison/evidence.py": "99f531c80ce9a2ac94cccd8c6c69e1adf3c82b65c3f28d78af25e0bd74d33ee2",
+    "src/icu_liaison/local_data.py": "d3afb0db2ce9f0f8a231e641d8dd0e6aac77825507b9bf86a7bf70553f49a2d7",
+    "src/icu_liaison/model.py": "98142e3f5da09e5f6dfd6fba2e736154a02bcab3b309c3fd2da0731069ab5236",
+    "src/icu_liaison/p3_cli.py": "a338dffa5822965a3796d479a9423aab9326910ce38ab2769898dae787723321",
+    "src/icu_liaison/p4_admission.py": "dc6c83046196e40d7635c396655f4a340e8e02beeba124db2cb0034e9d95c04d",
+    "src/icu_liaison/p4_cli.py": "4e9d989776a7351c91883be67905d728f030b2daa9793ddfc0146e7e384e4ad5",
+    "src/icu_liaison/p4_model.py": "ce63accb416f4c40e02b87b3be086c52b1dd038f70e0374f2e8a7a1a75ffb63b",
+    "src/icu_liaison/p5_cli.py": "3fe7e361257f48bf1e0d3f7e70fa931c7d5ef42a2a56eb18e35d0df5cc1140cc",
+    "src/icu_liaison/p5_reporting.py": "ac90454ecd6fc180656686874f189de71dba8caf79828462129e55a9a23c56b8",
+    "src/icu_liaison/protocol.py": "22e57ddcfd9e959d68af4b02f9d1a9b905bef7a76f0b291c1bc196bd931fd05e",
+    "src/icu_liaison/protocol_cli.py": "b1bbdfe98d26de95aa64b88dbab8960e0d3d8152c95c13f577df19686dd7d306",
+    "src/icu_liaison/provider_contracts.py": "8cabb0980bc7e831263dfcd424fc9959ae1158f9809487c69fcb4aa5b6a041e3",
+    "src/icu_liaison/public_evidence.py": "cf35325009f8e9e748f26f53db1242f6a01ed6d642bbc99183f79400f24f7c46",
+    "src/icu_liaison/schemas.py": "8764592e59c4886e2fdb261932d5ca618755e1ad08d7ac5098583a616f56f75d"
+  },
+  "date": "2026-11-18",
+  "dedicated_GitHub_repo_integrated": false,
+  "independent_clinical_finance_review": false,
+  "installed_Dapane_provider_qualified": false,
+  "installed_Voiage_provider_qualified": false,
+  "local_environment": {
+    "matplotlib": "3.10.8",
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "model_input_digest_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+  "next_open_gates": [
+    "P1 installed Dapane/Voiage",
+    "2024/25 ANZICS publisher binary verification",
+    "CHHHS source rights and local data",
+    "clinical safety and Finance sign-off",
+    "dedicated repository + hosted CI",
+    "independent economic methodology review"
+  ],
+  "observed_CHHHS_data": false,
+  "p3_publisher_2024_25_document_verified": false,
+  "p5_report_file_count": 10,
+  "p5_report_manifest_sha256": "d30d475fc1513dc06c0de649b9c0f8c57bea3fa5654c919ffad7f495f08c7ef8",
+  "qualified_native_release": false,
+  "record_version": "1",
+  "reused_unchanged_p4_model_sha256": "ce63accb416f4c40e02b87b3be086c52b1dd038f70e0374f2e8a7a1a75ffb63b",
+  "safety_outcomes_measured": false,
+  "scope": "source and local synthetic validation ONLY; not local CHHHS forecast, clinical approval or production build",
+  "source_contracts": {
+    "p2_protocol_sha256": "1d34284e55fd781cf534224f627e931dafa165b6bd81998c0ee2d62b01cf8f6e",
+    "p3_benchmarks_sha256": "fa3f529dcbc97bc5ec055013ec53b33542ea387ea82295cd99fd22dcbdc29915",
+    "p4_illustrative_scenario_sha256": "9dad28695fe920cff9118e8cbd83147c983121077702f2eed63e71ab0cac734b",
+    "provider_references_sha256": "965201d67217d220c2f64bb9c00a6ec4e2267c61c62132b6c4784ac372deaddc"
+  },
+  "status": "portable_source_and_synthetic_tests_accepted_external_gates_open",
+  "strategy_mean_net_resource_benefit_aud": {
+    "current_care": 0.0,
+    "extended_cover": -264882.58,
+    "liaison_service": -198823.76
+  },
+  "tests": [
+    {
+      "command": "PYTHONPATH=src python -m pytest -q --disable-warnings",
+      "failed": 0,
+      "result": "passed",
+      "test_count": 154
+    },
+    {
+      "command": "PYTHONPATH=src python -m icu_liaison.p4_cli model-inputs/p4/illustrative.json --one-way-strategy liaison_service",
+      "result": "passed"
+    },
+    {
+      "command": "PYTHONPATH=src python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json --output-dir <new> --plots",
+      "manifest_verified": true,
+      "result": "passed"
+    },
+    {
+      "command": "python -m compileall -q src tests",
+      "result": "passed"
+    },
+    {
+      "command": "P5 `--voiage` provider-required negative gate",
+      "result": "UNVERIFIED_EXIT_2_no_output_published"
+    },
+    {
+      "command": "P5 `--require-investment-ready` negative gate",
+      "result": "UNVERIFIED_EXIT_2_no_output_published"
+    }
+  ]
+}

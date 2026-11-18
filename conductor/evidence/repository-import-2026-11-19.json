@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "visibility_at_import": "private",
+  "source_snapshots": [
+    {
+      "name": "ICU_Liaison_P8_4_Source_Composition_2026-11-18.zip",
+      "sha256": "bf190c705223a33bc3311965a81913a352f9a7d9da17629d576329b1c47a455a",
+      "size_bytes": 386216
+    },
+    {
+      "name": "ICU_Liaison_Placeholder_Progress_P7_Source_2026-11-18.zip",
+      "sha256": "bf90aae262c891b5825efa38c1fa15d943d88846ea264139aa58b2dc6e3136ab",
+      "size_bytes": 318856
+    }
+  ],
+  "merge_policy": "P8.4 base; retain P8 source/catalogue upgrades; add all P7-only placeholder files; merge project context and register both P7 track histories.",
+  "placeholder_policy": "Unknown local data and approval evidence remain null/unresolved; numerical fixtures remain explicitly synthetic.",
+  "workbook_binary_included": false,
+  "clinical_or_financial_acceptance": false,
+  "native_provider_qualified": false,
+  "conductor": {
+    "url": "https://github.com/gemini-cli-extensions/conductor",
+    "gitlink": "extensions/conductor",
+    "sha": "7a5c560a4fdf5297be58594cc37527eb12790272",
+    "gemini_runtime_qualified": false
+  },
+  "original_careops_sim_pr215_modified": false
+}

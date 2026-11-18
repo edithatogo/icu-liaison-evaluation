@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "scenario_id": "synthetic-nurse-roster",
+  "jurisdiction": "Queensland",
+  "classification": "candidate-clinical-nurse-grade-6",
+  "classification_status": "candidate_unverified",
+  "expected_artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "source_artifact_json": "{\"synthetic\":\"test-only-placeholder-no-real-rates\"}",
+  "financial_price_year": 2026,
+  "knowledge_cutoff": "2026-11-18",
+  "exposures": [
+    {
+      "quantity_id": "synthetic-1-base",
+      "shift_id": "shift1",
+      "quote_id": "nursing-base-hour",
+      "unit": "hour",
+      "quantity": "8",
+      "kind": "analyst_assumption",
+      "component": "base_salary",
+      "segment_start": "2026-09-12T07:00:00+10:00",
+      "segment_end": "2026-09-12T15:00:00+10:00",
+      "valued_on": "2026-09-12"
+    }
+  ],
+  "contains_superannuation": false,
+  "contains_leave_relief": false,
+  "contains_penalties": false,
+  "completeness_status": "partial"
+}

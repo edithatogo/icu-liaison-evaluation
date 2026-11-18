@@ -1,0 +1,839 @@
+{
+  "entries": [
+    {
+      "binding": {
+        "artifact": "model-inputs/p3/anzics-public-contract.json",
+        "pointer": "/document_verification/status",
+        "shape": "unverified_document"
+      },
+      "blocks": [
+        "public_source_authentication"
+      ],
+      "id": "anzics_primary_pdf",
+      "kind": "publisher_document",
+      "owner_role": "Evidence reviewer",
+      "prospective_source": "ANZICS 2024/25 CCR PDF official publisher",
+      "replacement": {
+        "evidence_type": "publisher_document",
+        "requirements": [
+          "Acquire authentic publisher PDF and SHA-256",
+          "Independently recheck all source tables and page denominators; record reviewer and date"
+        ]
+      },
+      "source_class": "unverified_public_metadata",
+      "status": "placeholder",
+      "track": "P3"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/p3-synthetic/manifest.json",
+        "pointer": "/files/episodes",
+        "shape": "sample_file"
+      },
+      "blocks": [
+        "local_calibration",
+        "clinical_review"
+      ],
+      "id": "local_icu_episodes",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Informatics",
+      "prospective_source": "CHHHS ICU admission and hospital movements",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Approved pseudonymous event extract with readiness and transfer timestamps",
+          "Distinct observation period and source denominator",
+          "Episode overlap, duplicates and missingness independently qualified"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P3"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/p3-synthetic/manifest.json",
+        "pointer": "/files/followup",
+        "shape": "sample_file"
+      },
+      "blocks": [
+        "clinical_review",
+        "local_calibration"
+      ],
+      "id": "local_followup",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Informatics",
+      "prospective_source": "CHHHS hospital movement and death datasets",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Linkable 72-hour inpatient followup and explicit censoring status",
+          "Independent quality check of planned/unplanned admissions and competing death"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P3"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/p3-synthetic/manifest.json",
+        "pointer": "/files/liaison_contacts",
+        "shape": "sample_file"
+      },
+      "blocks": [
+        "causal_attribution",
+        "local_calibration"
+      ],
+      "id": "local_liaison_activity",
+      "kind": "approved_site_extract",
+      "owner_role": "Nursing Operations",
+      "prospective_source": "Current CHHHS liaison and ward/MET activity",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Actual roster/time/contact activity and current-service counterfactual",
+          "Scope and incremental reach confirmed against baseline"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P3"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/p3-synthetic/manifest.json",
+        "pointer": "/files/cost_lines",
+        "shape": "sample_file"
+      },
+      "blocks": [
+        "costing_qualification",
+        "finance_review"
+      ],
+      "id": "local_patient_costing",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Costing",
+      "prospective_source": "CHHHS patient-level activity and cost data",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Approved resource-use ledger and priced components",
+          "Separate index discharge, readmission and ward segments without duplicated use",
+          "Independent Finance validation of basis and price year"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P3"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "pointer": "/safety/assessment_status",
+        "shape": "unmeasured_safety"
+      },
+      "blocks": [
+        "clinical_review",
+        "investment_decision"
+      ],
+      "id": "clinical_safety_outcomes",
+      "kind": "governance_signoff",
+      "owner_role": "Clinical Governance",
+      "prospective_source": "CHHHS mortality, MET/rapid response, cardiac arrest and ward safety records",
+      "replacement": {
+        "evidence_type": "governance_signoff",
+        "requirements": [
+          "Complete balancing outcomes including appropriate rescue and treatment limitations",
+          "Review case mix, missingness and noninferiority criteria",
+          "Clinical safety approval independent of economic result"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P2"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/clinical-economic-protocol.json",
+        "pointer": "/strategies/0/funded_fte",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "service_specification",
+        "finance_review"
+      ],
+      "id": "current_service_workforce",
+      "kind": "staffing_roster",
+      "owner_role": "Medical and Nursing Workforce",
+      "prospective_source": "Existing ICU and ward liaison/coordination services",
+      "replacement": {
+        "evidence_type": "staffing_roster",
+        "requirements": [
+          "Current funded and realised FTE, tasks, times, roster and baseline displacement",
+          "Incremental comparator documented"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P2"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/clinical-economic-protocol.json",
+        "pointer": "/strategies/1/funded_fte",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "service_specification",
+        "finance_review"
+      ],
+      "id": "proposed_service_workforce",
+      "kind": "staffing_roster",
+      "owner_role": "Medical and Nursing Workforce",
+      "prospective_source": "Proposed service roster and funded establishment",
+      "replacement": {
+        "evidence_type": "staffing_roster",
+        "requirements": [
+          "Funded FTE, coverage hours, leave and overhead allocation",
+          "Implementation costs and overlap with existing funded work independently reviewed"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P2"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "pointer": "/annual_eligible_discharges",
+        "shape": "synthetic_scalar"
+      },
+      "blocks": [
+        "local_calibration"
+      ],
+      "id": "eligible_annual_volume",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Informatics",
+      "prospective_source": "CHHHS adult ICU eligible index ward discharges",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Local eligible ward discharge counts over 12 months",
+          "Reconcile index discharges versus repeated ICU admissions and exclusions"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "public_proxy",
+        "pointer": "/baseline/exit_block_rate",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "local_calibration"
+      ],
+      "id": "local_exit_block_rate",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Informatics",
+      "prospective_source": "CHHHS ready-to-physical departure episodes",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Local >=12h delay numerator and index live-ward denominator",
+          "Do not rebrand pooled ANZICS 20.4% as local measurement"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/baseline/unplanned_72h_return_rate",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "local_calibration",
+        "clinical_review"
+      ],
+      "id": "local_unplanned_72h_return",
+      "kind": "approved_site_extract",
+      "owner_role": "ICU Audit",
+      "prospective_source": "Linked CHHHS ICU episodes and planned-status adjudication",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Local 72-hour unplanned return risk among eligible index live discharges",
+          "Classify death/censoring/unknown separately; risk adjustment"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/addressable_delay_fraction",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "causal_attribution",
+        "local_calibration"
+      ],
+      "id": "addressable_delay_share",
+      "kind": "statistical_estimate",
+      "owner_role": "ICU/ward clinicians",
+      "prospective_source": "Delay-cause adjudication and ward constraints",
+      "replacement": {
+        "evidence_type": "statistical_estimate",
+        "requirements": [
+          "Case-review or prospectively coded fractions attributable to a modifiable liaison mechanism",
+          "Uncertainty distribution and overlap documented"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/hours_released_per_improved_case",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "causal_attribution",
+        "local_calibration"
+      ],
+      "id": "hours_released_per_improvement",
+      "kind": "statistical_estimate",
+      "owner_role": "ICU Audit",
+      "prospective_source": "Pre/post or controlled measured readiness-to-transfer times",
+      "replacement": {
+        "evidence_type": "statistical_estimate",
+        "requirements": [
+          "Observed conditional change and variance under a valid comparison",
+          "No claim that all released ICU hours are cash-realisable"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/strategies/1/delay_success_fraction",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "causal_attribution"
+      ],
+      "id": "causal_delay_success",
+      "kind": "statistical_estimate",
+      "owner_role": "Clinical Research",
+      "prospective_source": "Controlled service evaluation or robust quasi-experimental design",
+      "replacement": {
+        "evidence_type": "statistical_estimate",
+        "requirements": [
+          "Predefined intervention estimand and comparator",
+          "Case mix, secular trends, seasonality, implementation fidelity and uncertainty evaluated"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/strategies/1/relative_return_effect",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "causal_attribution",
+        "clinical_review"
+      ],
+      "id": "causal_return_effect",
+      "kind": "statistical_estimate",
+      "owner_role": "Clinical Research",
+      "prospective_source": "Adjudicated 72-hour ICU outcomes and controlled comparator",
+      "replacement": {
+        "evidence_type": "statistical_estimate",
+        "requirements": [
+          "Unplanned return risk difference with competing-risk analysis",
+          "Allow increased appropriate rescue; safety balanced against raw readmissions"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/strategies/1/annual_incremental_cost_aud",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "costing_qualification",
+        "finance_review"
+      ],
+      "id": "incremental_service_cost",
+      "kind": "costing_schedule",
+      "owner_role": "Finance and Nursing",
+      "prospective_source": "CHHHS funded nurse staffing and incremental operational costs",
+      "replacement": {
+        "evidence_type": "costing_schedule",
+        "requirements": [
+          "Annualised incremental expenditure, grade, on-cost, relief and coverage",
+          "Source price year, allowance, service displacement and budget attribution"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/net_index_delay_cost_aud_per_day",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "costing_qualification",
+        "finance_review"
+      ],
+      "id": "marginal_index_icu_cost",
+      "kind": "costing_schedule",
+      "owner_role": "Finance and Clinical Costing",
+      "prospective_source": "CHHHS ICU activity and marginal resource costing",
+      "replacement": {
+        "evidence_type": "costing_schedule",
+        "requirements": [
+          "Incremental avoidable ICU discharge-delay cost net of ward cost",
+          "No annual cost-per-available-bed substitution"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/incremental_return_cost_aud_per_return",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "costing_qualification",
+        "finance_review"
+      ],
+      "id": "incremental_readmission_cost",
+      "kind": "costing_schedule",
+      "owner_role": "Finance and Clinical Costing",
+      "prospective_source": "CHHHS hospital costing with episode segmentation",
+      "replacement": {
+        "evidence_type": "costing_schedule",
+        "requirements": [
+          "Incremental return episode cost versus appropriate care without readmission",
+          "Exclude index ICU delay hours to prevent double counting"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/usable_released_capacity_fraction",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "capacity_calibration"
+      ],
+      "id": "usable_capacity_fraction",
+      "kind": "statistical_estimate",
+      "owner_role": "ICU Operations",
+      "prospective_source": "ICU bed demand, ward flow, staffing and occupancy",
+      "replacement": {
+        "evidence_type": "statistical_estimate",
+        "requirements": [
+          "Observed matching of bed-time released to unmet demand and required workforce",
+          "State usable capacity separately from funded beds and cash"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p4/illustrative.json",
+        "expected_evidence_status": "illustrative_assumption",
+        "pointer": "/resource/index_cash_realisability_fraction",
+        "shape": "synthetic_prior"
+      },
+      "blocks": [
+        "costing_qualification",
+        "finance_review"
+      ],
+      "id": "cash_realisability_fraction",
+      "kind": "costing_schedule",
+      "owner_role": "Finance",
+      "prospective_source": "CHHHS Finance ledger and savings realisation plan",
+      "replacement": {
+        "evidence_type": "costing_schedule",
+        "requirements": [
+          "Evidence of actual reducible cash expenses",
+          "Separate resource opportunity value, accounting cost and budget appropriation"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/local_case_mix_risk_adjustment",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "local_calibration",
+        "causal_attribution"
+      ],
+      "id": "local_case_mix",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Informatics",
+      "prospective_source": "CHHHS clinical acuity and case-mix covariates",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Eligible ICU episode diagnosis/severity and transfer-risk adjustment",
+          "Causal transportability and missingness plan"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P4"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/local_ward_staffed_beds",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "capacity_calibration",
+        "clinical_review"
+      ],
+      "id": "ward_staffed_capacity",
+      "kind": "staffing_roster",
+      "owner_role": "Ward Operations",
+      "prospective_source": "Receiving ward staffing and available-bed calendars",
+      "replacement": {
+        "evidence_type": "staffing_roster",
+        "requirements": [
+          "Time-varying staffed ward occupancy and admission constraints",
+          "Transfer and redeployment windows independently reconciled"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P6"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p6/kairos-synthetic-input.json",
+        "pointer": "/staffed_beds",
+        "shape": "synthetic_scalar"
+      },
+      "blocks": [
+        "capacity_calibration"
+      ],
+      "id": "icu_staffed_capacity",
+      "kind": "staffing_roster",
+      "owner_role": "ICU Operations",
+      "prospective_source": "CHHHS ICU roster and available staffed bed calendars",
+      "replacement": {
+        "evidence_type": "staffing_roster",
+        "requirements": [
+          "Hourly staffed and physically open ICU capacity calendar",
+          "Distinguish capability/staffing and demand from average occupied beds"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P6"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p6/kairos-synthetic-input.json",
+        "pointer": "/arrivals",
+        "shape": "synthetic_array"
+      },
+      "blocks": [
+        "capacity_calibration",
+        "clinical_review"
+      ],
+      "id": "icu_request_demand",
+      "kind": "approved_site_extract",
+      "owner_role": "ICU Operations",
+      "prospective_source": "ICU admissions and deferred or declined requests",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Complete time-stamped demand including transfer declines and censoring",
+          "Demand held constant across strategy comparisons"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P6"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p6/synthetic-holdout.json",
+        "pointer": "/holdout",
+        "shape": "synthetic_array"
+      },
+      "blocks": [
+        "capacity_calibration",
+        "clinical_review"
+      ],
+      "id": "holdout_wait_observations",
+      "kind": "approved_site_extract",
+      "owner_role": "Clinical Research",
+      "prospective_source": "Prospective observed ICU admission-request wait times",
+      "replacement": {
+        "evidence_type": "approved_site_extract",
+        "requirements": [
+          "Prespecified disjoint development and holdout cohorts",
+          "Censoring and competing-risk plan for waiting/declined cases"
+        ]
+      },
+      "source_class": "synthetic",
+      "status": "placeholder",
+      "track": "P6"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/p6/kairos-provider-lock.json",
+        "pointer": "/binary_sha256",
+        "shape": "unverified_provider"
+      },
+      "blocks": [
+        "native_DES_validation"
+      ],
+      "id": "native_kairos_receipt",
+      "kind": "native_execution_receipt",
+      "owner_role": "Software Assurance",
+      "prospective_source": "Pinned Kairos Rust staged-resource runtime",
+      "replacement": {
+        "evidence_type": "native_execution_receipt",
+        "requirements": [
+          "Cargo.lock, compiler, pinned full Git commit ID, and native artifact SHA-256",
+          "Observed native execution and deterministic replay against independent reference",
+          "Contract adaptation/ward transitions separately qualified"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P6"
+    },
+    {
+      "binding": {
+        "artifact": "providers.lock.json",
+        "pointer": "/providers/dapane/binary_sha256",
+        "shape": "unverified_provider"
+      },
+      "blocks": [
+        "external_numerical_validation"
+      ],
+      "id": "native_dapane_receipt",
+      "kind": "native_execution_receipt",
+      "owner_role": "Software Assurance",
+      "prospective_source": "Dapane exact valuation Rust/Python provider",
+      "replacement": {
+        "evidence_type": "native_execution_receipt",
+        "requirements": [
+          "Installed package and binary hash/ABI record",
+          "Independent native Dapane counterfactual pricing and component conservation"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P1"
+    },
+    {
+      "binding": {
+        "artifact": "providers.lock.json",
+        "pointer": "/providers/voiage/binary_sha256",
+        "shape": "unverified_provider"
+      },
+      "blocks": [
+        "external_numerical_validation"
+      ],
+      "id": "native_voiage_receipt",
+      "kind": "native_execution_receipt",
+      "owner_role": "Software Assurance",
+      "prospective_source": "Voiage published v3.1 Python/Rust provider",
+      "replacement": {
+        "evidence_type": "native_execution_receipt",
+        "requirements": [
+          "Python 3.15.2 and installed Voiage provenance",
+          "Independent VOI and decision-array comparison to published methods"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P1"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/clinical_safety_approval",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "clinical_review",
+        "investment_decision"
+      ],
+      "id": "clinical_safety_approval",
+      "kind": "governance_signoff",
+      "owner_role": "Clinical Governance",
+      "prospective_source": "Approved ICU/ward safety review",
+      "replacement": {
+        "evidence_type": "governance_signoff",
+        "requirements": [
+          "Endpoint completeness, rescue and harms assessed",
+          "Independent clinical reviewer signed scope and thresholds"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P5"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/finance_investment_approval",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "finance_review",
+        "investment_decision"
+      ],
+      "id": "finance_approval",
+      "kind": "governance_signoff",
+      "owner_role": "Finance",
+      "prospective_source": "CHHHS Finance sign-off",
+      "replacement": {
+        "evidence_type": "governance_signoff",
+        "requirements": [
+          "Cost base and cash realisation independently reconciled",
+          "Budget holder validates incremental staffing and affordability"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P5"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/first_nations_data_governance_approval",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "equity_governance",
+        "investment_decision"
+      ],
+      "id": "first_nations_data_governance",
+      "kind": "governance_signoff",
+      "owner_role": "Data Governance",
+      "prospective_source": "Local Aboriginal and Torres Strait Islander data-governance framework",
+      "replacement": {
+        "evidence_type": "governance_signoff",
+        "requirements": [
+          "Appropriate consultation, scope, access/secondary use and cultural governance",
+          "Formal approved authorisation where relevant"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P5"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/independent_economic_review",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "external_numerical_validation",
+        "investment_decision"
+      ],
+      "id": "independent_economic_review",
+      "kind": "governance_signoff",
+      "owner_role": "Health Economics",
+      "prospective_source": "Independent reviewer of economic methodology",
+      "replacement": {
+        "evidence_type": "governance_signoff",
+        "requirements": [
+          "Independent mathematical/source checks and modelling critique",
+          "Clinical/Finance acceptability separately assessed"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P5"
+    },
+    {
+      "binding": {
+        "artifact": "model-inputs/placeholders/unresolved.json",
+        "pointer": "/dedicated_repository_ci_receipt",
+        "shape": "unknown"
+      },
+      "blocks": [
+        "repository_integration"
+      ],
+      "id": "dedicated_repo_ci",
+      "kind": "repository_ci",
+      "owner_role": "Repository Maintainer",
+      "prospective_source": "https://github.com/edithatogo/icu-liaison-evaluation: reviewed hosted CI and source migration receipt",
+      "replacement": {
+        "evidence_type": "repository_ci",
+        "requirements": [
+          "Use the provided dedicated repository https://github.com/edithatogo/icu-liaison-evaluation",
+          "Reconcile and migrate P0-P8 sources and both P7 Conductor tracks without PHI",
+          "Independent PR review and hosted check receipt for the receiving commit"
+        ]
+      },
+      "source_class": "missing",
+      "status": "placeholder",
+      "track": "P0"
+    }
+  ],
+  "policy": "synthetic_development_only_never_site_approved",
+  "project_id": "icu-liaison-evaluation",
+  "schema_version": 1,
+  "scope": "Public synthetic and curated public-source metadata; no patient or locally restricted data"
+}

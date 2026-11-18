@@ -1,0 +1,14 @@
+{
+  "entries": [
+    {
+      "approval_reference": "REPLACE_WITH_GOVERNANCE_RECORD_ID",
+      "artifact_path": "/CHANGE_TO_PRIVATE_ABSOLUTE_PATH/approved-evidence.dat",
+      "evidence_type": "approved_site_extract",
+      "id": "local_icu_episodes",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "source_custodian_role": "CONFIRM_APPROVED_CUSTODIAN_ROLE"
+    }
+  ],
+  "schema_version": 1,
+  "status": "candidates_for_independent_review"
+}

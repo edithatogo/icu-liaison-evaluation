@@ -1,0 +1,208 @@
+{
+  "$defs": {
+    "Binding": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "title": "Artifact",
+          "type": "string"
+        },
+        "expected_evidence_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "public_proxy",
+                "illustrative_assumption"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Evidence Status"
+        },
+        "pointer": {
+          "minLength": 2,
+          "title": "Pointer",
+          "type": "string"
+        },
+        "shape": {
+          "enum": [
+            "synthetic_scalar",
+            "synthetic_prior",
+            "synthetic_array",
+            "sample_file",
+            "unknown",
+            "unverified_provider",
+            "unverified_document",
+            "unmeasured_safety"
+          ],
+          "title": "Shape",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact",
+        "pointer",
+        "shape"
+      ],
+      "title": "Binding",
+      "type": "object"
+    },
+    "Placeholder": {
+      "additionalProperties": false,
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "blocks": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Blocks",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]{2,80}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "owner_role": {
+          "minLength": 1,
+          "title": "Owner Role",
+          "type": "string"
+        },
+        "prospective_source": {
+          "minLength": 1,
+          "title": "Prospective Source",
+          "type": "string"
+        },
+        "replacement": {
+          "$ref": "#/$defs/Replacement"
+        },
+        "source_class": {
+          "enum": [
+            "synthetic",
+            "missing",
+            "unverified_public_metadata"
+          ],
+          "title": "Source Class",
+          "type": "string"
+        },
+        "status": {
+          "const": "placeholder",
+          "title": "Status",
+          "type": "string"
+        },
+        "track": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5",
+            "P6"
+          ],
+          "title": "Track",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "track",
+        "kind",
+        "status",
+        "source_class",
+        "binding",
+        "prospective_source",
+        "owner_role",
+        "replacement",
+        "blocks"
+      ],
+      "title": "Placeholder",
+      "type": "object"
+    },
+    "Replacement": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_type": {
+          "enum": [
+            "publisher_document",
+            "approved_site_extract",
+            "statistical_estimate",
+            "costing_schedule",
+            "staffing_roster",
+            "native_execution_receipt",
+            "governance_signoff",
+            "repository_ci"
+          ],
+          "title": "Evidence Type",
+          "type": "string"
+        },
+        "requirements": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Requirements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "evidence_type",
+        "requirements"
+      ],
+      "title": "Replacement",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/Placeholder"
+      },
+      "minItems": 33,
+      "title": "Entries",
+      "type": "array"
+    },
+    "policy": {
+      "const": "synthetic_development_only_never_site_approved",
+      "title": "Policy",
+      "type": "string"
+    },
+    "project_id": {
+      "const": "icu-liaison-evaluation",
+      "title": "Project Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "policy",
+    "scope",
+    "entries"
+  ],
+  "title": "PlaceholderRegistry",
+  "type": "object"
+}

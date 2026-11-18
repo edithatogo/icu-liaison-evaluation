@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "track_id": "P7-technical-empirical-qualification",
+  "title": "Native, public evidence and local empirical admission",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "updated_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": [
+    "P7.1-2023_24-publisher-PDF-page-review",
+    "P7.2-independent-source-and-numerical-validation",
+    "P7.3-CHHHS-data-request-and-causal-plan"
+  ],
+  "blocked_phases": [
+    "P7.4-installed-Kairos",
+    "P7.5-installed-Dapane-Voiage",
+    "P7.6-2024_25-publisher-byte-review",
+    "P7.7-approved-local-data-and-independent-reviews",
+    "P7.8-dedicated-repo-hosted-integration"
+  ],
+  "dependency_tracks": ["P0-portable-consolidation", "P1-provider-reuse", "P2-clinical-economic-protocol", "P3-evidence-data-infrastructure", "P4-economic-decision-model", "P5-reporting-independent-review", "P6-kairos-capacity-validation"],
+  "clinical_validation": false,
+  "native_execution": "unverified_unavailable_toolchain",
+  "investment_ready": false
+}

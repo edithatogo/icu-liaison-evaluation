@@ -1,0 +1,84 @@
+{
+  "clinical_validity": false,
+  "commands": [
+    {
+      "command": "PYTHONPATH=src python -m pytest -q",
+      "exit_code": 0,
+      "tests_failed": 0,
+      "tests_passed": 19
+    },
+    {
+      "artifact": "verification/illustrative-psa-report.json",
+      "command": "PYTHONPATH=src python -m icu_liaison.cli model-inputs/illustrative.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m compileall -q src tools tests",
+      "exit_code": 0
+    },
+    {
+      "command": "PYTHONPATH=src python tools/qualify_providers.py --provider dapane",
+      "exit_code": 2,
+      "interpretation": "UNVERIFIED: provider not installed"
+    },
+    {
+      "command": "PYTHONPATH=src python tools/qualify_providers.py --provider voiage",
+      "exit_code": 2,
+      "interpretation": "UNVERIFIED: requires Python >=3.15.2"
+    }
+  ],
+  "conductor_installed": false,
+  "date": "2026-11-18",
+  "git_commit": null,
+  "project_destination_repo": null,
+  "python": "3.13.5",
+  "schema_version": 1,
+  "source_files": {
+    ".gitignore": "f280bd3b12a64baa4343580c8127d8891488e21ff243d271a9cbf70689ff42ea",
+    "AGENTS.md": "f13e5abfc30e2a1b64385c4469d64d3ff4205e2abf6e9d7cbfc2f54296b7e244",
+    "GEMINI.md": "289b95ab7a6d11c1c0f145a5353a4f9ce2a4f7542b62511b54d46c5f896b9edb",
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "README.md": "dd0aae9ecfad11abd6da7ec7fe8aa51cbe9e4b6a388a431a805c3f41f3cd3c4f",
+    "conductor/decisions/ADR-0001-consumer-first.md": "a226a590b53e51b191a963d2872e5206d3deb3c465deb27f4c4f2062f7e379b1",
+    "conductor/evidence/migration-manifest.json": "9f78c1b4c02566b9a21e2114a014de18f50b510a05239bad4c64a0ace1a4c0f1",
+    "conductor/evidence/source-register.json": "cd9fb1ded018133c2600a83c00fa040bcfd217dc0cc8c2b4ac56bf8d0898c1be",
+    "conductor/index.md": "9b1494824136c5415f6413278ea1e2ab4c781d6c50b8ad7943726b82aaf12e0b",
+    "conductor/tracks.md": "e0120255c808112f927c221f7eedc66118be2df36b2a05c8423a85d1a082c741",
+    "conductor/tracks/P0-portable-consolidation/agent-contract.md": "cf137415bd7e5d0b55350b35456e3ba965c00c3573a26e4c75615bf300f217f6",
+    "conductor/tracks/P0-portable-consolidation/handoff.md": "93bc3d487c9966ecc8ad5b25efe20f554a0a6b483fa0be678e40656d557304bf",
+    "conductor/tracks/P0-portable-consolidation/index.md": "ebe62abfcc911f000e1be16f9769cb8abf1d16782b13783879a89260e9783c15",
+    "conductor/tracks/P0-portable-consolidation/metadata.json": "2e8e614849f66cc11cf310c3bfe10b9f7840ab118bda92b72fd02afdfff8625d",
+    "conductor/tracks/P0-portable-consolidation/plan.md": "829efc4b0c94cd886c62bf6590d404a30d20aefdfad1cc2ed4352af81a1be586",
+    "conductor/tracks/P0-portable-consolidation/risk-register.md": "38cb30611087c2830e19afc423dd4fd8d5295e59c46e6a74852ecd8fe289835d",
+    "conductor/tracks/P0-portable-consolidation/spec.md": "ef532251b1cf2f3bd621f8b7906b59deb17af56e39a494ad4f42bbe19ca85aad",
+    "conductor/tracks/P0-portable-consolidation/test-matrix.md": "c634b3ed990b49d2578a051924db8ff76ac2e12fb1cde2869e1d66faf76a742e",
+    "docs/chhhs-required-inputs.md": "1e6f5ef4693f2c99cd042cb1f1b1e27633bbdbc46168d40f06c8ffc2cd792f8b",
+    "docs/reconciliation.md": "6f73af746e8effe7f240f2ac46708fdc6f7a42ef26ac0389c3f221c20eed49eb",
+    "model-inputs/illustrative.json": "8367b9a48323294d910b1140ff527516e2e83279a5167cc90f1f46a3b81c745a",
+    "pyproject.toml": "ca8091a25348c976598d9da2d42b83f0515424309d764cac53ef8921dc5dad32",
+    "src/icu_liaison/__init__.py": "f5cc5d8137732094bcec6ff0c7c481875bbca8b11d55f0fddc1af142975a0144",
+    "src/icu_liaison/adapters/__init__.py": "c042fcd8790cfb665ed11f1eb12f31284e1c1e7eec108a5c873b9a5fdf04adf2",
+    "src/icu_liaison/adapters/dapane.py": "d25087c73244c8eb289d9b5d0e4e039cda1b3dd4b62a85af6a922a18ba658c8f",
+    "src/icu_liaison/adapters/voiage.py": "f72a5253b3a29810d0ebcdb0f9d7a0812d779081b43e8763dfd219dc76cdf23d",
+    "src/icu_liaison/cli.py": "ffc4b5bf1af67a661f300fc950970e5a9ae2b9467335094d4a7147ce4d086fb6",
+    "src/icu_liaison/model.py": "98142e3f5da09e5f6dfd6fba2e736154a02bcab3b309c3fd2da0731069ab5236",
+    "src/icu_liaison/schemas.py": "8764592e59c4886e2fdb261932d5ca618755e1ad08d7ac5098583a616f56f75d",
+    "tests/test_adapters.py": "8bb80354e7d0b6e511e3d51e76d943f32bbf9b98620acccdb59f13192c02aa10",
+    "tests/test_model.py": "39ea813f2f56c27bb939284f91f0e1c0851cdd451639eec02cc91be63d882777",
+    "tests/test_sources_and_migration.py": "237da329aa8403a2610ebe02506a3862df896b5fed8555d764cbd89fe7c4b43a",
+    "tools/prepare_conductor_submodule.sh": "87597d2432a2303c08e61fbdbd58c979b3945bfae1fb673fabd77682947ff99e",
+    "tools/qualify_providers.py": "e151c6552a99cb83d7f1f170e3a679ccd8751d0a558918d2f7e6437849447458",
+    "verification/illustrative-psa-report.json": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38"
+  },
+  "source_kind": "synthetic_public_only",
+  "status": "local_portable_tests_passed_native_providers_unverified",
+  "valuation_provider_integrated": false,
+  "versions": {
+    "jsonschema": "4.26.0",
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "scipy": "1.17.0"
+  },
+  "voi_provider_integrated": false
+}

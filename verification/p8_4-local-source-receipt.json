@@ -1,0 +1,64 @@
+{
+  "contract_tests": {
+    "failures": 0,
+    "full_nonoverlapping_partitions": {
+      "A": {
+        "passed": 107,
+        "path": "verification/test-logs/P8_4_suite_A.log",
+        "sha256": "7ce0e423558a3e8e3946db6695102dd5d5b2f61b424e5c41143c5a66cb8006b9"
+      },
+      "B": {
+        "passed": 46,
+        "path": "verification/test-logs/P8_4_suite_B.log",
+        "sha256": "9ea2e164c6e7d8663d577c1cd92ae646b9411b356f95091ac0893a9c3ff72bb0"
+      },
+      "C": {
+        "passed": 20,
+        "path": "verification/test-logs/P8_4_suite_C.log",
+        "sha256": "883f883e05ba84d70b0e50011db8dfce75a7cc5276aa7d7a5c34c9c06320a198"
+      },
+      "D": {
+        "passed": 36,
+        "path": "verification/test-logs/P8_4_suite_D.log",
+        "sha256": "187feb6c2d0a752c4846e565efcd8b46b8f735df479c38194825d0858c561c0a"
+      },
+      "E": {
+        "passed": 83,
+        "path": "verification/test-logs/P8_4_suite_E.log",
+        "sha256": "845469d775d68b1e28ec686d2987bce5c1c91e33c85b72a473c25490fb062e4c"
+      }
+    },
+    "monolithic_full_suite": "timed_out_no_pass_claim",
+    "source_composition_and_cli": 29,
+    "total_passed": 292
+  },
+  "date": "2026-11-18",
+  "github_repository": "proposed: edithatogo/icu-liaison-evaluation",
+  "local_environment": {
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "new_source_behaviour": {
+    "cost_overlap": "no_additive_staffing_or_actual_revenue",
+    "mchs_shadow": "case_level_nwau_only_no_aud",
+    "p4": "unchanged_model_and_decision_draws",
+    "privacy": "synthetic_only",
+    "workforce_shadow": "unvalued_dapane_quote_request_only"
+  },
+  "notes": "This receipt is a local source contract observation. No native provider execution or CHHHS data are involved.",
+  "phase": "P8.4_source_only",
+  "project_source_kind": "portable_local_artifact_not_git_repo",
+  "provider_owners_changed": false,
+  "qualification_gates": {
+    "clinical_finance_governance_approval": false,
+    "dedicated_github_repo_push_or_CI": false,
+    "installed_workforce_dapane_voiage": false,
+    "mchs_official_annual_parity": false,
+    "observed_chhhs_calibration": false,
+    "qld_nursing_award_roster_costing": false
+  },
+  "schema_version": 1
+}

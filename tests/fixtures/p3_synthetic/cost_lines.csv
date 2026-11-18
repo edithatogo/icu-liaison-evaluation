@@ -1,0 +1,4 @@
+hospitalisation_pseudonym,index_icu_episode_id,cost_ledger_entry_id,cost_resource_segment,cost_resource_quantity,cost_unit_quotation,cost_currency,cost_price_year
+synthetic_case_A,synthetic_A_i1,synthetic_cost_A_index,index_ready_to_departure,0.5,1800.00,AUD,2026
+synthetic_case_A,synthetic_A_i1,synthetic_cost_A_return,return_episode,1,15000.00,AUD,2026
+,,synthetic_cost_incremental_service,incremental_service,1,250000.00,AUD,2026

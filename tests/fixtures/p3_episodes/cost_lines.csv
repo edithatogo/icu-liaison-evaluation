@@ -1,0 +1,3 @@
+hospitalisation_pseudonym,index_icu_episode_id,cost_ledger_entry_id,cost_resource_segment,cost_resource_quantity,cost_unit_quotation,cost_currency,cost_price_year,cost_basis,cost_use_id,cost_component_id
+SYNHOSP001,SYNICU001,SYNLEDG001,index_ready_to_departure,0.5416666667,1000.00,AUD,2026,economic_cost,USE-001,icu_nursing
+SYNHOSP001,SYNICU002,SYNLEDG002,post_departure_return,1,2500.00,AUD,2026,economic_cost,USE-002,icu_nursing
