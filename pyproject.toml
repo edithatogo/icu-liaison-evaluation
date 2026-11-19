@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=80,<83"]
+requires = ["setuptools>=84.1,<85"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,7 @@ name = "icu-liaison-evaluation-portable"
 version = "0.1.0"
 description = "Portable ANZICS-guided illustrative ICU liaison economic modelling consumer"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.15.2,<3.16"
 license = "Apache-2.0"
 dependencies = [
   "numpy>=2.3,<3",
@@ -17,8 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=9,<10", "jsonschema>=4.26,<5"]
-# Install only in a compatible Python >=3.15.2 environment. Dapane is a
-# separately qualified unpublished native wheel, not a mutable pip dependency.
+# Optional provider for the separate P1 qualification environment.
 voiage = ["voiage==3.1.0"]
 report = ["matplotlib>=3.10,<4"]
 

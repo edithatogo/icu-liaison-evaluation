@@ -166,7 +166,7 @@ asserted by this project.
 
 ## 5. Admissions and evidence required before site claims
 
-`python -m icu_liaison.protocol_cli` checks that the proposed protocol,
+`.venv/bin/python -m icu_liaison.protocol_cli` checks that the proposed protocol,
 source-tagged P1 illustrative parameters and variable requirements agree.
 It deliberately reports **ADMITTED_ILLUSTRATIVE_ONLY** and refuses
 `--require-local-ready` until a future version has qualified local data,

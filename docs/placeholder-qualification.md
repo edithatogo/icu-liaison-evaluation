@@ -19,14 +19,14 @@ in [its own track](../conductor/tracks/P8-abf-workforce-interop/index.md).
 
 ## Run the current synthetic programme
 
-From the root of the source checkout with Python 3.13+, SciPy, NumPy,
-Pydantic, and pytest installed:
+From the root of the source checkout, use the repository environment from the
+[README setup](../README.md#tested-basic-workflow).
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.placeholders_cli audit
-PYTHONPATH=src python -m icu_liaison.placeholders_cli dry-run \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli audit
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli dry-run \
   --output-dir /absolute/path/to/a/new/synthetic-output-directory
-PYTHONPATH=src python -m icu_liaison.placeholders_cli audit --require-site-ready
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli audit --require-site-ready
 ```
 
 The first command validates **all 33 source bindings** and prints the open
@@ -87,7 +87,7 @@ private-data lane with an explicit approval and retention plan.
 3. For each replacement, create a **private** candidate evidence file and a
    candidate receipt, e.g. the documented schema
    `model-inputs/placeholders/replacement-candidates.schema.json`.
-   Call `PYTHONPATH=src python -m icu_liaison.placeholders_cli review-candidates
+   Call `PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli review-candidates
    --submission /private/absolute/path/to/submission.json`.
    The command validates ID/type and byte hash only. It **cannot** verify the
    authenticity, authority or scientific adequacy of a self-declared receipt.
@@ -115,9 +115,9 @@ clinical safety acceptance remain open.
 
 ### Acceptance and reproducibility checks
 
-- Run `PYTHONPATH=src python -m pytest -q tests/test_p7_placeholder_progress.py`
+- Run `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p7_placeholder_progress.py`
   for placeholder registration, storage, hash, negative gates and dry-run tests.
-- Run the complete suite (`PYTHONPATH=src python -m pytest -q`) before promotion.
+- Run the complete suite (`PYTHONPATH=src .venv/bin/python -m pytest -q`) before promotion.
 - Use `verify_progress_manifest(output_dir)` to check the entire synthetic output
   inventory. Manifest hashes prevent accidental drift but do **not** provide a
   signed source-build or approval certificate.

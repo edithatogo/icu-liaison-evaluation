@@ -24,10 +24,10 @@ The inherited P4 numerical and statistical model is **unchanged**. P5 now has:
 Reproducible commands from package root:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
   --output-dir path/to/new/report --plots
-PYTHONPATH=src python -m icu_liaison.p5_review_cli path/to/new/report
-PYTHONPATH=src python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_review_cli path/to/new/report
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
   --output-dir path/to/new/with-dapane --dapane  # requires actual installed native Dapane
 ```
 
@@ -54,8 +54,8 @@ provider APIs and authorised local timelines, staff/ward capacities and
 clinical safety evidence. No parallel scheduler or cost kernel was built.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
-PYTHONPATH=src python -m pytest -q tests/test_p6_capacity_trace.py
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
+PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p6_capacity_trace.py
 ```
 
 ## Reproducibility and ownership

@@ -20,9 +20,10 @@ done
 git config --local core.hooksPath .githooks
 printf 'Configured local core.hooksPath=%s\n' "$(git config --local core.hooksPath)"
 
-if [[ -x "$ROOT/.venv/bin/python" ]]; then
-  printf 'Ready: %s (%s)\n' "$ROOT/.venv/bin/python" "$("$ROOT/.venv/bin/python" --version)"
+PY="$ROOT/.venv/bin/python"
+expected_version="$(cat .python-version)"
+if [[ -x "$PY" && "$("$PY" --version)" == "Python $expected_version" ]]; then
+  printf 'Ready: %s (Python %s)\n' "$PY" "$expected_version"
 else
-  printf 'WARNING: %s not found. Create it before committing:\n' "$ROOT/.venv/bin/python"
-  printf "  uv venv --python 3.13 .venv && uv pip install --python .venv/bin/python -c requirements-ci.txt '.[test,report]'\n"
+  printf 'Set up %s with Python %s using README.md before committing.\n' "$PY" "$expected_version"
 fi

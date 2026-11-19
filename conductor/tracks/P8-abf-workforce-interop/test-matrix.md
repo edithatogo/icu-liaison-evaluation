@@ -10,11 +10,11 @@
 | Kairos | Native usage event replay only if used | Optional and unqualified |
 | CHHHS | Clinical/Finance approval, actual episode and staffing data, causal effect and capacity review | Not obtained |
 
-Local focused check: `PYTHONPATH=src python -m pytest -q tests/test_p8_provider_roadmap.py`.
+Local focused check: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p8_provider_roadmap.py`.
 Run inherited source suites without interpreting them as provider binaries or
 hospital validation. No price, funding, clinical or native provider is admitted
 by accepting source-only tests.
 
-Additional source tests: `PYTHONPATH=src python -m pytest -q tests/test_p8_mchs_pair.py tests/test_p8_roster_bridge.py tests/test_p8_cli_and_schemas.py`. Generated JSON Schema uses `PYTHONPATH=src python tools/export_p8_schemas.py`. Native provider checks remain blocked until installed/qualified packages and official references are available.
+Additional source tests: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p8_mchs_pair.py tests/test_p8_roster_bridge.py tests/test_p8_cli_and_schemas.py`. Generated JSON Schema uses `PYTHONPATH=src .venv/bin/python tools/export_p8_schemas.py`. Native provider checks remain blocked until installed/qualified packages and official references are available.
 
 | P8.4 source-only crosswalk | 29 synthetic/CLI/schema tests; P4 means and budget outputs remain unchanged; NWAU stays case-level; unvalued roster cost stays null | Implemented, injected and static; native provider not qualified |

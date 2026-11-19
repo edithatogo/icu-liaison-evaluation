@@ -51,17 +51,17 @@ no actual nursing award rates.
 ## Runnable checks
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p8_cli inspect-mchs model-inputs/p8/synthetic-mchs-pair.json
-PYTHONPATH=src python -m icu_liaison.p8_cli inspect-roster model-inputs/p8/synthetic-nursing-roster.json
-PYTHONPATH=src python -m pytest -q tests/test_p8_*.py
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-mchs model-inputs/p8/synthetic-mchs-pair.json
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-roster model-inputs/p8/synthetic-nursing-roster.json
+PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p8_*.py
 ```
 
 Installed-provider calls, **only** in isolated compatible environments:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p8_cli run-mchs \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli run-mchs \
   model-inputs/p8/synthetic-mchs-pair.json --ref-dir /approved/MCHS/year-2025-reference
-PYTHONPATH=src python -m icu_liaison.p8_cli build-roster \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli build-roster \
   /approved/synthetic-quote-bound-roster.json
 ```
 

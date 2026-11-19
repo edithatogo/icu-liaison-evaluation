@@ -15,7 +15,7 @@ runner with the source lock and an independently reviewed Cargo.lock:
 cd native/kairos-icu-liaison
 cargo generate-lockfile            # one-time reviewed dependency resolution
 cd ../..
-PYTHONPATH=src python tools/qualify_p6_native.py
+PYTHONPATH=src .venv/bin/python tools/qualify_p6_native.py
 ```
 
 The script executes actual Cargo format, Clippy, tests and build, performs

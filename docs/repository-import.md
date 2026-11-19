@@ -37,8 +37,9 @@ workforce costs must later replace or reconcile the service-cost prior.
 
 ## Verification and practical limits
 
-The source suite runs on Python 3.13 with pinned source/test/report dependency
-versions. The hosted [Source CI workflow](../.github/workflows/ci.yml) checks the
+The source suite uses the CPython pin in [`.python-version`](../.python-version)
+and the constraints in [`requirements-ci.txt`](../requirements-ci.txt).
+The hosted [Source CI workflow](../.github/workflows/ci.yml) checks the
 source manifest and Conductor gitlink, all Python tests and a synthetic CLI
 workflow. The latter verifies the independently reviewed P5 report, rejects a
 tampered readiness claim and requires site-ready/qualified admission to remain

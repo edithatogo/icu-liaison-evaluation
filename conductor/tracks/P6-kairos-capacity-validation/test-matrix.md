@@ -12,7 +12,7 @@
   Kairos provenance claims without installed native provider qualification.
 - CLI emits aggregate-only JSON with source hash and never publishes source IDs.
 
-Commands: `PYTHONPATH=src python -m pytest -q tests/test_p6_capacity_trace.py`
+Commands: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p6_capacity_trace.py`
 then the repository's full test suite and deterministic CLI smoke.
 
 ## Native source and holdout extension
@@ -22,7 +22,7 @@ then the repository's full test suite and deterministic CLI smoke.
   and provenance refusal. This is *not* an actual Rust-run acceptance test.
 - `pytest -q tests/test_p6_holdout.py tests/test_p6_qualification_gates.py`
   covers SciPy holdout metrics, data-leakage refusal and missing-provider failure.
-- Future native gate: `python tools/qualify_p6_native.py` must validate installed
+- Future native gate: `.venv/bin/python tools/qualify_p6_native.py` must validate installed
   Rust compiler, reviewed lock, `cargo fmt/clippy/test/build`, real Kairos output,
   independent oracle and byte-identical replay; reject missing artifacts.
 - Site gate: validated CHHHS input sources, holdout, clinical safety/governance

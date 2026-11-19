@@ -40,11 +40,19 @@ preserved in `conductor/evidence/source-register.json`.
 
 ## Tested basic workflow
 
+Create a repository-local environment with the CPython release in
+`.python-version`. If the existing `.venv` uses a different release, move it
+aside once its processes have finished.
+
 ```sh
-# In an environment with Python >=3.13, NumPy, SciPy, Pydantic, pytest:
-python -m pip install -c requirements-ci.txt '.[test,report]'
-python -m pytest -q
-python -m icu_liaison.cli model-inputs/illustrative.json > local_output.json
+uv venv --python "$(cat .python-version)" .venv
+.venv/bin/python --version
+test "$(.venv/bin/python --version)" = "Python $(cat .python-version)"
+uv pip install --python .venv/bin/python -c requirements-ci.txt \
+  --build-constraints requirements-ci.txt '.[test,report]'
+.venv/bin/python -m pytest -q
+mkdir -p outputs
+.venv/bin/python -m icu_liaison.cli model-inputs/illustrative.json > outputs/illustrative.json
 ```
 
 The tested source and model results are reproducible for the same Python and
@@ -56,9 +64,9 @@ status, source, units and ranges. The output includes source-hash, seed,
 intervals and `P(net resource benefit >= 0)`.
 
 The P1 adapter now calls Voiage for financial-only EVPI, with an independent
-native two-state reference and a strict source lock. The native installed **Voiage v3.1** package requires **Python >=3.15.2**;
-the base package deliberately does not pull Voiage into its >=3.13 test
-requirements. The optional `adapters.voiage.make_voiage_analysis()` uses the
+native two-state reference and a strict source lock. Install **Voiage v3.1**
+as an optional dependency in the separate P1 provider environment.
+`adapters.voiage.make_voiage_analysis()` uses the
 published `ValueArray.from_numpy` / `DecisionAnalysis` boundary in a separately
 qualified environment. It is a **financial-only** net-benefit decision surface,
 not a QALY or cost-effectiveness result. **Do not claim VOI results until the
@@ -135,7 +143,7 @@ uses injected boundary providers and marks them as such. For real native
 qualification, use [the execution guide](docs/providers-p1.md):
 
 ```sh
-PYTHONPATH=src python tools/qualify_providers.py --provider all
+PYTHONPATH=src private/venv-p1/bin/python tools/qualify_providers.py --provider all
 ```
 
 In a host without the required native environments this command must exit 2
@@ -158,7 +166,7 @@ activity or service effectiveness from public ANZICS comparisons.
 Validate the *illustrative-only* economic model against the protocol:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.protocol_cli \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.protocol_cli \
   model-inputs/clinical-economic-protocol.json \
   model-inputs/illustrative.json \
   --data-dictionary model-inputs/clinical-data-dictionary.json
@@ -182,13 +190,13 @@ censoring and aggregate report privacy. It **does not** automatically acquire
 ANZICS Portal data, read real CHHHS records, or perform a Searchright review.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p3_cli sources \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli sources \
   --catalogue model-inputs/anzics-benchmarks.json \
   --source-register conductor/evidence/source-register.json
-PYTHONPATH=src python -m icu_liaison.p3_cli audit \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli audit \
   --manifest tests/fixtures/p3_episodes/manifest.json \
   --dictionary model-inputs/clinical-data-dictionary.json
-PYTHONPATH=src python -m icu_liaison.p3_cli schema
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli schema
 ```
 
 The inherited 2024/25 exit-block percentage is **previously transcribed but
@@ -207,7 +215,7 @@ transcribed, unverified external proxy**; none of the modelled interventions
 has an observed CHHHS effect. All cost values are synthetic in AUD 2026.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p4_cli model-inputs/p4/illustrative.json \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p4_cli model-inputs/p4/illustrative.json \
   --one-way-strategy liaison_service
 ```
 
@@ -218,7 +226,7 @@ threshold/negative-effect cases and blocked external acceptance are in
 ## P5: reporting, decision-analysis transfer and audit
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p5_cli \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_cli \
   model-inputs/p4/illustrative.json --output-dir outputs/p5-synthetic --plots
 ```
 
@@ -260,9 +268,9 @@ if the attacker recalculates the unsigned manifest. This still does not provide
 authenticated source evidence or independent clinical/financial peer review.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json \
   --output-dir outputs/new-p5 --plots
-PYTHONPATH=src python -m icu_liaison.p5_review_cli outputs/new-p5
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p5_review_cli outputs/new-p5
 ```
 
 [P6 trace audit](docs/p6-temporal-capacity.md) analyses **supplied synthetic**
@@ -270,7 +278,7 @@ ICU occupancy and admission-request trajectories against time-varying staffed
 bed counts, with common-demand and no-overbooking checks:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
 ```
 
 This is not a DES runner. Actual Kairos source bindings, installed native
@@ -296,7 +304,7 @@ No CHHHS clinical records or real approval have been added.
 ## P7 source/qualification handoff (18 November 2026)
 
 - [Independent source and numerical audit](src/icu_liaison/qualification_independent.py) independently recomputes selected P4 draws with Decimal and validates P3 aggregate denominator/missingness boundaries; **not** clinical or causal evidence.
-- [Current CHHHS data request](model-inputs/chhhs-data-request.json) is an 11-dataset, 115-field versioned request, with editable schema and [source request document](docs/causal-and-safety-validation-plan.md). Generate MD/CSV using `PYTHONPATH=src python tools/export_chhhs_data_request.py --output-dir /tmp/chhhs-request`.
+- [Current CHHHS data request](model-inputs/chhhs-data-request.json) is an 11-dataset, 115-field versioned request, with editable schema and [source request document](docs/causal-and-safety-validation-plan.md). Generate MD/CSV using `PYTHONPATH=src .venv/bin/python tools/export_chhhs_data_request.py --output-dir /tmp/chhhs-request`.
 - [Publisher verification note](docs/anzics-source-reconciliation-2026-11-18.md) directly verifies 2023/24 pages; 2024/25 inherited values remain unverified.
 - [P7 track](conductor/tracks/P7-technical-empirical-qualification/index.md) records native, empirical, governance and hosted CI gates. No external approvals claimed.
 
@@ -309,7 +317,7 @@ handoff. It does **not** claim installed MCHS/Wage/Dapane/Voiage consumers or
 local CHHHS applicability. In particular, NWAU is an activity measure; neither
 the technical NWAU difference nor a published nursing wage rate establishes
 actual local hospital revenue or fully loaded workforce costs. Run its focused
-checks with `PYTHONPATH=src python -m pytest -q
+checks with `PYTHONPATH=src .venv/bin/python -m pytest -q
 tests/test_p8_provider_roadmap.py`.
 
 - [P8 provider matrix](model-inputs/p8/provider-capabilities.json)
@@ -330,9 +338,9 @@ quote -> Dapane request builder. It has **no calculator or payroll formulas**.
 The tests are source-only and injected, not native provider acceptance.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p8_cli inspect-mchs model-inputs/p8/synthetic-mchs-pair.json
-PYTHONPATH=src python -m icu_liaison.p8_cli inspect-roster model-inputs/p8/synthetic-nursing-roster.json
-PYTHONPATH=src python -m pytest -q tests/test_p8_*.py
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-mchs model-inputs/p8/synthetic-mchs-pair.json
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-roster model-inputs/p8/synthetic-nursing-roster.json
+PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p8_*.py
 ```
 
 See [P8 source implementation and unresolved provider gates](docs/P8-implemented-consumer-contracts.md).
@@ -348,11 +356,11 @@ changing its resource or budget result**. This is a typed audit projection,
 not additional economic value, an allocation change or a clinical recommendation.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p8_composition_cli \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_composition_cli \
   model-inputs/p4/illustrative.json --strategy liaison_service
 
 # Optional synthetic source-only MCHS and workforce fixtures (no native execution):
-PYTHONPATH=src python -m icu_liaison.p8_composition_cli \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_composition_cli \
   model-inputs/p4/illustrative.json --strategy liaison_service \
   --mchs-result model-inputs/p8/synthetic-mchs-provider-output.json \
   --workforce-result model-inputs/p8/synthetic-workforce-provider-output.json \
@@ -362,7 +370,7 @@ PYTHONPATH=src python -m icu_liaison.p8_composition_cli \
 `--require-qualified` must fail until native, CHHHS and Finance acceptance
 receipts exist. The JSON Schema is
 `model-inputs/p8/p8-composition.schema.json`, regenerated with
-`PYTHONPATH=src python tools/export_p8_schemas.py`. The only computed
+`PYTHONPATH=src .venv/bin/python tools/export_p8_schemas.py`. The only computed
 numerical outputs are *unchanged* means from the synthetic P4 economic model.
 MCHS case NWAU is **not** monetised, and the workforce source request is
 **not** valued. Any fully source-verified workforce cost will later need to
@@ -381,9 +389,9 @@ probabilistic reporting, P6 occupancy trace and holdout validation without
 creating another numerical, valuation, VOI or DES engine.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.placeholders_cli audit
-PYTHONPATH=src python -m icu_liaison.placeholders_cli dry-run --output-dir ./outputs/new-synthetic-run
-PYTHONPATH=src python -m icu_liaison.placeholders_cli audit --require-site-ready # exit 2
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli audit
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli dry-run --output-dir ./outputs/new-synthetic-run
+PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli audit --require-site-ready # exit 2
 ```
 
 The fresh output contains a hash-checked `p5-report/`, `progress.json`,

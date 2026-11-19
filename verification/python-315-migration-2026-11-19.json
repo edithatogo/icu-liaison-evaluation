@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-19T16:31:20+10:00",
+  "scope": "repository_runtime_hosted_synthetic_ci_and_installed_dapane_p5_regression",
+  "python": "3.15.2",
+  "source_inputs_sha256": {
+    ".python-version": "673e2ba07f95bfcfe0a543258b8e267954e403d1f466481c546f467f86b31d46",
+    ".github/workflows/ci.yml": "06456789682cc3bc750401e3e464a3f6b0645bc029894e6db19dd24bcadf2822",
+    "pyproject.toml": "b0dc3e79e1d569fc63fcca0fb456b5fdb48383d9b848a01ed347e666088eabea",
+    "requirements-ci.txt": "b28703a409d2a9722cbf4bcf233cf577f49a750138d037fc00afdeb39f3dfaec",
+    "tools/run_local_ci.py": "5103c2180cc1ceb3260af0ec720f3437139aab57a768a6e16214dd9488736fc8",
+    "tests/test_p0_local_ci.py": "5aa7f61f9bc07d1971e1ee393e41a4a4c74261676d8237bfab4e6d5a438a99b7",
+    "tests/test_p5_provider_execution.py": "48974e4ec7557df1a357832f0d0c8c110af8568374a8bcb0d7ac101d48381269"
+  },
+  "build_dependency": {
+    "setuptools": "84.2.1",
+    "prior_advisory": "GHSA-xmj3-9gf7-h52w"
+  },
+  "local_portable": {
+    "command": ".venv/bin/python tools/run_local_ci.py --mode full --json",
+    "status": "LOCAL_CI_PASSED_SYNTHETIC_ONLY",
+    "steps": [
+      "verify_source_manifest",
+      "pytest",
+      "ci_smoke",
+      "qualify_current_portable",
+      "illustrative_cli"
+    ],
+    "installed_package_example": {
+      "command": ".venv/bin/python -I -m icu_liaison.cli model-inputs/illustrative.json",
+      "seed": 20261117,
+      "input_sha256": "ec3777ad8cd3c8e90b85cb76e9796b7380b0457443c3030830387a7649717aed",
+      "output_sha256": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38"
+    },
+    "full_suite_passed": 342
+  },
+  "local_installed_dapane": {
+    "python": "3.15.2",
+    "implementation": "CPython",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "dapane_version": "0.1.0",
+    "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+    "cargo_lock_sha256": "13649b9439eeba96b5be59cdb1653815bc093ea36066bc8bd14a1e547afc9ea7",
+    "wheel_filename": "dapane-0.1.0-cp315-cp315-macosx_11_0_arm64.whl",
+    "wheel_sha256": "89e11980964c7bb4ff07398d6db748c03f165f8efef0209565416826048eec26",
+    "native_extension_sha256": "d5ece8d154d56f007fc25486d5b27225de81e24696a527b46e8946e98b17ff3a",
+    "maturin": "1.16.0",
+    "pytest": "9.2.0",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+    "artifact_origin": "local_source_rebuild_from_locked_git_revision_and_cargo_lock",
+    "independent_artifact_adjudication": "pending",
+    "pytest_command": "PYTHONPATH=src private/venv-p1/bin/python -m pytest -q -o cache_dir=private/venv-p1/pytest-cache",
+    "full_suite_passed": 342,
+    "focused_regression_passed": 2,
+    "focused_regression_nodes": [
+      "tests/test_p5_provider_execution.py::test_p5_real_provider_missing_fails_closed_without_directory",
+      "tests/test_p5_provider_execution.py::test_p5_cli_dapane_required_is_fail_closed"
+    ],
+    "p5_synthetic_report": {
+      "input_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+      "manifest_sha256": "2b0185853fbd49ade9115b6c7b77b8b6277362c39b0b7d36b72166564f1a79d3",
+      "dapane_status": "native_provider_called_unqualified",
+      "all_strategies_reconciled": true,
+      "review_status": "self_consistency_verified_not_empirically_accepted",
+      "strategies_checked": 3,
+      "draws_checked": 5000
+    }
+  },
+  "hosted_synthetic": {
+    "status": "pending"
+  }
+}

@@ -11,17 +11,20 @@ patient episodes, hospital staff information, internal costing, credentials or
 verbatim conversations enter public Git. Clinical intervention effects remain
 uncertain assumptions until approved local evidence supports replacement.
 
-Run `python -m pytest -q` and `python -m icu_liaison.cli
-model-inputs/illustrative.json`; retain version, seed and SHA-256. Static tests
+Set up and verify the repository-local Python in [README](README.md#tested-basic-workflow).
+Run `.venv/bin/python -m pytest -q` and
+`.venv/bin/python -m icu_liaison.cli model-inputs/illustrative.json`. Retain
+the Python version, seed and SHA-256. Static tests
 on provider *adapters* do not prove installed-provider success. Work in scoped
 branches for subsequent changes; avoid multi-owner path conflicts.
 
 P1 adapter qualification: inspect `providers.lock.json` and
 `conductor/tracks/P1-provider-reuse/` before changing provider code. Execute
-`PYTHONPATH=src python -m pytest -q`; this checks local contracts, not native
+`PYTHONPATH=src .venv/bin/python -m pytest -q`. This checks local contracts, not native
 provider acceptance. Native checks are performed only with trusted, reviewed
-provider installations using `PYTHONPATH=src python tools/qualify_providers.py
---provider all`, which must fail closed when either is unavailable. Do not
+provider installations from the [P1 guide](docs/providers-p1.md) using
+`PYTHONPATH=src private/venv-p1/bin/python tools/qualify_providers.py --provider all`,
+which must fail closed when either is unavailable. Do not
 store protected CHHHS data in portable regression fixtures.
 
 P3 source admission: `conductor/tracks/P3-evidence-data-infrastructure/index.md`. Preserve public versus local denominators and patient confidentiality. Run the P3 synthetic tests; no automatic real-data ingestion, source web fetch, provider native installation or deployment.

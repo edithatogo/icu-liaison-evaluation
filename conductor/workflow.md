@@ -18,11 +18,14 @@
 
 ## Source verification
 
+Use the [README setup](../README.md#tested-basic-workflow) to create `.venv`
+from `.python-version`, verify the actual patch and install the pinned
+runtime and build dependencies.
+
 ```sh
-python -m pip install -c requirements-ci.txt '.[test,report]'
-python tools/verify_source_manifest.py
-PYTHONPATH=src python -m pytest -q
-PYTHONPATH=src python tools/ci_smoke.py
+.venv/bin/python tools/verify_source_manifest.py
+PYTHONPATH=src .venv/bin/python -m pytest -q
+PYTHONPATH=src .venv/bin/python tools/ci_smoke.py
 ```
 
 The smoke run uses temporary synthetic outputs and requires both site-ready
@@ -31,13 +34,10 @@ are part of acceptance, not failures to be bypassed.
 
 ## Local CI/CD and Git hooks
 
-When hosted Actions runners are unavailable or before pushing changes, install the
-versioned Git hooks (`pre-commit`, `pre-merge-commit`, `pre-push`) and run the
-local synthetic CI suite inside the isolated Python 3.13 environment:
+Install the versioned Git hooks (`pre-commit`, `pre-merge-commit`, `pre-push`)
+and run the local synthetic CI suite with the verified repository interpreter:
 
 ```sh
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python -c requirements-ci.txt '.[test,report]'
 bash tools/install_git_hooks.sh
 .venv/bin/python tools/run_local_ci.py --mode full
 ```

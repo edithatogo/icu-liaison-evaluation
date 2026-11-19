@@ -1,10 +1,12 @@
 # Technical stack
 
-The primary package is Python >=3.13 with a `src/icu_liaison` layout. Pydantic
-validates contracts; NumPy and SciPy provide numerical operations. Pytest and
+The project uses the CPython 3.15.2 pin in `.python-version` for repository-local
+development, builds, hooks and hosted CI. The package supports Python
+`>=3.15.2,<3.16` and uses a `src/icu_liaison` layout. Pydantic
+validates contracts. NumPy and SciPy provide numerical operations. Pytest and
 JSON Schema support contract checks. Matplotlib is optional for report plots.
-`pyproject.toml` defines supported ranges; `requirements-ci.txt` records the
-resolved source/test/report versions used for initial verification.
+`pyproject.toml` defines supported ranges. `requirements-ci.txt` pins
+source, test, report and isolated build dependencies.
 
 The optional Rust consumer under `native/kairos-icu-liaison` remains uncompiled
 and unqualified in this import. The dedicated provider environments and exact

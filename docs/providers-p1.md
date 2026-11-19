@@ -1,8 +1,8 @@
 # P1: installed-provider qualification and dependency reuse
 
-**Source candidate only — the executing environment used for this package was
-Python 3.13.5, with no Rust toolchain or network access. Native Dapane and Voiage
-could not be installed, so no native acceptance is claimed.**
+See the dated checkpoints below for the source tests and installed-provider
+results. Artifact provenance and independent platform qualification are tracked
+in the P1 plan.
 
 ## Provider identity
 
@@ -27,10 +27,13 @@ The current null `binary_sha256` values explicitly represent *missing* evidence.
 Create a separate project environment, retaining existing provider environments:
 
 ```sh
-uv python install 3.15.2
-uv venv --python 3.15.2 .venv-icu-providers
-PROVIDER_PYTHON="$PWD/.venv-icu-providers/bin/python"
-uv pip install --python "$PROVIDER_PYTHON" -e '.[test,voiage]' 'maturin==1.16.0'
+mkdir -p private
+uv venv --python "$(cat .python-version)" private/venv-p1
+PROVIDER_PYTHON="$PWD/private/venv-p1/bin/python"
+"$PROVIDER_PYTHON" --version
+test "$("$PROVIDER_PYTHON" --version)" = "Python $(cat .python-version)"
+uv pip install --python "$PROVIDER_PYTHON" -c requirements-ci.txt \
+  --build-constraints requirements-ci.txt '.[test,report,voiage]' 'maturin==1.16.0'
 ```
 
 Keep the absolute `PROVIDER_PYTHON` path when leaving the evaluation project
@@ -60,7 +63,7 @@ hash into the source lock or accept a mutable branch HEAD as the provider pin.
 Then run from the portable evaluation project:
 
 ```sh
-"$PROVIDER_PYTHON" -m pytest -q
+"$PROVIDER_PYTHON" -m pytest -q -o cache_dir=private/venv-p1/pytest-cache
 "$PROVIDER_PYTHON" tools/qualify_providers.py --provider all
 ```
 
@@ -136,6 +139,8 @@ The historical 19 November Python 3.15 receipt documented two failing P5 tests
 because they implicitly assumed Dapane was not installed. The tests now simulate
 unavailability explicitly in their own process/subprocess, so CI can exercise
 the fail-closed refusal both with and without a provider on the host. This
-source-level test repair does not modify the P5 production valuation adapter or
-change the historical receipt. Re-run the complete Python 3.15 native matrix
-before qualifying that platform as fully accepted.
+source-level repair was verified on CPython 3.15.2 with a new Dapane 0.1.0
+build from the source pin. The full suite passed 342 tests and the two focused
+regressions both passed. The [migration receipt](../verification/python-315-migration-2026-11-19.json)
+records the installed wheel and extension digests. Independent artifact
+adjudication remains open.

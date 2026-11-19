@@ -97,12 +97,17 @@ def test_run_local_ci_manifest_only_and_forbidden_staged_guard(tmp_path: Path) -
         (ROOT / "tools/verify_source_manifest.py").read_text(encoding="utf-8"),
         encoding="utf-8",
     )
+    version_pin = (ROOT / ".python-version").read_text(encoding="utf-8")
+    (repo / ".python-version").write_text(version_pin, encoding="utf-8")
     (repo / "SOURCE_MANIFEST.json").write_text(
         json.dumps({"file_sha256": {}, "git_submodules": {}}, sort_keys=True),
         encoding="utf-8",
     )
     subprocess.run([sys.executable, str(repo / "tools/verify_source_manifest.py"), "--write"], check=True)
-    subprocess.run(["git", "-C", str(repo), "add", "tools/verify_source_manifest.py", "SOURCE_MANIFEST.json"], check=True)
+    subprocess.run(
+        ["git", "-C", str(repo), "add", ".python-version", "tools/verify_source_manifest.py", "SOURCE_MANIFEST.json"],
+        check=True,
+    )
 
     code, summary = run_local_ci(repo, mode="manifest-only", check_staged=True, python_exe=sys.executable, quiet=True)
     assert code == 0
@@ -119,6 +124,31 @@ def test_run_local_ci_manifest_only_and_forbidden_staged_guard(tmp_path: Path) -
     assert code_bad == 2
     assert summary_bad["status"] == "FORBIDDEN_PATHS_REJECTED"
     assert summary_bad["forbidden_paths"] == [".env"]
+
+
+def test_run_local_ci_rejects_interpreter_outside_runtime_pin(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("tools.run_local_ci._python_version", lambda _: "3.13.18")
+    with pytest.raises(RuntimeError, match=r"requires Python .+ from \.python-version.+is Python 3\.13\.18"):
+        run_local_ci(ROOT, mode="manifest-only", quiet=True)
+
+
+def test_run_local_ci_drops_hook_git_overrides_from_pytest(monkeypatch: pytest.MonkeyPatch) -> None:
+    git_dir = subprocess.check_output(
+        ["git", "rev-parse", "--absolute-git-dir"], cwd=ROOT, text=True,
+    ).strip()
+    monkeypatch.setenv("GIT_DIR", git_dir)
+    test_step = {
+        "name": "pytest",
+        "command": [sys.executable, "-c", "import os; assert 'GIT_DIR' not in os.environ"],
+        "pythonpath_src": True,
+        "validator": "pytest",
+    }
+    monkeypatch.setattr("tools.run_local_ci.build_steps", lambda *_: [test_step])
+
+    code, summary = run_local_ci(ROOT, mode="pre-commit", quiet=True)
+
+    assert code == 0, summary
+    assert summary["steps"][0]["status"] == "passed"
 
 
 def test_audit_extension_verifies_parity_caveats_and_rejects_drift(tmp_path: Path) -> None:

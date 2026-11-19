@@ -77,9 +77,9 @@ def _git_branch(root: Path) -> str:
     return proc.stdout.strip() if proc.returncode == 0 else "unknown"
 
 
-def _python_version_tuple(python_exe: str) -> tuple[str, tuple[int, int, int]]:
+def _python_version(python_exe: str) -> str:
     proc = subprocess.run(
-        [python_exe, "-c", "import sys; print('.'.join(map(str, sys.version_info[:3])))"],
+        [python_exe, "-c", "import sys; print(sys.version.split()[0])"],
         capture_output=True,
         text=True,
         check=False,
@@ -87,11 +87,7 @@ def _python_version_tuple(python_exe: str) -> tuple[str, tuple[int, int, int]]:
     )
     if proc.returncode != 0:
         raise RuntimeError(f"Could not inspect Python executable {python_exe}: {proc.stderr.strip()}")
-    version_str = proc.stdout.strip()
-    parts = tuple(int(x) for x in version_str.split(".")[:3])
-    if len(parts) != 3:
-        raise RuntimeError(f"Unexpected Python version string: {version_str}")
-    return version_str, parts
+    return proc.stdout.strip()
 
 
 def build_steps(root: Path, python_exe: str, mode: Mode) -> list[dict]:
@@ -241,9 +237,13 @@ def run_local_ci(
     """Execute forbidden-path checks and local CI steps; return (exit_code, summary)."""
     repo_root = Path(root).resolve()
     exe = python_exe or sys.executable
-    py_ver_str, py_ver_tuple = _python_version_tuple(exe)
-    if py_ver_tuple < (3, 13, 0):
-        raise RuntimeError(f"Python >=3.13 is required for local CI; observed {py_ver_str}")
+    pinned_version = (repo_root / ".python-version").read_text(encoding="utf-8").strip()
+    py_ver_str = _python_version(exe)
+    if py_ver_str != pinned_version:
+        raise RuntimeError(
+            f"Local CI requires Python {pinned_version} from .python-version, "
+            f"but {exe} is Python {py_ver_str}. Set up .venv using README.md."
+        )
 
     tracked_bad = find_forbidden_paths(tracked_paths(repo_root))
     staged_bad = find_forbidden_paths(staged_paths(repo_root)) if check_staged else []
@@ -288,6 +288,10 @@ def run_local_ci(
     steps = build_steps(repo_root, exe, mode)
     for step in steps:
         env = dict(os.environ)
+        if step["validator"] == "pytest":
+            # Temporary test repositories must resolve their own Git metadata.
+            for name in _git_paths(repo_root, "rev-parse", "--local-env-vars"):
+                env.pop(name, None)
         if step["pythonpath_src"]:
             src_dir = str(repo_root / "src")
             existing = env.get("PYTHONPATH", "")

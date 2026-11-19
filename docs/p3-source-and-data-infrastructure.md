@@ -41,14 +41,14 @@ The JSON Schema for the manifest and feed rows is generated directly from the Py
 Run from the project root in an environment with the P0/P1 dependencies:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p3_cli schema > /tmp/icu_p3_input_schemas.json
-PYTHONPATH=src python -m icu_liaison.p3_cli sources \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli schema > /tmp/icu_p3_input_schemas.json
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli sources \
   --catalogue model-inputs/anzics-benchmarks.json \
   --source-register conductor/evidence/source-register.json
-PYTHONPATH=src python -m icu_liaison.p3_cli audit \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli audit \
   --manifest tests/fixtures/p3_episodes/manifest.json \
   --dictionary model-inputs/clinical-data-dictionary.json
-python -m pytest -q
+.venv/bin/python -m pytest -q
 ```
 
 The synthetic result includes **aggregate** counts, per-field availability, censor categories, SHA-256 feed hashes and an explicit `investment_ready=false`. It does not emit pseudonyms, individual episodes, dates of patient events, line-item costs or individual clinical records. No estimate of local liaison treatment effect is generated.
@@ -58,7 +58,7 @@ The synthetic result includes **aggregate** counts, per-field availability, cens
 **Do not run this on patient data solely because the software supports it.** A designated CHHHS custodian must determine the approved purpose, privacy, secure runtime, audit trail, patient pseudonymisation, system access, cultural data governance and release requirements. `--acknowledge-approved-processing` is a local *attestation*, not a substitute for an approved decision. Keep the real manifest and CSVs in private controlled storage—not this repo.
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p3_cli audit \
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli audit \
   --manifest /secure/approved-input/manifest.json \
   --dictionary model-inputs/clinical-data-dictionary.json \
   --acknowledge-approved-processing \
