@@ -23,8 +23,15 @@ until content is faithfully reconciled and a replacement is verified.
    [spec](tracks/P1-provider-reuse/spec.md),
    [plan](tracks/P1-provider-reuse/plan.md)).
   Source lock, Dapane incremental cost bridge, Voiage financial decision
-  consumer and offline conformance tests implemented. **Installed native
-  runtime and source/binary admission remain unverified**; neither provider is silently replaced by a custom kernel.
+  consumer, offline conformance tests, and macOS arm64 / Python 3.15.2
+  native oracle, vendor-test, PEP 740 / PGP attestation, advisory, cross-env
+  parity, and P5 reconciliation runs are implemented
+  (`verification/p1-native-qualification-2026-11-19.json`). **Independent P7
+  adjudication of `providers.lock.json` `binary_sha256`, Linux/Windows
+  multi-platform qualification, and external review remain open** (`dapane-cli`
+  APFS non-UTF-8 test, `RUSTSEC-2026-0543` unmaintained `chrono`, and
+  `setuptools==82.0.1` advisories documented); neither provider is silently
+  replaced by a custom kernel.
 - [~] **P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),

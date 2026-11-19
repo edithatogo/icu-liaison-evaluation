@@ -23,21 +23,43 @@
 - [x] Check output finiteness, strategies, scope and financial-only meaning;
   regression with provider injection and an independent 2-state native oracle.
 
-## P1.4 — Installed runtime qualification (blocked)
-- [ ] Obtain an authorised, exact-source Dapane 0.1 native wheel and released
+## P1.4 — Installed runtime qualification (macOS arm64 executed; open gates remain)
+- [x] Obtain an authorised, exact-source Dapane 0.1 native wheel and released
   Voiage 3.1.0 distribution in an isolated CPython 3.15.2 environment; save
-  inspected wheel and native-extension SHA-256 plus dependency resolution.
-- [ ] Run `python tools/qualify_providers.py --provider all` in that environment,
+  inspected wheel and native-extension SHA-256 plus dependency resolution
+  (`verification/p0-native-providers-py315-2026-11-19.json`,
+  `verification/p0-py315-native-lock-2026-11-19.txt`,
+  `verification/p1-native-qualification-2026-11-19.json`).
+- [~] Run `python tools/qualify_providers.py --provider all` in that environment,
   record installed numerical reference outputs, compatibility, vendor tests,
-  security/licence results and exact source attestations.
-- [ ] Run unchanged full tests using that runtime, compare cross-environment
-  reproducibility/precision, record remaining qualification findings.
+  security/licence results and exact source attestations:
+  macOS arm64 oracles (`NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING`),
+  GitHub PGP + PyPI PEP 740 attestations, Dapane `dapane-core` (54 passed) /
+  Python wheel (196 passed), Voiage core wheel tests (13 passed), and Python
+  3.15.2 `pip-audit` (0 CVEs) all passed (`verification/p1-native-qualification-2026-11-19.json`);
+  kept `[~]` because `dapane-cli` had 1 macOS APFS non-UTF-8 filename test
+  failure, `cargo deny` flagged unmaintained `RUSTSEC-2026-0543` (`chrono 0.4.45`),
+  `requirements-ci.txt` flagged `setuptools==82.0.1` (`PYSEC-2026-3447`, `GHSA-xmj3-9gf7-h52w`),
+  Linux/Windows qualification is pending, and independent P7 adjudication of
+  `providers.lock.json` `binary_sha256` remains open.
+- [x] Run unchanged full tests using that runtime, compare cross-environment
+  reproducibility/precision, record remaining qualification findings:
+  `icu_liaison.cli` produced byte-identical JSON across Python `3.13.18` vs
+  `3.15.2` (`max_abs_diff = 0.0`), `qualify_current_portable.py` matched
+  (`max_abs_difference_aud: 8.1709665315e-11`), P5 `--dapane --voiage` +
+  `p5_review_cli` reconciled cleanly, and unchanged `pytest` reported
+  `319 passed, 2 failed` strictly on the two P5 absent-Dapane tests.
 
-## P1.5 — Dedicated repository integration (blocked)
-- [ ] Import P0/P1 into the user-provided private repository, reconcile its
-  Conductor track registry, run hosted exact-head checks and independent review.
-- [ ] Retire exploratory CareOps Sim PR #215 only after equivalent source,
-  evidence and test outcomes have been verified in the new repository.
+## P1.5 — Dedicated repository integration (in progress)
+- [~] Import P0/P1 into the user-provided repository, reconcile its
+  Conductor track registry, run hosted exact-head checks and independent review:
+  imported into `edithatogo/icu-liaison-evaluation`, Conductor reconciled, green
+  hosted CI verified on `main` (`44444785989`) and PRs; independent external
+  review remains open.
+- [~] Retire exploratory CareOps Sim PR #215 only after equivalent source,
+  evidence and test outcomes have been verified in the new repository:
+  19-file comparison completed (`docs/pr215-migration-comparison.md`); closing
+  PR #215 runs immediately after this P1 PR passes hosted CI and merges.
 
 Source-only completion is not native acceptance and is not a clinical or
 investment recommendation. Keep P1.4 and P1.5 unaccepted until their actual

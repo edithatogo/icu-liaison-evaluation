@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "track": "P1-provider-reuse",
+  "status": "NATIVE_ORACLES_AND_CORE_VENDOR_TESTS_PASSED_PROVENANCE_AND_MULTIPLATFORM_OPEN",
+  "environment": {
+    "python": "3.15.2",
+    "python_implementation": "CPython",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09) (Homebrew)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05) (Homebrew)",
+    "maturin": "1.16.0"
+  },
+  "dapane": {
+    "repository": "https://github.com/edithatogo/dapane",
+    "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+    "github_commit_verification": {
+      "verified": true,
+      "reason": "valid"
+    },
+    "version": "0.1.0",
+    "contract": "0.1",
+    "license": "Apache-2.0",
+    "license_file_sha256": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "e9a11dc82b40f759e3a4ab319daed92f5e548486a14babb249861e49aba16839",
+      "THIRD_PARTY_NOTICES.txt": "531a87c73c797f15dec96e8f4aed96288d8f386cd8fa11d6ff00769b68ddbc95"
+    },
+    "wheel_filename": "dapane-0.1.0-cp315-cp315-macosx_11_0_arm64.whl",
+    "wheel_sha256": "5343c7b2dd0b47a6207125c5b191d7f0b7a3c6121204d09d0d02bb4a77592022",
+    "installed_native_extension_sha256": {
+      "dapane/_native.cpython-315-darwin.so": "d5ece8d154d56f007fc25486d5b27225de81e24696a527b46e8946e98b17ff3a"
+    },
+    "installed_record_digests": {
+      "dapane-0.1.0.dist-info/METADATA": {
+        "hash": "sha256=oKe82CEAw1HDjXSiAXoNUV_AzPVIVc9s_BGIxm6Sbzg",
+        "size": 9696
+      },
+      "dapane-0.1.0.dist-info/licenses/LICENSE": {
+        "hash": "sha256=z8d0m5b2O9McPEK1xHG_dWgUBT6EfBDz6wA0F7xSPTA",
+        "size": 11358
+      },
+      "dapane-0.1.0.dist-info/licenses/NOTICE": {
+        "hash": "sha256=6aEdyCtA91njpKsxna7ZL15UhIahS6uySYYeSauhaDk",
+        "size": 450
+      },
+      "dapane-0.1.0.dist-info/licenses/THIRD_PARTY_NOTICES.txt": {
+        "hash": "sha256=UxqHxzx5fxXeyW6PSu2WKI2POGzY-hHW_wB2m2jdvJU",
+        "size": 1637249
+      },
+      "dapane/__init__.py": {
+        "hash": "sha256=uTVdFmDDilDFtsklBaCVc11heXG_Hyq-0m6fOfhtS_0",
+        "size": 7215
+      },
+      "dapane/_native.cpython-315-darwin.so": {
+        "hash": "sha256=1ezo0VTVbwB_wlSG1bJyJd6B4kaWpSe0bolG6YsX_zo",
+        "size": 1100160
+      }
+    },
+    "vendor_tests": {
+      "dapane_core_rust": {
+        "command": "cargo test --locked -p dapane-core",
+        "passed": 54,
+        "failed": 0,
+        "suites": {
+          "capacity": 9,
+          "evaluation": 25,
+          "interval_review": 8,
+          "intervals": 12
+        }
+      },
+      "dapane_python_wheel": {
+        "command": "python -m pytest -q",
+        "passed": 196,
+        "failed": 0
+      },
+      "dapane_cli_rust": {
+        "command": "cargo test --locked",
+        "passed": 5,
+        "failed": 1,
+        "failed_test": "non_utf8_arguments_do_not_panic_and_file_paths_remain_usable",
+        "failure_reason": "macOS APFS rejects creating temp files with invalid UTF-8 bytes (0xff, Os error 92 Illegal byte sequence); consumer uses Python wheel dapane._native, not dapane-cli."
+      }
+    },
+    "cargo_deny_check": {
+      "bans": "ok",
+      "licenses": "ok",
+      "sources": "ok",
+      "advisories": "failed",
+      "advisory_ids": [
+        {
+          "id": "RUSTSEC-2026-0543",
+          "crate": "chrono",
+          "version": "0.4.45",
+          "kind": "unmaintained",
+          "note": "No CVE vulnerability; upstream Cargo.lock pinned without modification."
+        }
+      ]
+    }
+  },
+  "voiage": {
+    "repository": "https://github.com/edithatogo/voiage",
+    "release_tag": "v3.1.0",
+    "tag_object": "0540cf79c4dae77144ab25a08a650c8967a506f7",
+    "tag_commit": "d40af0276019a7d63657349b53dad96845e2b4c1",
+    "github_tag_verification": {
+      "verified": true,
+      "reason": "valid"
+    },
+    "version": "3.1.0",
+    "license": "Apache-2.0",
+    "license_file_sha256": {
+      "LICENSE": "ce8c23436cf2f3540f1148fe4202293f1612837c0a21951ba71591164b1c5dce"
+    },
+    "wheel_filename": "voiage-3.1.0-cp315-abi3-macosx_11_0_arm64.whl",
+    "wheel_sha256": "ca1a625ea2e0f6c63ffd306f19cb62c1c69242643164553d5ca633e94146eb5b",
+    "pypi_pep740_provenance": {
+      "predicateType": "https://docs.pypi.org/attestations/publish/v1",
+      "publisher": {
+        "kind": "GitHub",
+        "repository": "edithatogo/voiage",
+        "workflow": "release.yml",
+        "environment": "pypi"
+      },
+      "subject_name": "voiage-3.1.0-cp315-abi3-macosx_11_0_arm64.whl",
+      "subject_sha256": "ca1a625ea2e0f6c63ffd306f19cb62c1c69242643164553d5ca633e94146eb5b",
+      "verification_material_present": [
+        "certificate",
+        "transparency_entries"
+      ]
+    },
+    "installed_native_extension_sha256": {
+      "voiage/_core.abi3.so": "281903924effb5d54ff3dda03f285aa2e287d16bbb25daec9ee82326ae6ba31a"
+    },
+    "installed_record_digests": {
+      "voiage-3.1.0.dist-info/METADATA": {
+        "hash": "sha256=mQFi04UYZDJK190LhAfx7MsTinxmPzKoE9ADikxvUgs",
+        "size": 21327
+      },
+      "voiage-3.1.0.dist-info/licenses/LICENSE": {
+        "hash": "sha256=zowjQ2zy81QPEUj-QgIpPxYSg3wKIZUbpxWRFkscXc4",
+        "size": 10423
+      },
+      "voiage/_core.abi3.so": {
+        "hash": "sha256=KBkDkk7_tdVP892gPyhaouKH0Wu7JdrsnugjJq5roxo",
+        "size": 1638112
+      }
+    },
+    "vendor_tests": {
+      "scope": "core_decision_analysis_evpi_and_v3_contract_tests_against_installed_wheel",
+      "files": [
+        "tests/test_decision_analysis_methods.py",
+        "tests/test_v3_stable_api_contract.py",
+        "tests/test_analysis_contracts.py",
+        "tests/test_core_metrics_regression.py"
+      ],
+      "passed": 13,
+      "failed": 0,
+      "note": "Ran with installed site-packages first on PYTHONPATH and -o addopts='' to test the PyPI wheel without optional JAX/PyMC/PyYAML extras."
+    }
+  },
+  "pip_audit": {
+    "py315_native_pypi_lockfile": {
+      "source": "verification/p0-py315-native-lock-2026-11-19.txt",
+      "packages_audited": 42,
+      "dapane_excluded_as_unpublished_source_build": true,
+      "vulnerabilities_found": 0
+    },
+    "py313_requirements_ci": {
+      "source": "requirements-ci.txt",
+      "vulnerable_packages": 1,
+      "vulnerability_records": 3,
+      "findings": [
+        {
+          "package": "setuptools",
+          "version": "82.0.1",
+          "ids": [
+            "PYSEC-2026-3447 (CVE-2026-59890, fixed in 83.0.0: macOS APFS NFD/NFC MANIFEST.in sdist exclusion)",
+            "GHSA-xmj3-9gf7-h52w (fixed in 84.1.0: Windows legacy egg namespace_packages.txt traversal)"
+          ],
+          "note": "Left untouched in P1 PR to preserve P1 scope; tracked as build-dependency follow-up."
+        }
+      ]
+    }
+  },
+  "cross_environment_reproducibility": {
+    "python_3_13_18_vs_3_15_2_cli": {
+      "command": "python -m icu_liaison.cli model-inputs/illustrative.json",
+      "input_digest_sha256_match": true,
+      "exact_byte_match": true,
+      "max_abs_diff": 0.0
+    },
+    "qualify_current_portable": {
+      "py313_18_max_abs_difference_aud": 8.1709665315e-11,
+      "py315_2_max_abs_difference_aud": 8.1709665315e-11
+    },
+    "unchanged_pytest_py315": {
+      "passed": 319,
+      "failed": 2,
+      "expected_missing_dapane_failures": [
+        "tests/test_p5_provider_execution.py::test_p5_real_provider_missing_fails_closed_without_directory",
+        "tests/test_p5_provider_execution.py::test_p5_cli_dapane_required_is_fail_closed"
+      ]
+    }
+  },
+  "p5_native_reconciliation": {
+    "command_build": "python -m icu_liaison.p5_cli model-inputs/p4/illustrative.json --output-dir <scratch> --dapane --voiage",
+    "status": "illustrative_report_built",
+    "manifest_verified": true,
+    "investment_ready": false,
+    "input_digest_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+    "dapane_valuation": {
+      "all_strategies_reconciled": true,
+      "method": "dapane-exact-v0.1.0",
+      "status": "native_provider_called_unqualified",
+      "extended_cover_incremental_resource_benefit_aud": "-243467.70",
+      "liaison_service_incremental_resource_benefit_aud": "-168730.00",
+      "difference_from_float_reference_aud": "0.00"
+    },
+    "voiage_evpi": {
+      "provider": "voiage_v3_1",
+      "status": "native_provider_called_unqualified",
+      "value_aud": 3715.5862656929985
+    },
+    "p5_review_cli": {
+      "status": "self_consistency_verified_not_empirically_accepted",
+      "draws_checked": 5000,
+      "strategies_checked": 3,
+      "provider_qualification": false
+    }
+  },
+  "lockfile": "verification/p0-py315-native-lock-2026-11-19.txt",
+  "qualify_providers_receipt": "verification/p0-native-providers-py315-2026-11-19.json",
+  "open_gates": {
+    "providers_lock_binary_sha256_null_pending_independent_adjudication": true,
+    "multi_platform_linux_windows_pending": true,
+    "independent_economic_and_clinical_review_pending": true,
+    "investment_ready": false
+  }
+}

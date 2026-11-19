@@ -114,3 +114,18 @@ The script exits with code **2 / `UNVERIFIED`** for missing, incompatible,
 failed oracles or missing runtime. The executing host must record its actual
 result as a separate immutable verification receipt; never re-label an
 injected-provider test as installed acceptance.
+
+## Initial macOS arm64 / Python 3.15.2 qualification checkpoint (19 November 2026)
+
+On `macOS-27.2.1-arm64` with CPython `3.15.2` in an external isolated
+environment, `tools/qualify_providers.py --provider all` returned
+`NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING` for source-built
+`dapane==0.1.0` (`0658d94ad772023a0185a000b5254f9c2f4a63a9`) and PyPI
+`voiage==3.1.0` (`v3.1.0`). Observed wheel/extension/RECORD digests, vendor
+tests, PyPI PEP 740 + GitHub PGP attestations, `cargo deny`/`pip-audit`
+findings, cross-environment `3.13.18` vs `3.15.2` CLI byte-parity, and P5
+`--dapane --voiage` reconciliation are recorded in
+`verification/p1-native-qualification-2026-11-19.json` and
+`verification/p0-py315-native-lock-2026-11-19.txt`. Independent P7 adjudication
+of `providers.lock.json` (`binary_sha256` kept `null`) and Linux/Windows
+platform qualification remain open.
