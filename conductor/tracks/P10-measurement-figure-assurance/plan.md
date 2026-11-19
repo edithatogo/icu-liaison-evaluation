@@ -31,3 +31,7 @@
 - [x] **P10.14a:** source-level version, effective-date, exclusive expiry, price year and revocation contract with four explicit unverified source categories.
 - [x] **P10.14b:** validate date intervals, linked M/F identifiers and pricing-year compatibility; deterministic expiry and revocation negative tests.
 - [ ] **P10.14c:** trusted authority verification, subscription to real revocation feeds and removal of previously accepted site results, under approved governance.
+
+- [x] **P10.12a:** execute five adversarial, paired, seeded P4 synthetic scenarios: null effect, harmful returns, no addressable delay, no usable capacity and no cash realisability; preserve P4/P5 kernel authority.
+- [x] **P10.12b:** assert independent accounting/capacity invariants and fail-closed P10 safety policy for each proposed strategy in CI.
+- [ ] **P10.12c:** add separately qualified structural-model and observed-data uncertainty decomposition after actual CHHHS/clinical evidence and methods review.

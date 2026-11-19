@@ -7,7 +7,7 @@
     ".githooks/pre-commit": "75867ccd20b53fe18f56e52540c9002db777759cf4f01dc6990004b4aed5b743",
     ".githooks/pre-merge-commit": "6532993808cad2a3f21dc9639acaf4905d3eb550d6420d478f8654bfd5ea9f99",
     ".githooks/pre-push": "4ca61f78af18884026e5e21e69adb0f3ca776c8431b03e9dc451b13b9788dc89",
-    ".github/workflows/ci.yml": "56660c770b23b714bcd17481bb0e3ec3ca27cd83517fa0bf5b58bf485802e04d",
+    ".github/workflows/ci.yml": "667ab006b73b97cedefc6db33acc9b94ff84c594a3f133798783cb573689553e",
     ".gitignore": "f280bd3b12a64baa4343580c8127d8891488e21ff243d271a9cbf70689ff42ea",
     ".gitmodules": "77a9ba6319e67c8923f1e848f965ffbd81ef6210680335f0bbc695f48a21c799",
     ".pre-commit-config.yaml": "6b9145f0bdb3b0c3a60af3683bd5bcdf083a8376120b45dd21058c80f41ae53d",
@@ -49,11 +49,11 @@
     "conductor/tracks/P1-provider-reuse/risk-register.md": "4b3ab719c4abd37fdced73dd620cf6d626cacbf98c5245bd979b8ba4ab27cac2",
     "conductor/tracks/P1-provider-reuse/spec.md": "1475301516d0d25da8537be7dde4b60897e8362da9ad643c4ade993327a280b6",
     "conductor/tracks/P1-provider-reuse/test-matrix.md": "2e259dc3cd56a6431126771b83bc2db0355d2e9bc461cfc3488ae02865c75425",
-    "conductor/tracks/P10-measurement-figure-assurance/additional-recommendations.md": "96810b8faa2fb57a2d22650cfa24a23f59b6813d49de4ecd9e0e39e5448a076f",
+    "conductor/tracks/P10-measurement-figure-assurance/additional-recommendations.md": "752b619d56f923cae93e8baeab68cc89245df3862e44940b53fa32388e5ea947",
     "conductor/tracks/P10-measurement-figure-assurance/index.md": "bf2ea68c94945f73d6cbc1abd0b9d2f1fbdc4b6c807dcaee3fbe25d4a3606f50",
     "conductor/tracks/P10-measurement-figure-assurance/metadata.json": "82bdbc1cc65f4bfc1213f34e1a7a08b7ee5d17254b5b3d73f43426d5b29aa435",
-    "conductor/tracks/P10-measurement-figure-assurance/plan.md": "d0238c97275cbf1a1552e15cadd5c1b04f8c0f2773d9be2130b2c313a7cc88ca",
-    "conductor/tracks/P10-measurement-figure-assurance/requirements.md": "d50504f18ec8c98ea4769928fe1fd91f0d9ba70d533240a2bf6908af8c81cfae",
+    "conductor/tracks/P10-measurement-figure-assurance/plan.md": "2fc0715054f4e0966d9fd76772974f5ea6b0d143d743ededebc29e980a1d67c6",
+    "conductor/tracks/P10-measurement-figure-assurance/requirements.md": "d079f0881c0e19e611e83b795decd8c1222ad236ea42279b1a12ff7149157ece",
     "conductor/tracks/P10-measurement-figure-assurance/spec.md": "66f762ac0521a079bbc41cebab074e6b46a4910fd0e8d5e216b6f8ca9843e5a4",
     "conductor/tracks/P10-measurement-figure-assurance/test-matrix.md": "d1f88aacd25e83e836da009d125fe42ee7876591981cae58e5000509c29e88e8",
     "conductor/tracks/P2-clinical-economic-protocol/agent-contract.md": "d2fb5082ed389ae49d48ff1b8db0f2de7af0d4d938f1c14c805319b83b2f9e00",
@@ -359,7 +359,11 @@
     "contracts/reporting/evidence-lifecycle.schema.json": "52f1efb035f52c468744e6cee9060c214a5a3eebeb9241ffc007856bdbedf7c9",
     "contracts/reporting/evidence-lifecycle-README.md": "d58b4e77eb035109f17dee957f893075612a83a1acebb7d68b60ac1bd040c402",
     "tools/evidence_lifecycle.py": "2640fe13d807ed7762ffc2aefbe875b25c7c513ab9507c3e6c6229dd36219a50",
-    "tests/test_p10_evidence_lifecycle.py": "355ee9d1fcdab46ad81b725707d4045fc487cc142a932617a0ed13a2587caa6a"
+    "tests/test_p10_evidence_lifecycle.py": "355ee9d1fcdab46ad81b725707d4045fc487cc142a932617a0ed13a2587caa6a",
+    "contracts/reporting/falsification-matrix.json": "c3ec664b95b0798217c7d1d99208ef6526667d53a4955b634600666590a84acb",
+    "contracts/reporting/falsification-README.md": "af58126b12f810aa3b6f617a1940e797707655b9961902bf4eb08cbf0b104fef",
+    "tests/test_p10_falsification.py": "ff3282fcda6fa23cdf37d7838cd9d0e48e48424e0f40f60247525bc49489691a",
+    "tools/p10_falsification.py": "1851ea029969db08d0d60ccc173f9746ab85bd05b41ab31adbeecaff34972ac2"
   },
   "git_submodules": {
     "extensions/conductor": "7a5c560a4fdf5297be58594cc37527eb12790272"
