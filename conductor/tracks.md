@@ -120,3 +120,5 @@ Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 historical phase identifiers; use the full track directory in handoffs.
 
 - [~] **P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Two request tables and source-level catalogues implemented; site-validated figures and independent review remain pending.
+
+- [~] **P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). Source-only M01–M30/D01–D13 contracts, T/F links, uncertainty, visual and claim-admission checks; no site/governance or real visual validation.

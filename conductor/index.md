@@ -39,3 +39,5 @@ native providers, CHHHS calibration and clinical/Finance acceptance stay separat
 - [P1 provider reuse](tracks/P1-provider-reuse/index.md).
 - [P7 technical and empirical qualification](tracks/P7-technical-empirical-qualification/index.md).
 - [P7 placeholder workflow](tracks/P7-placeholder-assisted-qualification/index.md): companion track preserving the later portable branch.
+
+- [P10 measurement and claim assurance](tracks/P10-measurement-figure-assurance/index.md): canonical metrics/denominators and fail-closed evidence gates for P7 and P9.

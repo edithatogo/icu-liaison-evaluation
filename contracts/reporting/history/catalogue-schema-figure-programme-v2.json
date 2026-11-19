@@ -1,0 +1,489 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:reporting-catalogue:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_class",
+    "publication_gate",
+    "tables",
+    "figures",
+    "catalogue_revision",
+    "figure_register_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "source_class": {
+      "const": "synthetic_only"
+    },
+    "publication_gate": {
+      "const": "not_CHHHS_validated"
+    },
+    "tables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/table"
+      }
+    },
+    "figures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/figure"
+      }
+    },
+    "catalogue_revision": {
+      "const": "2026-11-19-figure-programme-v2"
+    },
+    "figure_register_status": {
+      "const": "specification_not_generated_outputs"
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^T[0-9]{2,7}$"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "artifact": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*\\.csv$"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "implemented",
+            "placeholder"
+          ]
+        },
+        "required_columns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          }
+        },
+        "grain": {
+          "$ref": "#/$defs/text"
+        },
+        "denominator": {
+          "$ref": "#/$defs/text"
+        },
+        "perspective": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/text"
+        },
+        "privacy": {
+          "enum": [
+            "synthetic_only",
+            "approved_aggregates_only"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "artifact",
+        "status",
+        "required_columns",
+        "grain",
+        "denominator",
+        "perspective",
+        "uncertainty",
+        "privacy"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "null"
+              },
+              "required_columns": {
+                "maxItems": 0
+              },
+              "privacy": {
+                "const": "approved_aggregates_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "implemented"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*\\.csv$"
+              },
+              "required_columns": {
+                "minItems": 1
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^F[0-9]{2,7}$"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "artifact": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*\\.svg$"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "implemented",
+            "implemented_optional",
+            "placeholder"
+          ]
+        },
+        "source_table": {
+          "type": "string",
+          "pattern": "^T[0-9]{2,7}$"
+        },
+        "plot_type": {
+          "$ref": "#/$defs/text"
+        },
+        "x": {
+          "$ref": "#/$defs/text"
+        },
+        "y": {
+          "$ref": "#/$defs/text"
+        },
+        "y_unit": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/text"
+        },
+        "alt_text": {
+          "type": "string",
+          "minLength": 15,
+          "maxLength": 1024
+        },
+        "privacy": {
+          "enum": [
+            "synthetic_only",
+            "approved_aggregates_only"
+          ]
+        },
+        "baseline": {
+          "$ref": "#/$defs/text"
+        },
+        "decision_question": {
+          "$ref": "#/$defs/text"
+        },
+        "estimand": {
+          "$ref": "#/$defs/text"
+        },
+        "evidence_tier": {
+          "enum": [
+            "synthetic_implemented",
+            "external_exploratory_only",
+            "synthetic_design_pending",
+            "empirical_blocked",
+            "provider_blocked"
+          ]
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "population": {
+          "$ref": "#/$defs/text"
+        },
+        "denominator": {
+          "$ref": "#/$defs/text"
+        },
+        "missingness": {
+          "enum": [
+            "synthetic_no_observed_missingness",
+            "unknown_never_zero"
+          ]
+        },
+        "pairing": {
+          "enum": [
+            "paired",
+            "unpaired",
+            "not_applicable"
+          ]
+        },
+        "time_horizon": {
+          "$ref": "#/$defs/text"
+        },
+        "x_scale": {
+          "enum": [
+            "linear",
+            "log",
+            "categorical",
+            "time",
+            "not_applicable"
+          ]
+        },
+        "y_scale": {
+          "enum": [
+            "linear",
+            "log",
+            "categorical",
+            "time",
+            "not_applicable"
+          ]
+        },
+        "source_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "release_gate": {
+          "$ref": "#/$defs/text"
+        },
+        "safety_boundary": {
+          "$ref": "#/$defs/text"
+        },
+        "accessibility": {
+          "const": "label_and_pattern_not_colour_alone"
+        },
+        "reproducibility": {
+          "$ref": "#/$defs/text"
+        },
+        "exploratory_reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "package",
+            "relative_path",
+            "sha256",
+            "in_repo"
+          ],
+          "properties": {
+            "package": {
+              "const": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip"
+            },
+            "relative_path": {
+              "type": "string",
+              "pattern": "^figures/[a-zA-Z0-9_-]+\\.png$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "in_repo": {
+              "const": false
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "artifact",
+        "status",
+        "source_table",
+        "plot_type",
+        "x",
+        "y",
+        "y_unit",
+        "uncertainty",
+        "alt_text",
+        "privacy",
+        "decision_question",
+        "estimand",
+        "evidence_tier",
+        "priority",
+        "population",
+        "denominator",
+        "missingness",
+        "pairing",
+        "time_horizon",
+        "x_scale",
+        "y_scale",
+        "source_requirements",
+        "release_gate",
+        "safety_boundary",
+        "accessibility",
+        "reproducibility"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "implemented",
+                  "implemented_optional"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*\\.svg$"
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              },
+              "evidence_tier": {
+                "const": "synthetic_implemented"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "enum": [
+                  "synthetic_design_pending",
+                  "external_exploratory_only",
+                  "provider_blocked"
+                ]
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "const": "empirical_blocked"
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              },
+              "privacy": {
+                "const": "approved_aggregates_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "const": "external_exploratory_only"
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "required": [
+              "exploratory_reference"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

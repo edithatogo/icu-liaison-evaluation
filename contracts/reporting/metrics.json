@@ -1,0 +1,787 @@
+{
+  "schema_version": 1,
+  "registry_revision": "2026-11-19-P10-measurement-v1",
+  "status": "definitions_only_no_site_data",
+  "scope": "Cairns ICU liaison evaluation and ANZICS-compatible descriptive comparators",
+  "denominators": [
+    {
+      "id": "D01",
+      "label": "All ICU admission episodes",
+      "time_anchor": "icu_admission",
+      "grain": "hospital ICU episode",
+      "inclusion": "all ICU episodes, including repeat admissions",
+      "missingness": "missing episode identifiers reported as unknown"
+    },
+    {
+      "id": "D02",
+      "label": "All live ICU-to-ward/home discharges",
+      "time_anchor": "physical_icu_departure",
+      "grain": "live ward/home transfer episode",
+      "inclusion": "all live ward/home discharges irrespective of hospital index status",
+      "missingness": "unknown destination and missing discharge time excluded and counted"
+    },
+    {
+      "id": "D03",
+      "label": "First eligible adult ICU-to-ward discharge per hospitalisation",
+      "time_anchor": "physical_icu_departure",
+      "grain": "one first eligible index per hospitalisation",
+      "inclusion": "eligible adult ward destination with approved age rule and episode linkage",
+      "missingness": "unlinked episodes kept unknown, not additional index events"
+    },
+    {
+      "id": "D04",
+      "label": "Live ICU-to-ward/home discharges with valid readiness and departure",
+      "time_anchor": "clinical_ready_time",
+      "grain": "ready-to-departure valid paired timestamp",
+      "inclusion": "subset of D02 with both readiness and departure known",
+      "missingness": "unknown readiness not zero delay; separate missingness"
+    },
+    {
+      "id": "D05",
+      "label": "Index ICU-to-ward discharges with adequate 72-hour ascertainment",
+      "time_anchor": "physical_icu_departure",
+      "grain": "one index discharge with known at-risk time",
+      "inclusion": "D03 eligible with verified 72-hour follow-up or observed earlier event, death or transfer adjudicated",
+      "missingness": "death and transfer competing; incomplete follow-up not classified no-return"
+    },
+    {
+      "id": "D06",
+      "label": "Actual ICU staffed capacity intervals",
+      "time_anchor": "staffed_shift_interval",
+      "grain": "time-integrated staffed beds",
+      "inclusion": "staffed, available and occupied beds with matching boundaries",
+      "missingness": "unreported shift coverage is unknown, not zero beds"
+    },
+    {
+      "id": "D07",
+      "label": "All ICU admission demand requests",
+      "time_anchor": "admission_request",
+      "grain": "one ICU request, admitted/refused/censored",
+      "inclusion": "requests including those declined or diverted",
+      "missingness": "rejected/unobserved demand cannot be inferred from admissions"
+    },
+    {
+      "id": "D08",
+      "label": "Defined annual programme",
+      "time_anchor": "programme_fiscal_year",
+      "grain": "one intervention comparator/year",
+      "inclusion": "paired strategy for annual eligible volume, declared price year",
+      "missingness": "missing local annual volume remains unqualified"
+    },
+    {
+      "id": "D09",
+      "label": "Aligned paired Monte Carlo iterations",
+      "time_anchor": "simulation_draw_id",
+      "grain": "same draw ID for both strategies",
+      "inclusion": "declared synthetic P4 iterations with matching seeds",
+      "missingness": "missing/duplicate draw rejects paired comparison"
+    },
+    {
+      "id": "D10",
+      "label": "Same hospital episode and relevant AR-DRG/year",
+      "time_anchor": "hospitalisation_episode",
+      "grain": "matched coded hospital episode",
+      "inclusion": "paired counterfactual eligible ICU hours and DRG/year",
+      "missingness": "unknown coding/annual weight is not an inferred zero"
+    },
+    {
+      "id": "D11",
+      "label": "Paid and productive rostered nursing hours",
+      "time_anchor": "nursing_shift",
+      "grain": "roster interval and FTE",
+      "inclusion": "shift hours net of leave/relief, eligible pay classifications",
+      "missingness": "no unverified salary or penalty inference"
+    },
+    {
+      "id": "D12",
+      "label": "All relevant patient journey stages with defined chronology",
+      "time_anchor": "transfer_stage",
+      "grain": "one disjoint event interval",
+      "inclusion": "readiness/referral/bed/transport/departure stages",
+      "missingness": "unknown stages cannot be zero-duration"
+    },
+    {
+      "id": "D13",
+      "label": "Endpoint-specific completed patient follow-up",
+      "time_anchor": "endpoint_index",
+      "grain": "eligible patients with complete endpoint ascertainment",
+      "inclusion": "index discharges with endpoint-specific follow-up and censoring",
+      "missingness": "competing events and unknown follow-up reported separately"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "M01",
+      "label": "ICU admissions",
+      "clinical_director_kpi": "ICU admissions",
+      "domain": "clinical_activity",
+      "unit": "count",
+      "numerator": "all ICU episodes",
+      "denominator_id": "D01",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "icu_admission",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M02",
+      "label": "All live ward/home ICU discharges",
+      "clinical_director_kpi": "Eligible discharges",
+      "domain": "clinical_activity",
+      "unit": "count",
+      "numerator": "all live discharge episodes",
+      "denominator_id": "D02",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M03",
+      "label": "First eligible adult ward index ICU discharge",
+      "clinical_director_kpi": "Eligible discharges",
+      "domain": "clinical_activity",
+      "unit": "count",
+      "numerator": "first eligible adult ward departure per hospitalisation",
+      "denominator_id": "D03",
+      "source_datasets": [
+        "icu_episodes",
+        "hospital_outcomes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M04",
+      "label": "ICU length of stay",
+      "clinical_director_kpi": "ICU length of stay",
+      "domain": "clinical_activity",
+      "unit": "hours",
+      "numerator": "physical departure minus ICU admission",
+      "denominator_id": "D01",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "icu_admission",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M05",
+      "label": "Ready-to-departure delay",
+      "clinical_director_kpi": "Discharge-ready delay",
+      "domain": "flow",
+      "unit": "hours",
+      "numerator": "physical ICU departure minus clinical readiness, with valid timestamps",
+      "denominator_id": "D04",
+      "source_datasets": [
+        "icu_episodes",
+        "ward_flow"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "clinical_ready_time",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M06",
+      "label": "Exit block at least twelve hours",
+      "clinical_director_kpi": "Exit block ≥12 hours",
+      "domain": "flow",
+      "unit": "proportion",
+      "numerator": "live ward/home ICU discharges with valid ready and departure timestamps delayed >=12 hours",
+      "denominator_id": "D04",
+      "source_datasets": [
+        "icu_episodes",
+        "ward_flow"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "clinical_ready_time",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M07",
+      "label": "After-hours live ICU discharge",
+      "clinical_director_kpi": "After-hours discharge",
+      "domain": "flow",
+      "unit": "proportion",
+      "numerator": "live discharges 18:00-05:59 in local clock time",
+      "denominator_id": "D02",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M08",
+      "label": "Unplanned ICU return within 72 hours",
+      "clinical_director_kpi": "Unplanned 72-hour ICU return",
+      "domain": "clinical_safety",
+      "unit": "proportion",
+      "numerator": "index discharges with unplanned ICU return strictly within 72h and adjudicated competing risk",
+      "denominator_id": "D05",
+      "source_datasets": [
+        "icu_episodes",
+        "hospital_outcomes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "clinical_effect",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": 72,
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M09",
+      "label": "Subsequent ICU/HDU admission episodes",
+      "clinical_director_kpi": "All-episode readmission",
+      "domain": "clinical_activity",
+      "unit": "proportion",
+      "numerator": "return ICU/HDU admission episodes distinct from 72-hour index patient risk",
+      "denominator_id": "D01",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "icu_admission",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M10",
+      "label": "MET activation after index ICU discharge",
+      "clinical_director_kpi": "MET after ICU discharge",
+      "domain": "clinical_safety",
+      "unit": "events_per_100",
+      "numerator": "MET activation within the declared 24 or 72 hour window",
+      "denominator_id": "D13",
+      "source_datasets": [
+        "clinical_safety",
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "clinical_effect",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": 72,
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M11",
+      "label": "Staffed ICU occupancy",
+      "clinical_director_kpi": "Staffed beds and occupancy",
+      "domain": "capacity",
+      "unit": "proportion",
+      "numerator": "integrated occupied staffed ICU bed time divided by staffed bed time",
+      "denominator_id": "D06",
+      "source_datasets": [
+        "bed_capacity"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "staffed_shift_interval",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M12",
+      "label": "ICU admission request delay or refusal",
+      "clinical_director_kpi": "Admission demand",
+      "domain": "flow",
+      "unit": "minutes",
+      "numerator": "request-to-admission delay plus refusal/diversion counts separately",
+      "denominator_id": "D07",
+      "source_datasets": [
+        "icu_access_demand"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "admission_request",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M13",
+      "label": "Stage-specific ward transfer delay",
+      "clinical_director_kpi": "Ward transfer intervals",
+      "domain": "flow",
+      "unit": "minutes",
+      "numerator": "elapsed nonoverlapping referral, acceptance, bed-ready and departure stages",
+      "denominator_id": "D12",
+      "source_datasets": [
+        "ward_flow"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "transfer_stage",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M14",
+      "label": "Ward cardiac arrest following index ICU discharge",
+      "clinical_director_kpi": "Clinical safety",
+      "domain": "clinical_safety",
+      "unit": "events_per_100",
+      "numerator": "ward arrest after ICU ward departure, endpoint-specific",
+      "denominator_id": "D13",
+      "source_datasets": [
+        "clinical_safety",
+        "hospital_outcomes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "clinical_effect",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M15",
+      "label": "Hospital death following index ICU discharge",
+      "clinical_director_kpi": "Clinical safety",
+      "domain": "clinical_safety",
+      "unit": "proportion",
+      "numerator": "hospital mortality with specified follow-up and limitations of treatment",
+      "denominator_id": "D13",
+      "source_datasets": [
+        "hospital_outcomes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "clinical_effect",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M16",
+      "label": "Liaison productive coverage and nursing FTE",
+      "clinical_director_kpi": "Existing liaison service",
+      "domain": "workforce",
+      "unit": "hours",
+      "numerator": "paid rostered hours and productive service coverage separately",
+      "denominator_id": "D11",
+      "source_datasets": [
+        "liaison_activity",
+        "staffing_costs"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "nursing_shift",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M17",
+      "label": "Incremental annual liaison programme cost",
+      "clinical_director_kpi": "Proposed liaison cost",
+      "domain": "finance",
+      "unit": "AUD_2026",
+      "numerator": "additional service cost including qualified hours, penalties, leave relief and startup costs",
+      "denominator_id": "D08",
+      "source_datasets": [
+        "staffing_costs",
+        "cost_resource_ledger"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "financial_effect",
+      "time_anchor": "programme_fiscal_year",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural",
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M18",
+      "label": "Avoidable marginal ICU resource cost per day",
+      "clinical_director_kpi": "ICU/ward unit cost",
+      "domain": "economics",
+      "unit": "AUD_2026_per_day",
+      "numerator": "marginal avoidable ICU delay resource cost, never assumed equal allocated average",
+      "denominator_id": "D08",
+      "source_datasets": [
+        "cost_resource_ledger"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "resource_effect",
+      "time_anchor": "programme_fiscal_year",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M19",
+      "label": "Incremental ICU readmission resource cost",
+      "clinical_director_kpi": "Return ICU cost",
+      "domain": "economics",
+      "unit": "AUD_2026_per_event",
+      "numerator": "cost attributable to additional ICU/ward return excluding overlapping index costs",
+      "denominator_id": "D08",
+      "source_datasets": [
+        "cost_resource_ledger"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "resource_effect",
+      "time_anchor": "programme_fiscal_year",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M20",
+      "label": "Annual counterfactual NWAU difference",
+      "clinical_director_kpi": "ABF inputs",
+      "domain": "activity_weight",
+      "unit": "NWAU",
+      "numerator": "same episode/DRG/year counterfactual with only eligible ICU hours changed",
+      "denominator_id": "D10",
+      "source_datasets": [
+        "cost_resource_ledger",
+        "hospital_outcomes"
+      ],
+      "evidence_basis": "requires_official_provider",
+      "claim_class": "activity_weight_not_cash",
+      "time_anchor": "hospitalisation_episode",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "provider",
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M21",
+      "label": "Modelled ICU bed-days released",
+      "clinical_director_kpi": "ICU discharge capacity",
+      "domain": "capacity",
+      "unit": "bed_days",
+      "numerator": "modelled ready-to-departure resource time released under specified scenario",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "icu_episodes",
+        "bed_capacity"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "synthetic_scenario",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M22",
+      "label": "Usable staffed ICU bed-days",
+      "clinical_director_kpi": "ICU discharge capacity",
+      "domain": "capacity",
+      "unit": "bed_days",
+      "numerator": "modelled bed-days practically reusable with staffed and demand constraints",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "bed_capacity",
+        "icu_access_demand"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "synthetic_scenario",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "operational"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M23",
+      "label": "Modelled unplanned returns avoided",
+      "clinical_director_kpi": "Unplanned 72-hour ICU return",
+      "domain": "clinical_safety",
+      "unit": "count",
+      "numerator": "hypothetical counterfactual return difference; not observed causal effect",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "synthetic_model_only",
+      "claim_class": "synthetic_scenario",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "clinical_effect",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M24",
+      "label": "Gross incremental resource benefit",
+      "clinical_director_kpi": "Resource consequences",
+      "domain": "economics",
+      "unit": "AUD_2026",
+      "numerator": "modelled avoidable resource value from nonoverlapping ICU delay and return segments",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "cost_resource_ledger"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "resource_effect",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M25",
+      "label": "Net incremental resource benefit",
+      "clinical_director_kpi": "Resource consequences",
+      "domain": "economics",
+      "unit": "AUD_2026",
+      "numerator": "gross avoidable resource benefit minus incremental programme resource cost",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "cost_resource_ledger",
+        "staffing_costs"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "resource_effect",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural",
+        "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M26",
+      "label": "Net hospital cash budget impact",
+      "clinical_director_kpi": "Budget impact",
+      "domain": "finance",
+      "unit": "AUD_2026",
+      "numerator": "modelled incremental hospital cash change distinguished from resources, NWAU and released capacity",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "cost_resource_ledger",
+        "staffing_costs"
+      ],
+      "evidence_basis": "synthetic_model_or_governed_site",
+      "claim_class": "financial_effect",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural",
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M27",
+      "label": "Assumed clinical intervention effectiveness",
+      "clinical_director_kpi": "Clinical case mix",
+      "domain": "model_input",
+      "unit": "dimensionless",
+      "numerator": "declared discharge improvement, contact coverage and signed return-risk multiplier incl null/harm",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "implementation_confounders"
+      ],
+      "evidence_basis": "synthetic_model_only",
+      "claim_class": "synthetic_scenario",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "clinical_effect",
+        "structural"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M28",
+      "label": "Expected value of decision information",
+      "clinical_director_kpi": "Economic decision uncertainty",
+      "domain": "economics",
+      "unit": "AUD_2026",
+      "numerator": "qualified Voiage expected value of perfect/partial/sample information by supported method",
+      "denominator_id": "D09",
+      "source_datasets": [
+        "cost_resource_ledger"
+      ],
+      "evidence_basis": "requires_official_provider",
+      "claim_class": "provider_method",
+      "time_anchor": "simulation_draw_id",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "provider",
+        "parameter_psa"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M29",
+      "label": "Case mix and baseline subgroup covariates",
+      "clinical_director_kpi": "Clinical case mix",
+      "domain": "clinical_activity",
+      "unit": "category",
+      "numerator": "age, diagnosis, severity, ventilation and elective status with pre-specified strata",
+      "denominator_id": "D01",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "icu_admission",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M30",
+      "label": "Consumer experience and equity outcomes",
+      "clinical_director_kpi": "Patient experience and equity",
+      "domain": "experience",
+      "unit": "endpoint_specific",
+      "numerator": "approved patient/family experience and governed equity endpoints",
+      "denominator_id": "D13",
+      "source_datasets": [
+        "equity_experience"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "clinical_effect",
+      "time_anchor": "physical_icu_departure",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    }
+  ]
+}

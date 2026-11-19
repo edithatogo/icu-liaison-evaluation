@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:claim-policy:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_revision",
+    "source_mode",
+    "public_repository_prohibition",
+    "claim_classes",
+    "issuer_boundary",
+    "synthetic_evidence_receipt_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_revision": {
+      "const": "2026-11-19-P10-source-claims-v1"
+    },
+    "source_mode": {
+      "const": "fail_closed_without_trusted_external_verifier"
+    },
+    "public_repository_prohibition": {
+      "$ref": "#/$defs/nonblank"
+    },
+    "issuer_boundary": {
+      "$ref": "#/$defs/nonblank"
+    },
+    "synthetic_evidence_receipt_status": {
+      "const": "template_only"
+    },
+    "claim_classes": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "required_evidence",
+          "requires_trusted_external_verifier",
+          "public_source_can_validate",
+          "disclosure"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/nonblank"
+          },
+          "required_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/nonblank"
+            }
+          },
+          "requires_trusted_external_verifier": {
+            "type": "boolean"
+          },
+          "public_source_can_validate": {
+            "type": "boolean"
+          },
+          "disclosure": {
+            "$ref": "#/$defs/nonblank"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "policy_revision": "2026-11-19-P10-source-claims-v1",
+  "source_mode": "fail_closed_without_trusted_external_verifier",
+  "public_repository_prohibition": "source_attestation_is_not_a_governance_approval",
+  "claim_classes": [
+    {
+      "id": "synthetic_illustration",
+      "required_evidence": [
+        "p5_input_digest",
+        "p5_numeric_review",
+        "manifest_verified"
+      ],
+      "requires_trusted_external_verifier": false,
+      "public_source_can_validate": true,
+      "disclosure": "Illustrative synthetic assumptions, not Cairns outcome estimates"
+    },
+    {
+      "id": "local_descriptive",
+      "required_evidence": [
+        "data_custodian_authorisation",
+        "complete_source_lineage",
+        "approved_aggregate_release"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "Observed CHHHS descriptive claims require organisation-controlled verification"
+    },
+    {
+      "id": "clinical_effectiveness",
+      "required_evidence": [
+        "site_governance",
+        "pre_registered_estimand",
+        "independent_statistical_review",
+        "clinical_safety_review"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "No causal or noninferiority claims without clinical and independent approval"
+    },
+    {
+      "id": "cash_savings",
+      "required_evidence": [
+        "finance_approval",
+        "ledger_reconciliation",
+        "marginal_cash_realisability"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "Capacity and activity weights are not cash"
+    },
+    {
+      "id": "nwau_activity",
+      "required_evidence": [
+        "annual_MCHS_parity",
+        "episode_coding_validation"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "NWAU change is not realised revenue"
+    },
+    {
+      "id": "provider_qualified",
+      "required_evidence": [
+        "exact_binary_provenance",
+        "native_oracle",
+        "independent_review"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "Cross-platform and release scope must be explicit"
+    },
+    {
+      "id": "investment_ready",
+      "required_evidence": [
+        "clinical_review",
+        "finance_review",
+        "statistical_review",
+        "applicable_First_Nations_governance",
+        "site_authority"
+      ],
+      "requires_trusted_external_verifier": true,
+      "public_source_can_validate": false,
+      "disclosure": "No public source JSON can convey site permission"
+    }
+  ],
+  "issuer_boundary": "external_authority_must_be_verified_by_separate_trusted_adapter_not_repository_boolean",
+  "synthetic_evidence_receipt_status": "template_only"
+}

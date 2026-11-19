@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "contract_only_unexecuted",
+  "required_profiles": [
+    {
+      "id": "mobile",
+      "width_px": 360,
+      "height_px": 720
+    },
+    {
+      "id": "tablet",
+      "width_px": 768,
+      "height_px": 1024
+    },
+    {
+      "id": "desktop",
+      "width_px": 1280,
+      "height_px": 720
+    },
+    {
+      "id": "print_a4",
+      "width_px": 794,
+      "height_px": 1123
+    }
+  ],
+  "checks": [
+    "data_value_to_mark_consistency",
+    "svg_title_description_and_aria_readability",
+    "explicit_units_price_year_denominator",
+    "contrast_and_pattern_independent_of_colour",
+    "zero_and_reference_lines",
+    "negative_values_and_log_scale_safety",
+    "missingness_and_censoring_annotations",
+    "font_size_and_clipping",
+    "print_grayscale_legibility",
+    "visual_baseline_review"
+  ],
+  "required_claim_boundary": "not_CHHHS_validated"
+}

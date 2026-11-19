@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "figure_id": "F10",
+  "status": "unproduced",
+  "source_class": "synthetic_only",
+  "source_input_sha256": null,
+  "model_seed": null,
+  "renderer_version": null,
+  "artifact_sha256": null,
+  "numeric_receipt_sha256": null,
+  "visual_receipt_sha256": null,
+  "approval_authority": null
+}

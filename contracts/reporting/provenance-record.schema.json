@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:figure-provenance:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "figure_id",
+    "status",
+    "source_class",
+    "source_input_sha256",
+    "model_seed",
+    "renderer_version",
+    "artifact_sha256",
+    "numeric_receipt_sha256",
+    "visual_receipt_sha256",
+    "approval_authority"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "figure_id": {
+      "type": "string",
+      "pattern": "^F[0-9]{2}$"
+    },
+    "status": {
+      "enum": [
+        "unproduced",
+        "rendered_unqualified",
+        "accepted_synthetic"
+      ]
+    },
+    "source_class": {
+      "enum": [
+        "synthetic_only",
+        "approved_aggregate_pending"
+      ]
+    },
+    "source_input_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "model_seed": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "renderer_version": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/nonblank"
+        }
+      ]
+    },
+    "artifact_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "numeric_receipt_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "visual_receipt_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "approval_authority": {
+      "type": "null"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "unproduced"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_input_sha256": {
+            "type": "null"
+          },
+          "model_seed": {
+            "type": "null"
+          },
+          "renderer_version": {
+            "type": "null"
+          },
+          "artifact_sha256": {
+            "type": "null"
+          },
+          "numeric_receipt_sha256": {
+            "type": "null"
+          },
+          "visual_receipt_sha256": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "accepted_synthetic"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_class": {
+            "const": "synthetic_only"
+          },
+          "source_input_sha256": {
+            "type": "string"
+          },
+          "model_seed": {
+            "type": "integer"
+          },
+          "renderer_version": {
+            "type": "string"
+          },
+          "artifact_sha256": {
+            "type": "string"
+          },
+          "numeric_receipt_sha256": {
+            "type": "string"
+          },
+          "visual_receipt_sha256": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
