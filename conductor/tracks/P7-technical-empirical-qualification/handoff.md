@@ -12,3 +12,13 @@ Pinned source and build products matched the installed wheel's content as
 recorded in the [P1.4 review](../P1-provider-reuse/plan.md#rebuilt-dapane-wheel-evidence-review).
 Detailed candidate evidence is held with the retained build. An independent
 reviewer can use it for the [P7.5 provenance decision](plan.md#p75-independent-provider-review).
+
+## Independent Dapane disposition — 19 November 2026
+
+Separate Codex reviewer `dapane_reviewer` verified the exact candidate wheel
+and extension, then withheld binary-pin sign-off. The Rust 1.99.1 values in
+the migration receipt came from preflight. The wheel's compiler evidence and
+the replayed tool resolution point to Homebrew Rust 1.100.0. Controlled
+builds under the pinned recipe produced different bytes. The detailed
+review and build logs are retained in private evidence.
+[P7.5 decision](plan.md#p75-independent-provider-review)
