@@ -11,8 +11,9 @@ qualification remain open.** See
 [P1 native qualification receipt](../../../verification/p1-native-qualification-2026-11-19.json).
 
 The separately rebuilt Dapane wheel passed local source, build-product and
-installed-file checks. Its independent provenance review remains open.
-[P1.4 evidence review](plan.md#rebuilt-dapane-wheel-evidence-review)
+installed-file checks. The independent technical reviewer withheld binary-pin
+sign-off after identifying Homebrew Rust 1.100.0 in the retained build.
+[P1.4 independent review](plan.md#independent-dapane-technical-review)
 
 [Provider execution guide](../../../docs/providers-p1.md) ·
 [Exact source reference lock](../../../providers.lock.json)

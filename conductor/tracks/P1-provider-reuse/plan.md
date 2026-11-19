@@ -81,6 +81,32 @@ open under [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-
 The Dapane `binary_sha256` field remains null. The 342-test run and the two
 focused P5 regressions in the migration receipt apply to the rebuilt wheel.
 
+### Independent Dapane technical review
+
+On 19 November 2026 AEST, Codex reviewer `dapane_reviewer` worked independently
+of the original build lane. The reviewer confirmed the pinned source, wheel
+digest, `RECORD` contents and installed bytes. The retained
+`dapane/_native.cpython-315-darwin.so` digest is
+`d5ece8d154d56f007fc25486d5b27225de81e24696a527b46e8946e98b17ff3a`.
+The reviewer verified the loaded extension's digest before both Dapane
+oracles passed at AUD 100.00 and AUD −168,730.00.
+
+The migration receipt's Rust 1.99.1 values came from preflight version probes.
+The retained Cargo compiler metadata and native extension identify Homebrew
+Rust 1.100.0. The historical P1 receipt records that toolchain for the
+same extension digest. Replaying the launcher set `RUSTUP_TOOLCHAIN=1.99.1`.
+Maturin's environment resolved `cargo` and `rustc` to Homebrew via `PATH`.
+Two independently controlled Rust 1.99.1 builds produced different wheel
+and extension bytes, including executable-section differences after
+build-path remapping.
+
+The reviewer **withheld binary-pin sign-off**. The recorded notices cover the
+pinned Rust 1.99.1 build inputs and the effective 1.100.0 toolchain inventory
+remains unreviewed. The previous test results still record the behavior of the
+exact installed candidate. The Dapane `binary_sha256` remains null.
+[P7.5 decision](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review)
+· [Corrected build procedure](../../../docs/providers-p1.md#source-dependent-runtime-setup-on-a-network-enabled-authorised-workstation)
+
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its
   Conductor track registry, run hosted exact-head checks and independent review:

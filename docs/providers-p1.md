@@ -47,10 +47,21 @@ git clone https://github.com/edithatogo/dapane.git ../dapane-p1-provider
 cd ../dapane-p1-provider
 git checkout --detach 0658d94ad772023a0185a000b5254f9c2f4a63a9
 # Verify git rev-parse HEAD and the source manifests before running the build.
-# Use Rust 1.99.1 and maturin 1.16.0 with the selected CPython 3.15.2.
-"$PROVIDER_PYTHON" -m maturin build --locked --release \
-  --interpreter "$PROVIDER_PYTHON" --out dist
+(
+  set -eu
+  DAPANE_RUST_BIN="$(dirname "$(rustup which --toolchain 1.99.1 cargo)")"
+  export PATH="$DAPANE_RUST_BIN:$PATH"
+  export RUSTC="$DAPANE_RUST_BIN/rustc"
+  test "$(command -v cargo)" = "$DAPANE_RUST_BIN/cargo"
+  cargo --version
+  "$RUSTC" --version
+  "$PROVIDER_PYTHON" -m maturin build --locked --release \
+    --interpreter "$PROVIDER_PYTHON" --out dist
+)
 ```
+
+Keep the tool versions from the build environment and the resulting Cargo
+compiler metadata with the wheel and native extension digests.
 
 Paths above are illustrative: invoke the actual trusted interpreter and
 maturin installation from your controlled environment. Install the resulting
@@ -143,4 +154,6 @@ source-level repair was verified on CPython 3.15.2 with a new Dapane 0.1.0
 build from the source pin. The full suite passed 342 tests and the two focused
 regressions both passed. The [migration receipt](../verification/python-315-migration-2026-11-19.json)
 records the installed wheel and extension digests. Independent artifact
-adjudication remains open.
+review subsequently found that Maturin used Homebrew Rust 1.100.0. The
+receipt's Rust 1.99.1 values came from separate version probes. The reviewer
+withheld binary pin sign-off. [P1.4 independent review](../conductor/tracks/P1-provider-reuse/plan.md#independent-dapane-technical-review)
