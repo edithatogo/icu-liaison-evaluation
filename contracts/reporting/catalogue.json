@@ -22,7 +22,20 @@
       "denominator": "eligible_annual_scenario_discharge",
       "perspective": "resource_and_budget_separate",
       "uncertainty": "PSA_not_confidence_interval",
-      "privacy": "synthetic_only"
+      "privacy": "synthetic_only",
+      "metric_ids": [
+        "M17",
+        "M21",
+        "M22",
+        "M23",
+        "M24",
+        "M25",
+        "M26"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ]
     },
     {
       "id": "T02",
@@ -44,7 +57,17 @@
       "denominator": "paired_model_draws",
       "perspective": "resource_or_budget_separate",
       "uncertainty": "paired_PSA_not_clinical_superiority",
-      "privacy": "synthetic_only"
+      "privacy": "synthetic_only",
+      "metric_ids": [
+        "M21",
+        "M23",
+        "M25",
+        "M26"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ]
     },
     {
       "id": "T03",
@@ -58,7 +81,16 @@
       "denominator": "prior_bounds",
       "perspective": "economic_resource",
       "uncertainty": "one_way_not_PSA",
-      "privacy": "synthetic_only"
+      "privacy": "synthetic_only",
+      "metric_ids": [
+        "M17",
+        "M25",
+        "M27"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ]
     },
     {
       "id": "T04",
@@ -72,7 +104,14 @@
       "denominator": "one_annual_programme_decision_per_draw",
       "perspective": "resource_net_benefit_only",
       "uncertainty": "paired_PSA",
-      "privacy": "synthetic_only"
+      "privacy": "synthetic_only",
+      "metric_ids": [
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ]
     },
     {
       "id": "T05",
@@ -84,7 +123,15 @@
       "denominator": "paid_and_productive_hours",
       "perspective": "financial_cost_reconcile_P4_prior",
       "uncertainty": "workforce_qualification_pending",
-      "privacy": "approved_aggregates_only"
+      "privacy": "approved_aggregates_only",
+      "metric_ids": [
+        "M16",
+        "M17"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ]
     },
     {
       "id": "T06",
@@ -96,7 +143,14 @@
       "denominator": "eligible_icu_hours",
       "perspective": "weighted_activity_not_actual_revenue",
       "uncertainty": "annual_parity_pending",
-      "privacy": "approved_aggregates_only"
+      "privacy": "approved_aggregates_only",
+      "metric_ids": [
+        "M20"
+      ],
+      "uncertainty_classes": [
+        "provider",
+        "data_quality"
+      ]
     },
     {
       "id": "T07",
@@ -108,7 +162,30 @@
       "denominator": "endpoint_specific_followup",
       "perspective": "clinical_safety_not_monetised",
       "uncertainty": "local_data_pending",
-      "privacy": "approved_aggregates_only"
+      "privacy": "approved_aggregates_only",
+      "metric_ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12",
+        "M13",
+        "M14",
+        "M15",
+        "M29",
+        "M30"
+      ],
+      "uncertainty_classes": [
+        "clinical_effect",
+        "data_quality"
+      ]
     }
   ],
   "figures": [
@@ -142,7 +219,15 @@
       "release_gate": "P5 numeric reader and source manifest",
       "safety_boundary": "Not measured CHHHS effects",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "P5_input_manifest_SVG_metadata"
+      "reproducibility": "P5_input_manifest_SVG_metadata",
+      "metric_ids": [
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "psa_percentile_not_confidence_interval"
     },
     {
       "id": "F02",
@@ -174,7 +259,17 @@
       "release_gate": "P4 nominal source and exact reconciliation",
       "safety_boundary": "Released capacity is not cash savings",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M17",
+        "M24",
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F03",
@@ -206,7 +301,17 @@
       "release_gate": "Approved CHHHS timestamps and staffed-capacity data",
       "safety_boundary": "Association does not prove liaison effect",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M05",
+        "M06",
+        "M11"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F04",
@@ -238,7 +343,18 @@
       "release_gate": "Clinical/economic methods signoff and effect source",
       "safety_boundary": "No CEAC from invented clinical effectiveness",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M08",
+        "M14",
+        "M15",
+        "M17"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F05",
@@ -276,7 +392,16 @@
         "relative_path": "figures/02_resource_vs_budget.png",
         "sha256": "90e946796ec23d47970d1164425c792131672d5ac9776e3c0b8032a69b330c72",
         "in_repo": false
-      }
+      },
+      "metric_ids": [
+        "M25",
+        "M26"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F06",
@@ -314,7 +439,15 @@
         "relative_path": "figures/03_positive_draw_fraction.png",
         "sha256": "7947e09f84f77627ff73521ba9de03c5f82039525ef83cd608ff2ed6fa212aca",
         "in_repo": false
-      }
+      },
+      "metric_ids": [
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "psa_percentile_not_confidence_interval"
     },
     {
       "id": "F07",
@@ -352,7 +485,16 @@
         "relative_path": "figures/04_one_way_sensitivity.png",
         "sha256": "afd3563279e4e54b2d8e9f4fb86eeaf19edbbc63373f83995430427fe48f973d",
         "in_repo": false
-      }
+      },
+      "metric_ids": [
+        "M25",
+        "M27"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F08",
@@ -390,7 +532,15 @@
         "relative_path": "figures/05_resource_draw_distributions.png",
         "sha256": "019e09c14f1118bbc6d49b20940df47226f57cd6710b8a8364bfbf8720dcf40b",
         "in_repo": false
-      }
+      },
+      "metric_ids": [
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "psa_percentile_not_confidence_interval"
     },
     {
       "id": "F09",
@@ -428,7 +578,16 @@
         "relative_path": "figures/06_synthetic_capacity_trace.png",
         "sha256": "fbad6e6eb2abb4305b35c34db5424bcfa99fffd806f6c520ceccb995f5c50060",
         "in_repo": false
-      }
+      },
+      "metric_ids": [
+        "M11",
+        "M12"
+      ],
+      "uncertainty_classes": [
+        "operational",
+        "parameter_psa"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F10",
@@ -460,7 +619,17 @@
       "release_gate": "Independent grid oracle and finite bounded domain",
       "safety_boundary": "Safety threshold separate from financial break-even",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M17",
+        "M25",
+        "M27"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F11",
@@ -492,7 +661,16 @@
       "release_gate": "Stable IDs and independent paired draw check",
       "safety_boundary": "Never monetise same bed-day twice",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M21",
+        "M25"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "psa_percentile_not_confidence_interval"
     },
     {
       "id": "F12",
@@ -524,7 +702,16 @@
       "release_gate": "Native Voiage qualification and method verification",
       "safety_boundary": "No improvised VOI fallback",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M25",
+        "M28"
+      ],
+      "uncertainty_classes": [
+        "provider",
+        "data_quality"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F13",
@@ -556,7 +743,17 @@
       "release_gate": "Synthetic P3 linked fixture; conservation checks",
       "safety_boundary": "Synthetic flow not Cairns counts",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M03",
+        "M08",
+        "M15"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F14",
@@ -588,7 +785,17 @@
       "release_gate": "CHHHS timestamps, timezones and minimum cells",
       "safety_boundary": "Unknown not a zero denominator",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M05",
+        "M06",
+        "M07"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F15",
@@ -620,7 +827,16 @@
       "release_gate": "Synthetic event fixture and interval conservation",
       "safety_boundary": "Potentially addressable not necessarily preventable",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M05",
+        "M13"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F16",
@@ -652,7 +868,18 @@
       "release_gate": "Governed linked ICU/MET/ward outcome data",
       "safety_boundary": "Appropriate returns may reflect better rescue",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M08",
+        "M10",
+        "M14",
+        "M15"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F17",
@@ -684,7 +911,16 @@
       "release_gate": "Linked death/transfer/return timing and statistician review",
       "safety_boundary": "Death and missingness not no-return",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M08",
+        "M15"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F18",
@@ -716,7 +952,17 @@
       "release_gate": "Synthetic design only; empirical data before inference",
       "safety_boundary": "No synthetic causal treatment effect",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M05",
+        "M06",
+        "M08"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F19",
@@ -748,7 +994,18 @@
       "release_gate": "Approved data and culturally appropriate governance",
       "safety_boundary": "Small-cell and multiple-comparison caution",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M08",
+        "M14",
+        "M15",
+        "M30"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F20",
@@ -780,7 +1037,16 @@
       "release_gate": "Hypothetical roster and hour-conservation checks",
       "safety_boundary": "No Queensland pay rate or actual demand claimed",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M03",
+        "M16"
+      ],
+      "uncertainty_classes": [
+        "operational",
+        "parameter_psa"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     },
     {
       "id": "F21",
@@ -812,7 +1078,16 @@
       "release_gate": "Qualified Queensland award and Finance roster",
       "safety_boundary": "No duplicate P4 service-cost prior",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M16",
+        "M17"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F22",
@@ -844,7 +1119,15 @@
       "release_gate": "MCHS official parity and approved case data",
       "safety_boundary": "NWAU is not actual funding",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M20"
+      ],
+      "uncertainty_classes": [
+        "provider",
+        "data_quality"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F23",
@@ -876,7 +1159,17 @@
       "release_gate": "Kairos native and independent holdout data",
       "safety_boundary": "Accepted admissions cannot quantify rejected demand",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M05",
+        "M11",
+        "M12"
+      ],
+      "uncertainty_classes": [
+        "data_quality",
+        "clinical_effect"
+      ],
+      "interval_semantics": "not_estimated"
     },
     {
       "id": "F24",
@@ -908,9 +1201,22 @@
       "release_gate": "P4 prior/source controls and independent bounds tests",
       "safety_boundary": "Never claim observed clinical noninferiority",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required"
+      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "metric_ids": [
+        "M08",
+        "M23",
+        "M25",
+        "M27"
+      ],
+      "uncertainty_classes": [
+        "parameter_psa",
+        "clinical_effect",
+        "structural"
+      ],
+      "interval_semantics": "scenario_assumptions_not_interval"
     }
   ],
-  "catalogue_revision": "2026-11-19-figure-programme-v2",
-  "figure_register_status": "specification_not_generated_outputs"
+  "catalogue_revision": "2026-11-19-P10-metric-assurance-v3",
+  "figure_register_status": "specification_not_generated_outputs",
+  "assurance_contract": "contracts/reporting/metrics.json"
 }

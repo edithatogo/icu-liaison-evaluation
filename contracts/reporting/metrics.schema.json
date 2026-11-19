@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:measurement-registry:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "registry_revision",
+    "status",
+    "scope",
+    "denominators",
+    "metrics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "registry_revision": {
+      "const": "2026-11-19-P10-measurement-v1"
+    },
+    "status": {
+      "const": "definitions_only_no_site_data"
+    },
+    "scope": {
+      "$ref": "#/$defs/nonblank"
+    },
+    "denominators": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "$ref": "#/$defs/denominator"
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    }
+  },
+  "$defs": {
+    "nonblank": {
+      "type": "string",
+      "minLength": 1
+    },
+    "denominator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "time_anchor",
+        "grain",
+        "inclusion",
+        "missingness"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^D[0-9]{2}$"
+        },
+        "label": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "time_anchor": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "grain": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "inclusion": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "missingness": {
+          "$ref": "#/$defs/nonblank"
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "clinical_director_kpi",
+        "domain",
+        "unit",
+        "numerator",
+        "denominator_id",
+        "source_datasets",
+        "evidence_basis",
+        "claim_class",
+        "time_anchor",
+        "followup_hours",
+        "uncertainty_classes",
+        "missingness_rule",
+        "calibration_status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^M[0-9]{2}$"
+        },
+        "label": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "clinical_director_kpi": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "domain": {
+          "enum": [
+            "clinical_activity",
+            "flow",
+            "clinical_safety",
+            "capacity",
+            "workforce",
+            "finance",
+            "economics",
+            "activity_weight",
+            "model_input",
+            "experience"
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "numerator": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "denominator_id": {
+          "type": "string",
+          "pattern": "^D[0-9]{2}$"
+        },
+        "source_datasets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonblank"
+          }
+        },
+        "evidence_basis": {
+          "enum": [
+            "synthetic_model_only",
+            "synthetic_model_or_governed_site",
+            "requires_governed_site_data",
+            "requires_official_provider"
+          ]
+        },
+        "claim_class": {
+          "enum": [
+            "descriptive",
+            "clinical_effect",
+            "financial_effect",
+            "resource_effect",
+            "activity_weight_not_cash",
+            "synthetic_scenario",
+            "provider_method"
+          ]
+        },
+        "time_anchor": {
+          "$ref": "#/$defs/nonblank"
+        },
+        "followup_hours": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            }
+          ]
+        },
+        "uncertainty_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "parameter_psa",
+              "structural",
+              "clinical_effect",
+              "data_quality",
+              "operational",
+              "provider"
+            ]
+          }
+        },
+        "missingness_rule": {
+          "const": "unknown_remains_unknown"
+        },
+        "calibration_status": {
+          "const": "not_empirically_qualified"
+        }
+      }
+    }
+  }
+}

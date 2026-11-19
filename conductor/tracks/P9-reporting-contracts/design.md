@@ -21,3 +21,7 @@
 ## Promotion gates
 
 Synthetic source acceptance requires fixture hashes, deterministic model seed, numeric oracle, accessible SVG and hosted CI. Native output requires source/binary qualification and independent method parity. Empirical results require authorised CHHHS custodian access and clinical/Finance/statistical/First Nations governance as relevant. Investment recommendations require further substantive independent review. Missing evidence is never treated as compliance.
+
+## Measurement assurance architecture
+
+P10 now defines common denominator IDs, metric identifiers and uncertainty classes. It also defines source-only provenance/visual review specifications and a fail-closed claim policy. P9 must not promote any P10 template to a verified external approval by editing a JSON Boolean; independently reviewed external evidence is required.

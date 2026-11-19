@@ -24,3 +24,7 @@ For **each figure**, build the RED negative tests first, render from versioned s
 - P9.4.11: Index all accepted F-IDs by question/figure type/audience/claim status, register SVG/PNG exports and reproducibility metadata.
 
 **Definition of done per unit:** independently checked data transformations, documented population and denominator, negative fixtures, exact output identity and source provenance, visual/accessibility checks, synthetic-only watermark, and CI. Never promote a placeholder without an actual committed reproducible renderer and results.
+
+## P10 dependency
+
+Every new P9 figure must link to canonical P10 M-IDs and D-IDs. Rendering requires evidence provenance and actual visual/mark validation; annual cash, NWAU and clinical effects have separate qualification authority. See [P10 plan](../P10-measurement-figure-assurance/plan.md).

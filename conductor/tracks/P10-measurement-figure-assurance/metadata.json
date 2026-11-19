@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "track_id": "P10-measurement-figure-assurance",
+  "status": "in_progress",
+  "source_phases_implemented": [
+    "P10.01",
+    "P10.02",
+    "P10.03",
+    "P10.04",
+    "P10.05",
+    "P10.06",
+    "P10.07",
+    "P10.08"
+  ],
+  "blocked": [
+    "P10.09",
+    "P10.10",
+    "P10.11",
+    "P10.12",
+    "P10.13",
+    "P10.14"
+  ],
+  "depends_on": [
+    "P3-evidence-data-infrastructure",
+    "P7-technical-empirical-qualification",
+    "P9-reporting-contracts"
+  ],
+  "data_class": "public_synthetic_source_contract_only",
+  "claims_verified": 0,
+  "visual_checks_executed": 0
+}

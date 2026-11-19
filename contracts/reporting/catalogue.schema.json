@@ -10,7 +10,8 @@
     "tables",
     "figures",
     "catalogue_revision",
-    "figure_register_status"
+    "figure_register_status",
+    "assurance_contract"
   ],
   "properties": {
     "schema_version": {
@@ -37,10 +38,13 @@
       }
     },
     "catalogue_revision": {
-      "const": "2026-11-19-figure-programme-v2"
+      "const": "2026-11-19-P10-metric-assurance-v3"
     },
     "figure_register_status": {
       "const": "specification_not_generated_outputs"
+    },
+    "assurance_contract": {
+      "const": "contracts/reporting/metrics.json"
     }
   },
   "$defs": {
@@ -103,6 +107,30 @@
             "synthetic_only",
             "approved_aggregates_only"
           ]
+        },
+        "metric_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^M[0-9]{2}$"
+          }
+        },
+        "uncertainty_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "parameter_psa",
+              "structural",
+              "clinical_effect",
+              "data_quality",
+              "operational",
+              "provider"
+            ]
+          }
         }
       },
       "required": [
@@ -115,7 +143,9 @@
         "denominator",
         "perspective",
         "uncertainty",
-        "privacy"
+        "privacy",
+        "metric_ids",
+        "uncertainty_classes"
       ],
       "allOf": [
         {
@@ -337,6 +367,37 @@
               "const": false
             }
           }
+        },
+        "metric_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^M[0-9]{2}$"
+          }
+        },
+        "uncertainty_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "parameter_psa",
+              "structural",
+              "clinical_effect",
+              "data_quality",
+              "operational",
+              "provider"
+            ]
+          }
+        },
+        "interval_semantics": {
+          "enum": [
+            "psa_percentile_not_confidence_interval",
+            "scenario_assumptions_not_interval",
+            "not_estimated"
+          ]
         }
       },
       "required": [
@@ -367,7 +428,10 @@
         "release_gate",
         "safety_boundary",
         "accessibility",
-        "reproducibility"
+        "reproducibility",
+        "metric_ids",
+        "uncertainty_classes",
+        "interval_semantics"
       ],
       "allOf": [
         {

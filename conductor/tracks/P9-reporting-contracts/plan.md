@@ -13,3 +13,7 @@
 - [ ] P9.4c Produce empirical and native-provider figures only after data/assurance admission.
 - [ ] P9.4d Generate an accessible report index with seeded, input-hashed SVG, visual regression and independent numerical reconciliation.
 - [ ] P9.5 Independent clinical, statistical, Finance and relevant First Nations governance acceptance.
+
+- [x] P9.3g Link all seven table and 24 figure contracts to P10 metric/denominator IDs and uncertainty classes.
+- [x] P9.3h Enforce source-only P10 claim and provenance checks; visual-review contract is still unexecuted.
+- [ ] P9.6 Generate actual multi-viewport screenshots, independent source-mark checks and verified provenance for each accepted synthetic SVG.

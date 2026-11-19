@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "taxonomy_only_not_fitted",
+  "classes": [
+    {
+      "id": "parameter_psa",
+      "meaning": "paired epistemic/parametric uncertainty in assumed distributions",
+      "source": "P4 synthetic priors",
+      "interpretation": "percentile range of synthetic draws, not confidence interval"
+    },
+    {
+      "id": "structural",
+      "meaning": "choice of pathway, population, causal response and accounting boundaries",
+      "source": "P2/P4 structural scenario",
+      "interpretation": "scenario alternatives, not a single probability interval"
+    },
+    {
+      "id": "clinical_effect",
+      "meaning": "unknown liaison effect including null and harm",
+      "source": "P2 empirical protocol",
+      "interpretation": "hypothetical until clinically validated"
+    },
+    {
+      "id": "data_quality",
+      "meaning": "measurement error, timestamp completeness, unknown follow-up and source uncertainty",
+      "source": "P3/P7",
+      "interpretation": "separate missingness and censoring, no assumed zero"
+    },
+    {
+      "id": "operational",
+      "meaning": "time-varying staffed capacity, queue and flow uncertainty",
+      "source": "P6 trace and future holdout",
+      "interpretation": "fixture results not site predictions"
+    },
+    {
+      "id": "provider",
+      "meaning": "binary/protocol/version and annual MCHS parity uncertainty",
+      "source": "P1/P7/P8",
+      "interpretation": "blocked until exact qualification"
+    }
+  ],
+  "forbidden_conflations": [
+    "PSA_percentiles_are_not_empirical_confidence_intervals",
+    "NWAU_is_not_actual_hospital_revenue",
+    "released_capacity_is_not_cash",
+    "synthetic_effects_are_not_causal_estimates"
+  ],
+  "interval_label_for_synthetic": "PSA_p05_p95_not_confidence_interval"
+}
