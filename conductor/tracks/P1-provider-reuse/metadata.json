@@ -8,7 +8,7 @@
   "implementation_started": true,
   "accepted_phases": ["P1.1", "P1.2", "P1.3"],
   "blocked_phases": ["P1.4", "P1.5"],
-  "blocker": "Independent P7 adjudication of providers.lock.json binary_sha256, Linux/Windows qualification, the Dapane CLI APFS filename test, cargo-deny RUSTSEC-2026-0543 follow-up and independent external review remain open.",
+  "blocker": "The rebuilt macOS arm64 Dapane wheel matched pinned source, retained Cargo outputs and installed files. Independent P7.5 adjudication of exact wheel provenance and binary_sha256, Linux/Windows qualification, the Dapane CLI APFS filename test, cargo-deny RUSTSEC-2026-0543 follow-up and external review remain open.",
   "dependencies": ["P0-portable-consolidation"],
   "native_qualification_receipt": "verification/p1-native-qualification-2026-11-19.json",
   "installed_dapane_regression_receipt": "verification/python-315-migration-2026-11-19.json",

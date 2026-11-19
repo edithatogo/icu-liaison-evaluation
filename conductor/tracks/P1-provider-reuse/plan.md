@@ -55,6 +55,32 @@
   macOS arm64 and CPython 3.15.2.
   [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
 
+### Rebuilt Dapane wheel evidence review
+
+On 19 November 2026, the build owner checked the macOS arm64 CPython 3.15
+wheel identified by SHA-256 `89e11980964c7bb4ff07398d6db748c03f165f8efef0209565416826048eec26`.
+All 301 retained source entries matched the archive from GitHub-verified
+commit `0658d94ad772023a0185a000b5254f9c2f4a63a9`. The archived
+`Cargo.lock` matched the build receipt. The wheel's 37 SBOM dependency
+entries matched the lock, including checksums for all 36 registry crate
+archives verified in the local cache.
+
+ZIP integrity and all 10 hashed `RECORD` entries checked out, and all 10
+files matched the existing installation. The Python package files and
+three licence and notice files matched pinned source bytes. The native
+extension matched both retained Cargo products and the extension SHA-256
+recorded in the earlier P1 receipt. The earlier full wheel SHA-256 starts
+with `5343c7b2`, and the two wheel archives have distinct digests. The
+macOS arm64 binary has an ad-hoc signature. GitHub returned HTTP 404 for an
+artifact attestation lookup against the exact rebuilt wheel digest.
+[Migration receipt](../../../verification/python-315-migration-2026-11-19.json) ·
+[Earlier P1 receipt](../../../verification/p1-native-qualification-2026-11-19.json)
+
+Independent adjudication of the exact wheel and its build provenance is
+open under [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review).
+The Dapane `binary_sha256` field remains null. The 342-test run and the two
+focused P5 regressions in the migration receipt apply to the rebuilt wheel.
+
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its
   Conductor track registry, run hosted exact-head checks and independent review:
