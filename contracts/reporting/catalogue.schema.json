@@ -8,7 +8,9 @@
     "source_class",
     "publication_gate",
     "tables",
-    "figures"
+    "figures",
+    "catalogue_revision",
+    "figure_register_status"
   ],
   "properties": {
     "schema_version": {
@@ -33,6 +35,12 @@
       "items": {
         "$ref": "#/$defs/figure"
       }
+    },
+    "catalogue_revision": {
+      "const": "2026-11-19-figure-programme-v2"
+    },
+    "figure_register_status": {
+      "const": "specification_not_generated_outputs"
     }
   },
   "$defs": {
@@ -224,6 +232,111 @@
         },
         "baseline": {
           "$ref": "#/$defs/text"
+        },
+        "decision_question": {
+          "$ref": "#/$defs/text"
+        },
+        "estimand": {
+          "$ref": "#/$defs/text"
+        },
+        "evidence_tier": {
+          "enum": [
+            "synthetic_implemented",
+            "external_exploratory_only",
+            "synthetic_design_pending",
+            "empirical_blocked",
+            "provider_blocked"
+          ]
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "population": {
+          "$ref": "#/$defs/text"
+        },
+        "denominator": {
+          "$ref": "#/$defs/text"
+        },
+        "missingness": {
+          "enum": [
+            "synthetic_no_observed_missingness",
+            "unknown_never_zero"
+          ]
+        },
+        "pairing": {
+          "enum": [
+            "paired",
+            "unpaired",
+            "not_applicable"
+          ]
+        },
+        "time_horizon": {
+          "$ref": "#/$defs/text"
+        },
+        "x_scale": {
+          "enum": [
+            "linear",
+            "log",
+            "categorical",
+            "time",
+            "not_applicable"
+          ]
+        },
+        "y_scale": {
+          "enum": [
+            "linear",
+            "log",
+            "categorical",
+            "time",
+            "not_applicable"
+          ]
+        },
+        "source_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "release_gate": {
+          "$ref": "#/$defs/text"
+        },
+        "safety_boundary": {
+          "$ref": "#/$defs/text"
+        },
+        "accessibility": {
+          "const": "label_and_pattern_not_colour_alone"
+        },
+        "reproducibility": {
+          "$ref": "#/$defs/text"
+        },
+        "exploratory_reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "package",
+            "relative_path",
+            "sha256",
+            "in_repo"
+          ],
+          "properties": {
+            "package": {
+              "const": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip"
+            },
+            "relative_path": {
+              "type": "string",
+              "pattern": "^figures/[a-zA-Z0-9_-]+\\.png$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "in_repo": {
+              "const": false
+            }
+          }
         }
       },
       "required": [
@@ -238,7 +351,23 @@
         "y_unit",
         "uncertainty",
         "alt_text",
-        "privacy"
+        "privacy",
+        "decision_question",
+        "estimand",
+        "evidence_tier",
+        "priority",
+        "population",
+        "denominator",
+        "missingness",
+        "pairing",
+        "time_horizon",
+        "x_scale",
+        "y_scale",
+        "source_requirements",
+        "release_gate",
+        "safety_boundary",
+        "accessibility",
+        "reproducibility"
       ],
       "allOf": [
         {
@@ -256,9 +385,6 @@
             "properties": {
               "artifact": {
                 "type": "null"
-              },
-              "privacy": {
-                "const": "approved_aggregates_only"
               }
             }
           }
@@ -285,8 +411,76 @@
               },
               "privacy": {
                 "const": "synthetic_only"
+              },
+              "evidence_tier": {
+                "const": "synthetic_implemented"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "enum": [
+                  "synthetic_design_pending",
+                  "external_exploratory_only",
+                  "provider_blocked"
+                ]
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "const": "empirical_blocked"
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              },
+              "privacy": {
+                "const": "approved_aggregates_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence_tier": {
+                "const": "external_exploratory_only"
+              }
+            },
+            "required": [
+              "evidence_tier"
+            ]
+          },
+          "then": {
+            "required": [
+              "exploratory_reference"
+            ]
           }
         }
       ]

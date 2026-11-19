@@ -5,12 +5,33 @@
   "source_phases_implemented": [
     "P9.1",
     "P9.2",
-    "P9.3"
+    "P9.3",
+    "P9.3e",
+    "P9.3f"
   ],
   "blocked": [
     "P9.4",
     "P9.5"
   ],
   "native_provider_qualified": false,
-  "clinical_or_finance_approval": false
+  "clinical_or_finance_approval": false,
+  "catalogue_revision": "2026-11-19-figure-programme-v2",
+  "figures_total": 24,
+  "tables_total": 7,
+  "next_synthetic_figures": [
+    "F02",
+    "F10",
+    "F11",
+    "F15",
+    "F20",
+    "F24"
+  ],
+  "external_exploratory_figures": [
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09"
+  ],
+  "external_figures_accepted_as_repository_artifacts": false
 }

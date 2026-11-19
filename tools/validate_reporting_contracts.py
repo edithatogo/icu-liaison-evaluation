@@ -42,6 +42,17 @@ def validate_catalogue(c: dict) -> None:
     if errors:
         first = sorted(errors, key=lambda error: str(list(error.path)))[0]
         raise ValueError(f"reporting schema invalid at {list(first.path)}: {first.message}")
+    expected = [f'F{i:02d}' for i in range(1, 25)]
+    if [item['id'] for item in c['figures']] != expected:
+        raise ValueError('expected stable F01-F24 figure ordering')
+    for figure in c['figures']:
+        tier = figure['evidence_tier']
+        if tier != 'synthetic_implemented' and figure['status'] != 'placeholder':
+            raise ValueError('unqualified figure promoted')
+        if tier == 'empirical_blocked' and figure['missingness'] != 'unknown_never_zero':
+            raise ValueError('unknown empirical observation misrepresented')
+        if tier == 'external_exploratory_only' and figure['exploratory_reference']['in_repo']:
+            raise ValueError('external image wrongly claimed as repo artifact')
     byid = {t["id"]:t for t in c["tables"]}
     if byid["T06"]["perspective"] != "weighted_activity_not_actual_revenue":
         raise ValueError("NWAU must not become hospital revenue")

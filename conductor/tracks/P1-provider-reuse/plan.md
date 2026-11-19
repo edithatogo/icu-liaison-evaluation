@@ -122,7 +122,8 @@ AUD 100.00 and AUD −168,730.00, and the Voiage two-state EVPI returned
 AUD 5.00. The P5 synthetic report used both providers and reconciled
 5,000 draws across three strategies. The focused P1/P5 suite passed 43
 tests, including the Dapane-unavailable regressions. The full installed
-suite passed 342 tests.
+suite passed 342 tests at the build checkpoint and 346 after integrating
+the updated P9 reporting contracts.
 
 On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer` signed off
 on the exact candidate for macOS arm64 and CPython 3.15.2. An independent

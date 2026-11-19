@@ -6,5 +6,10 @@
 - [x] P9.3b Execute contract validation against an actual P5 synthetic report and reject unregistered files in CI, without promoting placeholders or local clinical claims.
 - [x] P9.3c Enforce versioned Draft 2020-12 reporting catalogue schema with deny-unknown-fields, safe output paths, placeholders, metadata and privacy classes; preserve the P5 numeric review.
 - [x] P9.3d Embed registered synthetic accessibility description as SVG metadata and reject independently rehashed figures with mismatched descriptions; no changes to P4 numeric outputs.
-- [ ] P9.4 Generate local workforce, ABF, budget, time series and clinical figures after governed data/provider qualification.
+- [x] P9.3e Reconcile six previously generated synthetic graphics with the reporting programme, distinguishing first-class P5 SVG from five external exploratory PNGs.
+- [x] P9.3f Expand figure contract with decision question, estimand, evidence tier, denominator, paired semantics, sources, uncertainty, privacy, acceptance gates and accessibility.
+- [ ] P9.4 Generate six priority synthetic figures under individually testable source contracts (F02/F10/F11/F15/F20/F24).
+- [ ] P9.4b Qualify exploratory F05-F09 assets by rerendering from pinned source outputs, never by copying or falsely marking as in-repo.
+- [ ] P9.4c Produce empirical and native-provider figures only after data/assurance admission.
+- [ ] P9.4d Generate an accessible report index with seeded, input-hashed SVG, visual regression and independent numerical reconciliation.
 - [ ] P9.5 Independent clinical, statistical, Finance and relevant First Nations governance acceptance.
