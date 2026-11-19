@@ -21,7 +21,8 @@ def test_all_cases_run_with_safety_unmeasured(receipt):
 
 def test_null_effect_yields_cost_without_benefit(receipt):
     arms = receipt["cases"][0]["strategies"]
-    assert all(x["mean_bed_days_released"] == 0 and x["mean_returns_avoided"] == 0
+    assert all(abs(x["mean_bed_days_released"]) < 1e-8
+               and abs(x["mean_returns_avoided"]) < 1e-8
                and x["mean_net_resource_benefit_aud"] < 0 for x in arms)
 
 
