@@ -29,6 +29,26 @@ The smoke run uses temporary synthetic outputs and requires both site-ready
 and provider-qualified admission to fail with exit 2. These expected rejections
 are part of acceptance, not failures to be bypassed.
 
+## Local CI/CD and Git hooks
+
+When hosted Actions runners are unavailable or before pushing changes, install the
+versioned Git hooks (`pre-commit`, `pre-merge-commit`, `pre-push`) and run the
+local synthetic CI suite inside the isolated Python 3.13 environment:
+
+```sh
+uv venv --python 3.13 .venv
+uv pip install --python .venv/bin/python -c requirements-ci.txt '.[test,report]'
+bash tools/install_git_hooks.sh
+.venv/bin/python tools/run_local_ci.py --mode full
+```
+
+`.pre-commit-config.yaml` mirrors the same `tools/run_local_ci.py` entrypoints
+(`--mode pre-commit --check-staged` on `pre-commit` and `--mode full` on
+`pre-push`). Local CI enforces forbidden-path checks, `SOURCE_MANIFEST.json`
+integrity, `pytest`, `tools/ci_smoke.py`, `tools/qualify_current_portable.py`,
+and `icu_liaison.cli` output contracts. Passing local CI does not close hosted,
+native-provider, empirical, or governance gates.
+
 ## Evidence and release boundaries
 
 Source CI does not close native, empirical or governance gates. Candidate data

@@ -9,10 +9,13 @@ until content is faithfully reconciled and a replacement is verified.
    [spec](tracks/P0-portable-consolidation/spec.md),
    [plan](tracks/P0-portable-consolidation/plan.md)).
   Source, curated evidence, scenario and tested local adapters are preserved;
-  The private destination is provided and the reviewed Conductor gitlink is
-  registered. Source is pushed in PR #1; hosted CI is blocked before steps
-  by account runner availability. Import verification is recorded separately; installed
-  providers, Gemini runtime qualification and parent PR closeout remain pending.
+  PR #1 is merged into `main` (`4644bb4`), the Conductor submodule is initialized
+  with static runtime/policy parity verified (`autoUpdate: true` caveat), and
+  local CI/CD + Git hooks (`pre-commit`, `pre-merge-commit`, `pre-push`) are
+  active. Hosted CI remains blocked before steps by account billing/spending-limit
+  availability (`44434804695`); installed native providers, live Gemini runtime
+  command qualification, CHHHS data, and CareOps Sim PR #215 retirement remain
+  pending.
 - [~] **P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
    [spec](tracks/P1-provider-reuse/spec.md),

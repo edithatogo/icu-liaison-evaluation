@@ -26,11 +26,22 @@
   placeholder source checkpoints without replacing either branch of work.
 - [x] Push the reconciled source on the scoped import branch and open PR #1.
   Imported head: `ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d`; remote tree matches the reviewed local tree.
-- [!] Complete hosted CI before integration. Both initial jobs were blocked
-  before any step by account billing/spending-limit availability. See
+- [x] Merge PR #1 into `main` (`4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558`) and
+  synchronise local `main`.
+- [!] Complete hosted CI before integration. Initial push/PR runs and merge
+  run `44434804695` were blocked before any job step by account
+  billing/spending-limit availability. See
   [hosted receipt](../../../verification/hosted-ci-2026-11-19.json).
-- [x] Register and check out Conductor at the reviewed SHA as a Git submodule.
-- [ ] Qualify the installed Gemini extension commands and permissions.
+- [x] Implement local CI/CD runner (`tools/run_local_ci.py`), `.pre-commit-config.yaml`,
+  and active `.githooks/` (`pre-commit`, `pre-merge-commit`, `pre-push`) in an
+  isolated Python 3.13 environment (`verification/p0-local-ci-2026-11-19.json`).
+- [x] Register and check out Conductor at the reviewed SHA as a Git submodule
+  (`7a5c560a4fdf5297be58594cc37527eb12790272`).
+- [~] Qualify the installed Gemini extension commands and permissions: static
+  SHA-256 parity of all 22 runtime, command, and `ask_user`-only policy files
+  passed (`verification/p0-gemini-conductor-audit-2026-11-19.json`), while
+  `autoUpdate: true` on the user `github-release` install and live interactive
+  Gemini CLI slash-command execution remain open.
 - [ ] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
   consumers with independent numerical oracles and dependency lockfiles.
 - [ ] Open and complete a tested PR in the dedicated repository; independently

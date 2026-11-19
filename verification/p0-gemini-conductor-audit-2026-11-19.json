@@ -1,0 +1,148 @@
+{
+  "autoupdate_caveat": "autoUpdate is enabled in .gemini-extension-install.json; future upstream releases could drift from the pinned submodule commit.",
+  "commands": {
+    "implement.toml": {
+      "installed_sha256": "dfd2623ad062041c70a20857d16ffa75665af1f7e73dcd2fa73a84d41ff0f07d",
+      "matches": true,
+      "path": "commands/conductor/implement.toml",
+      "pinned_sha256": "dfd2623ad062041c70a20857d16ffa75665af1f7e73dcd2fa73a84d41ff0f07d"
+    },
+    "newTrack.toml": {
+      "installed_sha256": "1fa4cdfb227e7e2128a26c9cc18d5d88db81b2f53748bc03dd9770e3a7778a74",
+      "matches": true,
+      "path": "commands/conductor/newTrack.toml",
+      "pinned_sha256": "1fa4cdfb227e7e2128a26c9cc18d5d88db81b2f53748bc03dd9770e3a7778a74"
+    },
+    "revert.toml": {
+      "installed_sha256": "9ce1618921786195a1fa37640f1a628d0e3e590efbd86c6e475bdef26194b2d5",
+      "matches": true,
+      "path": "commands/conductor/revert.toml",
+      "pinned_sha256": "9ce1618921786195a1fa37640f1a628d0e3e590efbd86c6e475bdef26194b2d5"
+    },
+    "review.toml": {
+      "installed_sha256": "31557b25a4c30ddd977a7d30ef911cbde614d3a00feddde92466708026faae92",
+      "matches": true,
+      "path": "commands/conductor/review.toml",
+      "pinned_sha256": "31557b25a4c30ddd977a7d30ef911cbde614d3a00feddde92466708026faae92"
+    },
+    "setup.toml": {
+      "installed_sha256": "0d4d9fcaf281e33bbec5ccd4270c24311b82594784a50887fcf869d1a95a4b31",
+      "matches": true,
+      "path": "commands/conductor/setup.toml",
+      "pinned_sha256": "0d4d9fcaf281e33bbec5ccd4270c24311b82594784a50887fcf869d1a95a4b31"
+    },
+    "status.toml": {
+      "installed_sha256": "55707b3666be298ccc0ba2fd325d69f2244044eabe7ae982f5e4544cd478cdf8",
+      "matches": true,
+      "path": "commands/conductor/status.toml",
+      "pinned_sha256": "55707b3666be298ccc0ba2fd325d69f2244044eabe7ae982f5e4544cd478cdf8"
+    }
+  },
+  "extra_in_installed": [],
+  "hash_mismatches": [],
+  "install_metadata": {
+    "autoUpdate": true,
+    "releaseTag": "conductor-v0.4.1",
+    "source": "https://github.com/gemini-cli-extensions/conductor",
+    "type": "github-release"
+  },
+  "installed_dir": "~/.gemini/extensions/conductor",
+  "installed_file_count": 22,
+  "matched_files_count": 22,
+  "missing_non_runtime_packaging_files": [
+    ".github/workflows/release-please.yml",
+    ".gitignore",
+    ".release-please-manifest.json",
+    "CONTRIBUTING.md",
+    "release-please-config.json"
+  ],
+  "missing_runtime_files": [],
+  "note": "Read-only file/policy parity audit; interactive Gemini slash-command execution remains a manual/runtime check.",
+  "pinned_dir": "extensions/conductor",
+  "pinned_file_count": 27,
+  "policies": {
+    "installed": {
+      "policy_files_sha256": {
+        "policies/conductor.toml": "6f7c1c23c6f463baf9726ae3e8406eadfc9fac736256412949a15e37daf19557"
+      },
+      "rules": [
+        {
+          "commandPrefix": null,
+          "decision": "ask_user",
+          "file": "policies/conductor.toml",
+          "modes": [
+            "plan"
+          ],
+          "rule_index": 0,
+          "toolName": [
+            "write_file",
+            "replace"
+          ]
+        },
+        {
+          "commandPrefix": [
+            "git status",
+            "git diff",
+            "ls",
+            "mkdir",
+            "cp",
+            "git init",
+            "git add",
+            "git commit"
+          ],
+          "decision": "ask_user",
+          "file": "policies/conductor.toml",
+          "modes": [
+            "plan"
+          ],
+          "rule_index": 1,
+          "toolName": "run_shell_command"
+        }
+      ],
+      "unapproved_auto_allow_rules": []
+    },
+    "pinned": {
+      "policy_files_sha256": {
+        "policies/conductor.toml": "6f7c1c23c6f463baf9726ae3e8406eadfc9fac736256412949a15e37daf19557"
+      },
+      "rules": [
+        {
+          "commandPrefix": null,
+          "decision": "ask_user",
+          "file": "policies/conductor.toml",
+          "modes": [
+            "plan"
+          ],
+          "rule_index": 0,
+          "toolName": [
+            "write_file",
+            "replace"
+          ]
+        },
+        {
+          "commandPrefix": [
+            "git status",
+            "git diff",
+            "ls",
+            "mkdir",
+            "cp",
+            "git init",
+            "git add",
+            "git commit"
+          ],
+          "decision": "ask_user",
+          "file": "policies/conductor.toml",
+          "modes": [
+            "plan"
+          ],
+          "rule_index": 1,
+          "toolName": "run_shell_command"
+        }
+      ],
+      "unapproved_auto_allow_rules": []
+    }
+  },
+  "runtime_commands_executed": false,
+  "schema_version": 1,
+  "status": "PINNED_PARITY_VERIFIED_WITH_AUTOUPDATE_CAVEAT"
+}

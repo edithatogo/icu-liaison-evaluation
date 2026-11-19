@@ -1,0 +1,64 @@
+{
+  "check_staged": false,
+  "date": "2026-11-19",
+  "forbidden_paths": [],
+  "git_branch": "p0/local-cicd-and-hooks",
+  "hosted_ci_executed": false,
+  "investment_ready": false,
+  "mode": "full",
+  "native_providers_executed": false,
+  "python": "3.13.18",
+  "schema_version": 1,
+  "scope": "local_synthetic_ci_not_hosted_or_native",
+  "status": "LOCAL_CI_PASSED_SYNTHETIC_ONLY",
+  "steps": [
+    {
+      "details": {
+        "file_count": 299
+      },
+      "elapsed_seconds": 0.092,
+      "exit_code": 0,
+      "name": "verify_source_manifest",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "tests_passed": 320
+      },
+      "elapsed_seconds": 29.901,
+      "exit_code": 0,
+      "name": "pytest",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "investment_ready": false
+      },
+      "elapsed_seconds": 4.627,
+      "exit_code": 0,
+      "name": "ci_smoke",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "draws_checked": 18,
+        "investment_ready": false
+      },
+      "elapsed_seconds": 0.655,
+      "exit_code": 0,
+      "name": "qualify_current_portable",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "input_digest_sha256": "ec3777ad8cd3c8e90b85cb76e9796b7380b0457443c3030830387a7649717aed",
+        "result_class": "illustrative_not_chhhs_observed",
+        "seed": 20261117
+      },
+      "elapsed_seconds": 0.633,
+      "exit_code": 0,
+      "name": "illustrative_cli",
+      "status": "passed"
+    }
+  ]
+}

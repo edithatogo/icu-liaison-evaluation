@@ -61,3 +61,16 @@ or spending-limit availability. This is recorded in the [hosted attempt receipt]
 The PR remains open; rerun hosted checks after runner availability is restored
 and inspect the latest head before integration. Source-only review and local
 validation do not replace that hosted result.
+
+## Local CI/CD and merge update (2026-11-19)
+
+[PR #1](https://github.com/edithatogo/icu-liaison-evaluation/pull/1) was merged
+into `main` (`4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558`). The hosted merge run
+(`44434804695`) again failed before any job step due to account billing/spending
+limit availability. To enforce CI locally without altering hosted gates, track
+`P0-portable-consolidation` added `tools/run_local_ci.py`, `.pre-commit-config.yaml`,
+versioned `.githooks/` (`pre-commit`, `pre-merge-commit`, `pre-push`), and
+`tools/audit_conductor_extension.py`. Local receipts are recorded in
+`verification/p0-local-ci-2026-11-19.json` and
+`verification/p0-gemini-conductor-audit-2026-11-19.json`; hosted CI, native
+providers, and CareOps Sim PR #215 retirement remain separate open gates.
