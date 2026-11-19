@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "contracts/reporting/catalogue.json"
+SCHEMA = ROOT / "contracts/reporting/catalogue.schema.json"
 
 
 def validate_catalogue(c: dict) -> None:
@@ -33,6 +34,14 @@ def validate_catalogue(c: dict) -> None:
     table_ids = {r["id"] for r in c["tables"]}
     if any(f.get("source_table") not in table_ids for f in c["figures"]):
         raise ValueError("unknown figure source table")
+    from jsonschema import Draft202012Validator
+
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    errors = list(Draft202012Validator(schema).iter_errors(c))
+    if errors:
+        first = sorted(errors, key=lambda error: str(list(error.path)))[0]
+        raise ValueError(f"reporting schema invalid at {list(first.path)}: {first.message}")
     byid = {t["id"]:t for t in c["tables"]}
     if byid["T06"]["perspective"] != "weighted_activity_not_actual_revenue":
         raise ValueError("NWAU must not become hospital revenue")
