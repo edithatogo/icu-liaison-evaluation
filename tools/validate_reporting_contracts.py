@@ -70,6 +70,18 @@ def validate_report(folder: Path, c: dict) -> dict:
         if path.exists():
             if path.suffix != ".svg" or b"<svg" not in path.read_bytes()[:5000]:
                 raise ValueError("not SVG")
+            if path.stat().st_size > 3_000_000:
+                raise ValueError('SVG exceeds bounded reporting size')
+            from xml.etree import ElementTree
+            try:
+                svg = ElementTree.parse(path).getroot()
+            except ElementTree.ParseError as exc:
+                raise ValueError('invalid SVG accessibility structure') from exc
+            if svg.tag != '{http://www.w3.org/2000/svg}svg':
+                raise ValueError('invalid SVG root')
+            description = svg.find('.//{http://purl.org/dc/elements/1.1/}description')
+            if description is None or description.text != f['alt_text']:
+                raise ValueError('SVG accessibility description differs from source contract')
             checked.append(f["id"])
         elif f["status"] != "implemented_optional":
             raise ValueError("mandatory figure missing")
