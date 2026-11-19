@@ -52,10 +52,10 @@
     "conductor/tracks/P10-measurement-figure-assurance/additional-recommendations.md": "1136ceb73059a9210b181a744f0fd6adc7e6511ff98c95d6d8f347979003f645",
     "conductor/tracks/P10-measurement-figure-assurance/index.md": "bf2ea68c94945f73d6cbc1abd0b9d2f1fbdc4b6c807dcaee3fbe25d4a3606f50",
     "conductor/tracks/P10-measurement-figure-assurance/metadata.json": "82bdbc1cc65f4bfc1213f34e1a7a08b7ee5d17254b5b3d73f43426d5b29aa435",
-    "conductor/tracks/P10-measurement-figure-assurance/plan.md": "c399fb3b375c65c43f10deda834d971c9dc00cccc77edb8463a28a1bbcf29a0a",
+    "conductor/tracks/P10-measurement-figure-assurance/plan.md": "d2411fffc9984dbd2d75d04290ee06b46307331949c4b4bb300b8a066346e283",
     "conductor/tracks/P10-measurement-figure-assurance/requirements.md": "a9c6b8279399c6501a3f3201cf40e5f17766b0bd0ac1e1c57a1ed2a339247b2a",
     "conductor/tracks/P10-measurement-figure-assurance/spec.md": "66f762ac0521a079bbc41cebab074e6b46a4910fd0e8d5e216b6f8ca9843e5a4",
-    "conductor/tracks/P10-measurement-figure-assurance/test-matrix.md": "8c97a0bf541fd74da4a9d269151fd805140dcb067ed53f05613f32f91a952965",
+    "conductor/tracks/P10-measurement-figure-assurance/test-matrix.md": "d1f88aacd25e83e836da009d125fe42ee7876591981cae58e5000509c29e88e8",
     "conductor/tracks/P2-clinical-economic-protocol/agent-contract.md": "d2fb5082ed389ae49d48ff1b8db0f2de7af0d4d938f1c14c805319b83b2f9e00",
     "conductor/tracks/P2-clinical-economic-protocol/handoff.md": "4039cb52d8134e98fa642368ef7ee6c7f0b10ad27b47776675aacd9d8504b611",
     "conductor/tracks/P2-clinical-economic-protocol/index.md": "39f92680b20270de6e0386dc8cdb1edf5acd8b1c3a046c37690f5aa558a6709e",
@@ -347,7 +347,9 @@
     "verification/test-logs/P8_source_suite_B.log": "c1fdfb7cbefabfeb9a4c9cbfe3734a9123a47bae1b7c3b8cda2a23d965ba7606",
     "verification/test-logs/P8_source_suite_C.log": "336065802166d8e410b0181d66c849d0cae8b8b4a7e11d0c8bee190a913acf44",
     "verification/test-logs/P8_source_suite_D.log": "f0f5b721259c60c2adbec0b216b9ba25af8654cce1e89e55165b0df9c9cb3004",
-    "verification/test-logs/P8_source_suite_E.log": "8137d98690055c2c5a9ddec7f135a644a64b32908ab5db76d842e42ad181baae"
+    "verification/test-logs/P8_source_suite_E.log": "8137d98690055c2c5a9ddec7f135a644a64b32908ab5db76d842e42ad181baae",
+    "tools/p10_figure_provenance.py": "0c7c635f45e9057d7c217c187f9c4d24976869bd446b88510ba7b53027265047",
+    "tests/test_p10_figure_provenance.py": "cef84ded55021dcfcb33aeb21e6d1b3e89cfde834fc69cd660e2d5799afb670a"
   },
   "git_submodules": {
     "extensions/conductor": "7a5c560a4fdf5297be58594cc37527eb12790272"
