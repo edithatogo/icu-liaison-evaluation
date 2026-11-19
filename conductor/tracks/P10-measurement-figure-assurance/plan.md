@@ -19,3 +19,7 @@
 - [ ] P10.14 Implement approval validity, protocol freeze and staleness notifications before site reports.
 
 **Lower-capability task rule:** Each task owns a non-overlapping file set, has a failing negative fixture before behaviour changes, one deterministic acceptance oracle, explicit prohibited P4/P5/provider-core paths, source manifest update, exact-head CI and a reviewer handoff. One integrator merges.
+
+- [x] **P10.10a:** independently recompute P4 canonical scenario digest, P5 model identity/manifest, F01 SVG hash and P5/P9 reviews; emit a reproducible directed source→table→figure graph outside the P5 bundle. This certifies **computational consistency only**.
+- [x] **P10.10b:** negative fixtures for changed input seed, missing SVG and rehashed tampering; verify stored receipts against fresh source hashes. No editable receipt grants an external authority.
+- [ ] **P10.10c:** add actual independent SVG mark/visual receipts before any `accepted_synthetic` status or human visual acceptance.

@@ -11,3 +11,6 @@
 | Responsive/print/contrast checks | Four profiles in visual matrix | **Not executed** |
 | Actual source-to-mark visual and clinical review | Requires independent rendered and site artefacts | **Not executed** |
 | Held-out CHHHS data / signed clinical decisions | Governed data and trusted verifier | **Blocked** |
+
+| F01 real report provenance | `tests/test_p10_figure_provenance.py`; source/input/renderer/SVG/numeric SHA-256 + P9 validation | Implemented as **rendered_unqualified**; not a visual or clinical acceptance |
+| Rehashed SVG and changed scenario negatives | Fresh receipt recomputation under tampered manifest / modified input | Implemented; independent visual/marks review remains open |
