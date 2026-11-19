@@ -24,3 +24,7 @@
 ## P5.4 — External clinical/financial review (blocked)
 - [ ] Obtain independent clinician/nursing/Finance/health-economics review, approved safety balancing, actual local data and signed costing interpretation.
 - [ ] Run exact-head hosted CI, independent code review, supply chain and real installed-provider tests after migrating to the dedicated repository.
+  Hosted CPython 3.15.2 CI passed the suite and P5 synthetic report smoke test
+  recorded in [P0.5](../P0-portable-consolidation/plan.md#p05--python-and-hosted-ci-runtime-migration).
+  Independent code review, supply chain and provider artifact acceptance
+  remain open.

@@ -68,6 +68,23 @@
     }
   },
   "hosted_synthetic": {
-    "status": "pending"
+    "status": "passed",
+    "workflow": "Synthetic source validation",
+    "event": "pull_request",
+    "head_sha": "0c3547ab9b1efc19fce6bb310b7703b412cf74d8",
+    "run_id": 44473577455,
+    "run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44473577455",
+    "job_id": 135388627812,
+    "runner": "ubuntu-latest",
+    "python": "3.15.2",
+    "full_suite_passed": 342,
+    "verified_steps": [
+      "Create and verify the repository environment",
+      "Install pinned source, test and report dependencies",
+      "Verify project hashes and Conductor gitlink",
+      "Validate source-only table and figure catalogue",
+      "Run synthetic contract and numerical tests",
+      "Exercise synthetic reports and closed admission gates"
+    ]
   }
 }

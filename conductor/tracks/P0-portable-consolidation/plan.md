@@ -64,10 +64,10 @@ be claimed until target-repo and provider acceptance are obtained.
 
 ## P0.5 — Python and hosted CI runtime migration
 
-- [~] Pin the repository, builds, local hooks and hosted synthetic validation
+- [x] Pin the repository, builds, local hooks and hosted synthetic validation
   to CPython 3.15.2. Run the full suite and both P5 regressions with the
   P1-pinned Dapane installed and retain hosted evidence. Local portable CI,
-  the full suite with Dapane (342 passed) and focused P5 regressions (2 passed)
-  are recorded in the
-  [migration receipt](../../../verification/python-315-migration-2026-11-19.json).
-  Exact-head hosted verification is pending.
+  the full suite with Dapane and hosted synthetic CI each passed 342 tests.
+  The two focused P5 regressions also passed with Dapane installed.
+  [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
+  · [Hosted run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44473577455)

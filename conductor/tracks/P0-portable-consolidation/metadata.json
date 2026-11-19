@@ -8,7 +8,8 @@
   "accepted_phases": [
     "P0.1",
     "P0.2",
-    "P0.3"
+    "P0.3",
+    "P0.5"
   ],
   "blocked_phases": [
     "P0.4"
@@ -36,6 +37,7 @@
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
   "initial_import_pr_merged_sha": "4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558",
   "hosted_ci_public_run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989",
+  "python_runtime_migration_receipt": "verification/python-315-migration-2026-11-19.json",
   "native_py315_oracle_receipt": "verification/p0-native-providers-py315-2026-11-19.json",
   "pr215_comparison_doc": "docs/pr215-migration-comparison.md",
   "gitleaks_precommit_enabled": true,

@@ -15,7 +15,10 @@ until content is faithfully reconciled and a replacement is verified.
   `pre-merge-commit`, `pre-push`) are active, static Conductor 0.4.1 parity is
   verified (`autoUpdate: true` caveat), isolated Python 3.15.2 native
   Dapane `0.1.0` / Voiage `3.1.0` numerical oracles passed, and the 19-file
-  PR #215 comparison is recorded. Independent wheel-provenance adjudication,
+  PR #215 comparison is recorded. P0.5 completed the CPython 3.15.2 migration
+  with 342 tests passing in hosted CI and locally with Dapane installed.
+  [Migration receipt](../verification/python-315-migration-2026-11-19.json)
+  Independent wheel-provenance adjudication,
   live Gemini runtime command qualification, CHHHS data, and independent
   sign-off to retire CareOps Sim PR #215 remain pending.
 - [~] **P1 — Runtime provider reuse qualification**
@@ -29,9 +32,9 @@ until content is faithfully reconciled and a replacement is verified.
   (`verification/p1-native-qualification-2026-11-19.json`). **Independent P7
   adjudication of `providers.lock.json` `binary_sha256`, Linux/Windows
   multi-platform qualification, and external review remain open** (`dapane-cli`
-  APFS non-UTF-8 test, `RUSTSEC-2026-0543` unmaintained `chrono`, and
-  `setuptools==82.0.1` advisories documented); neither provider is silently
-  replaced by a custom kernel.
+  APFS non-UTF-8 test and `RUSTSEC-2026-0543` unmaintained `chrono` documented).
+  The two corrected P5 regressions passed with the locked Dapane source build,
+  and P0.5 raised the setuptools pin to 84.2.1.
 - [~] **P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
@@ -68,9 +71,10 @@ until content is faithfully reconciled and a replacement is verified.
    [plan](tracks/P5-reporting-independent-review/plan.md)).
   Deterministic cost-consequence, paired comparisons, sensitivity tables,
   Dapane nominal requests, Voiage-compatible draw surface, opt-in Voiage EVPI,
-  report and SHA-256 file manifest have local source verification. **Independent
-  clinical/economic reviewer sign-off, installed native providers, hosted CI
-  and observed CHHHS validation remain external gates.**
+  report and SHA-256 file manifest have local source verification. The
+  synthetic P5 report smoke test passed in hosted CPython 3.15.2 CI.
+  **Independent clinical/economic review, provider artifact qualification
+  and observed CHHHS validation remain open.**
 - [~] **P6 — Optional Kairos time-aware capacity modelling**
   ([index](tracks/P6-kairos-capacity-validation/index.md),
    [spec](tracks/P6-kairos-capacity-validation/spec.md),
