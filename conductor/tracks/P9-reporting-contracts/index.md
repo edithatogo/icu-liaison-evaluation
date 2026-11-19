@@ -1,5 +1,5 @@
-# P9: Clinical Director request and reporting contracts
+# P9 reporting contract
 
-[Plan](plan.md) | [Two-table data request](../../../docs/clinical-director-data-request.md) | [Table and figure catalogue](../../../contracts/reporting/catalogue.json)
+[Clinical Director request](../../../docs/clinical-director-data-request.md) | [Figure contract](../../../contracts/reporting/catalogue.json) | [Contract schema](../../../contracts/reporting/catalogue.schema.json) | [Granular tasks](figure-workplan.md) | [Design decisions](design.md) | [Plan](plan.md)
 
-T01-T04 and optional F01 map to the existing synthetic P5 report. T05-T07 and F02-F04 are **unproduced placeholders**, not missing-as-zero results. P9 checks structural semantics and reuses P5's numerical report reader.
+**Seven table contracts and 24 distinct figure contracts.** F01 is the single source-generated P5 synthetic SVG. F05-F09 refer to five earlier exploratory PNGs in a separate ZIP; they are **not** repository report artifacts. The next six synthetic figures are F02, F10, F11, F15, F20 and F24. Every ungenerated figure remains a null-artifact placeholder. No clinical, Finance, provider or observed CHHHS acceptance is inferred.

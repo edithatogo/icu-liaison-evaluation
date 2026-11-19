@@ -8,7 +8,7 @@ def load():
 
 def test_catalogue_structural_contract():
     c=load();validate_catalogue(c)
-    assert len(c["tables"])==7 and len(c["figures"])==4
+    assert len(c["tables"])==7 and len(c["figures"])==24
 
 def test_fake_plot_rejected():
     c=load()
@@ -158,3 +158,35 @@ def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path):
     manifest_path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match='accessibility description'):
         validate_report(folder, load())
+
+
+def test_p9_expanded_figure_programme_and_priorities():
+    c = load()
+    validate_catalogue(c)
+    assert [f["id"] for f in c["figures"]] == [f"F{i:02d}" for i in range(1, 25)]
+    assert {f["id"] for f in c["figures"] if f["priority"] == 1 and f["evidence_tier"] == "synthetic_design_pending"} == {"F02", "F10", "F11", "F15", "F20", "F24"}
+    assert sum(f["evidence_tier"] == "external_exploratory_only" for f in c["figures"]) == 5
+
+
+def test_external_figures_cannot_be_falsely_promoted():
+    c = load()
+    f = c["figures"][4]
+    assert f["artifact"] is None and f["exploratory_reference"]["in_repo"] is False
+    f["artifact"] = "fabricated.svg"
+    f["status"] = "implemented_optional"
+    with pytest.raises(ValueError, match="schema|unqualified"):
+        validate_catalogue(c)
+
+
+def test_missing_empirical_followup_cannot_be_assumed_complete():
+    c = load()
+    c["figures"][16]["missingness"] = "synthetic_no_observed_missingness"
+    with pytest.raises(ValueError, match="schema|unknown"):
+        validate_catalogue(c)
+
+
+def test_future_figure_denominator_is_required():
+    c = load()
+    del c["figures"][10]["denominator"]
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
