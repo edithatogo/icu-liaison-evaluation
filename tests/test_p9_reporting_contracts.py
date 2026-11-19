@@ -113,3 +113,48 @@ def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthet
     c["tables"][0]["privacy"] = "approved_aggregates_only"
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
+
+
+def test_generated_svg_metadata_matches_registered_accessibility_text(tmp_path):
+    from xml.etree import ElementTree
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / 'model-inputs/p4/illustrative.json').read_text()
+    )
+    folder = tmp_path / 'report'
+    build_report(scenario, folder, plots=True)
+    expected = next(f for f in load()['figures'] if f['id'] == 'F01')['alt_text']
+    svg = ElementTree.parse(folder / 'scenario-comparison.svg').getroot()
+    description = svg.find('.//{http://purl.org/dc/elements/1.1/}description')
+    assert description is not None and description.text == expected
+    assert 'F01' in validate_report(folder, load())['checked']
+
+
+def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path):
+    import hashlib
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / 'model-inputs/p4/illustrative.json').read_text()
+    )
+    folder = tmp_path / 'report'
+    build_report(scenario, folder, plots=True)
+    path = folder / 'scenario-comparison.svg'
+    alt = next(f for f in load()['figures'] if f['id'] == 'F01')['alt_text']
+    original = path.read_text(encoding='utf-8')
+    assert alt in original
+    path.write_text(
+        original.replace(alt, 'A misleading clinical outcome claim'),
+        encoding='utf-8',
+    )
+    manifest_path = folder / 'manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['files_sha256'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match='accessibility description'):
+        validate_report(folder, load())

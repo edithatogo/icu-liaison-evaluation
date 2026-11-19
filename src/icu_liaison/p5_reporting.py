@@ -336,7 +336,11 @@ def _plot(path: Path, model: dict) -> None:
     ax.tick_params(axis='x', rotation=15)
     fig.tight_layout()
     plt.rcParams['svg.hashsalt'] = 'icu-liaison-p5'
-    fig.savefig(path, format='svg', metadata={'Date': None})
+    fig.savefig(path, format='svg', metadata={
+        'Date': None,
+        'Title': 'Synthetic ICU liaison scenarios - not CHHHS predictions',
+        'Description': 'Synthetic net resource benefit by strategy with fifth to ninety-fifth percentile ranges, not CHHHS outcomes',
+    })
     plt.close(fig)
 
 
