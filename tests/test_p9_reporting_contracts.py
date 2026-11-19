@@ -69,3 +69,47 @@ def test_p9_contract_rejects_unregistered_report_artifact(tmp_path):
     )
     with pytest.raises(ValueError, match="file-set mismatch"):
         validate_report(report, load())
+
+
+def test_reporting_schema_is_valid_and_admits_existing_catalogue():
+    from jsonschema import Draft202012Validator
+    from tools.validate_reporting_contracts import SCHEMA
+
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    assert list(Draft202012Validator(schema).iter_errors(load())) == []
+
+
+def test_reporting_schema_rejects_unrecognised_table_metadata():
+    c = load()
+    c["tables"][0]["claimed_clinical_approval"] = True
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_rejects_path_traversal():
+    c = load()
+    c["tables"][0]["artifact"] = "../../private/patient-records.csv"
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_requires_figure_axis():
+    c = load()
+    del c["figures"][0]["x"]
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_rejects_falsely_promoted_placeholder():
+    c = load()
+    c["tables"][4].update(status="implemented", artifact="invented.csv", required_columns=["value"])
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthetic_output():
+    c = load()
+    c["tables"][0]["privacy"] = "approved_aggregates_only"
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)

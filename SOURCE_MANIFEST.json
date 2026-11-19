@@ -310,12 +310,13 @@
     "verification/test-logs/P8_source_suite_E.log": "8137d98690055c2c5a9ddec7f135a644a64b32908ab5db76d842e42ad181baae",
     "docs/clinical-director-data-request.md": "94bcd17da6bd6fce20ee0941dc2313949fc6f9433ff152b12de6f4da7531fc98",
     "contracts/reporting/catalogue.json": "aaed31826950b2765208ba6281c674c0d7730ccd7faecf49b680cf116b8e22db",
-    "tools/validate_reporting_contracts.py": "3b70bab43ce3a89a0ede5f902420c359b8d2fc01092cbaa8393da153cbf4adbd",
-    "tests/test_p9_reporting_contracts.py": "9f70e24b54395cd8b6f13bf668b39f484a9669e34805ebd9aee23ca8acfc60bf",
+    "tools/validate_reporting_contracts.py": "ae503967ba57e9752ad04f3fea0b6d585dda8487877099d590b57ac029477f9d",
+    "tests/test_p9_reporting_contracts.py": "49f476eed8c997ffed743439d0c35f9fd851e836eaa3adf6c645764b13771062",
     "conductor/tracks/P9-reporting-contracts/index.md": "3ef19faa7120f7fc1410d128755a974d0ab04c37e19418019df41d16e8320e57",
-    "conductor/tracks/P9-reporting-contracts/plan.md": "6d61f804140ef0e4450acbf5bb73e8a4551bd68312c8464911b711929b5e5e70",
+    "conductor/tracks/P9-reporting-contracts/plan.md": "e5fc953dba845f433c1d3e1e79837f6948064c4c2d1568ea57d59f653c4b813d",
     "conductor/tracks/P9-reporting-contracts/metadata.json": "163d492afe8441b5bf49cb269c9793560337781a0d5b87d250e0594234906c57",
-    "verification/p1-native-qualification-2026-11-19.json": "b223c8d22a86b6f689fa69a47bc750e54ae9e0256ecd86aff306641809cfc919"
+    "verification/p1-native-qualification-2026-11-19.json": "b223c8d22a86b6f689fa69a47bc750e54ae9e0256ecd86aff306641809cfc919",
+    "contracts/reporting/catalogue.schema.json": "43b20bed83a359081cca98c007e4cf960c2a455a1e10d1fc743da40280590587"
   },
   "git_submodules": {
     "extensions/conductor": "7a5c560a4fdf5297be58594cc37527eb12790272"
