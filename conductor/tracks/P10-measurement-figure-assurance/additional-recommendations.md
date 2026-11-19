@@ -10,3 +10,5 @@ These are proposals, **not implemented outcomes**.
 6. **Prespecified evaluation and implementation fidelity (Must for causal claims).** Freeze analytic estimands, controls and measured liaison contact/dose before site-level causal inference.
 
 Next recommended implementable slice: P10.10 source-to-output provenance digest validation, followed by P10.11 actual responsive/print visual checks.
+
+**P10.14 source-date update:** temporal validity, exclusive expiry, source version and revocation checks now have source-only tests. A trusted external verification/revocation workflow is not implemented and remains a high-priority acceptance gate.

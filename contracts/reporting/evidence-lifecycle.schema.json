@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:evidence-lifecycle:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "revision",
+    "status",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "revision": {
+      "const": "2026-11-19-P10-lifecycle-v1"
+    },
+    "status": {
+      "const": "all_external_sources_unverified"
+    },
+    "records": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "kind",
+        "version",
+        "source_sha256",
+        "valid_from",
+        "valid_until_exclusive",
+        "revoked_at",
+        "pricing_year",
+        "verification",
+        "review_receipt_sha256",
+        "dependent_metric_ids",
+        "dependent_figure_ids"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]+$"
+        },
+        "kind": {
+          "enum": [
+            "activity_weight",
+            "employment_terms",
+            "external_benchmark",
+            "site_authority"
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "source_sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "valid_until_exclusive": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "revoked_at": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            }
+          ]
+        },
+        "pricing_year": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          ]
+        },
+        "verification": {
+          "const": "unverified"
+        },
+        "review_receipt_sha256": {
+          "type": "null"
+        },
+        "dependent_metric_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^M[0-9]{2}$"
+          }
+        },
+        "dependent_figure_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^F[0-9]{2}$"
+          }
+        }
+      }
+    }
+  }
+}

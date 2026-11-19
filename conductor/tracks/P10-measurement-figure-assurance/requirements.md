@@ -25,3 +25,6 @@ No patient-level data ingestion, signing keys, real approvals or substitute Dapa
 
 ## Additional Must: safety-constrained decision
 - **R15** Any positive economic value must remain non-decisive if clinical safety outcomes, acceptable harm thresholds, risk adjustment, ascertainment or independent clinical and Finance signoff are unqualified. Synthetic analyses cannot prove noninferiority.
+
+## Additional source-validity control
+- **R16** Evidence must carry an effective period, exclusive expiry, pricing/coding year, revocation state and source identifiers before use. These fields are not proof of authentication. A public metadata record always remains unverified without a trusted external verifier.

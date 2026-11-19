@@ -27,3 +27,7 @@
 - [x] **P10.15a:** register all six mandatory P2 safety outcomes as unmeasured with null noninferiority margins and no invented local source.
 - [x] **P10.15b:** reject positive synthetic net resource benefit as clinical investment authorisation; test unknowns, fake margins/signoffs, endpoint omissions, nonfinite economics and incorrectly substituted endpoints.
 - [ ] **P10.15c:** clinically determine margin/effect/threshold per endpoint and verify external authority before site decision.
+
+- [x] **P10.14a:** source-level version, effective-date, exclusive expiry, price year and revocation contract with four explicit unverified source categories.
+- [x] **P10.14b:** validate date intervals, linked M/F identifiers and pricing-year compatibility; deterministic expiry and revocation negative tests.
+- [ ] **P10.14c:** trusted authority verification, subscription to real revocation feeds and removal of previously accepted site results, under approved governance.
