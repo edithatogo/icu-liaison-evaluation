@@ -1,0 +1,18 @@
+# Never commit observed clinical data, local costing, exports or secrets.
+.local/
+private/
+outputs/
+results/
+*.npz
+*.parquet
+*.xlsx
+*.xlsm
+.env
+.env.*
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.egg-info/
+dist/
+build/

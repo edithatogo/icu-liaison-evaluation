@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "pull_request_url": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
+  "source_head_sha": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d",
+  "source_tree_sha": "2e033208fa1c94502fcea6f8cec599b672f151af",
+  "runs": [
+    {
+      "id": 44390314725,
+      "event": "push",
+      "url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44390314725"
+    },
+    {
+      "id": 44390318379,
+      "event": "pull_request",
+      "url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44390318379"
+    }
+  ],
+  "conclusion": "blocked_before_job_steps",
+  "job_id": 135105867992,
+  "steps_executed": 0,
+  "failure_category": "account_billing_or_spending_limit",
+  "annotation_source": "GitHub Actions run summary inspected through authenticated browser",
+  "local_tests_passed": 314,
+  "local_synthetic_smoke": "passed",
+  "native_provider_qualified": false,
+  "clinical_or_financial_acceptance": false,
+  "merge_status": "open_waiting_for_hosted_checks",
+  "resume_action": "Restore account runner availability, rerun the latest PR head and inspect hosted results before integration."
+}

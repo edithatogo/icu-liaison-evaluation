@@ -1,0 +1,8 @@
+hospitalisation_pseudonym,index_icu_episode_id,icu_admission_at,icu_medically_ready_at,icu_actual_departure_at,destination_category,adult_age_at_icu_admission_years,readmission_planned_status
+SYNHOSP001,SYNICU001,2025-12-29T09:00:00+10:00,2025-12-31T21:00:00+10:00,2026-01-01T10:00:00+10:00,ward_same_hospital,58,not_applicable
+SYNHOSP001,SYNICU002,2026-01-02T13:00:00+10:00,2026-01-05T08:00:00+10:00,2026-01-05T09:00:00+10:00,ward_same_hospital,58,unplanned
+SYNHOSP002,SYNICU003,2026-02-01T07:00:00+10:00,,2026-02-04T19:30:00+10:00,ward_same_hospital,66,not_applicable
+SYNHOSP003,SYNICU004,2026-03-02T08:00:00+10:00,2026-03-10T12:00:00+10:00,2026-03-10T16:00:00+10:00,ward_same_hospital,74,not_applicable
+SYNHOSP003,SYNICU005,2026-03-11T10:00:00+10:00,,2026-03-11T18:00:00+10:00,direct_home,74,planned
+SYNHOSP004,SYNICU006,2026-04-01T08:00:00+10:00,,2026-04-01T20:00:00+10:00,icu_to_icu_transfer,39,not_applicable
+SYNHOSP004,SYNICU007,2026-04-01T22:00:00+10:00,,2026-04-02T13:00:00+10:00,direct_home,39,not_applicable

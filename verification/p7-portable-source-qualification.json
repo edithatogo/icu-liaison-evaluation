@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-18",
+  "project": "icu_liaison_portable_source_qualification",
+  "evidence_class": "source_level_synthetic_and_documentary_review_only",
+  "test_results": {
+    "counts": {
+      "P0_P4_and_qualification": 153,
+      "P5": 20,
+      "P6": 36,
+      "total": 209
+    },
+    "P0_P4_base_partition": {
+      "command": "PYTHONPATH=src python -m pytest -q [all non-P5/P6 test modules, excluding subsequently added runner]",
+      "passed": 152,
+      "result": "passed"
+    },
+    "P0_P4_runner_increment": {
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_qualification_runner.py",
+      "passed": 1,
+      "result": "passed"
+    },
+    "P5": {
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_p5_*.py",
+      "passed": 20,
+      "result": "passed"
+    },
+    "P6": {
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_p6_*.py",
+      "passed": 36,
+      "result": "passed"
+    },
+    "note": "Nonoverlapping partitioned runs. An orchestration call timed out after finishing first partition; separate P5 and P6 calls completed normally."
+  },
+  "independent_controls": {
+    "p4_recalculation": {
+      "clinical_or_causal_validation": false,
+      "draws_checked": 18,
+      "investment_ready": false,
+      "max_abs_difference_aud": 8.1803943292e-11,
+      "oracle": "separate_decimal_resource_ledger_no_P4_production_formula_called",
+      "selected_draw_indices": [
+        0,
+        1,
+        7,
+        53,
+        2500,
+        4999
+      ],
+      "status": "independently_recalculated_draw_accounting"
+    },
+    "p3_data_quality": {
+      "CHHHS_approval_verified": false,
+      "after_hours": {
+        "denominator": 3,
+        "numerator": 1,
+        "rate": 0.3333333333333333
+      },
+      "clinical_or_causal_validation": false,
+      "data_class": "synthetic",
+      "eligible_index_discharges": 3,
+      "exit_block_ge12h": {
+        "exact_binomial_95_interval_observed_only": [
+          0.01257911709367899,
+          0.987420882906321
+        ],
+        "missing_readiness_count": 1,
+        "observed_denominator": 2,
+        "observed_numerator": 1,
+        "observed_rate": 0.5,
+        "uncertainty_limitation": "Conditional on cases with valid clinical readiness; missing-not-at-random unassessed"
+      },
+      "investment_ready": false,
+      "provenance_class": "synthetic",
+      "readiness_completeness": {
+        "denominator": 3,
+        "numerator": 2,
+        "proportion": 0.6666666666666666
+      },
+      "return_72h": {
+        "competing_death_within_unknown": 1,
+        "complete_cohort_risk_estimable": false,
+        "interpretation": "Not a 72h cumulative-incidence estimate when followup is incomplete or death competes",
+        "no_event": 1,
+        "observed_positive_fraction_of_eligible": 0.3333333333333333,
+        "positive": 1,
+        "unknown": 1,
+        "unknown_fraction_of_eligible": 0.3333333333333333
+      },
+      "source_provenance_present": true
+    },
+    "interpretation": "Independent implementation of arithmetic and denominator checks; not external clinical/causal validation"
+  },
+  "source_verification": {
+    "ANZICS_CCR_2023_24": {
+      "status": "publisher_text_and_rendered_pages_verified_no_downloaded_pdf_sha",
+      "printed_pages": [
+        16,
+        17
+      ],
+      "values": {
+        "exit_block": {
+          "rate": 0.198,
+          "reporting_icus": 154,
+          "denominator": "all live ward/home discharges"
+        },
+        "after_hours": {
+          "rate": 0.188,
+          "reporting_icus": 164,
+          "denominator": "all live ward/home discharges"
+        },
+        "readmission_episodes": {
+          "rate": 0.043,
+          "reporting_icus": 168,
+          "denominator": "all ICU/HDU admissions; not a 72h rate"
+        }
+      },
+      "publisher": "https://www.anzics.org/wp-content/uploads/2025/05/2023_24-CCR-Activity-Report-1.pdf",
+      "hash_available": false
+    },
+    "ANZICS_CCR_2024_25": {
+      "status": "previous_transcription_not_independently_reverified",
+      "figures": {
+        "exit_block": 0.204,
+        "after_hours": 0.184,
+        "readmission_episodes": 0.045
+      },
+      "reason": "publisher PDF unavailable via available evidence sources; retain inherited model as illustrative public proxy"
+    }
+  },
+  "source_access": {
+    "Google_Drive_search": "no suitable CHHHS ICU movement or costing dataset found among inspected matches",
+    "ChatGPT_Library_search": "ANZICS 2024/25 publisher PDF not found",
+    "dedicated_github_repo": "not_supplied"
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "rustc_installed": false,
+    "cargo_installed": false
+  },
+  "provider_execution": {
+    "dapane": {
+      "environment": {
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "python": "3.13.5",
+        "python_implementation": "CPython"
+      },
+      "providers_requested": [
+        "dapane"
+      ],
+      "reason": "dapane: installed distribution unavailable",
+      "status": "UNVERIFIED",
+      "exit_code": 2,
+      "requested_native_execution": true
+    },
+    "voiage": {
+      "environment": {
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "python": "3.13.5",
+        "python_implementation": "CPython"
+      },
+      "providers_requested": [
+        "voiage"
+      ],
+      "reason": "Voiage 3.1.0 requires Python 3.15.2 through 3.15.x",
+      "status": "UNVERIFIED",
+      "exit_code": 2,
+      "requested_native_execution": true
+    },
+    "kairos": {
+      "status": "UNVERIFIED",
+      "scope": "native_qualification",
+      "reason": "missing installed Rust cargo/rustc",
+      "investment_ready": false,
+      "exit_code": 2,
+      "requested_native_execution": true
+    }
+  },
+  "CHHHS_data": {
+    "status": "not_obtained",
+    "request_datasets": 11,
+    "request_fields": 115,
+    "clinical_approval": false,
+    "finance_approval": false,
+    "First_Nations_data_governance_approved": false,
+    "calibration_performed": false
+  },
+  "native_kairos_qualified": false,
+  "Dapane_native_qualified": false,
+  "Voiage_native_qualified": false,
+  "causal_or_clinical_validation_complete": false,
+  "hosted_CI_in_destination_repo": false,
+  "investment_ready": false,
+  "prior_careops_sim_PR_215": "left_unchanged_unmerged",
+  "status": "portable_source_independent_controls_passed_external_qualification_open"
+}

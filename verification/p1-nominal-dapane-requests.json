@@ -1,0 +1,172 @@
+{
+  "status": "source_contract_only_not_native_valued",
+  "scenario_id": "public-anzics-plus-explicit-illustrative-assumptions-2026-11",
+  "costing_profile": "incremental_resource_bridge_not_full_hospital_episode",
+  "requests": {
+    "current_care": {
+      "schema_version": "0.1",
+      "run_id": "public-anzics-plus-explicit-illustrative-assumptions-2026-11-current",
+      "knowledge_cutoff": "2026-12-31",
+      "policy": {
+        "id": "icu-liaison-cost-profile",
+        "version": "1.0.0",
+        "currency": "AUD",
+        "price_year": 2026,
+        "perspective": "provider",
+        "basis": "economic_cost",
+        "rounding": {
+          "scale": 2,
+          "mode": "half_even"
+        }
+      },
+      "quotes": [
+        {
+          "id": "quote-index-delay-counterfactual",
+          "kind": "resource_use",
+          "target": "index_delay",
+          "unit": "icu_day",
+          "amount": "1800.0",
+          "per_quantity": "1",
+          "currency": "AUD",
+          "price_year": 2026,
+          "basis": "economic_cost",
+          "components": [
+            "index_ready_to_depart"
+          ],
+          "valid_from": "2026-01-01",
+          "valid_to": "2027-01-01",
+          "known_from": "2026-01-01",
+          "source": {
+            "id": "quote-index-delay-counterfactual",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        },
+        {
+          "id": "quote-avoided-return-counterfactual",
+          "kind": "resource_use",
+          "target": "avoidable_return",
+          "unit": "readmission",
+          "amount": "15000.0",
+          "per_quantity": "1",
+          "currency": "AUD",
+          "price_year": 2026,
+          "basis": "economic_cost",
+          "components": [
+            "post_icu_readmission"
+          ],
+          "valid_from": "2026-01-01",
+          "valid_to": "2027-01-01",
+          "known_from": "2026-01-01",
+          "source": {
+            "id": "quote-avoided-return-counterfactual",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        }
+      ],
+      "usage": [
+        {
+          "id": "usage-index-delay-counterfactual",
+          "use_id": "use-index-delay-counterfactual",
+          "kind": "resource_use",
+          "target": "index_delay",
+          "unit": "icu_day",
+          "quantity": "7.65",
+          "service_date": "2026-07-01",
+          "quote_id": "quote-index-delay-counterfactual",
+          "source": {
+            "id": "usage-index-delay-counterfactual",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        },
+        {
+          "id": "usage-avoided-return-counterfactual",
+          "use_id": "use-avoided-return-counterfactual",
+          "kind": "resource_use",
+          "target": "avoidable_return",
+          "unit": "readmission",
+          "quantity": "4.5",
+          "service_date": "2026-07-01",
+          "quote_id": "quote-avoided-return-counterfactual",
+          "source": {
+            "id": "usage-avoided-return-counterfactual",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        }
+      ]
+    },
+    "liaison_service": {
+      "schema_version": "0.1",
+      "run_id": "public-anzics-plus-explicit-illustrative-assumptions-2026-11-liaison",
+      "knowledge_cutoff": "2026-12-31",
+      "policy": {
+        "id": "icu-liaison-cost-profile",
+        "version": "1.0.0",
+        "currency": "AUD",
+        "price_year": 2026,
+        "perspective": "provider",
+        "basis": "economic_cost",
+        "rounding": {
+          "scale": 2,
+          "mode": "half_even"
+        }
+      },
+      "quotes": [
+        {
+          "id": "quote-additional-liaison-service",
+          "kind": "resource_use",
+          "target": "liaison_staffing",
+          "unit": "service_year",
+          "amount": "250000.0",
+          "per_quantity": "1",
+          "currency": "AUD",
+          "price_year": 2026,
+          "basis": "economic_cost",
+          "components": [
+            "incremental_service"
+          ],
+          "valid_from": "2026-01-01",
+          "valid_to": "2027-01-01",
+          "known_from": "2026-01-01",
+          "source": {
+            "id": "quote-additional-liaison-service",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        }
+      ],
+      "usage": [
+        {
+          "id": "usage-additional-liaison-service",
+          "use_id": "use-additional-liaison-service",
+          "kind": "resource_use",
+          "target": "liaison_staffing",
+          "unit": "service_year",
+          "quantity": "1",
+          "service_date": "2026-07-01",
+          "quote_id": "quote-additional-liaison-service",
+          "source": {
+            "id": "usage-additional-liaison-service",
+            "version": "1.0.0",
+            "evidence": "synthetic",
+            "access": "private",
+            "validation": "unvalidated"
+          }
+        }
+      ]
+    }
+  }
+}

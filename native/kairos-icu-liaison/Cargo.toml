@@ -1,0 +1,15 @@
+[package]
+name = "icu-liaison-kairos-consumer"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.99.1"
+license = "Apache-2.0"
+publish = false
+
+# Only the accepted Kairos staged-resource runtime and types are consumed.
+# Match the same immutable revision; no internal scheduler or queueing library.
+[dependencies]
+kairo-ecs-des = { git = "https://github.com/edithatogo/kairos", rev = "a1f6283575ad26918230adc122a99b5c08fc4da3" }
+kairo-ecs-types = { git = "https://github.com/edithatogo/kairos", rev = "a1f6283575ad26918230adc122a99b5c08fc4da3" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

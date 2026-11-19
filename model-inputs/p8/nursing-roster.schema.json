@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "RosterExposure": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Component",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "analyst_assumption",
+            "observed_use"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "quantity": {
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+          "title": "Quantity",
+          "type": "string"
+        },
+        "quantity_id": {
+          "maxLength": 128,
+          "minLength": 2,
+          "title": "Quantity Id",
+          "type": "string"
+        },
+        "quote_id": {
+          "maxLength": 128,
+          "minLength": 2,
+          "title": "Quote Id",
+          "type": "string"
+        },
+        "segment_end": {
+          "format": "date-time",
+          "title": "Segment End",
+          "type": "string"
+        },
+        "segment_start": {
+          "format": "date-time",
+          "title": "Segment Start",
+          "type": "string"
+        },
+        "shift_id": {
+          "maxLength": 128,
+          "minLength": 2,
+          "title": "Shift Id",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "valued_on": {
+          "format": "date",
+          "title": "Valued On",
+          "type": "string"
+        }
+      },
+      "required": [
+        "quantity_id",
+        "shift_id",
+        "quote_id",
+        "unit",
+        "quantity",
+        "kind",
+        "component",
+        "segment_start",
+        "segment_end",
+        "valued_on"
+      ],
+      "title": "RosterExposure",
+      "type": "object"
+    }
+  },
+  "$id": "urn:icu-liaison:p8:roster:1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "classification": {
+      "maxLength": 150,
+      "minLength": 2,
+      "title": "Classification",
+      "type": "string"
+    },
+    "classification_status": {
+      "const": "candidate_unverified",
+      "title": "Classification Status",
+      "type": "string"
+    },
+    "completeness_status": {
+      "enum": [
+        "partial",
+        "full"
+      ],
+      "title": "Completeness Status",
+      "type": "string"
+    },
+    "contains_leave_relief": {
+      "title": "Contains Leave Relief",
+      "type": "boolean"
+    },
+    "contains_penalties": {
+      "title": "Contains Penalties",
+      "type": "boolean"
+    },
+    "contains_superannuation": {
+      "title": "Contains Superannuation",
+      "type": "boolean"
+    },
+    "data_class": {
+      "const": "synthetic",
+      "title": "Data Class",
+      "type": "string"
+    },
+    "expected_artifact_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Expected Artifact Sha256",
+      "type": "string"
+    },
+    "exposures": {
+      "items": {
+        "$ref": "#/$defs/RosterExposure"
+      },
+      "maxItems": 5000,
+      "minItems": 1,
+      "title": "Exposures",
+      "type": "array"
+    },
+    "financial_price_year": {
+      "maximum": 2100,
+      "minimum": 2024,
+      "title": "Financial Price Year",
+      "type": "integer"
+    },
+    "jurisdiction": {
+      "const": "Queensland",
+      "title": "Jurisdiction",
+      "type": "string"
+    },
+    "knowledge_cutoff": {
+      "format": "date",
+      "title": "Knowledge Cutoff",
+      "type": "string"
+    },
+    "scenario_id": {
+      "maxLength": 128,
+      "minLength": 2,
+      "pattern": "^synthetic-[a-zA-Z0-9_-]+$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_artifact_json": {
+      "maxLength": 2000000,
+      "minLength": 2,
+      "title": "Source Artifact Json",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "data_class",
+    "scenario_id",
+    "jurisdiction",
+    "classification",
+    "classification_status",
+    "expected_artifact_sha256",
+    "source_artifact_json",
+    "financial_price_year",
+    "knowledge_cutoff",
+    "exposures",
+    "contains_superannuation",
+    "contains_leave_relief",
+    "contains_penalties",
+    "completeness_status"
+  ],
+  "title": "RosterScenario",
+  "type": "object"
+}

@@ -1,0 +1,36 @@
+{
+  "can_run_illustrative": true,
+  "data_dictionary": {
+    "field_count": 32,
+    "sha256": "563d786f6a0880a4530bddfb9701a1273a5b8591227904092f6b22c543c86e88",
+    "status": "unvalidated_local_source_mapping"
+  },
+  "local_inputs_requiring_verification": [
+    "additional_cost_per_readmission_aud",
+    "addressable_cases_improved_fraction",
+    "annual_eligible_discharges",
+    "annual_incremental_service_cost_aud",
+    "delayed_cases_addressable_fraction",
+    "delayed_discharge_ge12h_rate",
+    "hours_released_per_improved_case",
+    "net_avoidable_cost_per_icu_day_aud",
+    "relative_readmission_reduction",
+    "unplanned_72h_readmission_risk"
+  ],
+  "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+  "protocol_sha256": "49f6183180ef31a1a69e0d3ebdbe7c28067d47aa273f60ab9a63e2d80d5daa4e",
+  "public_rate_role": "external_comparator_not_CHHHS_observed",
+  "ready_for_cash_savings_claim": false,
+  "ready_for_clinical_safety_claim": false,
+  "ready_for_local_claims": false,
+  "reasons": [
+    "local cohort, staffing, discharge delay and costs have not been validated",
+    "intervention causal effects and early unplanned return risk are illustrative",
+    "safety guardrails and care-plan appropriateness are unmeasured",
+    "Dapane/Voiage installed-provider qualification remains separate",
+    "released index ICU hours are not evidence of realised cash savings"
+  ],
+  "scenario_id": "public-anzics-plus-explicit-illustrative-assumptions-2026-11",
+  "schema_version": 1,
+  "status": "ADMITTED_ILLUSTRATIVE_ONLY"
+}

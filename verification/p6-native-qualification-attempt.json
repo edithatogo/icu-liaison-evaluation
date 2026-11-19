@@ -1,0 +1,13 @@
+{
+  "as_of": "2026-11-18",
+  "command": "PYTHONPATH=src python tools/qualify_p6_native.py",
+  "note": "Failed-closed native check; compiler, lockfile and installed consumer are absent; no native execution.",
+  "observed_exit_code": 2,
+  "observed_result": {
+    "investment_ready": false,
+    "reason": "missing installed Rust cargo/rustc",
+    "scope": "native_qualification",
+    "status": "UNVERIFIED"
+  },
+  "schema_version": 1
+}

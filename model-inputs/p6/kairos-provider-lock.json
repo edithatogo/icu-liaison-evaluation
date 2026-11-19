@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "provider": "kairo-ecs-des",
+  "repository": "https://github.com/edithatogo/kairos",
+  "source_commit": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+  "api": "kairo-ecs-des::StagedResourceRuntime",
+  "status": "upstream_api_source_inspected_native_compilation_not_executed",
+  "rust_version_policy": "1.99.1 or later with exact supported lockfile",
+  "binary_sha256": null,
+  "clinical_or_occupancy_validation": false,
+  "inspected_upstream_blob_shas": {
+    "crates/kairo-ecs-des/src/staged_runtime.rs": "70dd886b973e1f8a610163faef08bf1d633f070a",
+    "crates/kairo-ecs-types/src/lib.rs": "25662a5c74cc8b18ee68acb55aac3b2ae544c6f4",
+    "crates/kairo-ecs-des/Cargo.toml": "bef7004932741b2ca374b45d8001198069bcba6d"
+  },
+  "source_verification": "exact_upstream_file_at_pinned_sha_read_via_authenticated_GitHub_connector"
+}

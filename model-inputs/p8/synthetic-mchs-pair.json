@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "episode_id": "synthetic-icu-episode-01",
+  "pricing_year": 2025,
+  "drg": "E62B",
+  "drg_edition": "v11.0",
+  "hospital_los_days": 6,
+  "icu_hours_current": "58.25",
+  "icu_hours_intervention": "54.25",
+  "icu_other_hours": "0",
+  "pat_sameday_flag": 0,
+  "pat_private_flag": 0,
+  "context": {
+    "PAT_COVID_FLAG": 0,
+    "EST_ELIGIBLE_ICU_FLAG": 1
+  },
+  "source_bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "source_bundle_id": "synthetic-ihacpa-bundle"
+}

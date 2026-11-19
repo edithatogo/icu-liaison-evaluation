@@ -1,0 +1,63 @@
+{
+  "calibrated_from_p3_synthetic_fixture": false,
+  "checkpoint_date": "2026-11-18",
+  "clinical_data_observed": false,
+  "clinical_safety_approved": false,
+  "finance_approved": false,
+  "first_nations_data_governance_approved": false,
+  "independent_source_document_verified": false,
+  "input_status": "synthetic_and_unverified_public_source_metadata_only",
+  "installed_provider_qualification": "not_executed",
+  "investment_ready": false,
+  "model_engine": "unchanged_P4_source",
+  "native_dapane_executed": false,
+  "native_kairos_executed": false,
+  "native_voiage_executed": false,
+  "p4_illustrative_annual_eligible_discharges": 1000,
+  "placeholder_count": 33,
+  "post_edit_focused_tests": {
+    "elapsed_seconds": 4.99,
+    "failed": 0,
+    "passed": 18,
+    "scope": "P7_and_source_migration"
+  },
+  "project_status": "portable_source_not_github_migrated",
+  "remaining": [
+    "ANZICS_2024_25_publisher_document_sha256_and_independent_denominator_review",
+    "authorised_CHHHS_episodes_followup_roster_ward_capacity_cost_and_safety_data",
+    "causal_intervention_effect_and_independent_clinical_economic_Finance_review",
+    "native_Kairos_Dapane_Voiage_execution_and_accepted_binary_receipts",
+    "Aboriginal_and_Torres_Strait_Islander_data_governance_as_applicable",
+    "dedicated_repository_hosted_CI_and_source_migration"
+  ],
+  "runtime": {
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "rust_compiler_present": false,
+  "schema_version": 1,
+  "scope": "source_level_P7_placeholder_routing_and_synthetic_p3_p6_pipeline",
+  "source_bindings_checked": 33,
+  "source_privacy_boundary": "synthetic fixtures/public metadata only; no site patient records",
+  "synthetic_fixture_p3_eligible_index_discharges": 3,
+  "synthetic_output_manifest_sha256": "30ba3e14acb868f74a7c3608be2bad0a5c08d61fb296f27eedfd72e741961df4",
+  "test_partitions": [
+    {
+      "elapsed_seconds": 28.76,
+      "failed": 0,
+      "passed": 139,
+      "scope": "P0_P4"
+    },
+    {
+      "elapsed_seconds": 17.4,
+      "failed": 0,
+      "passed": 74,
+      "scope": "P5_P7_and_source_migration"
+    }
+  ],
+  "total_distinct_python_tests_passed": 213,
+  "unresolved_count": 33
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "purpose": "Inspected source interface catalogue for future ICU liaison evaluation; not installed binary admission, clinical-source validation or an operational input profile",
+  "observed_date": "2026-11-18",
+  "providers": [
+    {
+      "id": "mchs",
+      "repository": "https://github.com/edithatogo/mchs",
+      "source_ref": "master",
+      "source_revision": "125933c7770e9a6bed9b62e354a6380d3dac3d47",
+      "domain_scope": "Admitted acute NWAU funding calculation, ICU eligible hours, length of stay, DRG inputs, HAC/AHR where supported",
+      "ledger": "weighted_activity_funding_shadow",
+      "declared_contract": "nwau_py.calculators.acute; NEP26 equation is only a bounded component",
+      "owner_reuses_existing_track": "ihacpa_2026_27_support_20260512 / acute parity & coding gates",
+      "year_2026_27_full_parity": false,
+      "installed_qualification": "unverified",
+      "clinical_qualification": "unverified",
+      "consumer_role": "Optional paired episode revaluation producing NWAU and separate modelled shadow price, never actual cash funding"
+    },
+    {
+      "id": "microcosting_healthworkforce",
+      "repository": "https://github.com/edithatogo/microcosting_healthworkforce",
+      "source_ref": "main",
+      "source_revision": "8fa5882e2fda6cdba9ae93c46542c5b0b874c260",
+      "domain_scope": "Versioned employment rates, payable conditions, source-scoped unit quotations, optional Dapane adapter; specific Queensland nursing rules require qualification",
+      "ledger": "workforce_resource_input",
+      "declared_contract": "microcosting_healthworkforce.unit_quotes and dapane_adapter; conditions-costing-v2",
+      "owner_reuses_existing_track": "workforce-conditions-costing-v2_20261106 / workforce-source-coverage_20261106",
+      "installed_qualification": "unverified",
+      "clinical_qualification": "unverified",
+      "consumer_role": "Generate full incremental nursing roster/paid-hour resource costs and exact source-bound quotes only after classification, award, pay-point and full on-cost review"
+    },
+    {
+      "id": "dapane",
+      "repository": "https://github.com/edithatogo/dapane",
+      "source_ref": "main",
+      "source_revision": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+      "domain_scope": "Exact quantity-based resource valuation, allocation, economic/financial/funding basis distinction, dated quotation and lineage; no causal model",
+      "ledger": "resource_valuation",
+      "declared_contract": "dapane-core v0.1 and profile v0.2; mchs_source_adapters_20261108 planned",
+      "owner_reuses_existing_track": "mchs_source_adapters_20261108 / process_models_20261108 / python_two_consumers_20261108",
+      "installed_qualification": "unverified",
+      "clinical_qualification": "unverified",
+      "consumer_role": "Value exact resource and workload quantities; do not import NWAU as resource use, preserve separate funding views"
+    },
+    {
+      "id": "voiage",
+      "repository": "https://github.com/edithatogo/voiage",
+      "source_ref": "v3.1.0",
+      "source_revision": "d40af0276019a7d63657349b53dad96845e2b4c1",
+      "domain_scope": "Labeled decisions, uncertainty, EVPI/EVPPI/selected EVSI, net benefit and paired draws, with runtime Python 3.15.2",
+      "ledger": "decision_uncertainty",
+      "declared_contract": "DecisionAnalysis / ValueArray v3.1.0; financial-only EVPI consumer",
+      "owner_reuses_existing_track": "P5 source consumer and voiage published v3.1.0 provider qualification",
+      "installed_qualification": "unverified",
+      "clinical_qualification": "unverified",
+      "consumer_role": "Consume separately-labelled cost, benefit and funding views; never silently add unverified NWAU or cash receipts to resource net benefit"
+    },
+    {
+      "id": "kairos",
+      "repository": "https://github.com/edithatogo/kairos",
+      "source_ref": "main",
+      "source_revision": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+      "domain_scope": "Deterministic DES staged resource leases, queues, timing and optional neutral resource-use exports under planned Track 114",
+      "ledger": "temporal_capacity_optional",
+      "declared_contract": "StagedResourceRuntime experimental; quantitative usage export not native-qualified",
+      "owner_reuses_existing_track": "114-dependency-and-consumer-contracts / ICU liaison P6 native qualification",
+      "installed_qualification": "unverified",
+      "clinical_qualification": "unverified",
+      "consumer_role": "Produce actual simulated resource quantities on a qualified interface, optional only; not ABF, pricing or payroll rules"
+    }
+  ]
+}

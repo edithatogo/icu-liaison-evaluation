@@ -1,0 +1,53 @@
+{
+  "as_of": "2026-11-18",
+  "blocked": [
+    "Rust 1.99.1+ toolchain and reviewed Cargo.lock; compiled same-pin consumer and native replay",
+    "Dapane and Voiage actual native runtime qualification",
+    "CHHHS authorised ICU/ward/roster/cost and follow-up patient-level data",
+    "Independent clinical, economic, First Nations governance, security and Finance review",
+    "Dedicated GitHub repository and its hosted CI",
+    "Reauthentication of primary 2024/25 CCR publisher PDF for 20.4% value"
+  ],
+  "cargo_present": false,
+  "clinical_validation": false,
+  "data": "public benchmark metadata and synthetic only; no CHHHS patient records",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "scipy": "1.17.0"
+  },
+  "financial_validation": false,
+  "investment_ready": false,
+  "native_binary_executed": false,
+  "native_build_attested": false,
+  "native_compiler_present": false,
+  "output_hash": "bf26137cb498c29d16fbca3a371539abd34c7066f2343fec734670fc976accf1",
+  "provider_git_pin": "a1f6283575ad26918230adc122a99b5c08fc4da3",
+  "publishing_approval": false,
+  "runtime": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.13.5"
+  },
+  "schema_version": 1,
+  "scope": "P6 source-level Kairos consumer plus synthetic trace and holdout validation",
+  "source_digest_lock": {
+    "conductor/tracks/P6-kairos-capacity-validation/metadata.json": "876f653789a005b3e52ffdec5a2e6a5e8f039717dc299524dfdb95de890abf65",
+    "docs/p6-native-qualification.md": "65587b6b3d02c739571d68a800aeb4b9783ba7344f0f016b5af3836fedafa68e",
+    "model-inputs/p6/kairos-provider-lock.json": "3063610bf26ab9fab1ff948b30cb27948b22e9204ce371bd94db5be81de4e00a"
+  },
+  "technical_tests": {
+    "P0_P4": "139 passed (27.59s)",
+    "P5": "20 passed (6.78s)",
+    "P6_and_source_migration": "40 passed (6.05s)",
+    "all_failed": 0,
+    "all_test_count": 199,
+    "all_test_files_covered_in_partitioned_passes": true,
+    "cmd_P0_P4": "PYTHONPATH=src python -m pytest -q tests/test_adapters.py tests/test_model.py tests/test_p1_*.py tests/test_p2_*.py tests/test_p3_*.py tests/test_p4_*.py --disable-warnings",
+    "cmd_P5": "PYTHONPATH=src python -m pytest -q tests/test_p5_provider_execution.py tests/test_p5_reporting.py tests/test_p5_semantic_review.py --disable-warnings",
+    "cmd_P6": "PYTHONPATH=src python -m pytest -q tests/test_p6_*.py tests/test_sources_and_migration.py --disable-warnings",
+    "historical_all_in_one_run": "195 passed in 38.39s before four new tests",
+    "native_rust_tests": "not_executed_no_rust_toolchain",
+    "subsequent_all_in_one_attempt": "timed out after ~72% with no test failure printed; partitioned all-tests run passed"
+  }
+}

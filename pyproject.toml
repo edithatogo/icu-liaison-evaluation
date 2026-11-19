@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=80,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "icu-liaison-evaluation-portable"
+version = "0.1.0"
+description = "Portable ANZICS-guided illustrative ICU liaison economic modelling consumer"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "Apache-2.0"
+dependencies = [
+  "numpy>=2.3,<3",
+  "scipy>=1.17,<2",
+  "pydantic>=2.13,<3",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=9,<10", "jsonschema>=4.26,<5"]
+# Install only in a compatible Python >=3.15.2 environment. Dapane is a
+# separately qualified unpublished native wheel, not a mutable pip dependency.
+voiage = ["voiage==3.1.0"]
+report = ["matplotlib>=3.10,<4"]
+
+[project.scripts]
+icu-liaison-evaluate = "icu_liaison.cli:main"
+icu-liaison-protocol = "icu_liaison.protocol_cli:main"
+icu-liaison-sources = "icu_liaison.p3_cli:main"
+icu-liaison-p4 = "icu_liaison.p4_cli:main"
+icu-liaison-p5 = "icu_liaison.p5_cli:main"
+icu-liaison-p5-review = "icu_liaison.p5_review_cli:main"
+icu-liaison-p6 = "icu_liaison.p6_cli:main"
+icu-liaison-p6-native = "icu_liaison.p6_native_cli:main"
+icu-liaison-placeholders = "icu_liaison.placeholders_cli:main"
+icu-liaison-p8 = "icu_liaison.p8_cli:main"
+icu-liaison-p8-compose = "icu_liaison.p8_composition_cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

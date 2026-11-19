@@ -1,0 +1,7 @@
+hospitalisation_pseudonym,index_icu_episode_id,icu_admission_at,icu_medically_ready_at,icu_actual_departure_at,destination_category,adult_age_at_icu_admission_years,followup_observation_end_at,censor_reason,hospitalisation_final_departure_at,hospital_death_at
+synthetic_case_A,synthetic_A_i1,2026-06-28T00:00:00+10:00,2026-07-01T06:00:00+10:00,2026-07-01T18:00:00+10:00,ward_same_hospital,64,2026-07-04T18:00:00+10:00,completed_72h,2026-07-06T11:00:00+10:00,
+synthetic_case_A,synthetic_A_i2,2026-07-02T20:00:00+10:00,2026-07-03T06:00:00+10:00,2026-07-03T10:00:00+10:00,ward_same_hospital,64,2026-07-06T10:00:00+10:00,completed_72h,2026-07-06T11:00:00+10:00,
+synthetic_case_B,synthetic_B_i1,2026-06-30T11:00:00+10:00,2026-07-01T07:00:00+10:00,2026-07-01T09:00:00+10:00,ward_same_hospital,74,2026-07-04T09:00:00+10:00,completed_72h,2026-07-06T18:00:00+10:00,
+synthetic_case_C,synthetic_C_i1,2026-06-28T21:00:00+10:00,,2026-07-01T03:00:00+10:00,ward_same_hospital,21,2026-07-01T23:00:00+10:00,interhospital_transfer,2026-07-02T01:00:00+10:00,
+synthetic_case_D,synthetic_D_i1,2026-06-28T11:00:00+10:00,2026-06-30T22:00:00+10:00,2026-07-01T11:00:00+10:00,ward_same_hospital,68,2026-07-02T07:00:00+10:00,death,2026-07-02T07:00:00+10:00,2026-07-02T07:00:00+10:00
+synthetic_case_E,synthetic_E_i1,2026-06-30T12:00:00+10:00,2026-07-01T01:00:00+10:00,2026-07-01T05:00:00+10:00,ward_same_hospital,47,2026-07-04T05:00:00+10:00,completed_72h,2026-07-05T18:00:00+10:00,

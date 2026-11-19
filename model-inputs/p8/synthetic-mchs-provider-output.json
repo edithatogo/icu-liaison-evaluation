@@ -1,0 +1,19 @@
+{
+  "actual_revenue_aud": null,
+  "annual_calculator_parity": "unverified",
+  "change_nwau": "-0.1000",
+  "clinical_case_mix_qualification": "not_established",
+  "current_nwau": "2.1000",
+  "data_class": "synthetic",
+  "drg_edition": "v11.0",
+  "episode_id": "synthetic-episode-001",
+  "execution_evidence": "injected_contract_test_only",
+  "pricing_year": 2025,
+  "proposed_nwau": "2.0000",
+  "provider": "mchs",
+  "schema_version": 1,
+  "source_bundle_id": "synthetic-bundle-not-verified",
+  "source_bundle_sha256_declared": "1111111111111111111111111111111111111111111111111111111111111111",
+  "technical_modelled_aud": null,
+  "unit": "NWAU"
+}

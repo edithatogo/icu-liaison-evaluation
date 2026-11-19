@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "track_id": "P8-abf-workforce-interop",
+  "title": "MCHS annual ABF shadow and nursing workforce cost interoperability",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "updated_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": [
+    "P8.0-source-reconciliation",
+    "P8.1-contract-and-negative-controls",
+    "P8.2-synthetic-annual-consumer-source-only",
+    "P8.3-synthetic-workforce-Dapane-transport-source-only",
+    "P8.4-synthetic-cross-ledger-composition-source-only"
+  ],
+  "blocked_phases": [
+    "P8.2-official-parity-and-installed-MCHS",
+    "P8.3-QLD-nursing-classification-conditions-and-costing",
+    "P8.4-installed-Dapane-Voiage-and-P4-prior-reconciliation",
+    "P8.5-installed-clinical-finance-hosted-acceptance"
+  ],
+  "dependency_tracks": [
+    "P0-portable-consolidation",
+    "P1-provider-reuse",
+    "P2-clinical-economic-protocol",
+    "P4-economic-decision-model",
+    "P5-reporting-independent-review",
+    "P7-technical-empirical-qualification"
+  ],
+  "native_integrations_qualified": false,
+  "clinical_validation": false,
+  "finance_validation": false,
+  "data_class": "synthetic_and_public_source_metadata",
+  "owner": "dedicated_evaluation_project_pending_repository",
+  "provider_owner_changes_committed": false,
+  "evidence": {
+    "source_references": "model-inputs/p8/provider-capabilities.json",
+    "contract": "model-inputs/p8/funding-workforce-shadow.schema.json",
+    "synthetic_fixture": "model-inputs/p8/synthetic-null-shadow.json",
+    "focused_tests": "tests/test_p8_provider_roadmap.py",
+    "mchs_consumer": "src/icu_liaison/adapters/p8_mchs.py",
+    "workforce_consumer": "src/icu_liaison/adapters/p8_workforce.py",
+    "CLI": "src/icu_liaison/p8_cli.py",
+    "new_tests": [
+      "tests/test_p8_mchs_pair.py",
+      "tests/test_p8_roster_bridge.py",
+      "tests/test_p8_cli_and_schemas.py"
+    ],
+    "consumer_documentation": "docs/P8-implemented-consumer-contracts.md",
+    "p8_composition": "src/icu_liaison/p8_composition.py",
+    "p8_composition_cli": "src/icu_liaison/p8_composition_cli.py",
+    "p8_composition_tests": [
+      "tests/test_p8_composition.py",
+      "tests/test_p8_composition_cli.py"
+    ],
+    "p8_composition_schema": "model-inputs/p8/p8-composition.schema.json"
+  }
+}

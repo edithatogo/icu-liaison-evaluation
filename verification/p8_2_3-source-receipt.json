@@ -1,0 +1,58 @@
+{
+  "any_github_push_performed": false,
+  "clinical_economic_approval": false,
+  "date": "2026-11-18",
+  "dedicated_github_repository_found": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "notes": "Source-level paired MCHS and workforce quote/Dapane transport, injected contract tests, no native or observed-case evaluation.",
+  "p8_2_source": {
+    "actual_revenue_claim": false,
+    "implemented": true,
+    "native_calculation_executed": false,
+    "official_year_parity_qualified": false
+  },
+  "p8_3_source": {
+    "annual_labour_cost_qualified": false,
+    "employment_rules_qualified": false,
+    "implemented": true,
+    "native_workforce_quote_executed": false
+  },
+  "provider_runtime": {
+    "dapane": "not_installed",
+    "kairos": "no_rust_toolchain",
+    "mchs": "not_installed",
+    "microcosting_healthworkforce": "not_installed",
+    "voiage": "not_installed"
+  },
+  "status": "SOURCE_CONTRACT_VERIFIED_NATIVE_UNVERIFIED",
+  "test_partitions": {
+    "P0_P3": {
+      "log": "verification/test-logs/P8_source_suite_A.log",
+      "passed": 107
+    },
+    "P4_P7": {
+      "log": "verification/test-logs/P8_source_suite_B.log",
+      "passed": 46
+    },
+    "P5": {
+      "log": "verification/test-logs/P8_source_suite_C.log",
+      "passed": 20
+    },
+    "P6": {
+      "log": "verification/test-logs/P8_source_suite_D.log",
+      "passed": 36
+    },
+    "P8": {
+      "log": "verification/test-logs/P8_source_suite_E.log",
+      "passed": 54
+    }
+  },
+  "test_total": 263,
+  "track": "P8.2_P8.3_source_consumers"
+}

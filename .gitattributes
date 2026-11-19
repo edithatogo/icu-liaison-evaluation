@@ -1,0 +1,4 @@
+# Source manifests bind exact file bytes, including inherited CSV CRLF records.
+# Preserve those bytes on every platform instead of implicit EOL conversion.
+* -text
+*.csv whitespace=cr-at-eol

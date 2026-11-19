@@ -1,0 +1,35 @@
+{
+  "gross_resource_benefit_aud": {
+    "mean": 89082.56944093626,
+    "p05": -137.30242618473818,
+    "p50": 78828.61703562085,
+    "p95": 213226.9678730799
+  },
+  "icu_bed_days_released": {
+    "mean": 7.846681149745213,
+    "p05": 2.8264807863099204,
+    "p50": 7.18911272231658,
+    "p95": 15.147222497076168
+  },
+  "input_digest_sha256": "ec3777ad8cd3c8e90b85cb76e9796b7380b0457443c3030830387a7649717aed",
+  "interpretation": "annual economic resource scenario; not a claim of budget savings, health gain, or staffed ICU capacity",
+  "iterations": 5000,
+  "net_resource_benefit_aud": {
+    "mean": -188102.40443536415,
+    "p05": -303678.9653628219,
+    "p50": -194984.10294313647,
+    "p95": -50964.94458328358
+  },
+  "probability_net_resource_benefit_nonnegative": 0.019,
+  "readmissions_avoided": {
+    "mean": 3.8920869273064453,
+    "p05": -0.890215696136443,
+    "p50": 3.697227359370116,
+    "p95": 9.462627729096447
+  },
+  "result_class": "illustrative_not_chhhs_observed",
+  "scenario_id": "public-anzics-plus-explicit-illustrative-assumptions-2026-11",
+  "schema_version": 1,
+  "seed": 20261117,
+  "uncertainty": "independent_triangular_parameter_uncertainty_not_predictive_interval"
+}

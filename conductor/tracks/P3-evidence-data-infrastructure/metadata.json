@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "track_id": "P3-evidence-data-infrastructure",
+  "title": "ANZICS provenance and authorised local-data admission",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": ["P3.1-source-contract", "P3.2-synthetic-ingestion", "P3.3-quality-contract", "P3.4-local-tests"],
+  "blocked_phases": ["P3.1-publisher-binary", "P3.2-approved-local-source", "P3.3-empirical-qualification", "P3.4-hosted-and-provider"],
+  "dependencies": ["P2-clinical-economic-protocol", "P1-provider-reuse"],
+  "source_acceptance_boundary": "synthetic local-source contract, SHA-pinned files, source/denominator checks and aggregate outcomes only",
+  "external_dependencies": [
+    {"provider":"ANZICS CORE","requirement":"2024/25 report binary/hash and site-specific portal data","status":"not_verified"},
+    {"provider":"CHHHS","requirement":"approved clinical data extract, costing, privacy and Indigenous governance","status":"not_obtained"},
+    {"provider":"Searchright","requirement":"actual review run and approved CSL-JSON/receipt import","status":"not_executed"},
+    {"provider":"Dapane/Voiage","requirement":"P1 installed native qualification","status":"not_executed"},
+    {"provider":"new repository","requirement":"Git source commit, hosted checks, Conductor install and independent review","status":"not_provided"}
+  ]
+}

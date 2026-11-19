@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "track_id": "P0-portable-consolidation",
+  "title": "Portable consolidation and consumer-first dependency reuse",
+  "status": "in_progress",
+  "created_at": "2026-11-18",
+  "implementation_started": true,
+  "accepted_phases": [
+    "P0.1",
+    "P0.2",
+    "P0.3"
+  ],
+  "blocked_phases": [
+    "P0.4"
+  ],
+  "blocker": "Hosted Actions jobs cannot start due to account billing/spending-limit availability. Native Dapane/Voiage, Gemini runtime and original PR reconciliation remain separately outstanding.",
+  "dependencies": [],
+  "external_dependencies": [
+    {
+      "provider": "dapane",
+      "required": "exact contract 0.1 installed-native valuation consumer"
+    },
+    {
+      "provider": "voiage",
+      "required": "v3.1 in Python >=3.15.2 installed VOI consumer"
+    },
+    {
+      "provider": "gemini-cli-extensions/conductor",
+      "pin": "7a5c560a4fdf5297be58594cc37527eb12790272",
+      "required": "actual gitlink and reviewed local install"
+    }
+  ],
+  "updated_at": "2026-11-19",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "current_task": "P0.4 hosted CI awaiting account runner availability; initial source push complete",
+  "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
+  "imported_source_head": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d"
+}

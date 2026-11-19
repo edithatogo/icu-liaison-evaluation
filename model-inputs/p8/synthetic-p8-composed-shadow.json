@@ -1,0 +1,38 @@
+{
+  "actual_hospital_revenue_change_aud": null,
+  "admission": "planning_only",
+  "clinical_investment_approval": false,
+  "data_class": "synthetic",
+  "extra_workforce_cost_applied_to_p4": false,
+  "finance_authorisation": false,
+  "mchs": {
+    "actual_revenue_aud": null,
+    "annual_calculator_parity": "unverified",
+    "case_change_nwau": null,
+    "drg_edition": null,
+    "episode_id": null,
+    "pricing_year": null,
+    "scope": "one_synthetic_episode_not_programme_total",
+    "source_bundle_sha256_declared": null,
+    "status": "unavailable"
+  },
+  "modelled_financial_basis": "illustrative_P4_uncalibrated",
+  "net_modelled_nwau_aud": null,
+  "p4_annual_incremental_service_cost_prior_aud_nominal": 250000.0,
+  "p4_illustrative_net_budget_impact_aud_mean": -248731.07496704604,
+  "p4_illustrative_net_resource_benefit_aud_mean": -198823.76304966788,
+  "p4_input_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+  "p4_price_year": 2026,
+  "scenario_id": "icu-liaison-p4-public-proxy-synthetic",
+  "schema_version": 1,
+  "strategy_id": "liaison_service",
+  "workforce": {
+    "annual_labour_cost_aud": null,
+    "financial_cost_status": "unavailable",
+    "financial_price_year": null,
+    "reconciliation_to_p4_cost_prior": "not_reconciled",
+    "request_line_count": null,
+    "roster_scenario_id": null,
+    "source_evidence": null
+  }
+}

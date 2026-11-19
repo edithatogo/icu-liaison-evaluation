@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-18",
+  "governance": {
+    "careops_sim_PR215": "unchanged_open_draft_awaiting_dedicated_repository",
+    "clinical_and_economic_approval": "not_established",
+    "new_dedicated_GitHub_repository": "not_provided",
+    "public_report_binary_SHA_review": "not_established",
+    "restricted_CHHHS_access": "not_obtained",
+    "source_data_is_synthetic_only": true
+  },
+  "p3_sources": {
+    "2023_24_ccr": "publisher_text_inspected_no_pdf_sha",
+    "2024_25_ccr": "previous_transcription_not_independently_reverified",
+    "catalogue": "model-inputs/anzics-benchmarks.json",
+    "number_metrics": 6,
+    "public_unplanned_72h_rate_available": false,
+    "status": "CATALOGUE_METADATA_ADMITTED_NOT_DOCUMENT_VERIFIED",
+    "unverified_documents": 6
+  },
+  "p3_synthetic": {
+    "competing_death_before_return": 1,
+    "eligible_first_index_discharges": 3,
+    "exit_block_12h": 1,
+    "hospitalisations": 4,
+    "icu_episodes": 7,
+    "patient_records_in_artifact": false,
+    "readiness_present": 2,
+    "result_status": "SYNTHETIC_ONLY_NOT_CHHHS_OBSERVED",
+    "source_manifest": "tests/fixtures/p3_episodes/manifest.json",
+    "unknown_early_return": 1,
+    "unplanned_72h_return": 1
+  },
+  "provider_native": {
+    "command": "PYTHONPATH=src python tools/qualify_providers.py --provider all",
+    "exit_code": 2,
+    "reason": "dapane installed distribution unavailable in Python 3.13.5; voiage requires its own >=3.15.2 environment",
+    "status": "UNVERIFIED"
+  },
+  "regression": {
+    "p0_p1_p2_source_inputs_unchanged_count": 15,
+    "p1_illustrative_result_object_matches_p2_receipt": true,
+    "p2_protocol_admission_cli": "PASS_ILLUSTRATIVE_ONLY"
+  },
+  "remaining": [
+    "ANZICS source binary hash and reviewer",
+    "CHHHS approved local extracts/cross-walk",
+    "source completeness thresholds and safety/Finance sign-off",
+    "Searchright source review import",
+    "P1 native Dapane/Voiage",
+    "dedicated repo CI and independent review"
+  ],
+  "schema_version": 1,
+  "source_checksum_manifest": "verification/p3-source-checksums.json",
+  "status": "portable_source_qualification_passed_external_gates_unverified",
+  "tests": {
+    "command": "PYTHONPATH=src python -m pytest -q",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "pydantic": "2.13.5",
+    "pytest": "9.0.2",
+    "python": "3.13.5",
+    "result": "108 passed; 0 failed",
+    "ruff": "not_installed_not_run",
+    "rust_tests": "not_required_for_P3_python_consumer",
+    "scipy": "1.17.0",
+    "status": "PASS"
+  },
+  "track": "P3-evidence-data-infrastructure",
+  "workspace": "/mnt/data/icu_liaison_p3_work/icu-liaison-evaluation-portable"
+}

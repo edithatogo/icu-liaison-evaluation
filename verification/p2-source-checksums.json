@@ -1,0 +1,30 @@
+{
+  "files_sha256": {
+    "README.md": "e3c8d3743bfa3b87291b32ef46678888169b0aa6357643d741b94d155c24fefa",
+    "conductor/decisions/ADR-0003-icu-liaison-clinical-economic-estimand.md": "0408145a2575c9b694b563ea52ffc9073f9801b4af0871eb29a8ad32b8d3bcb4",
+    "conductor/evidence/source-register.json": "4645b520c1d7d16def50b2b190df1befaee0a3e6450cb5f31339c834f04be9d4",
+    "conductor/index.md": "0f236a8579a1df0019e1f83b239af777d76ef384bccd5469224bb9d399f7ab94",
+    "conductor/tracks.md": "65c888d4f4e4f7059e64dd846d6604a5f1ce5576c830318f05bade801a3b68ee",
+    "conductor/tracks/P2-clinical-economic-protocol/agent-contract.md": "d2fb5082ed389ae49d48ff1b8db0f2de7af0d4d938f1c14c805319b83b2f9e00",
+    "conductor/tracks/P2-clinical-economic-protocol/handoff.md": "c6d4f22ea6153b0a16b0486cef938504968297adc0108353a5a23575ac83ba29",
+    "conductor/tracks/P2-clinical-economic-protocol/index.md": "d81b53d814b4bac7fd1d7c5b9ddf33c1a870be32566a3b683c6819b65e3aee9d",
+    "conductor/tracks/P2-clinical-economic-protocol/metadata.json": "c5550b6341d8c5aa109763da43dfdf93f8cd2330d7cbc185eea441fbee967dd8",
+    "conductor/tracks/P2-clinical-economic-protocol/plan.md": "180a797292b6bb0e908ceb0273181ad0b0c1d174ae3739758739a31369a88291",
+    "conductor/tracks/P2-clinical-economic-protocol/risk-register.md": "2e63af51bb20dfd2848ba3dced4e070494cd947bb70c38071224d79298c96618",
+    "conductor/tracks/P2-clinical-economic-protocol/spec.md": "dedf7f9654851c0ed91f2116cce087612bb84d94899ddc4dd0de84d9212b9898",
+    "conductor/tracks/P2-clinical-economic-protocol/test-matrix.md": "98cbbd2491d99e0abf9395c9b03d32e3e20d2d8c3b67ed687e20e5d2952cb58a",
+    "docs/data-requirements-p2.md": "207df781d4512a58b2538a0aec162f6cbe9997aec369f71b701a3e7ebf4808c5",
+    "docs/protocol-p2.md": "dd56df612a194a647dc7c60fbed6fbda2b03b6710843e0cd26ef4df45ea37e0a",
+    "docs/reporting-checklist-p2.md": "841b50375797ccf116a092d20d6e4e72febb1dfd547fc80ce8aada193b5a2630",
+    "model-inputs/clinical-data-dictionary.json": "563d786f6a0880a4530bddfb9701a1273a5b8591227904092f6b22c543c86e88",
+    "model-inputs/clinical-economic-protocol.json": "1d34284e55fd781cf534224f627e931dafa165b6bd81998c0ee2d62b01cf8f6e",
+    "pyproject.toml": "4e51574c71bb3b799da0d9bd86c81dc1cefaab47c89a9fac17bbec55254cbde8",
+    "src/icu_liaison/endpoints.py": "841e4a858bdd2119995f1e6b408f5ef4d2f4d7f439bdc450f86bac6fe6e700a2",
+    "src/icu_liaison/protocol.py": "22e57ddcfd9e959d68af4b02f9d1a9b905bef7a76f0b291c1bc196bd931fd05e",
+    "src/icu_liaison/protocol_cli.py": "b1bbdfe98d26de95aa64b88dbab8960e0d3d8152c95c13f577df19686dd7d306",
+    "tests/test_p2_cli.py": "e1c180ff930b7df0dc6b5cccf7143262a08e741c093722cfe4b5b8aa93515a4e",
+    "tests/test_p2_protocol.py": "1a4ca3b458fe559b32be649f2aa4c37ab546578e20a9c95d113ae0cca756e080"
+  },
+  "schema_version": 1,
+  "source_archive_baseline": "P1 portable ZIP, retained unchanged"
+}

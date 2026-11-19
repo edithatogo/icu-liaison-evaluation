@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "scope": "initial_private_source_import_with_placeholders",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "python": "3.13.5",
+  "dependency_versions_file": "requirements-ci.txt",
+  "checks": [
+    {
+      "command": "uv pip install --python ../icu-python313/bin/python -c requirements-ci.txt '.[test,report]'",
+      "exit_code": 0,
+      "result": "package_built_and_installed"
+    },
+    {
+      "command": "PYTHONPATH=src python -m pytest -q",
+      "exit_code": 0,
+      "tests_passed": 314,
+      "elapsed_seconds": 25.51
+    },
+    {
+      "command": "PYTHONPATH=src python tools/qualify_current_portable.py",
+      "exit_code": 0,
+      "result": "SOURCE_ORACLES_PASSED_SYNTHETIC_ONLY",
+      "independent_decimal_draws_checked": 18,
+      "max_abs_difference_aud": 8.1803943292e-11
+    },
+    {
+      "command": "PYTHONPATH=src python tools/ci_smoke.py",
+      "exit_code": 0,
+      "result": "synthetic_cli_smoke_passed"
+    },
+    {
+      "command": "python tools/verify_source_manifest.py",
+      "exit_code": 0,
+      "result": "VERIFIED",
+      "note": "Manifest regenerated again after adding this receipt; it does not hash itself."
+    },
+    {
+      "check": "project_markdown_links",
+      "missing_targets": 0
+    },
+    {
+      "check": "independent_migration_review",
+      "result": "no_material_blocker_to_initial_private_push"
+    }
+  ],
+  "source_and_test_tree_sha256": "d678ee47c0cd6b986e1790406b6d7b8a750b2e997d13a1760cefa39816606f09",
+  "hosted_ci_at_receipt_creation": "not_yet_executed_use_GitHub_exact_commit_results",
+  "native_providers_executed": false,
+  "observed_chhhs_data_used": false,
+  "clinical_or_financial_acceptance": false,
+  "investment_ready": false,
+  "expected_closed_gates": [
+    "site_ready_exit_2",
+    "P8_require_qualified_exit_2"
+  ],
+  "review_scope_note": "Technical and source review only; clinical, Finance, cultural-governance, native and original PR215 migration acceptance remain separate."
+}
