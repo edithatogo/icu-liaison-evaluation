@@ -32,7 +32,9 @@
   ],
   "updated_at": "2026-11-19",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "current_task": "P0.4 hosted CI awaiting account runner availability; initial source push complete",
+  "current_task": "P0.4 local CI/CD, Git hooks and Conductor parity audit complete; hosted CI, native providers and PR #215 retirement remain open",
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
+  "initial_import_pr_merged_sha": "4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558",
+  "local_ci_hooks_installed": true,
   "imported_source_head": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d"
 }
