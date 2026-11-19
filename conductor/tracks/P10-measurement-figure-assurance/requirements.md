@@ -28,3 +28,6 @@ No patient-level data ingestion, signing keys, real approvals or substitute Dapa
 
 ## Additional source-validity control
 - **R16** Evidence must carry an effective period, exclusive expiry, pricing/coding year, revocation state and source identifiers before use. These fields are not proof of authentication. A public metadata record always remains unverified without a trusted external verifier.
+
+## Additional falsification requirement
+- **R17** A synthetic economic demonstration must pass explicit null-effect, harmful-effect, non-addressable-delay, non-usable-capacity, non-cash-realisable and mispaired/invalid-effect negative cases. Preserve distinct physical, resource, cash and clinical-safety meanings.

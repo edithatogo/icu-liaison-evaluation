@@ -12,3 +12,5 @@ These are proposals, **not implemented outcomes**.
 Next recommended implementable slice: P10.10 source-to-output provenance digest validation, followed by P10.11 actual responsive/print visual checks.
 
 **P10.14 source-date update:** temporal validity, exclusive expiry, source version and revocation checks now have source-only tests. A trusted external verification/revocation workflow is not implemented and remains a high-priority acceptance gate.
+
+**P10.12 synthetic progress:** five adversarial P4 scenarios now have executable source-only accounting assertions. These are falsification fixtures, not observed harm or structural-model calibration.

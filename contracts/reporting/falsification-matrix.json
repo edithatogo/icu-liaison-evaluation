@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "synthetic_falsification_only",
+  "source": "model-inputs/p4/illustrative.json",
+  "iterations": 128,
+  "seed_policy": "preserve_declared_seed_and_common_draws",
+  "cases": [
+    {
+      "id": "no_effect",
+      "change": "zero proposed delay improvement and return effect",
+      "invariant": "no modelled bed release or returns avoided; ongoing staffing cost remains"
+    },
+    {
+      "id": "harmful_returns",
+      "change": "negative signed relative return effect",
+      "invariant": "modelled ICU returns avoided become negative; no safety claim"
+    },
+    {
+      "id": "zero_addressable_delay",
+      "change": "zero proportion of addressable delay",
+      "invariant": "no released bed-days; return effect remains a separate pathway"
+    },
+    {
+      "id": "zero_usable_capacity",
+      "change": "zero reusable fraction of physical bed-days",
+      "invariant": "usable capacity zero, economic resource costs unchanged"
+    },
+    {
+      "id": "zero_cash_realisability",
+      "change": "zero index and return cash realisability",
+      "invariant": "economic net benefit unchanged while budget reflects service expenditure only"
+    }
+  ],
+  "evidence_boundary": "No clinical effect, noninferiority, Finance saving or CHHHS site validity inferred from fixtures."
+}

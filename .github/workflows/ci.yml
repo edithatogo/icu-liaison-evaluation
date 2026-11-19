@@ -40,6 +40,8 @@ jobs:
         run: .venv/bin/python tools/evaluate_safety_decision.py --synthetic-net-resource-benefit 1000000
       - name: Reject stale or unverified source admission
         run: .venv/bin/python tools/evidence_lifecycle.py --as-of 2026-11-19 --price-year 2026
+      - name: Falsify synthetic economic and safety assumptions
+        run: .venv/bin/python -m tools.p10_falsification --iterations 128
       - name: Run synthetic contract and numerical tests
         run: .venv/bin/python -m pytest -q
       - name: Exercise synthetic reports and closed admission gates
