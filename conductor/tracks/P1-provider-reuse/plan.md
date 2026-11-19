@@ -78,7 +78,7 @@ artifact attestation lookup against the exact rebuilt wheel digest.
 
 Independent adjudication of the exact wheel and its build provenance is
 open under [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review).
-The Dapane `binary_sha256` field remains null. The 342-test run and the two
+The Dapane `binary_sha256` field was unset after this review. The 342-test run and the two
 focused P5 regressions in the migration receipt apply to the rebuilt wheel.
 
 ### Independent Dapane technical review
@@ -103,9 +103,39 @@ build-path remapping.
 The reviewer **withheld binary-pin sign-off**. The recorded notices cover the
 pinned Rust 1.99.1 build inputs and the effective 1.100.0 toolchain inventory
 remains unreviewed. The previous test results still record the behavior of the
-exact installed candidate. The Dapane `binary_sha256` remains null.
+exact installed candidate. The Dapane `binary_sha256` was unset at that checkpoint.
 [P7.5 decision](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review)
 · [Corrected build procedure](../../../docs/providers-p1.md#source-dependent-runtime-setup-on-a-network-enabled-authorised-workstation)
+
+### Corrected Rust 1.99.1 candidate
+
+On 19 November 2026 AEST, the pinned Dapane 0.1.0 source and 36 locked
+registry crates were rebuilt for macOS arm64 using CPython 3.15.2 and
+Maturin 1.16.0. The effective Cargo and Rust compiler were 1.99.1. The Cargo
+product, wheel member and installed native extension matched. The private
+build receipt binds the exact artifact digests to the compiler metadata,
+build log and installed checks. The out-of-space first attempt and prior
+Homebrew 1.100.0 wheel remain historical evidence.
+
+P1 ran both providers in the new environment. The Dapane oracles returned
+AUD 100.00 and AUD −168,730.00, and the Voiage two-state EVPI returned
+AUD 5.00. The P5 synthetic report used both providers and reconciled
+5,000 draws across three strategies. The focused P1/P5 suite passed 43
+tests, including the Dapane-unavailable regressions. The full installed
+suite passed 342 tests.
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer` signed off
+on the exact candidate for macOS arm64 and CPython 3.15.2. An independent
+Rust 1.99.1 build matched all native code and data. Accounting for the
+linker UUID, its derived code-page hash and the generated wheel metadata
+reproduced both complete artifacts byte for byte. All ten hashed wheel
+members matched the installed files. The
+[provider lock](../../../providers.lock.json) records the extension SHA-256
+as `binary_sha256` and the paired archive SHA-256 in `reviewed_wheel`.
+
+The [P7.5 approval](../P7-technical-empirical-qualification/plan.md#corrected-dapane-artifact-decision)
+covers this binary pin. The separate native-execution and release
+decisions remain open.
 
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its

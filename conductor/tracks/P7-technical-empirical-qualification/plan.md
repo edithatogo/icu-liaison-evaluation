@@ -4,7 +4,7 @@
 - [x] P7.2 Independent P4 draw accounting and P3 aggregate QA/unknowns; focused tests.
 - [x] P7.3 Typed CHHHS 11-dataset request pack and clinical/causal validation protocol; no observed data imported.
 - [ ] P7.4 Run qualified Kairos native consumer against pinned source and reviewed Cargo.lock; currently missing Rust toolchain and lock.
-- [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. The independent Dapane reviewer withheld binary-pin sign-off after finding a toolchain mismatch. Voiage admission remains open.
+- [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. The corrected Dapane binary pin has scoped independent approval. Voiage admission and separate native-execution and release decisions remain open.
 - [ ] P7.6 Authenticate 2024/25 ANZICS publisher PDF bytes, exact source hash and pages.
 - [ ] P7.7 Receive authorised CHHHS activity, capacity, staffing and costing extracts; calibrate and validate prospectively with clinical/Finance/equity governance.
 - [ ] P7.8 Supply the selected dedicated GitHub repository, transplant sources, run hosted CI, independent review, and close exploratory careops-sim PR #215 after reconciliation.
@@ -39,7 +39,24 @@ The review reproduced the pinned crate and Rust 1.99.1 notice inventory.
 The offline macOS arm64 crate graph passed bans, source and crate licence
 checks. The advisory check still flagged `RUSTSEC-2026-0543`
 (`chrono 0.4.45`). Effective Rust 1.100.0 notices, the Dapane CLI APFS
-filename failure and Linux and Windows qualification remain open. Only the
-macOS arm64 CPython 3.15.2 candidate was checked here. Both
-`providers.lock.json` binary digests remain null pending independent
-adjudication. Voiage's artifact evidence remains a separate decision.
+filename failure and Linux and Windows qualification remain open. The
+review left both provider digests unset at that checkpoint.
+
+### Corrected Dapane artifact decision
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer`
+approved the exact corrected Dapane 0.1.0 wheel and binary pin for the
+macOS arm64 installation tested on CPython 3.15.2. The pinned Rust 1.99.1
+build trace and compiler evidence matched the installed extension.
+Independent reconstruction produced both exact candidate digests after
+accounting for the linker UUID and its derived page hash, the SBOM paths
+and wheel packaging. The dated verdict and full verification evidence are
+retained privately.
+
+The [provider lock](../../../providers.lock.json) now records the
+reviewed extension as Dapane `binary_sha256` and pairs it with the exact
+wheel digest. The [P1/P5 reruns](../P1-provider-reuse/plan.md#corrected-rust-1991-candidate)
+passed for that installed artifact. The companion P7 placeholder tracks
+the separate native-execution receipt. Voiage admission, the `chrono`
+advisory, the Dapane CLI APFS case, other platforms and release approval
+remain open.

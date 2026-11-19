@@ -21,9 +21,10 @@
 - [ ] 1. Qualify actual ANZICS publisher PDF and page-specific denominators.
 - [ ] 2. Obtain approved CHHHS cohort, workforce, cost, ward and clinical safety data with competent oversight.
 - [ ] 3. Execute and independently qualify pinned Dapane/Voiage/Kairos provider artifacts.
-  The independent Dapane reviewer withheld sign-off for the rebuilt wheel in
-  [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review).
-  Independent provider artifact admission remains open.
+  The corrected Dapane binary pin has scoped approval in
+  [technical P7.5](../P7-technical-empirical-qualification/plan.md#corrected-dapane-artifact-decision).
+  The companion Dapane placeholder tracks the separate native-execution
+  receipt, which remains open.
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
 - [ ] 5. Migrate into user-selected dedicated repository, run its hosted checks, and preserve PR #215 until reconciled.
 

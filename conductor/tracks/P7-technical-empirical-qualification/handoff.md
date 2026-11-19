@@ -22,3 +22,12 @@ the replayed tool resolution point to Homebrew Rust 1.100.0. Controlled
 builds under the pinned recipe produced different bytes. The detailed
 review and build logs are retained in private evidence.
 [P7.5 decision](plan.md#p75-independent-provider-review)
+
+## Corrected Dapane approval — 19 November 2026
+
+Separate Codex reviewer `dapane_reviewer` approved the exact corrected
+Rust 1.99.1 Dapane 0.1.0 wheel and native extension for macOS arm64 with
+CPython 3.15.2. P1 and P5 passed on the exact installation. The lock now
+records the reviewed extension hash and its paired wheel. The dated
+technical verdict and reconstruction evidence are retained privately.
+[P7.5 corrected artifact decision](plan.md#corrected-dapane-artifact-decision)
