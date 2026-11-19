@@ -1,0 +1,46 @@
+{
+  "crosswalk": {
+    "counts_by_kind": {
+      "aggregate_governed": 1,
+      "derived": 3,
+      "exact": 9,
+      "filtered_event": 1,
+      "renamed": 18
+    },
+    "crosswalk_sha256": "0edc047d8e166ad075b01ae5a54cb80590c3296e513e121e2f35ccb942b2f883",
+    "datasets_referenced": [
+      "bed_capacity",
+      "clinical_safety",
+      "cost_resource_ledger",
+      "equity_experience",
+      "hospital_outcomes",
+      "icu_episodes",
+      "liaison_activity",
+      "staffing_costs"
+    ],
+    "dictionary_sha256": "563d786f6a0880a4530bddfb9701a1273a5b8591227904092f6b22c543c86e88",
+    "exact_count": 9,
+    "non_exact_count": 23,
+    "p2_field_count": 32,
+    "request_sha256": "d50d05a9570d8e6cda477b01a548460d70ab7f293f417be625738a78beef11e5",
+    "status": "CROSSWALK_VERIFIED_NO_LOCAL_DATA"
+  },
+  "date": "2026-11-19",
+  "observed_chhhs_data_used": false,
+  "ready_for_local_claims": false,
+  "schema_version": 1,
+  "signoff_template": {
+    "approved_gate_count": 0,
+    "data_dictionary_sha256_verified": true,
+    "gate_count": 7,
+    "pending_gate_count": 7,
+    "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+    "protocol_sha256_verified": true,
+    "ready_for_local_claims": false,
+    "signoff_sha256": "6bde04a63956848e4dd9ce9bd5b418e4d35c33d40a70c9cd304d6450c57a130c",
+    "status": "template_unapproved_no_site_signoff"
+  },
+  "status": "P2_5_STAKEHOLDER_PACK_PREPARED_SITE_GATES_OPEN",
+  "timezone": "Australia/Brisbane",
+  "track": "P2-clinical-economic-protocol"
+}

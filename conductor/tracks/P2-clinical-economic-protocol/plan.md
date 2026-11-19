@@ -33,6 +33,9 @@
   clinical-data blockers without changing P1 acceptance status.
 
 ## P2.5 — Required external gates (not complete)
+*Preparation artifacts ready for stakeholder review (`docs/p2-stakeholder-review-pack.md`,
+`model-inputs/p2-chhhs-field-crosswalk.json`, `model-inputs/p2-governance-signoff-TEMPLATE.json`,
+`verification/p2-governance-crosswalk-2026-11-19.json`); external CHHHS sign-offs remain open.*
 - [ ] Obtain Clinical/ICU/Nursing/Finance and appropriate consumer/stakeholder
   review of eligibility, comparator, realistic staffing, outcomes and costing.
 - [ ] Approve analytic design, safety margins and minimum acceptable data
