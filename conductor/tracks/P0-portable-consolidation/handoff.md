@@ -45,3 +45,13 @@ against CareOps Sim PR #215 is recorded in `docs/pr215-migration-comparison.md`
 and `verification/p0-pr215-migration-comparison-2026-11-19.json`; PR #215 remains
 open pending independent sign-off, and independent wheel-provenance adjudication
 (`providers.lock.json`) remains open in P1.4/P7.
+
+## CPython 3.15.2 migration — 19 November 2026
+
+P0.5 pins local development, packaging, Git hooks and the hosted synthetic
+workflow to CPython 3.15.2. Both full local runs and the Ubuntu workflow
+passed 342 tests. The two corrected P5 tests also passed in a focused run
+with Dapane 0.1.0 rebuilt from the locked revision. The
+[migration receipt](../../../verification/python-315-migration-2026-11-19.json)
+records the GitHub run, the Dapane wheel and native extension digests, and the
+synthetic P5 reconciliation. Independent artifact adjudication remains in P1.4/P7.

@@ -8,9 +8,10 @@
   "implementation_started": true,
   "accepted_phases": ["P1.1", "P1.2", "P1.3"],
   "blocked_phases": ["P1.4", "P1.5"],
-  "blocker": "macOS arm64 / Python 3.15.2 native oracles and core vendor tests executed; independent P7 adjudication of providers.lock.json binary_sha256, Linux/Windows multi-platform qualification, cargo-deny RUSTSEC-2026-0543 / setuptools==82.0.1 follow-up, and independent external review remain open.",
+  "blocker": "Independent P7 adjudication of providers.lock.json binary_sha256, Linux/Windows qualification, the Dapane CLI APFS filename test, cargo-deny RUSTSEC-2026-0543 follow-up and independent external review remain open.",
   "dependencies": ["P0-portable-consolidation"],
   "native_qualification_receipt": "verification/p1-native-qualification-2026-11-19.json",
+  "installed_dapane_regression_receipt": "verification/python-315-migration-2026-11-19.json",
   "py315_lockfile": "verification/p0-py315-native-lock-2026-11-19.txt",
   "external_dependencies": [
     {"provider": "dapane", "contract": "0.1", "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9", "status": "native_oracles_and_vendor_tests_passed_macos_arm64_provenance_adjudication_pending"},

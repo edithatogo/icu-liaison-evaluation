@@ -16,7 +16,15 @@
 - [x] Run independent report-reader checks against exported decision draws, rejecting rehashed semantic tampering.
 - [x] Add opt-in native Dapane valuation and strict nominal reconciliation (installed execution remains separately blocked).
 - [x] Run negative tests for invalid provider output, mutated manifest, invalid P2/P3 evidence and no-effect/negative-effect cases.
+  Both corrected Dapane-unavailable tests passed with Dapane 0.1.0 installed
+  on CPython 3.15.2. The installed-provider synthetic report also reconciled
+  across all three strategies.
+  [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
 
 ## P5.4 — External clinical/financial review (blocked)
 - [ ] Obtain independent clinician/nursing/Finance/health-economics review, approved safety balancing, actual local data and signed costing interpretation.
 - [ ] Run exact-head hosted CI, independent code review, supply chain and real installed-provider tests after migrating to the dedicated repository.
+  Hosted CPython 3.15.2 CI passed the suite and P5 synthetic report smoke test
+  recorded in [P0.5](../P0-portable-consolidation/plan.md#p05--python-and-hosted-ci-runtime-migration).
+  Independent code review, supply chain and provider artifact acceptance
+  remain open.

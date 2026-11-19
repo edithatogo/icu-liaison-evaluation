@@ -30,7 +30,8 @@
   (`verification/p0-native-providers-py315-2026-11-19.json`,
   `verification/p0-py315-native-lock-2026-11-19.txt`,
   `verification/p1-native-qualification-2026-11-19.json`).
-- [~] Run `python tools/qualify_providers.py --provider all` in that environment,
+- [~] Run `private/venv-p1/bin/python tools/qualify_providers.py --provider all`
+  in the reviewed provider environment,
   record installed numerical reference outputs, compatibility, vendor tests,
   security/licence results and exact source attestations:
   macOS arm64 oracles (`NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING`),
@@ -49,6 +50,10 @@
   (`max_abs_difference_aud: 8.1709665315e-11`), P5 `--dapane --voiage` +
   `p5_review_cli` reconciled cleanly, and unchanged `pytest` reported
   `319 passed, 2 failed` strictly on the two P5 absent-Dapane tests.
+  After the tests were corrected, the full suite passed (342 tests) and the
+  two P5 regressions passed as a focused run with Dapane 0.1.0 installed on
+  macOS arm64 and CPython 3.15.2.
+  [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
 
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its

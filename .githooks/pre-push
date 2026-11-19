@@ -6,8 +6,7 @@ PY="$ROOT/.venv/bin/python"
 
 if [[ ! -x "$PY" ]]; then
   echo "ERROR: $PY not found or not executable." >&2
-  echo "Create the isolated Python 3.13 environment before pushing:" >&2
-  echo "  uv venv --python 3.13 .venv && uv pip install --python .venv/bin/python -c requirements-ci.txt '.[test,report]'" >&2
+  echo "Set up the repository .venv from .python-version using README.md." >&2
   exit 1
 fi
 

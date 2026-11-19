@@ -15,3 +15,9 @@ The [import record](../../../docs/repository-import.md) and
 reconciliation and checks. Independent wheel-provenance adjudication, live
 Gemini runtime command acceptance, original PR #215 closure and CHHHS
 calibration remain pending.
+
+P0.5 completed the CPython 3.15.2 migration for local development, isolated
+builds, Git hooks and hosted synthetic CI. The
+[migration receipt](../../../verification/python-315-migration-2026-11-19.json)
+records the exact hosted run and the full suite and focused P5 results with
+Dapane installed.

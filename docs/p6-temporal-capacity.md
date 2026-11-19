@@ -27,8 +27,8 @@ coded as no admission.
 Run from the package root:
 
 ```sh
-PYTHONPATH=src python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
-PYTHONPATH=src python -m pytest -q tests/test_p6_capacity_trace.py
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p6_cli model-inputs/p6/synthetic-trace.json
+PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p6_capacity_trace.py
 ```
 
 The synthetic four-hour one-bed example produces 180 vs 150 occupied bed-

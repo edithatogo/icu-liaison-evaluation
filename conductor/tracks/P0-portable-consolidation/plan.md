@@ -50,8 +50,8 @@
   isolated Python 3.15.2 scratch environment
   ([native receipt](../../../verification/p0-native-providers-py315-2026-11-19.json),
   [lockfile](../../../verification/p0-py315-native-lock-2026-11-19.txt)). Independent
-  wheel-provenance adjudication (`providers.lock.json` `binary_sha256`) and the
-  2 P5 absent-Dapane tests remain separate open items in P1.4/P7.
+  wheel-provenance adjudication (`providers.lock.json` `binary_sha256`) remains
+  open in P1.4/P7. The corrected P5 regression rerun is recorded in P0.5.
 - [~] Open and complete a tested PR in the dedicated repository; independently
   verify acceptance and only then retire CareOps Sim PR #215. Exact 19-file
   comparison and central accounting parity verification are recorded in
@@ -61,3 +61,13 @@
 
 P0.4 pending does not block portable source tests. Completion of P0 cannot
 be claimed until target-repo and provider acceptance are obtained.
+
+## P0.5 — Python and hosted CI runtime migration
+
+- [x] Pin the repository, builds, local hooks and hosted synthetic validation
+  to CPython 3.15.2. Run the full suite and both P5 regressions with the
+  P1-pinned Dapane installed and retain hosted evidence. Local portable CI,
+  the full suite with Dapane and hosted synthetic CI each passed 342 tests.
+  The two focused P5 regressions also passed with Dapane installed.
+  [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
+  · [Hosted run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44473577455)

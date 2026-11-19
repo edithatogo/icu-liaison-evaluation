@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Render the approved-for-request (not approved-to-extract) CHHHS specification."""
 from __future__ import annotations
 

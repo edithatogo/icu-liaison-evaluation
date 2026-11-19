@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Execute only source-independent synthetic numerical/aggregate oracles.
 
 This is not a native-provider or CHHHS clinical qualification runner. It cannot

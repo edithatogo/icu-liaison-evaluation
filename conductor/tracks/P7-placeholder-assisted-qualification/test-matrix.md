@@ -9,5 +9,5 @@
 | Provider readiness | Explicit open gate and source lock | `--require-site-ready` returns 2 | External Dapane/Voiage/Kairos runtimes absent |
 | Output integrity | All released hashes verified | Tampered output or overwrite rejected | Not a signed release |
 
-Run `PYTHONPATH=src python -m pytest -q tests/test_p7_placeholder_progress.py`.
+Run `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p7_placeholder_progress.py`.
 Run all P0–P6 tests (possibly in non-overlapping partitions) before delivery.
