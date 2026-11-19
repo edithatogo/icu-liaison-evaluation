@@ -43,11 +43,13 @@ bash tools/install_git_hooks.sh
 ```
 
 `.pre-commit-config.yaml` mirrors the same `tools/run_local_ci.py` entrypoints
-(`--mode pre-commit --check-staged` on `pre-commit` and `--mode full` on
-`pre-push`). Local CI enforces forbidden-path checks, `SOURCE_MANIFEST.json`
-integrity, `pytest`, `tools/ci_smoke.py`, `tools/qualify_current_portable.py`,
-and `icu_liaison.cli` output contracts. Passing local CI does not close hosted,
-native-provider, empirical, or governance gates.
+(`--mode pre-commit --check-staged --gitleaks` on `pre-commit` and `--mode full`
+on `pre-push`; `.githooks/pre-commit` and `.githooks/pre-merge-commit` also
+require `gitleaks protect --staged`). Local CI enforces forbidden-path checks,
+`SOURCE_MANIFEST.json` integrity, `pytest`, `tools/ci_smoke.py`,
+`tools/qualify_current_portable.py`, and `icu_liaison.cli` output contracts.
+Passing local CI does not close hosted, native-provider, empirical, or
+governance gates.
 
 ## Evidence and release boundaries
 

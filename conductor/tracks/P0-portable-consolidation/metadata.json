@@ -13,7 +13,7 @@
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Hosted Actions jobs cannot start due to account billing/spending-limit availability. Native Dapane/Voiage, Gemini runtime and original PR reconciliation remain separately outstanding.",
+  "blocker": "Independent wheel-provenance adjudication (providers.lock.json binary_sha256), live Gemini interactive slash-command check, independent review/retirement of CareOps Sim PR #215, and CHHHS calibration remain outstanding.",
   "dependencies": [],
   "external_dependencies": [
     {
@@ -32,9 +32,13 @@
   ],
   "updated_at": "2026-11-19",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "current_task": "P0.4 local CI/CD, Git hooks and Conductor parity audit complete; hosted CI, native providers and PR #215 retirement remain open",
+  "current_task": "P0.4 public hosted CI passed, local gitleaks hooks active, Python 3.15.2 native Dapane/Voiage oracles executed, and PR #215 comparison recorded; independent review and PR #215 retirement remain open",
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
   "initial_import_pr_merged_sha": "4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558",
+  "hosted_ci_public_run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989",
+  "native_py315_oracle_receipt": "verification/p0-native-providers-py315-2026-11-19.json",
+  "pr215_comparison_doc": "docs/pr215-migration-comparison.md",
+  "gitleaks_precommit_enabled": true,
   "local_ci_hooks_installed": true,
   "imported_source_head": "ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d"
 }

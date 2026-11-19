@@ -14,7 +14,7 @@ from tools.audit_conductor_extension import (
     audit_extension,
     normalize_display_path,
 )
-from tools.run_local_ci import build_steps, find_forbidden_paths, run_local_ci
+from tools.run_local_ci import build_steps, find_forbidden_paths, run_gitleaks_staged, run_local_ci
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -196,3 +196,36 @@ def test_git_hooks_and_pre_commit_config_exist_and_are_executable() -> None:
 
     pre_commit_cfg = (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
     assert "tools/run_local_ci.py" in pre_commit_cfg
+    assert "--gitleaks" in pre_commit_cfg
+    assert "--gitleaks" in (ROOT / ".githooks/pre-commit").read_text(encoding="utf-8")
+    assert "--gitleaks" in (ROOT / ".githooks/pre-merge-commit").read_text(encoding="utf-8")
+
+
+def test_run_gitleaks_staged_fails_closed_when_missing_and_handles_exit_codes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("tools.run_local_ci.shutil.which", lambda name: None)
+    code_missing, rec_missing = run_gitleaks_staged(tmp_path)
+    assert code_missing == 2
+    assert rec_missing["status"] == "missing_binary"
+
+    seen: dict = {}
+
+    def fake_run_pass(cmd, **kwargs):
+        seen["cmd"] = cmd
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr("tools.run_local_ci.subprocess.run", fake_run_pass)
+    code_ok, rec_ok = run_gitleaks_staged(tmp_path, gitleaks_bin="/fake/gitleaks")
+    assert code_ok == 0
+    assert rec_ok["status"] == "passed"
+    assert seen["cmd"] == ["/fake/gitleaks", "protect", "--staged", "--no-banner", "--redact"]
+
+    def fake_run_leak(cmd, **kwargs):
+        return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="leaks found: 1")
+
+    monkeypatch.setattr("tools.run_local_ci.subprocess.run", fake_run_leak)
+    code_leak, rec_leak = run_gitleaks_staged(tmp_path, gitleaks_bin="/fake/gitleaks")
+    assert code_leak == 1
+    assert rec_leak["status"] == "failed"
+    assert "leaks found" in rec_leak["stderr"]

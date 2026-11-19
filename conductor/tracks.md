@@ -9,13 +9,15 @@ until content is faithfully reconciled and a replacement is verified.
    [spec](tracks/P0-portable-consolidation/spec.md),
    [plan](tracks/P0-portable-consolidation/plan.md)).
   Source, curated evidence, scenario and tested local adapters are preserved;
-  PR #1 is merged into `main` (`4644bb4`), the Conductor submodule is initialized
-  with static runtime/policy parity verified (`autoUpdate: true` caveat), and
-  local CI/CD + Git hooks (`pre-commit`, `pre-merge-commit`, `pre-push`) are
-  active. Hosted CI remains blocked before steps by account billing/spending-limit
-  availability (`44434804695`); installed native providers, live Gemini runtime
-  command qualification, CHHHS data, and CareOps Sim PR #215 retirement remain
-  pending.
+  the repository is now public with GitHub Secret Scanning + Push Protection
+  enabled, hosted GitHub Actions CI passed on `main` (`1c7f640`, run
+  `44444785989`), local CI/CD + `gitleaks` Git hooks (`pre-commit`,
+  `pre-merge-commit`, `pre-push`) are active, static Conductor 0.4.1 parity is
+  verified (`autoUpdate: true` caveat), isolated Python 3.15.2 native
+  Dapane `0.1.0` / Voiage `3.1.0` numerical oracles passed, and the 19-file
+  PR #215 comparison is recorded. Independent wheel-provenance adjudication,
+  live Gemini runtime command qualification, CHHHS data, and independent
+  sign-off to retire CareOps Sim PR #215 remain pending.
 - [~] **P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
    [spec](tracks/P1-provider-reuse/spec.md),

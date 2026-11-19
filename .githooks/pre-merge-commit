@@ -11,4 +11,4 @@ if [[ ! -x "$PY" ]]; then
   exit 1
 fi
 
-exec "$PY" "$ROOT/tools/run_local_ci.py" --mode full --check-staged
+exec "$PY" "$ROOT/tools/run_local_ci.py" --mode full --check-staged --gitleaks

@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -188,11 +189,52 @@ def _validate_step_output(step: dict, stdout: str) -> dict:
     return details
 
 
+def run_gitleaks_staged(root: Path, *, gitleaks_bin: str | None = None) -> tuple[int, dict]:
+    """Run gitleaks staged-changes secret scan, failing closed if missing or leaks found."""
+    exe = gitleaks_bin or shutil.which("gitleaks")
+    if exe is None:
+        return 2, {
+            "name": "gitleaks_staged",
+            "status": "missing_binary",
+            "exit_code": 2,
+            "error": "gitleaks binary not found on PATH",
+        }
+    started = time.monotonic()
+    proc = subprocess.run(
+        [exe, "protect", "--staged", "--no-banner", "--redact"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    elapsed = round(time.monotonic() - started, 3)
+    if proc.returncode == 0:
+        return 0, {
+            "name": "gitleaks_staged",
+            "status": "passed",
+            "exit_code": 0,
+            "elapsed_seconds": elapsed,
+        }
+    record: dict = {
+        "name": "gitleaks_staged",
+        "status": "failed",
+        "exit_code": proc.returncode,
+        "elapsed_seconds": elapsed,
+    }
+    if proc.stderr.strip():
+        record["stderr"] = proc.stderr.strip()
+    if proc.stdout.strip():
+        record["stdout"] = proc.stdout.strip()
+    return proc.returncode, record
+
+
 def run_local_ci(
     root: Path,
     *,
     mode: Mode = "full",
     check_staged: bool = False,
+    check_gitleaks: bool = False,
     python_exe: str | None = None,
     quiet: bool = False,
 ) -> tuple[int, dict]:
@@ -215,6 +257,7 @@ def run_local_ci(
         "python": py_ver_str,
         "git_branch": _git_branch(repo_root),
         "check_staged": check_staged,
+        "check_gitleaks": check_gitleaks,
         "forbidden_paths": forbidden,
         "hosted_ci_executed": False,
         "native_providers_executed": False,
@@ -227,6 +270,20 @@ def run_local_ci(
         if not quiet:
             print(f"[local-ci] FAIL: forbidden paths detected: {', '.join(forbidden)}", file=sys.stderr)
         return 2, summary
+
+    if check_gitleaks:
+        if not quiet:
+            print("[local-ci] Running gitleaks_staged...", file=sys.stderr)
+        gl_code, gl_record = run_gitleaks_staged(repo_root)
+        summary["steps"].append(gl_record)
+        if gl_code != 0:
+            summary["status"] = "LOCAL_CI_FAILED"
+            if not quiet:
+                detail = gl_record.get("error") or gl_record.get("stderr") or gl_record.get("stdout") or ""
+                print(f"[local-ci] FAIL gitleaks_staged (exit {gl_code}): {detail}", file=sys.stderr)
+            return gl_code, summary
+        if not quiet:
+            print(f"[local-ci] PASS gitleaks_staged ({gl_record['elapsed_seconds']:.2f}s)", file=sys.stderr)
 
     steps = build_steps(repo_root, exe, mode)
     for step in steps:
@@ -302,6 +359,7 @@ def main(argv: list[str] | None = None) -> int:
         default="full",
     )
     parser.add_argument("--check-staged", action="store_true")
+    parser.add_argument("--gitleaks", action="store_true")
     parser.add_argument("--json", action="store_true", dest="json_output")
     parser.add_argument("--write-receipt", type=Path, default=None)
     args = parser.parse_args(argv)
@@ -311,6 +369,7 @@ def main(argv: list[str] | None = None) -> int:
             root,
             mode=args.mode,
             check_staged=args.check_staged,
+            check_gitleaks=args.gitleaks,
             quiet=args.json_output,
         )
     except (OSError, RuntimeError, ValueError) as exc:

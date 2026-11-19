@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
+  "visibility": "public",
+  "security_and_analysis": {
+    "secret_scanning": "enabled",
+    "secret_scanning_push_protection": "enabled"
+  },
+  "workflow": {
+    "name": "Synthetic source validation",
+    "path": ".github/workflows/ci.yml"
+  },
+  "run_id": 44444785989,
+  "run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989",
+  "job_id": 135294191504,
+  "job_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989/job/135294191504",
+  "head_sha": "1c7f640e59f8b600738b84a0644d14699dda4605",
+  "branch": "main",
+  "status": "completed",
+  "conclusion": "success",
+  "started_at": "2026-11-19T02:30:17Z",
+  "completed_at": "2026-11-19T02:31:28Z",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "number": 2,
+      "name": "Check out project and recorded dependency pins",
+      "conclusion": "success"
+    },
+    {
+      "number": 3,
+      "name": "Set up Python 3.13",
+      "conclusion": "success"
+    },
+    {
+      "number": 4,
+      "name": "Install base, test and report dependencies",
+      "conclusion": "success"
+    },
+    {
+      "number": 5,
+      "name": "Verify project hashes and Conductor gitlink",
+      "conclusion": "success"
+    },
+    {
+      "number": 6,
+      "name": "Run synthetic contract and numerical tests",
+      "conclusion": "success"
+    },
+    {
+      "number": 7,
+      "name": "Exercise synthetic reports and closed admission gates",
+      "conclusion": "success"
+    }
+  ],
+  "native_providers_executed_in_hosted_ci": false,
+  "observed_chhhs_data_used": false,
+  "investment_ready": false,
+  "placeholder_gate_dedicated_repo_ci_still_pending_independent_review": true,
+  "historical_blocked_receipt": "verification/hosted-ci-2026-11-19.json",
+  "note": "Hosted GitHub Actions synthetic CI succeeded on public main commit 1c7f640. Independent review and native/site acceptance gates remain separate."
+}
