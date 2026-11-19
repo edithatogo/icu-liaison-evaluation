@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:reporting-catalogue:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_class",
+    "publication_gate",
+    "tables",
+    "figures"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "source_class": {
+      "const": "synthetic_only"
+    },
+    "publication_gate": {
+      "const": "not_CHHHS_validated"
+    },
+    "tables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/table"
+      }
+    },
+    "figures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/figure"
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^T[0-9]{2,7}$"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "artifact": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*\\.csv$"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "implemented",
+            "placeholder"
+          ]
+        },
+        "required_columns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          }
+        },
+        "grain": {
+          "$ref": "#/$defs/text"
+        },
+        "denominator": {
+          "$ref": "#/$defs/text"
+        },
+        "perspective": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/text"
+        },
+        "privacy": {
+          "enum": [
+            "synthetic_only",
+            "approved_aggregates_only"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "artifact",
+        "status",
+        "required_columns",
+        "grain",
+        "denominator",
+        "perspective",
+        "uncertainty",
+        "privacy"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "null"
+              },
+              "required_columns": {
+                "maxItems": 0
+              },
+              "privacy": {
+                "const": "approved_aggregates_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "implemented"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*\\.csv$"
+              },
+              "required_columns": {
+                "minItems": 1
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^F[0-9]{2,7}$"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "artifact": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*\\.svg$"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "implemented",
+            "implemented_optional",
+            "placeholder"
+          ]
+        },
+        "source_table": {
+          "type": "string",
+          "pattern": "^T[0-9]{2,7}$"
+        },
+        "plot_type": {
+          "$ref": "#/$defs/text"
+        },
+        "x": {
+          "$ref": "#/$defs/text"
+        },
+        "y": {
+          "$ref": "#/$defs/text"
+        },
+        "y_unit": {
+          "$ref": "#/$defs/text"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/text"
+        },
+        "alt_text": {
+          "type": "string",
+          "minLength": 15,
+          "maxLength": 1024
+        },
+        "privacy": {
+          "enum": [
+            "synthetic_only",
+            "approved_aggregates_only"
+          ]
+        },
+        "baseline": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "artifact",
+        "status",
+        "source_table",
+        "plot_type",
+        "x",
+        "y",
+        "y_unit",
+        "uncertainty",
+        "alt_text",
+        "privacy"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "placeholder"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "null"
+              },
+              "privacy": {
+                "const": "approved_aggregates_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "implemented",
+                  "implemented_optional"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*\\.svg$"
+              },
+              "privacy": {
+                "const": "synthetic_only"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

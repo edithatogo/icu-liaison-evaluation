@@ -34,3 +34,127 @@ def test_director_two_tables_source_consistent():
     assert d.count("## Table ")==2
     assert "first eligible adult" in d and "all live ward/home" in d
     assert "72" in d and "NWAU" in d
+
+
+def test_p5_generated_report_matches_p9_table_contract(tmp_path):
+    """Exercise the registered table schema on a real synthetic report bundle."""
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / "model-inputs/p4/illustrative.json").read_text()
+    )
+    report = tmp_path / "report"
+    build_report(scenario, report, voiage_mode="skip")
+    result = validate_report(report, load())
+    assert result["status"] == "synthetic_source_consistent_not_clinically_validated"
+    assert {"T01", "T02", "T03", "T04"} <= set(result["checked"])
+    assert "T05" not in result["checked"] and "T06" not in result["checked"]
+
+
+def test_p9_contract_rejects_unregistered_report_artifact(tmp_path):
+    """Report-file membership rejects a fabricated clinical results table."""
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / "model-inputs/p4/illustrative.json").read_text()
+    )
+    report = tmp_path / "report"
+    build_report(scenario, report, voiage_mode="skip")
+    (report / "unregistered-clinical-effect.csv").write_text(
+        "effect,value\nreturn_rate,0.5\n"
+    )
+    with pytest.raises(ValueError, match="file-set mismatch"):
+        validate_report(report, load())
+
+
+def test_reporting_schema_is_valid_and_admits_existing_catalogue():
+    from jsonschema import Draft202012Validator
+    from tools.validate_reporting_contracts import SCHEMA
+
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    assert list(Draft202012Validator(schema).iter_errors(load())) == []
+
+
+def test_reporting_schema_rejects_unrecognised_table_metadata():
+    c = load()
+    c["tables"][0]["claimed_clinical_approval"] = True
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_rejects_path_traversal():
+    c = load()
+    c["tables"][0]["artifact"] = "../../private/patient-records.csv"
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_requires_figure_axis():
+    c = load()
+    del c["figures"][0]["x"]
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_rejects_falsely_promoted_placeholder():
+    c = load()
+    c["tables"][4].update(status="implemented", artifact="invented.csv", required_columns=["value"])
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthetic_output():
+    c = load()
+    c["tables"][0]["privacy"] = "approved_aggregates_only"
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(c)
+
+
+def test_generated_svg_metadata_matches_registered_accessibility_text(tmp_path):
+    from xml.etree import ElementTree
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / 'model-inputs/p4/illustrative.json').read_text()
+    )
+    folder = tmp_path / 'report'
+    build_report(scenario, folder, plots=True)
+    expected = next(f for f in load()['figures'] if f['id'] == 'F01')['alt_text']
+    svg = ElementTree.parse(folder / 'scenario-comparison.svg').getroot()
+    description = svg.find('.//{http://purl.org/dc/elements/1.1/}description')
+    assert description is not None and description.text == expected
+    assert 'F01' in validate_report(folder, load())['checked']
+
+
+def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path):
+    import hashlib
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / 'model-inputs/p4/illustrative.json').read_text()
+    )
+    folder = tmp_path / 'report'
+    build_report(scenario, folder, plots=True)
+    path = folder / 'scenario-comparison.svg'
+    alt = next(f for f in load()['figures'] if f['id'] == 'F01')['alt_text']
+    original = path.read_text(encoding='utf-8')
+    assert alt in original
+    path.write_text(
+        original.replace(alt, 'A misleading clinical outcome claim'),
+        encoding='utf-8',
+    )
+    manifest_path = folder / 'manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['files_sha256'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match='accessibility description'):
+        validate_report(folder, load())
