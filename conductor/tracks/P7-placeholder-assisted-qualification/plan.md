@@ -21,11 +21,12 @@
 - [ ] 1. Qualify actual ANZICS publisher PDF and page-specific denominators.
 - [ ] 2. Obtain approved CHHHS cohort, workforce, cost, ward and clinical safety data with competent oversight.
 - [ ] 3. Execute and independently qualify pinned Dapane/Voiage/Kairos provider artifacts.
-  The corrected Dapane binary pin and scoped macOS arm64 native pricing
-  receipt have independent approval. The companion Dapane placeholder
-  continues to track qualification for the intended platforms through
+  Dapane's approved wheels, extensions and native pricing receipts are
+  scoped to the environments recorded in the lock. The companion Dapane
+  placeholder continues to track broader provider qualification through
   `provider_qualification_receipt_sha256`.
-  [Technical P7.5](../P7-technical-empirical-qualification/plan.md#dapane-native-execution-decision)
+  [Provider lock](../../../providers.lock.json) ·
+  [Technical P7.5](../P7-technical-empirical-qualification/plan.md)
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
 - [ ] 5. Migrate into user-selected dedicated repository, run its hosted checks, and preserve PR #215 until reconciled.
 

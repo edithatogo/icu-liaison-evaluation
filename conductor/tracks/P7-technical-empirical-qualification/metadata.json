@@ -20,6 +20,6 @@
   ],
   "dependency_tracks": ["P0-portable-consolidation", "P1-provider-reuse", "P2-clinical-economic-protocol", "P3-evidence-data-infrastructure", "P4-economic-decision-model", "P5-reporting-independent-review", "P6-kairos-capacity-validation"],
   "clinical_validation": false,
-  "native_execution": "dapane_macos_arm64_independently_reviewed_broader_qualification_pending",
+  "native_execution": "dapane_platform_scoped_independently_reviewed_broader_qualification_pending",
   "investment_ready": false
 }

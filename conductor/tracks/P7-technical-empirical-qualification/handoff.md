@@ -40,3 +40,12 @@ component conservation against frozen independent expectations. The lock
 records the receipt digest for macOS arm64 and CPython 3.15.2. Broader
 provider qualification, release review and Voiage admission remain open.
 [P7.5 native execution decision](plan.md#dapane-native-execution-decision)
+
+## Linux and Windows Dapane approvals — 19 November 2026
+
+Separate Codex reviewer `dapane_reviewer` signed off on the exact Ubuntu
+24.04.5 LTS x86-64 and Windows Server 2025 Datacenter x86-64 wheels,
+extensions and native execution receipts. The Windows decision covers the
+follow-up build and full vendor rerun with the two fixture key corrections.
+The provider lock records the approved hashes for each tested host and the
+signed decisions are retained privately. [P7.5 platform decisions](plan.md#linux-and-windows-dapane-decisions)

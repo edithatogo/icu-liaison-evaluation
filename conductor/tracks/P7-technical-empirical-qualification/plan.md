@@ -4,7 +4,7 @@
 - [x] P7.2 Independent P4 draw accounting and P3 aggregate QA/unknowns; focused tests.
 - [x] P7.3 Typed CHHHS 11-dataset request pack and clinical/causal validation protocol; no observed data imported.
 - [ ] P7.4 Run qualified Kairos native consumer against pinned source and reviewed Cargo.lock; currently missing Rust toolchain and lock.
-- [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. Dapane's pinned macOS arm64 binary and native pricing receipt have independent approval. Broader Dapane provider qualification and Voiage admission remain open.
+- [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64 artifacts and native pricing receipts have scoped independent approval. Broader Dapane provider qualification and Voiage admission remain open.
 - [ ] P7.6 Authenticate 2024/25 ANZICS publisher PDF bytes, exact source hash and pages.
 - [ ] P7.7 Receive authorised CHHHS activity, capacity, staffing and costing extracts; calibrate and validate prospectively with clinical/Finance/equity governance.
 - [ ] P7.8 Supply the selected dedicated GitHub repository, transplant sources, run hosted CI, independent review, and close exploratory careops-sim PR #215 after reconciliation.
@@ -74,7 +74,26 @@ consumer commit and the pre-insertion lock digest. The dated verdict and
 supporting evidence are retained privately.
 [Provider lock](../../../providers.lock.json)
 
-The companion P7 register still requires Dapane provider qualification for
-the intended platforms. Linux/Windows qualification, the `chrono` advisory,
-the Dapane CLI APFS case, release review and Voiage admission remain open.
-[Companion plan](../P7-placeholder-assisted-qualification/plan.md#p74--external-qualifications-blocked-not-accepted)
+### Linux and Windows Dapane decisions
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer`
+approved the exact Dapane 0.1.0 wheels, loaded extensions and native replay
+receipts for Ubuntu 24.04.5 LTS x86-64 with glibc 2.39 and Windows Server
+2025 Datacenter x86-64 build 26100 on CPython 3.15.2. The compiler trace
+showed Rust 1.99.1. The reviewer audited source and wheel provenance,
+the archived build evidence, wheel records, and the exact native output
+of independently authored pricing and component-conservation checks in
+a fresh environment on each build runner. [P1.4 platform findings](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
+
+The unmodified Windows vendor suite exposed 30 schema lookups that used
+inconsistent path separators. The reviewer verified the two test-only
+edits in a disposable checkout and all 196 passing tests against the
+follow-up wheel. The first Windows candidate remains historical. The
+platform-specific lock entries record the approved wheel, native
+extension and replay receipt SHA-256 digests. The dated verdicts and
+sealed evidence are retained privately. [Provider lock](../../../providers.lock.json) ·
+[Windows rerun](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44508599306/job/135506594520)
+
+Other platform environments, the upstream Windows test fixture defect,
+the `chrono` advisory, the macOS CLI APFS case, release review and Voiage
+admission remain open. [Companion plan](../P7-placeholder-assisted-qualification/plan.md#p74--external-qualifications-blocked-not-accepted)
