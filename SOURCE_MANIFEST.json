@@ -282,7 +282,7 @@
     "tools/qualify_p6_native.py": "9fb01dc370ae371119a62b1a15119f4ffbd8bc7067f9dbebc92690019340b979",
     "tools/qualify_providers.py": "9cff1835d4876d2da2ade6b9435289a936f0e3c49a862aa755f475cd707fc7d3",
     "tools/run_local_ci.py": "5103c2180cc1ceb3260af0ec720f3437139aab57a768a6e16214dd9488736fc8",
-    "tools/validate_reporting_contracts.py": "0cbc1cfd5fbb82b2aa44a0c3526824a34f2624cf1d6dd88f98f7cd7b7c266d6e",
+    "tools/validate_reporting_contracts.py": "997c64ee746998d265bd880ff7bbb66b1b8a4186872fb13af86e7aca9d3b1a91",
     "tools/verify_source_manifest.py": "d624b47a5f132530225d534fcd398b2b377f657ac61f38d8d2710d8a39bd9af4",
     "verification/hosted-ci-2026-11-19.json": "5c56f3d4fd24b820246693f3acc146dbc2e20c7b7b993e9fe74b858d5b802d90",
     "verification/hosted-ci-public-2026-11-19.json": "9c1450194f1bf1bb72ba55c0d290971de781dc8a6e0a561b96696037365bb807",

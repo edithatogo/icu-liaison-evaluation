@@ -53,7 +53,10 @@ def validate_catalogue(c: dict) -> None:
             raise ValueError('unknown empirical observation misrepresented')
         if tier == 'external_exploratory_only' and figure['exploratory_reference']['in_repo']:
             raise ValueError('external image wrongly claimed as repo artifact')
-    from tools.validate_measurement_contracts import validate_assurance
+    if __package__:
+        from tools.validate_measurement_contracts import validate_assurance
+    else:
+        from validate_measurement_contracts import validate_assurance
     validate_assurance(catalogue=c)
     byid = {t["id"]:t for t in c["tables"]}
     if byid["T06"]["perspective"] != "weighted_activity_not_actual_revenue":
