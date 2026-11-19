@@ -30,7 +30,7 @@
     "conductor/product-guidelines.md": "1856b731c7c2add049b3a8d46a6400c5fd17300a53875eac8abc06153ceb7054",
     "conductor/product.md": "7fc565f3cde1a6d31e197cdd94818fee38c329cbc8e3ed1e3c241214046edeae",
     "conductor/tech-stack.md": "0ff7cebfbb583de09bad570d85fbfa85e4f89944396aa85a6dab7fa8cce1313f",
-    "conductor/tracks.md": "4939f3063eff5ce8f3b401306610c16ae5f56efe9b0af034a05c0ff750379cf7",
+    "conductor/tracks.md": "629b9205b56d921f75a155f97756795fb58ab7774b9a249d3523bd42ad29eeb4",
     "conductor/tracks/P0-portable-consolidation/agent-contract.md": "8214d718df8188997184e88096a4aeb25c04d4d3c8ee17f7457f33c434183f1a",
     "conductor/tracks/P0-portable-consolidation/handoff.md": "a9d031b016bcd34cae9dd509c601f54780e573a62c52fe1daf6a5037e117cc97",
     "conductor/tracks/P0-portable-consolidation/index.md": "aa55675e6c72c935892e0344fa4d4829c079731405f5666b534c1f05b2d6b740",
@@ -280,7 +280,6 @@
     "verification/p0-pr215-migration-comparison-2026-11-19.json": "d0fe4ecb1512685a342bb733a079abacf0cea282e1798db4c9d714fa82d41b77",
     "verification/p0-py315-native-lock-2026-11-19.txt": "d8452f3e04e5cf77523be5d941b3b5e59ab503f12d545dca303e3be81a3e1da8",
     "verification/p1-local-receipt.json": "fe451013eb60647f938c52eb19f2dcd887b9d3a40ed37b3ec80d8839ab55b784",
-    "verification/p1-native-qualification-2026-11-19.json": "b223c8d22a86b6f689fa69a47bc750e54ae9e0256ecd86aff306641809cfc919",
     "verification/p1-nominal-dapane-requests.json": "1acf119ade570d3862bd05eadcbba8dd944960160104f55b1aec59039cc3a5ac",
     "verification/p1-source-checksums.json": "737c892c4c4ae6df75f9223b8fe506d5fa93ace818d5d973bd6a5653f8b27e21",
     "verification/p2-local-receipt.json": "0be08250a359ae904b2d2f84a1ad6ae46e509246f05e326332651a9e755d307a",
@@ -308,7 +307,15 @@
     "verification/test-logs/P8_source_suite_B.log": "c1fdfb7cbefabfeb9a4c9cbfe3734a9123a47bae1b7c3b8cda2a23d965ba7606",
     "verification/test-logs/P8_source_suite_C.log": "336065802166d8e410b0181d66c849d0cae8b8b4a7e11d0c8bee190a913acf44",
     "verification/test-logs/P8_source_suite_D.log": "f0f5b721259c60c2adbec0b216b9ba25af8654cce1e89e55165b0df9c9cb3004",
-    "verification/test-logs/P8_source_suite_E.log": "8137d98690055c2c5a9ddec7f135a644a64b32908ab5db76d842e42ad181baae"
+    "verification/test-logs/P8_source_suite_E.log": "8137d98690055c2c5a9ddec7f135a644a64b32908ab5db76d842e42ad181baae",
+    "docs/clinical-director-data-request.md": "94bcd17da6bd6fce20ee0941dc2313949fc6f9433ff152b12de6f4da7531fc98",
+    "contracts/reporting/catalogue.json": "aaed31826950b2765208ba6281c674c0d7730ccd7faecf49b680cf116b8e22db",
+    "tools/validate_reporting_contracts.py": "3b70bab43ce3a89a0ede5f902420c359b8d2fc01092cbaa8393da153cbf4adbd",
+    "tests/test_p9_reporting_contracts.py": "1e2415396331749db805a18b475f1ebbb911a195d5106fd7c02dbf55067cc506",
+    "conductor/tracks/P9-reporting-contracts/index.md": "3ef19faa7120f7fc1410d128755a974d0ab04c37e19418019df41d16e8320e57",
+    "conductor/tracks/P9-reporting-contracts/plan.md": "7be5c17a45bc58bd29c8d27d7c34f8bbc375262a5fcb4ccbafb972e8686939d3",
+    "conductor/tracks/P9-reporting-contracts/metadata.json": "163d492afe8441b5bf49cb269c9793560337781a0d5b87d250e0594234906c57",
+    "verification/p1-native-qualification-2026-11-19.json": "b223c8d22a86b6f689fa69a47bc750e54ae9e0256ecd86aff306641809cfc919"
   },
   "git_submodules": {
     "extensions/conductor": "7a5c560a4fdf5297be58594cc37527eb12790272"

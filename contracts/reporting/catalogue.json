@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "source_class": "synthetic_only",
+  "publication_gate": "not_CHHHS_validated",
+  "tables": [
+    {
+      "id": "T01",
+      "title": "Cost consequences",
+      "artifact": "cost-consequence.csv",
+      "status": "implemented",
+      "required_columns": [
+        "strategy_id",
+        "measure",
+        "unit",
+        "boundary",
+        "mean",
+        "p05",
+        "p50",
+        "p95"
+      ],
+      "grain": "strategy_by_measure",
+      "denominator": "eligible_annual_scenario_discharge",
+      "perspective": "resource_and_budget_separate",
+      "uncertainty": "PSA_not_confidence_interval",
+      "privacy": "synthetic_only"
+    },
+    {
+      "id": "T02",
+      "title": "Paired comparisons",
+      "artifact": "paired-comparisons.csv",
+      "status": "implemented",
+      "required_columns": [
+        "strategy_id",
+        "reference_strategy",
+        "measure",
+        "unit",
+        "mean",
+        "p05",
+        "p50",
+        "p95",
+        "probability_strictly_better"
+      ],
+      "grain": "strategy_by_measure",
+      "denominator": "paired_model_draws",
+      "perspective": "resource_or_budget_separate",
+      "uncertainty": "paired_PSA_not_clinical_superiority",
+      "privacy": "synthetic_only"
+    },
+    {
+      "id": "T03",
+      "title": "One-way sensitivity",
+      "artifact": "one-way-sensitivity.csv",
+      "status": "implemented",
+      "required_columns": [
+        "strategy_id"
+      ],
+      "grain": "strategy_by_parameter",
+      "denominator": "prior_bounds",
+      "perspective": "economic_resource",
+      "uncertainty": "one_way_not_PSA",
+      "privacy": "synthetic_only"
+    },
+    {
+      "id": "T04",
+      "title": "Decision draw surface",
+      "artifact": "decision-surface.csv",
+      "status": "implemented",
+      "required_columns": [
+        "current_care"
+      ],
+      "grain": "draw_by_strategy",
+      "denominator": "one_annual_programme_decision_per_draw",
+      "perspective": "resource_net_benefit_only",
+      "uncertainty": "paired_PSA",
+      "privacy": "synthetic_only"
+    },
+    {
+      "id": "T05",
+      "title": "Workforce costing",
+      "artifact": null,
+      "status": "placeholder",
+      "required_columns": [],
+      "grain": "strategy_by_roster",
+      "denominator": "paid_and_productive_hours",
+      "perspective": "financial_cost_reconcile_P4_prior",
+      "uncertainty": "workforce_qualification_pending",
+      "privacy": "approved_aggregates_only"
+    },
+    {
+      "id": "T06",
+      "title": "MCHS NWAU",
+      "artifact": null,
+      "status": "placeholder",
+      "required_columns": [],
+      "grain": "episode_by_strategy",
+      "denominator": "eligible_icu_hours",
+      "perspective": "weighted_activity_not_actual_revenue",
+      "uncertainty": "annual_parity_pending",
+      "privacy": "approved_aggregates_only"
+    },
+    {
+      "id": "T07",
+      "title": "Clinical safety",
+      "artifact": null,
+      "status": "placeholder",
+      "required_columns": [],
+      "grain": "cohort_by_endpoint",
+      "denominator": "endpoint_specific_followup",
+      "perspective": "clinical_safety_not_monetised",
+      "uncertainty": "local_data_pending",
+      "privacy": "approved_aggregates_only"
+    }
+  ],
+  "figures": [
+    {
+      "id": "F01",
+      "title": "Synthetic scenario comparison",
+      "artifact": "scenario-comparison.svg",
+      "status": "implemented_optional",
+      "source_table": "T01",
+      "plot_type": "bar_p05_p95",
+      "x": "strategy_id",
+      "y": "net_resource_benefit_aud",
+      "y_unit": "illustrative_AUD_price_year",
+      "uncertainty": "PSA_quantiles_not_CI",
+      "alt_text": "Synthetic net resource benefit by strategy with fifth to ninety-fifth percentile ranges, not CHHHS outcomes",
+      "privacy": "synthetic_only"
+    },
+    {
+      "id": "F02",
+      "title": "Budget impact waterfall",
+      "artifact": null,
+      "status": "placeholder",
+      "source_table": "T01",
+      "plot_type": "waterfall",
+      "x": "cost_component",
+      "y": "AUD",
+      "y_unit": "AUD_price_year",
+      "uncertainty": "Finance_reconciliation_pending",
+      "alt_text": "Not produced until cost components and marginal savings are verified",
+      "privacy": "approved_aggregates_only"
+    },
+    {
+      "id": "F03",
+      "title": "ICU discharge/occupancy trend",
+      "artifact": null,
+      "status": "placeholder",
+      "source_table": "T07",
+      "plot_type": "time_series",
+      "x": "time",
+      "y": "occupancy_or_delay",
+      "y_unit": "separate_panels",
+      "uncertainty": "CHHHS_data_pending",
+      "alt_text": "Not produced pending approved hospital timestamps and staffed bed counts",
+      "privacy": "approved_aggregates_only"
+    },
+    {
+      "id": "F04",
+      "title": "Cost effectiveness acceptability",
+      "artifact": null,
+      "status": "placeholder",
+      "source_table": "T07",
+      "plot_type": "acceptability_curve",
+      "x": "willingness_to_pay",
+      "y": "probability_preferred",
+      "y_unit": "proportion",
+      "uncertainty": "clinical_effect_pending",
+      "alt_text": "Not produced without a clinically validated outcome and threshold",
+      "privacy": "approved_aggregates_only"
+    }
+  ]
+}
