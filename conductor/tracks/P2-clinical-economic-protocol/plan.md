@@ -51,3 +51,7 @@ clinical deployment, GitHub merge or HREC approval is implied.
 - [x] The [P10 decision contract](../../../contracts/clinical/safety-decision.json) lists all six P2 safety outcomes and leaves unavailable measurements, noninferiority margins and site authority explicitly null.
 - [x] An illustrative positive net resource benefit cannot grant clinical safety or rollout acceptance.
 - [ ] Site clinical review of acceptable harm margins, endpoint ascertainment, early appropriate return interpretation and formal decision authority remains required.
+
+## P2.7: pre-registration and service fidelity
+- [x] Source-only [pre-registration draft](../../../contracts/clinical/preregistration.json) defines intention-to-cover, exploratory contact association, phased/controlled ITS, covariates and negative controls without observed data.
+- [ ] Before site implementation, clinically approve index validity definitions, current-care activity and exposure/roster recordings, proposed controls, minimum age, analysis locking and linked endpoints. The public draft is not registration.

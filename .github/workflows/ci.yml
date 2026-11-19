@@ -42,6 +42,8 @@ jobs:
         run: .venv/bin/python tools/evidence_lifecycle.py --as-of 2026-11-19 --price-year 2026
       - name: Falsify synthetic economic and safety assumptions
         run: .venv/bin/python -m tools.p10_falsification --iterations 128
+      - name: Verify causal pre-registration and exposure remain draft
+        run: .venv/bin/python tools/validate_preregistration.py
       - name: Run synthetic contract and numerical tests
         run: .venv/bin/python -m pytest -q
       - name: Exercise synthetic reports and closed admission gates

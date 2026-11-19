@@ -35,3 +35,8 @@
 - [x] **P10.12a:** execute five adversarial, paired, seeded P4 synthetic scenarios: null effect, harmful returns, no addressable delay, no usable capacity and no cash realisability; preserve P4/P5 kernel authority.
 - [x] **P10.12b:** assert independent accounting/capacity invariants and fail-closed P10 safety policy for each proposed strategy in CI.
 - [ ] **P10.12c:** add separately qualified structural-model and observed-data uncertainty decomposition after actual CHHHS/clinical evidence and methods review.
+
+- [x] **P10.16a:** source-only draft study preregistration and intervention-fidelity contract; distinguish roster eligibility from realised liaison contacts and avoid adjustment for post-treatment exposure as baseline confounding.
+- [x] **P10.16b:** prespecified comparison/design, mandatory clinical safety outcomes, negative controls and draft-case mix requirements; reject fake registration, site approval and missing outcomes.
+- [ ] **P10.16c:** resolve missing D03 index-specific valid-ready discharge-delay metric separately from M05/D04 all-live descriptive reporting, before a site primary outcome or statistical analysis can be frozen.
+- [ ] **P10.16d:** clinically approve pre-registration, current-care comparator, roster/contact definitions, intervention start, safety margins, data governance and independent analysis lock.

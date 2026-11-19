@@ -31,3 +31,6 @@ No patient-level data ingestion, signing keys, real approvals or substitute Dapa
 
 ## Additional falsification requirement
 - **R17** A synthetic economic demonstration must pass explicit null-effect, harmful-effect, non-addressable-delay, non-usable-capacity, non-cash-realisable and mispaired/invalid-effect negative cases. Preserve distinct physical, resource, cash and clinical-safety meanings.
+
+## Causal analysis and fidelity
+- **R18** Prior to estimating any CHHHS treatment effect, register and approve the index discharge estimand, contemporaneous control definition, baseline covariates, negative controls, rollout date and intention-to-cover versus realised-contact estimands. Maintain a distinct D03 index valid-ready measure rather than silently substituting all-live M05/D04.
