@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-19-P10-safety-v1",
+  "status": "thresholds_unapproved_outcomes_unmeasured",
+  "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+  "decision": "incremental_icu_liaison_service_investment",
+  "required_endpoints": [
+    {
+      "id": "delayed_escalation",
+      "metric_id": null,
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    },
+    {
+      "id": "post_icu_death",
+      "metric_id": "M15",
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    },
+    {
+      "id": "return_severity_and_appropriateness",
+      "metric_id": null,
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    },
+    {
+      "id": "treatment_limitations",
+      "metric_id": null,
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    },
+    {
+      "id": "ward_cardiac_arrest",
+      "metric_id": "M14",
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    },
+    {
+      "id": "ward_workload",
+      "metric_id": null,
+      "measurement_status": "unmeasured",
+      "safety_margin_status": "not_approved",
+      "approved_noninferiority_margin": null,
+      "observed_effect": null,
+      "source_receipt_sha256": null
+    }
+  ],
+  "review_roles": [
+    "icu_clinical_director",
+    "icu_nursing",
+    "clinical_governance",
+    "independent_statistics",
+    "finance",
+    "first_nations_governance_where_applicable"
+  ],
+  "signoff_authority": null,
+  "claim_boundary": "economic_break_even_not_a_patient_safety_gate"
+}
