@@ -8,7 +8,8 @@ The independent reviewer approved the exact Dapane wheels, loaded extensions
 and native pricing receipts for the recorded macOS arm64, Ubuntu x86-64
 and Windows Server x86-64 hosts on CPython 3.15.2. Broader release review
 and Voiage admission remain open. [macOS findings](plan.md#native-counterfactual-pricing-and-component-conservation) ·
-[Linux and Windows findings](plan.md#linux-and-windows-x86-64-qualification)
+[Linux findings](plan.md#linux-and-windows-x86-64-qualification) ·
+[Windows upstream rebuild](plan.md#windows-rebuild-after-the-upstream-fixture-fix)
 
 [Provider execution guide](../../../docs/providers-p1.md) ·
 [Exact source reference lock](../../../providers.lock.json)

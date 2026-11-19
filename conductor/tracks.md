@@ -37,7 +37,9 @@ until content is faithfully reconciled and a replacement is verified.
   The corrected Rust 1.99.1 Dapane wheel passed P1/P5. The independent reviewer
   approved the wheels, binary pins and native counterfactual pricing and
   component conservation receipts for the tested macOS arm64, Ubuntu
-  x86-64 and Windows Server x86-64 hosts. [P1.4 platform findings](tracks/P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
+  x86-64 and Windows Server x86-64 hosts. The Windows rebuild passed
+  all 215 vendor tests directly from the upstream fixture fix.
+  [P1.4 Windows rebuild](tracks/P1-provider-reuse/plan.md#windows-rebuild-after-the-upstream-fixture-fix)
 - [~] **P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
@@ -98,7 +100,7 @@ until content is faithfully reconciled and a replacement is verified.
   qualification and release review, Voiage admission, the 2024/25 PDF,
   CHHHS empirical calibration and approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
-  [P7.5 platform decisions](tracks/P7-technical-empirical-qualification/plan.md#linux-and-windows-dapane-decisions)
+  [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 
 - [~] **P8 — MCHS ABF, nursing workforce and valuation interoperability**
   ([index](tracks/P8-abf-workforce-interop/index.md),
