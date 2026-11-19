@@ -74,3 +74,18 @@ versioned `.githooks/` (`pre-commit`, `pre-merge-commit`, `pre-push`), and
 `verification/p0-local-ci-2026-11-19.json` and
 `verification/p0-gemini-conductor-audit-2026-11-19.json`; hosted CI, native
 providers, and CareOps Sim PR #215 retirement remain separate open gates.
+
+## Public visibility, hosted CI, native oracles, and PR #215 comparison (2026-11-19)
+
+After auditing the repository for private/confidential data, visibility was
+switched to public with GitHub Secret Scanning and Push Protection enabled, and
+`gitleaks protect --staged` was wired into `pre-commit` and `pre-merge-commit`.
+Hosted GitHub Actions (`Synthetic source validation`) passed on `main` (`1c7f640`,
+run `44444785989`), recorded in `verification/hosted-ci-public-2026-11-19.json`.
+Isolated Python 3.15.2 native Dapane `0.1.0` (`0658d94ad772023a0185a000b5254f9c2f4a63a9`)
+and PyPI Voiage `3.1.0` numerical oracles passed in
+`verification/p0-native-providers-py315-2026-11-19.json` (lockfile
+`verification/p0-py315-native-lock-2026-11-19.txt`), and the 19-file read-only
+comparison with CareOps Sim PR #215 is documented in `docs/pr215-migration-comparison.md`
+(`verification/p0-pr215-migration-comparison-2026-11-19.json`). Independent
+wheel-provenance adjudication and PR #215 retirement remain separate open gates.

@@ -1,0 +1,187 @@
+{
+  "central_accounting_identity": {
+    "annual_eligible_discharges": 1000,
+    "gross_resource_benefit_aud": 81270.0,
+    "icu_bed_days_released": 7.65,
+    "net_resource_benefit_aud": -168730.0,
+    "parity_verified": true,
+    "readmissions_avoided": 4.5
+  },
+  "date": "2026-11-19",
+  "disposition_counts": {
+    "careops_sim_repo_specific_not_carried_over": 3,
+    "deliberately_replaced_with_scipy_numpy": 2,
+    "migrated_and_expanded": 14
+  },
+  "files": [
+    {
+      "change_type": "MODIFIED",
+      "disposition": "careops_sim_repo_specific_not_carried_over",
+      "source_path": ".careops-security/inventory.json",
+      "target_paths": [
+        "SOURCE_MANIFEST.json",
+        "tools/verify_source_manifest.py"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "GEMINI.md",
+      "target_paths": [
+        "GEMINI.md"
+      ]
+    },
+    {
+      "change_type": "MODIFIED",
+      "disposition": "careops_sim_repo_specific_not_carried_over",
+      "source_path": "conductor/execution/tasks.json",
+      "target_paths": [
+        "conductor/tracks.md"
+      ]
+    },
+    {
+      "change_type": "MODIFIED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks.md",
+      "target_paths": [
+        "conductor/tracks.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/agent-contract.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/agent-contract.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/handoff.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/handoff.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/index.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/index.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/metadata.json",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/metadata.json"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/plan.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/plan.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/risk-register.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/risk-register.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/spec.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/spec.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "conductor/tracks/icu_liaison_economic_psa_20261117/test-matrix.md",
+      "target_paths": [
+        "conductor/tracks/P0-portable-consolidation/test-matrix.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "deliberately_replaced_with_scipy_numpy",
+      "source_path": "crates/careops-core/examples/icu_liaison.rs",
+      "target_paths": [
+        "src/icu_liaison/cli.py"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "deliberately_replaced_with_scipy_numpy",
+      "source_path": "crates/careops-core/src/icu_liaison.rs",
+      "target_paths": [
+        "src/icu_liaison/model.py",
+        "src/icu_liaison/schemas.py",
+        "tests/test_model.py"
+      ]
+    },
+    {
+      "change_type": "MODIFIED",
+      "disposition": "careops_sim_repo_specific_not_carried_over",
+      "source_path": "crates/careops-core/src/lib.rs",
+      "target_paths": [
+        "src/icu_liaison/__init__.py"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "docs/icu-liaison/evidence-and-decisions.md",
+      "target_paths": [
+        "conductor/evidence/source-register.json",
+        "conductor/decisions/ADR-0001-consumer-first.md",
+        "docs/anzics-source-reconciliation-2026-11-18.md",
+        "README.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "model-inputs/icu-liaison/README.md",
+      "target_paths": [
+        "README.md",
+        "docs/anzics-source-reconciliation-2026-11-18.md"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "model-inputs/icu-liaison/illustrative.json",
+      "target_paths": [
+        "model-inputs/illustrative.json"
+      ]
+    },
+    {
+      "change_type": "ADDED",
+      "disposition": "migrated_and_expanded",
+      "source_path": "tools/install_gemini_conductor.sh",
+      "target_paths": [
+        "tools/prepare_conductor_submodule.sh",
+        ".gitmodules",
+        "extensions/conductor"
+      ]
+    }
+  ],
+  "pr215_head_sha": "e6caa16c5b87cbfadd2b10588ed10b7c6d60b637",
+  "pr215_state_at_comparison": "OPEN_DRAFT_PRESERVED",
+  "pr215_url": "https://github.com/edithatogo/careops-sim/pull/215",
+  "schema_version": 1,
+  "source_repository": "edithatogo/careops-sim",
+  "target_repository": "edithatogo/icu-liaison-evaluation",
+  "timezone": "Australia/Brisbane",
+  "total_files_compared": 19
+}

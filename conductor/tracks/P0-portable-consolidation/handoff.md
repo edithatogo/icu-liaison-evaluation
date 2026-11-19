@@ -27,5 +27,21 @@ run `44434804695`, 0 steps executed). This machine now runs an isolated `.venv`
 `pre-merge-commit`, `pre-push`). `extensions/conductor` is initialized at
 `7a5c560a4fdf5297be58594cc37527eb12790272` and matches all 22 runtime/command/
 policy files of `~/.gemini/extensions/conductor` (`autoUpdate: true` caveat and
-live interactive slash-command execution remain open). Native Dapane 0.1 and
-Voiage 3.1 qualification and CareOps Sim PR #215 retirement remain pending.
+live interactive slash-command execution remain open).
+
+## Public CI, gitleaks, Python 3.15.2 native oracles, and PR #215 comparison (19 November 2026)
+
+`edithatogo/icu-liaison-evaluation` was changed to public visibility with GitHub
+Secret Scanning and Push Protection enabled, and hosted GitHub Actions CI
+passed on `main` (`1c7f640`, run `44444785989`, `verification/hosted-ci-public-2026-11-19.json`).
+Local `gitleaks protect --staged` scanning is wired into `pre-commit` and
+`pre-merge-commit`. In an external Python 3.15.2 environment, pinned Dapane
+`0.1.0` (`0658d94ad772023a0185a000b5254f9c2f4a63a9`) and PyPI Voiage `3.1.0`
+passed `tools/qualify_providers.py --provider all` (`verification/p0-native-providers-py315-2026-11-19.json`,
+lockfile `verification/p0-py315-native-lock-2026-11-19.txt`); 319/321 unchanged
+tests passed in Python 3.15.2, with only the 2 P5 absent-Dapane assertion
+tests failing because real Dapane executed. A read-only 19-file comparison
+against CareOps Sim PR #215 is recorded in `docs/pr215-migration-comparison.md`
+and `verification/p0-pr215-migration-comparison-2026-11-19.json`; PR #215 remains
+open pending independent sign-off, and independent wheel-provenance adjudication
+(`providers.lock.json`) remains open in P1.4/P7.

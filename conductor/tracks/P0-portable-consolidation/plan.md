@@ -28,13 +28,16 @@
   Imported head: `ea7bdc3b75beb74cfc8f4e27a1257caec0051c5d`; remote tree matches the reviewed local tree.
 - [x] Merge PR #1 into `main` (`4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558`) and
   synchronise local `main`.
-- [!] Complete hosted CI before integration. Initial push/PR runs and merge
-  run `44434804695` were blocked before any job step by account
-  billing/spending-limit availability. See
-  [hosted receipt](../../../verification/hosted-ci-2026-11-19.json).
+- [x] Complete hosted CI on the now-public repository: push to `main` (`1c7f640`)
+  passed all `Synthetic source validation` steps in run `44444785989`
+  ([public hosted receipt](../../../verification/hosted-ci-public-2026-11-19.json));
+  initial private-repo account-limit failures remain preserved in the
+  [historical hosted receipt](../../../verification/hosted-ci-2026-11-19.json).
 - [x] Implement local CI/CD runner (`tools/run_local_ci.py`), `.pre-commit-config.yaml`,
   and active `.githooks/` (`pre-commit`, `pre-merge-commit`, `pre-push`) in an
-  isolated Python 3.13 environment (`verification/p0-local-ci-2026-11-19.json`).
+  isolated Python 3.13 environment (`verification/p0-local-ci-2026-11-19.json`),
+  with local `gitleaks protect --staged` hook checks and GitHub public-repo
+  Secret Scanning + Push Protection enabled.
 - [x] Register and check out Conductor at the reviewed SHA as a Git submodule
   (`7a5c560a4fdf5297be58594cc37527eb12790272`).
 - [~] Qualify the installed Gemini extension commands and permissions: static
@@ -42,10 +45,19 @@
   passed (`verification/p0-gemini-conductor-audit-2026-11-19.json`), while
   `autoUpdate: true` on the user `github-release` install and live interactive
   Gemini CLI slash-command execution remain open.
-- [ ] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
-  consumers with independent numerical oracles and dependency lockfiles.
-- [ ] Open and complete a tested PR in the dedicated repository; independently
-  verify acceptance and only then retire CareOps Sim PR #215.
+- [x] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
+  consumers with independent numerical oracles and dependency lockfiles in an
+  isolated Python 3.15.2 scratch environment
+  ([native receipt](../../../verification/p0-native-providers-py315-2026-11-19.json),
+  [lockfile](../../../verification/p0-py315-native-lock-2026-11-19.txt)). Independent
+  wheel-provenance adjudication (`providers.lock.json` `binary_sha256`) and the
+  2 P5 absent-Dapane tests remain separate open items in P1.4/P7.
+- [~] Open and complete a tested PR in the dedicated repository; independently
+  verify acceptance and only then retire CareOps Sim PR #215. Exact 19-file
+  comparison and central accounting parity verification are recorded in
+  [PR #215 migration comparison](../../../docs/pr215-migration-comparison.md)
+  ([receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json));
+  PR #215 remains open pending independent sign-off.
 
 P0.4 pending does not block portable source tests. Completion of P0 cannot
 be claimed until target-repo and provider acceptance are obtained.

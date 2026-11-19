@@ -4,12 +4,14 @@
 [Ownership](agent-contract.md) · [Tests](test-matrix.md) ·
 [Risks](risk-register.md) · [Handoff](handoff.md)
 
-P0 is **partially completed**, with portable sources and local tests prepared.
-The user has provided the private destination repository and the reviewed
-Conductor submodule is initialized at `7a5c560a4fdf5297be58594cc37527eb12790272`.
-The [import record](../../../docs/repository-import.md) tracks source reconciliation
-and checks. PR #1 is merged into `main` (`4644bb4`), local CI/CD + Git hooks are
-active, and static Conductor 0.4.1 runtime parity is verified (`autoUpdate: true`
-caveat noted). Hosted CI, Dapane/Voiage installed-provider qualification, live
-Gemini runtime command acceptance, original PR closure and CHHHS calibration
-remain pending.
+P0 is **partially completed**, with portable sources, local CI/CD + `gitleaks`
+hooks, public hosted CI (`44444785989`), isolated Python 3.15.2 native
+Dapane/Voiage numerical oracle runs, and the 19-file PR #215 comparison
+completed. The repository is now public with GitHub Secret Scanning and Push
+Protection enabled, and the reviewed Conductor submodule is initialized at
+`7a5c560a4fdf5297be58594cc37527eb12790272` (`autoUpdate: true` caveat noted).
+The [import record](../../../docs/repository-import.md) and
+[PR #215 comparison](../../../docs/pr215-migration-comparison.md) track
+reconciliation and checks. Independent wheel-provenance adjudication, live
+Gemini runtime command acceptance, original PR #215 closure and CHHHS
+calibration remain pending.

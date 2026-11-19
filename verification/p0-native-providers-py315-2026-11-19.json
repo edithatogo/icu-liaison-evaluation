@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "timezone": "Australia/Brisbane",
+  "status": "NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING",
+  "environment": {
+    "python": "3.15.2",
+    "python_implementation": "CPython",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09) (Homebrew)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05) (Homebrew)",
+    "maturin": "1.16.0"
+  },
+  "dapane_build": {
+    "repository": "https://github.com/edithatogo/dapane",
+    "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+    "version": "0.1.0",
+    "contract": "0.1",
+    "wheel_filename": "dapane-0.1.0-cp315-cp315-macosx_11_0_arm64.whl",
+    "wheel_sha256": "5343c7b2dd0b47a6207125c5b191d7f0b7a3c6121204d09d0d02bb4a77592022",
+    "native_extension_digests": {
+      "dapane/_native.cpython-315-darwin.so": "d5ece8d154d56f007fc25486d5b27225de81e24696a527b46e8946e98b17ff3a"
+    }
+  },
+  "voiage_install": {
+    "repository": "https://github.com/edithatogo/voiage",
+    "release_tag": "v3.1.0",
+    "tag_commit": "d40af0276019a7d63657349b53dad96845e2b4c1",
+    "version": "3.1.0",
+    "wheel_filename": "voiage-3.1.0-cp315-abi3-macosx_11_0_arm64.whl",
+    "wheel_sha256": "ca1a625ea2e0f6c63ffd306f19cb62c1c69242643164553d5ca633e94146eb5b",
+    "native_extension_digests": {
+      "voiage/_core.abi3.so": "281903924effb5d54ff3dda03f285aa2e287d16bbb25daec9ee82326ae6ba31a"
+    }
+  },
+  "qualify_providers_output": {
+    "environment": {
+      "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+      "python": "3.15.2",
+      "python_implementation": "CPython"
+    },
+    "installed_distributions": [
+      {
+        "distribution": "dapane",
+        "native_extension_digests": {
+          "dapane/_native.cpython-315-darwin.so": "d5ece8d154d56f007fc25486d5b27225de81e24696a527b46e8946e98b17ff3a"
+        },
+        "origin_claim": "installed_distribution_only_no_wheel_source_attestation",
+        "version": "0.1.0"
+      },
+      {
+        "distribution": "voiage",
+        "native_extension_digests": {
+          "voiage/_core.abi3.so": "281903924effb5d54ff3dda03f285aa2e287d16bbb25daec9ee82326ae6ba31a"
+        },
+        "origin_claim": "installed_distribution_only_no_wheel_source_attestation",
+        "version": "3.1.0"
+      }
+    ],
+    "note": "Compare installed wheel/native-extension digests with reviewed artifacts before integration acceptance.",
+    "observations": [
+      {
+        "contract": "0.1",
+        "nominal_resource_bridge_aud": "-168730.00",
+        "one_line_rounded_aud": "100.00",
+        "provider": "dapane",
+        "status": "native_numerical_oracles_executed"
+      },
+      {
+        "illustrative_annual_programme_evpi_aud": 887.9132732582029,
+        "interpretation": "resource_only_no_QALYs_or_patient_level_EVPI",
+        "provider": "voiage",
+        "status": "native_numerical_oracles_executed",
+        "two_state_evpi_aud": 5.0
+      }
+    ],
+    "providers_requested": [
+      "dapane",
+      "voiage"
+    ],
+    "source_lock_sha256": "965201d67217d220c2f64bb9c00a6ec4e2267c61c62132b6c4784ac372deaddc",
+    "status": "NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING"
+  },
+  "cross_environment_comparison": {
+    "py313_18_qualify_current_portable_max_abs_diff_aud": 8.1709665315e-11,
+    "py315_2_qualify_current_portable_max_abs_diff_aud": 8.1709665315e-11,
+    "py315_2_ci_smoke_status": "synthetic_cli_smoke_passed",
+    "py315_2_unchanged_pytest_findings": {
+      "tests_passed": 319,
+      "tests_failed": 2,
+      "expected_missing_dapane_test_failures": [
+        "tests/test_p5_provider_execution.py::test_p5_real_provider_missing_fails_closed_without_directory",
+        "tests/test_p5_provider_execution.py::test_p5_cli_dapane_required_is_fail_closed"
+      ],
+      "explanation": "Both P5 tests explicitly assert that dapane is unavailable (expecting RuntimeError or CLI exit 2) and were left unchanged to preserve the P5 track boundary; in the isolated Python 3.15.2 environment with dapane==0.1.0 installed, real Dapane executed and returned exit 0 (illustrative_report_built)."
+    }
+  },
+  "lockfile": "verification/p0-py315-native-lock-2026-11-19.txt",
+  "independent_provenance_adjudication_complete": false,
+  "providers_lock_binary_sha256_still_null_pending_review": true,
+  "investment_ready": false
+}
