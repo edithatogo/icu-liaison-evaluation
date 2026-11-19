@@ -45,3 +45,12 @@ Observed outcomes and open caveats:
   unchanged `pytest` in Python 3.15.2 failed only the 2 P5 absent-Dapane tests,
   Linux/Windows qualification is pending, and independent P7 adjudication of
   `providers.lock.json` `binary_sha256` remains open.
+
+## Independent Dapane native execution approval — 19 November 2026
+
+Separate Codex reviewer `dapane_reviewer` approved the native
+counterfactual pricing and component conservation receipt on the corrected,
+pinned Dapane 0.1.0 installation. The lock records the receipt digest for
+macOS 27.2.1 arm64 and CPython 3.15.2. Broader platform and release
+qualification and Voiage admission remain open.
+[P1.4 findings](plan.md#native-counterfactual-pricing-and-component-conservation)

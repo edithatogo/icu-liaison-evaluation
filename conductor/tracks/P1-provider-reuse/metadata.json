@@ -8,13 +8,13 @@
   "implementation_started": true,
   "accepted_phases": ["P1.1", "P1.2", "P1.3"],
   "blocked_phases": ["P1.4", "P1.5"],
-  "blocker": "The corrected Rust 1.99.1 Dapane binary pin is independently approved for macOS arm64 and CPython 3.15.2. Separate native-execution and release evidence, Linux/Windows qualification, the Dapane CLI APFS filename test, RUSTSEC-2026-0543 follow-up and Voiage admission remain open.",
+  "blocker": "The corrected Dapane binary pin and native counterfactual pricing and component conservation receipt are independently approved for macOS arm64 and CPython 3.15.2. Release review, Linux/Windows qualification, the Dapane CLI APFS filename test, RUSTSEC-2026-0543 follow-up and Voiage admission remain open.",
   "dependencies": ["P0-portable-consolidation"],
   "native_qualification_receipt": "verification/p1-native-qualification-2026-11-19.json",
   "installed_dapane_regression_receipt": "verification/python-315-migration-2026-11-19.json",
   "py315_lockfile": "verification/p0-py315-native-lock-2026-11-19.txt",
   "external_dependencies": [
-    {"provider": "dapane", "contract": "0.1", "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9", "status": "macos_arm64_artifact_reviewed_release_pending"},
+    {"provider": "dapane", "contract": "0.1", "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9", "status": "macos_arm64_native_execution_reviewed_release_pending"},
     {"provider": "voiage", "contract": "3.1.0", "tag_commit": "d40af0276019a7d63657349b53dad96845e2b4c1", "status": "native_oracles_and_vendor_tests_passed_macos_arm64_provenance_adjudication_pending"}
   ]
 }

@@ -35,8 +35,9 @@ until content is faithfully reconciled and a replacement is verified.
   APFS non-UTF-8 test and `RUSTSEC-2026-0543` unmaintained `chrono` documented).
   The two corrected P5 regressions passed with the locked Dapane source build,
   and P0.5 raised the setuptools pin to 84.2.1.
-  The corrected Rust 1.99.1 Dapane wheel passed P1/P5 and has an independently
-  approved macOS arm64 binary pin. [P1.4 corrected candidate](tracks/P1-provider-reuse/plan.md#corrected-rust-1991-candidate)
+  The corrected Rust 1.99.1 Dapane wheel passed P1/P5. The independent reviewer
+  approved the macOS arm64 binary pin and native counterfactual pricing and
+  component conservation receipt. [P1.4 native execution](tracks/P1-provider-reuse/plan.md#native-counterfactual-pricing-and-component-conservation)
 - [~] **P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
@@ -93,9 +94,11 @@ until content is faithfully reconciled and a replacement is verified.
   [plan](tracks/P7-technical-empirical-qualification/plan.md)).
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
   2023/24 review. P7.5 records scoped approval of the corrected Dapane binary
-  pin. The separate native-execution and release gates, Voiage admission,
-  the 2024/25 PDF, CHHHS empirical calibration and approvals remain open.
+  and native execution receipt. Broader Dapane qualification and release
+  review, Voiage admission, the 2024/25 PDF, CHHHS empirical calibration and
+  approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
+  [P7.5 native execution decision](tracks/P7-technical-empirical-qualification/plan.md#dapane-native-execution-decision)
 
 - [~] **P8 — MCHS ABF, nursing workforce and valuation interoperability**
   ([index](tracks/P8-abf-workforce-interop/index.md),

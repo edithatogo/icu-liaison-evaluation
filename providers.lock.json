@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "snapshot_date": "2026-11-18",
-  "purpose": "Source and interface lock with scoped independently reviewed native artifact pins",
+  "purpose": "Source and interface lock with scoped independently reviewed native artifacts and execution evidence",
   "providers": {
     "dapane": {
       "distribution": "dapane",
@@ -22,8 +22,9 @@
         "rustc": "1.99.1",
         "reviewed_on": "2026-11-19"
       },
-      "native_execution_receipt_sha256": null,
-      "status": "macos_arm64_artifact_reviewed_release_pending"
+      "native_execution_receipt_sha256": "589564b3a86da645ac671e02a82eced40373261a473b5c4bdeaff164f6568110",
+      "provider_qualification_receipt_sha256": null,
+      "status": "macos_arm64_native_execution_reviewed_release_pending"
     },
     "voiage": {
       "distribution": "voiage",
