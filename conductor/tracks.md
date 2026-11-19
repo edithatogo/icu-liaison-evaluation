@@ -36,9 +36,13 @@ until content is faithfully reconciled and a replacement is verified.
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
    [plan](tracks/P2-clinical-economic-protocol/plan.md)).
-  P2.1–P2.4 clinical/cohort/economic contracts and synthetic outcome tests
-  implemented locally; **P2.5 site clinical/finance review, real data,
-  safety threshold, ethics/governance and native provider gates remain open**.
+  P2.1–P2.4 clinical/cohort/economic contracts, synthetic outcome tests, and
+  P2.5 preparation deliverables (`docs/p2-stakeholder-review-pack.md`, 32↔115
+  CHHHS field crosswalk, fail-closed 7-gate sign-off template, and
+  `verification/p2-governance-crosswalk-2026-11-19.json`) are implemented;
+  **P2.5 site clinical/Nursing/Finance/HREC/First Nations approvals, real
+  CHHHS data, safety thresholds, and P1/P7 provider provenance adjudication
+  remain open**.
 - [~] **P3 — Public evidence provenance and controlled data admission**
   ([index](tracks/P3-evidence-data-infrastructure/index.md),
    [spec](tracks/P3-evidence-data-infrastructure/spec.md),

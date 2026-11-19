@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "status": "template_unapproved_no_site_signoff",
+  "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+  "protocol_sha256": "1d34284e55fd781cf534224f627e931dafa165b6bd81998c0ee2d62b01cf8f6e",
+  "data_dictionary_sha256": "563d786f6a0880a4530bddfb9701a1273a5b8591227904092f6b22c543c86e88",
+  "pending_protocol_decisions": {
+    "current_care_funded_fte": null,
+    "liaison_service_funded_fte": null,
+    "hours_of_coverage_per_week": null,
+    "approved_noninferiority_margins": {},
+    "minimum_data_completeness_approved": null,
+    "ethics_or_qi_pathway": null
+  },
+  "gates": [
+    {
+      "id": "icu_medical_clinical_director",
+      "owner_role": "ICU Medical / Clinical Director",
+      "scope": "Cohort eligibility, first-index live ward discharge denominator, clinical readiness definition, and proposed study design",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "icu_nursing_liaison_lead",
+      "owner_role": "ICU Nursing / Liaison Service Lead",
+      "scope": "Observed baseline comparator, incremental liaison FTE, coverage hours, roster model, and existing work displacement",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "ward_nursing_operations",
+      "owner_role": "Receiving Ward Nursing & Patient Flow Operations",
+      "scope": "Receiving ward bed/staffing constraints, handover workflow, ward workload measurement, and escalation expectations",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "finance_and_clinical_costing",
+      "owner_role": "CHHHS Finance & Clinical Costing",
+      "scope": "2026 price year, marginal ICU vs ward offset valuation, nonoverlapping cost segments, workforce on-costs, and budget vs economic separation",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "clinical_governance_patient_safety",
+      "owner_role": "Clinical Governance & Patient Safety Committee",
+      "scope": "Six mandatory safety endpoints, prespecified noninferiority margins or stopping rules, and minimum acceptable data completeness threshold",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "hrec_and_data_stewardship",
+      "owner_role": "HREC / Quality Activity & CHHHS Data Stewardship",
+      "scope": "Ethics vs quality-improvement pathway determination, pseudonymisation key custody, secure environment boundary, and data extraction authority",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    },
+    {
+      "id": "first_nations_and_consumer_governance",
+      "owner_role": "Aboriginal and Torres Strait Islander Health & Consumer Governance",
+      "scope": "First Nations data sovereignty, small-cell suppression rules, rural/remote equity stratification, and approved transition-experience reporting",
+      "decision": "pending",
+      "approval_reference": null,
+      "signed_date": null,
+      "conditions": []
+    }
+  ]
+}

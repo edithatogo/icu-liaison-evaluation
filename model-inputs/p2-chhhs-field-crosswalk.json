@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "status": "planning_crosswalk_no_local_data",
+  "p2_dictionary_path": "model-inputs/clinical-data-dictionary.json",
+  "chhhs_request_path": "model-inputs/chhhs-data-request.json",
+  "mappings": [
+    {
+      "p2_field": "hospitalisation_pseudonym",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["hospitalisation_pseudonym"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct site-generated pseudonymous hospitalisation join key."
+    },
+    {
+      "p2_field": "index_icu_episode_id",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["icu_episode_id"],
+      "mapping_kind": "derived",
+      "reconciliation_note": "Derived by selecting the first eligible live adult ICU-to-ward discharge episode per hospitalisation_pseudonym."
+    },
+    {
+      "p2_field": "icu_admission_at",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["icu_admission_at"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct ICU admission timestamp in ISO 8601 timezone-aware format."
+    },
+    {
+      "p2_field": "icu_medically_ready_at",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["icu_medically_ready_at"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct clinical discharge readiness timestamp; retain null if missing."
+    },
+    {
+      "p2_field": "icu_actual_departure_at",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["icu_actual_departure_at"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct physical ICU departure timestamp."
+    },
+    {
+      "p2_field": "destination_category",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["destination_category"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct coded discharge destination separating eligible wards from death, home, ICU-to-ICU, and transfers."
+    },
+    {
+      "p2_field": "adult_age_at_icu_admission_years",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["adult_age_at_icu_admission_years"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct completed age in years at ICU admission for adult >=16 eligibility."
+    },
+    {
+      "p2_field": "hospitalisation_final_departure_at",
+      "dataset_id": "hospital_outcomes",
+      "target_fields": ["hospital_separated_at"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to hospital_outcomes.hospital_separated_at marking final hospital stay separation."
+    },
+    {
+      "p2_field": "followup_observation_end_at",
+      "dataset_id": "hospital_outcomes",
+      "target_fields": ["followup_observation_end_at"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct end timestamp of inpatient follow-up surveillance."
+    },
+    {
+      "p2_field": "censor_reason",
+      "dataset_id": "hospital_outcomes",
+      "target_fields": ["followup_censor_reason"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to hospital_outcomes.followup_censor_reason capturing separation, transfer, death, or full observation."
+    },
+    {
+      "p2_field": "icu_readmission_at",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["icu_admission_at"],
+      "mapping_kind": "derived",
+      "reconciliation_note": "Derived as any subsequent icu_episodes.icu_admission_at within the same hospitalisation_pseudonym after index physical departure."
+    },
+    {
+      "p2_field": "readmission_planned_status",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["readmission_planned_status"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct planned/unplanned/unknown readmission adjudication."
+    },
+    {
+      "p2_field": "hospital_death_at",
+      "dataset_id": "hospital_outcomes",
+      "target_fields": ["hospital_death_at"],
+      "mapping_kind": "exact",
+      "reconciliation_note": "Direct in-hospital death timestamp within the index hospitalisation."
+    },
+    {
+      "p2_field": "ward_cardiac_arrest_at",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["event_at", "event_type"],
+      "mapping_kind": "filtered_event",
+      "reconciliation_note": "Filter clinical_safety rows where event_type denotes post-ICU ward cardiac arrest and extract event_at."
+    },
+    {
+      "p2_field": "deterioration_recognised_at",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["escalation_request_at"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.escalation_request_at; site review must confirm whether escalation request time equals clinical recognition time."
+    },
+    {
+      "p2_field": "escalation_responded_at",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["critical_response_at"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.critical_response_at."
+    },
+    {
+      "p2_field": "return_severity",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["patient_deterioration_severity"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.patient_deterioration_severity; reconcile locally with return-episode icu_episodes.anzrod_predicted_mortality."
+    },
+    {
+      "p2_field": "return_appropriateness_review",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["return_appropriateness"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.return_appropriateness."
+    },
+    {
+      "p2_field": "treatment_goals_at_discharge",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["treatment_limitation_status"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.treatment_limitation_status; site check required to verify capture at index ICU discharge rather than only on safety events."
+    },
+    {
+      "p2_field": "icu_admission_severity",
+      "dataset_id": "icu_episodes",
+      "target_fields": ["anzrod_predicted_mortality"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to icu_episodes.anzrod_predicted_mortality for baseline case-mix adjustment."
+    },
+    {
+      "p2_field": "ward_staffed_bed_count",
+      "dataset_id": "bed_capacity",
+      "target_fields": ["ward_open_beds"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to bed_capacity.ward_open_beds; semantic verification required to distinguish physically open vs staffed receiving-ward beds."
+    },
+    {
+      "p2_field": "icu_staffed_bed_count",
+      "dataset_id": "bed_capacity",
+      "target_fields": ["staffed_icu_beds"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to bed_capacity.staffed_icu_beds."
+    },
+    {
+      "p2_field": "ward_workload_minutes",
+      "dataset_id": "clinical_safety",
+      "target_fields": ["ward_workload_metric"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to clinical_safety.ward_workload_metric; confirm locally whether workload is recorded in nursing minutes or a categorical acuity score."
+    },
+    {
+      "p2_field": "liaison_contact_at",
+      "dataset_id": "liaison_activity",
+      "target_fields": ["contact_at"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to liaison_activity.contact_at."
+    },
+    {
+      "p2_field": "liaison_intervention_type",
+      "dataset_id": "liaison_activity",
+      "target_fields": ["contact_type"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to liaison_activity.contact_type."
+    },
+    {
+      "p2_field": "liaison_roster_coverage_hours",
+      "dataset_id": "staffing_costs",
+      "target_fields": ["coverage_hours_per_week"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to staffing_costs.coverage_hours_per_week."
+    },
+    {
+      "p2_field": "liaison_incremental_fte",
+      "dataset_id": "staffing_costs",
+      "target_fields": ["rostered_fte", "service_model_id"],
+      "mapping_kind": "derived",
+      "reconciliation_note": "Derived as proposed service_model_id rostered_fte net of observed current-care baseline rostered_fte."
+    },
+    {
+      "p2_field": "cost_ledger_entry_id",
+      "dataset_id": "cost_resource_ledger",
+      "target_fields": ["resource_use_id"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to cost_resource_ledger.resource_use_id."
+    },
+    {
+      "p2_field": "cost_resource_segment",
+      "dataset_id": "cost_resource_ledger",
+      "target_fields": ["cost_segment"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to cost_resource_ledger.cost_segment enforcing nonoverlapping index, return, and liaison segments."
+    },
+    {
+      "p2_field": "cost_resource_quantity",
+      "dataset_id": "cost_resource_ledger",
+      "target_fields": ["resource_quantity"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to cost_resource_ledger.resource_quantity."
+    },
+    {
+      "p2_field": "cost_unit_quotation",
+      "dataset_id": "cost_resource_ledger",
+      "target_fields": ["quoted_unit_cost_aud"],
+      "mapping_kind": "renamed",
+      "reconciliation_note": "Mapped to cost_resource_ledger.quoted_unit_cost_aud."
+    },
+    {
+      "p2_field": "patient_family_transition_experience",
+      "dataset_id": "equity_experience",
+      "target_fields": ["reported_metric", "aggregate_value"],
+      "mapping_kind": "aggregate_governed",
+      "reconciliation_note": "Governed aggregate summary reporting only with small-cell suppression under equity_experience."
+    }
+  ]
+}
