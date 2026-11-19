@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_EVEN
 import json
+import os
+import builtins
 from pathlib import Path
 import subprocess
 import sys
@@ -74,7 +76,16 @@ def test_p5_no_implicit_provider_and_bad_mode_rejected(tmp_path):
     assert not (tmp_path / 'bad').exists()
 
 
-def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path):
+def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path, monkeypatch):
+    # Exercise the missing-provider branch even when native Dapane is installed.
+    original_import = builtins.__import__
+
+    def without_dapane(name, *args, **kwargs):
+        if name == 'dapane' or name.startswith('dapane.'):
+            raise ImportError('simulated missing Dapane provider')
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, '__import__', without_dapane)
     target = tmp_path / 'missing'
     with pytest.raises(RuntimeError, match='Dapane'):
         build_report(scenario(), target, dapane_mode='provider')
@@ -82,12 +93,16 @@ def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path):
 
 
 def test_p5_cli_dapane_required_is_fail_closed(tmp_path):
+    # Shadow site-packages deterministically for the subprocess only.
+    unavailable = tmp_path / 'unavailable'
+    unavailable.mkdir()
+    (unavailable / 'dapane.py').write_text("raise ImportError('simulated Dapane unavailable')\n")
     target = tmp_path / 'missing'
     result = subprocess.run(
         [sys.executable, '-m', 'icu_liaison.p5_cli',
          str(ROOT / 'model-inputs/p4/illustrative.json'),
          '--output-dir', str(target), '--dapane'],
-        cwd=ROOT, env={'PYTHONPATH': str(ROOT / 'src')},
+        cwd=ROOT, env={**os.environ, 'PYTHONPATH': os.pathsep.join([str(unavailable), str(ROOT / 'src')])},
         capture_output=True, text=True,
     )
     assert result.returncode == 2

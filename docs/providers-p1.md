@@ -129,3 +129,13 @@ findings, cross-environment `3.13.18` vs `3.15.2` CLI byte-parity, and P5
 `verification/p0-py315-native-lock-2026-11-19.txt`. Independent P7 adjudication
 of `providers.lock.json` (`binary_sha256` kept `null`) and Linux/Windows
 platform qualification remain open.
+
+## Provider-presence-independent P5 negative tests
+
+The historical 19 November Python 3.15 receipt documented two failing P5 tests
+because they implicitly assumed Dapane was not installed. The tests now simulate
+unavailability explicitly in their own process/subprocess, so CI can exercise
+the fail-closed refusal both with and without a provider on the host. This
+source-level test repair does not modify the P5 production valuation adapter or
+change the historical receipt. Re-run the complete Python 3.15 native matrix
+before qualifying that platform as fully accepted.
