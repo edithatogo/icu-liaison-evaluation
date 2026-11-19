@@ -35,6 +35,8 @@ until content is faithfully reconciled and a replacement is verified.
   APFS non-UTF-8 test and `RUSTSEC-2026-0543` unmaintained `chrono` documented).
   The two corrected P5 regressions passed with the locked Dapane source build,
   and P0.5 raised the setuptools pin to 84.2.1.
+  The rebuilt wheel passed local source, build-product and installed-file
+  checks on macOS arm64. [P1.4 evidence review](tracks/P1-provider-reuse/plan.md#rebuilt-dapane-wheel-evidence-review)
 - [~] **P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
@@ -90,9 +92,10 @@ until content is faithfully reconciled and a replacement is verified.
   ([index](tracks/P7-technical-empirical-qualification/index.md),
   [plan](tracks/P7-technical-empirical-qualification/plan.md)).
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
-  2023/24 review; native installed providers, 2024/25 PDF, CHHHS empirical
-  calibration and approvals remain open. Hosted integration evidence is
-  tracked in the repository import record.
+  2023/24 review. P7.5 has a local Dapane wheel evidence review. Independent
+  provider artifact admission, the 2024/25 PDF, CHHHS empirical calibration
+  and approvals remain open. Hosted integration evidence is tracked in the
+  repository import record.
 
 - [~] **P8 — MCHS ABF, nursing workforce and valuation interoperability**
   ([index](tracks/P8-abf-workforce-interop/index.md),
