@@ -34,3 +34,38 @@ def test_director_two_tables_source_consistent():
     assert d.count("## Table ")==2
     assert "first eligible adult" in d and "all live ward/home" in d
     assert "72" in d and "NWAU" in d
+
+
+def test_p5_generated_report_matches_p9_table_contract(tmp_path):
+    """Exercise the registered table schema on a real synthetic report bundle."""
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / "model-inputs/p4/illustrative.json").read_text()
+    )
+    report = tmp_path / "report"
+    build_report(scenario, report, voiage_mode="skip")
+    result = validate_report(report, load())
+    assert result["status"] == "synthetic_source_consistent_not_clinically_validated"
+    assert {"T01", "T02", "T03", "T04"} <= set(result["checked"])
+    assert "T05" not in result["checked"] and "T06" not in result["checked"]
+
+
+def test_p9_contract_rejects_unregistered_report_artifact(tmp_path):
+    """Report-file membership rejects a fabricated clinical results table."""
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from tools.validate_reporting_contracts import validate_report
+
+    scenario = EconomicScenario.model_validate_json(
+        (ROOT / "model-inputs/p4/illustrative.json").read_text()
+    )
+    report = tmp_path / "report"
+    build_report(scenario, report, voiage_mode="skip")
+    (report / "unregistered-clinical-effect.csv").write_text(
+        "effect,value\nreturn_rate,0.5\n"
+    )
+    with pytest.raises(ValueError, match="file-set mismatch"):
+        validate_report(report, load())
