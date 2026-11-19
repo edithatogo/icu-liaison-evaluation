@@ -46,3 +46,8 @@
 
 These source milestones are local acceptance only. No site/hospital assertion,
 clinical deployment, GitHub merge or HREC approval is implied.
+
+## P2.6: P10 source-only safety decision integration
+- [x] The [P10 decision contract](../../../contracts/clinical/safety-decision.json) lists all six P2 safety outcomes and leaves unavailable measurements, noninferiority margins and site authority explicitly null.
+- [x] An illustrative positive net resource benefit cannot grant clinical safety or rollout acceptance.
+- [ ] Site clinical review of acceptable harm margins, endpoint ascertainment, early appropriate return interpretation and formal decision authority remains required.

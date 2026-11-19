@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:icu-liaison:safety-decision:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "revision",
+    "status",
+    "protocol_id",
+    "decision",
+    "required_endpoints",
+    "review_roles",
+    "signoff_authority",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "revision": {
+      "const": "2026-11-19-P10-safety-v1"
+    },
+    "status": {
+      "const": "thresholds_unapproved_outcomes_unmeasured"
+    },
+    "protocol_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "const": "incremental_icu_liaison_service_investment"
+    },
+    "required_endpoints": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "metric_id",
+          "measurement_status",
+          "safety_margin_status",
+          "approved_noninferiority_margin",
+          "observed_effect",
+          "source_receipt_sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^M[0-9]{2}$"
+              }
+            ]
+          },
+          "measurement_status": {
+            "const": "unmeasured"
+          },
+          "safety_margin_status": {
+            "const": "not_approved"
+          },
+          "approved_noninferiority_margin": {
+            "type": "null"
+          },
+          "observed_effect": {
+            "type": "null"
+          },
+          "source_receipt_sha256": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "review_roles": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "signoff_authority": {
+      "type": "null"
+    },
+    "claim_boundary": {
+      "const": "economic_break_even_not_a_patient_safety_gate"
+    }
+  }
+}

@@ -36,6 +36,8 @@ jobs:
         run: .venv/bin/python tools/verify_source_manifest.py
       - name: Validate source-only table and figure catalogue
         run: .venv/bin/python tools/validate_reporting_contracts.py
+      - name: Assert clinical safety overrides synthetic economic gain
+        run: .venv/bin/python tools/evaluate_safety_decision.py --synthetic-net-resource-benefit 1000000
       - name: Run synthetic contract and numerical tests
         run: .venv/bin/python -m pytest -q
       - name: Exercise synthetic reports and closed admission gates

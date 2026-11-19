@@ -22,3 +22,6 @@
 
 ## Won't in this source-only phase
 No patient-level data ingestion, signing keys, real approvals or substitute Dapane/Voiage/Kairos/MCHS engines.
+
+## Additional Must: safety-constrained decision
+- **R15** Any positive economic value must remain non-decisive if clinical safety outcomes, acceptable harm thresholds, risk adjustment, ascertainment or independent clinical and Finance signoff are unqualified. Synthetic analyses cannot prove noninferiority.

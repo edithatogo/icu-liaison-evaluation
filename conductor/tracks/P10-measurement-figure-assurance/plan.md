@@ -23,3 +23,7 @@
 - [x] **P10.10a:** independently recompute P4 canonical scenario digest, P5 model identity/manifest, F01 SVG hash and P5/P9 reviews; emit a reproducible directed source→table→figure graph outside the P5 bundle. This certifies **computational consistency only**.
 - [x] **P10.10b:** negative fixtures for changed input seed, missing SVG and rehashed tampering; verify stored receipts against fresh source hashes. No editable receipt grants an external authority.
 - [ ] **P10.10c:** add actual independent SVG mark/visual receipts before any `accepted_synthetic` status or human visual acceptance.
+
+- [x] **P10.15a:** register all six mandatory P2 safety outcomes as unmeasured with null noninferiority margins and no invented local source.
+- [x] **P10.15b:** reject positive synthetic net resource benefit as clinical investment authorisation; test unknowns, fake margins/signoffs, endpoint omissions, nonfinite economics and incorrectly substituted endpoints.
+- [ ] **P10.15c:** clinically determine margin/effect/threshold per endpoint and verify external authority before site decision.
