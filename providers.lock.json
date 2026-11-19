@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "snapshot_date": "2026-11-18",
-  "purpose": "Source reference and interface lock; NOT an installed binary or wheel-hash lock",
+  "purpose": "Source and interface lock with scoped independently reviewed native artifact pins",
   "providers": {
     "dapane": {
       "distribution": "dapane",
@@ -12,8 +12,18 @@
       "method_version": "dapane-exact-v0.1.0",
       "type": "unpublished_source_built_python_wheel",
       "build_guide": "https://github.com/edithatogo/dapane/blob/main/docs/quickstart.md",
-      "binary_sha256": null,
-      "status": "source_contract_inspected_native_artifact_unverified"
+      "binary_sha256": "473c9f9adf0f4cbcb46a2f2ea5987e42349d6ce1a44e62a1a0e283cf322ead5d",
+      "reviewed_wheel": {
+        "filename": "dapane-0.1.0-cp315-cp315-macosx_11_0_arm64.whl",
+        "sha256": "457410fc635ab954b94c127da745c58b93a235d82c15c71aa84ae0a8dec90528",
+        "native_extension": "dapane/_native.cpython-315-darwin.so",
+        "python": "3.15.2",
+        "platform": "macOS 27.2.1 arm64",
+        "rustc": "1.99.1",
+        "reviewed_on": "2026-11-19"
+      },
+      "native_execution_receipt_sha256": null,
+      "status": "macos_arm64_artifact_reviewed_release_pending"
     },
     "voiage": {
       "distribution": "voiage",

@@ -20,7 +20,9 @@ in the P1 plan.
 The lock does not pretend to freeze all transitive dependencies. Qualifying
 operators must record exact wheel hashes, native extension hashes, distribution
 RECORDs, dependency versions and platform/ABI on the selected supported host.
-The current null `binary_sha256` values explicitly represent *missing* evidence.
+An approved `binary_sha256` identifies the native extension. The lock's
+`reviewed_wheel` records the paired archive and its review scope. The
+companion P7 placeholder tracks the separate Dapane native-execution receipt.
 
 ## Source-dependent runtime setup (on a network-enabled authorised workstation)
 
@@ -157,3 +159,8 @@ records the installed wheel and extension digests. Independent artifact
 review subsequently found that Maturin used Homebrew Rust 1.100.0. The
 receipt's Rust 1.99.1 values came from separate version probes. The reviewer
 withheld binary pin sign-off. [P1.4 independent review](../conductor/tracks/P1-provider-reuse/plan.md#independent-dapane-technical-review)
+
+The corrected Rust 1.99.1 build subsequently passed P1/P5 with both providers
+installed. The independent reviewer approved the exact Dapane wheel and
+extension for macOS arm64 on CPython 3.15.2.
+[P1.4 corrected candidate](../conductor/tracks/P1-provider-reuse/plan.md#corrected-rust-1991-candidate)
