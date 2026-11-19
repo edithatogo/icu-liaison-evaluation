@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-19-P10-lifecycle-v1",
+  "status": "all_external_sources_unverified",
+  "records": [
+    {
+      "source_id": "official_mchs",
+      "kind": "activity_weight",
+      "version": null,
+      "source_sha256": null,
+      "valid_from": null,
+      "valid_until_exclusive": null,
+      "revoked_at": null,
+      "pricing_year": null,
+      "verification": "unverified",
+      "review_receipt_sha256": null,
+      "dependent_metric_ids": [
+        "M20"
+      ],
+      "dependent_figure_ids": [
+        "F22"
+      ]
+    },
+    {
+      "source_id": "queensland_nursing_award",
+      "kind": "employment_terms",
+      "version": null,
+      "source_sha256": null,
+      "valid_from": null,
+      "valid_until_exclusive": null,
+      "revoked_at": null,
+      "pricing_year": null,
+      "verification": "unverified",
+      "review_receipt_sha256": null,
+      "dependent_metric_ids": [
+        "M17"
+      ],
+      "dependent_figure_ids": [
+        "F21"
+      ]
+    },
+    {
+      "source_id": "anzics_2024_25",
+      "kind": "external_benchmark",
+      "version": null,
+      "source_sha256": null,
+      "valid_from": null,
+      "valid_until_exclusive": null,
+      "revoked_at": null,
+      "pricing_year": null,
+      "verification": "unverified",
+      "review_receipt_sha256": null,
+      "dependent_metric_ids": [
+        "M06"
+      ],
+      "dependent_figure_ids": [
+        "F03"
+      ]
+    },
+    {
+      "source_id": "chhhs_governance",
+      "kind": "site_authority",
+      "version": null,
+      "source_sha256": null,
+      "valid_from": null,
+      "valid_until_exclusive": null,
+      "revoked_at": null,
+      "pricing_year": null,
+      "verification": "unverified",
+      "review_receipt_sha256": null,
+      "dependent_metric_ids": [
+        "M08"
+      ],
+      "dependent_figure_ids": [
+        "F17"
+      ]
+    }
+  ]
+}
