@@ -8,7 +8,7 @@
   "implementation_started": true,
   "accepted_phases": ["P1.1", "P1.2", "P1.3"],
   "blocked_phases": ["P1.4", "P1.5"],
-  "blocker": "The exact Dapane wheels, extensions and native pricing and component conservation receipts are independently approved for the recorded macOS arm64, Ubuntu x86-64 and Windows Server x86-64 hosts on CPython 3.15.2. Broader release review, the upstream Windows vendor test fixture defect, the macOS CLI APFS filename test, RUSTSEC-2026-0543 follow-up and Voiage admission remain open.",
+  "blocker": "The exact Dapane wheels, extensions and native pricing and component conservation receipts are independently approved for the recorded macOS arm64, Ubuntu x86-64 and Windows Server x86-64 hosts on CPython 3.15.2. Broader release review, the macOS CLI APFS filename test, RUSTSEC-2026-0543 follow-up and Voiage admission remain open.",
   "dependencies": ["P0-portable-consolidation"],
   "native_qualification_receipt": "verification/p1-native-qualification-2026-11-19.json",
   "installed_dapane_regression_receipt": "verification/python-315-migration-2026-11-19.json",

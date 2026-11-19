@@ -8,11 +8,11 @@ in the P1 plan.
 
 `providers.lock.json` holds the reviewed public source references:
 
-- **Dapane 0.1.0**: Git commit
-  `0658d94ad772023a0185a000b5254f9c2f4a63a9`;
-  JSON contract `0.1` and method `dapane-exact-v0.1.0`.
-  Dapane is unpublished; build its native wheel from the exact reviewed revision.
-  A source commit is not a native wheel checksum.
+- **Dapane 0.1.0** uses JSON contract `0.1` and method
+  `dapane-exact-v0.1.0`. Build the unpublished native wheel from the
+  reviewed source for the selected host. Use the Dapane `source_commit`
+  for macOS and Linux and `reviewed_platforms.windows-x86_64.source_commit`
+  for the rebuilt Windows wheel. [Provider lock](../providers.lock.json)
 - **Voiage 3.1.0**: annotated tag `v3.1.0` points to release commit
   `d40af0276019a7d63657349b53dad96845e2b4c1`.
   This release requires Python `>=3.15.2,<3.16` for its published package.
@@ -46,8 +46,9 @@ uv pip install --python "$PROVIDER_PYTHON" -c requirements-ci.txt \
 Keep the absolute `PROVIDER_PYTHON` path when leaving the evaluation project
 directory. Do not silently change to an older interpreter or Voiage version.
 
-Build Dapane in an **independent inspected clone** checked out at the lock's
-full source SHA, using its own `docs/quickstart.md` and `Cargo.lock`:
+Build Dapane in an **independent inspected clone** checked out at the
+selected source SHA, using its own `docs/quickstart.md` and `Cargo.lock`.
+The example uses the macOS and Linux source reference.
 
 ```sh
 git clone https://github.com/edithatogo/dapane.git ../dapane-p1-provider

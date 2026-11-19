@@ -49,3 +49,12 @@ extensions and native execution receipts. The Windows decision covers the
 follow-up build and full vendor rerun with the two fixture key corrections.
 The provider lock records the approved hashes for each tested host and the
 signed decisions are retained privately. [P7.5 platform decisions](plan.md#linux-and-windows-dapane-decisions)
+
+## Windows upstream rebuild approval
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer`
+approved the exact Windows rebuild from the landed upstream fixture fix.
+All 215 vendor Python tests passed using that checkout, including the
+original 196 cases. The Windows lock entry records the approved source,
+wheel, extension and native replay receipt. The verdict and sealed
+evidence are retained privately. [P7.5 decision](plan.md#windows-upstream-rebuild-decision)

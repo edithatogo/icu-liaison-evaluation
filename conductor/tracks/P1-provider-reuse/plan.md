@@ -190,9 +190,8 @@ test logs and the two-line fixture diff.
 
 The independent reviewer approved the exact follow-up Windows wheel,
 loaded PE32+ extension and native execution receipt on 19 November 2026
-AEST. The first Windows build produced different bytes and remains a
-historical result. The approved Linux and Windows digests are recorded
-by platform after sign-off. [Provider lock](../../../providers.lock.json) ·
+AEST. The first Windows build produced different bytes. Both earlier
+Windows runs are retained as historical results.
 [P7.5 platform decisions](../P7-technical-empirical-qualification/plan.md#linux-and-windows-dapane-decisions)
 
 The three synthetic pairs exercised beneficial and adverse returns through
@@ -201,6 +200,27 @@ extension. Current care minus liaison was AUD +762.35, AUD −2,356.40 and
 AUD +1.53 respectively. The replay checked 15 lines, exact and rounded
 component conservation, rounding adjustments and six deterministic
 ledgers. Duplicate same-use component pricing failed closed.
+
+### Windows rebuild after the upstream fixture fix
+
+Dapane PR #32 normalized schema fixture keys in the two reported test
+modules and the newer QLD NBS module, which used the same path-key
+construction. The Windows wheel was rebuilt from landed commit
+`33941aa22616629a26b58220f7e05ae615855072` with Rust and Cargo 1.99.1
+and CPython 3.15.2. The full vendor suite ran directly from that checkout
+on Windows Server 2025 Datacenter x86-64 build 26100. All 215 Python
+tests passed, including the original 196 and 19 QLD NBS cases. The Dapane
+qualifier, 21 focused P1/P5 checks and 61 vendor Rust tests also passed.
+[Upstream fixture fix](https://github.com/edithatogo/dapane/pull/32) ·
+[Windows rebuild](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44513181631/job/135522336234)
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer`
+matched the full set of hosted pass results to independently collected
+test IDs. The reviewer verified the exact wheel, loaded PE32+ extension
+and all six pricing ledger replays, including component conservation. The
+Windows lock entry now records this source revision and the three signed
+digests. [Provider lock](../../../providers.lock.json) ·
+[P7.5 Windows decision](../P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its

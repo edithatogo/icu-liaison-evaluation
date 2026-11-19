@@ -88,12 +88,26 @@ a fresh environment on each build runner. [P1.4 platform findings](../P1-provide
 The unmodified Windows vendor suite exposed 30 schema lookups that used
 inconsistent path separators. The reviewer verified the two test-only
 edits in a disposable checkout and all 196 passing tests against the
-follow-up wheel. The first Windows candidate remains historical. The
-platform-specific lock entries record the approved wheel, native
-extension and replay receipt SHA-256 digests. The dated verdicts and
-sealed evidence are retained privately. [Provider lock](../../../providers.lock.json) ·
+follow-up wheel. The dated verdicts and sealed evidence for those runs
+are retained privately.
 [Windows rerun](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44508599306/job/135506594520)
 
-Other platform environments, the upstream Windows test fixture defect,
-the `chrono` advisory, the macOS CLI APFS case, release review and Voiage
-admission remain open. [Companion plan](../P7-placeholder-assisted-qualification/plan.md#p74--external-qualifications-blocked-not-accepted)
+### Windows upstream rebuild decision
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer`
+approved the exact Dapane 0.1.0 wheel, loaded extension and replay receipt
+rebuilt from landed source `33941aa22616629a26b58220f7e05ae615855072`
+with Rust 1.99.1 and CPython 3.15.2 on Windows Server 2025 Datacenter
+x86-64 build 26100. The upstream fixture fix normalized schema path keys
+in three test modules. The reviewer matched all 215 passing vendor cases
+to the independently collected test IDs, covering all 196 original cases
+and 19 later QLD NBS cases. The sealed packet binds the compiler trace,
+installed wheel and all six pricing and conservation replays.
+[Upstream fixture fix](https://github.com/edithatogo/dapane/pull/32) ·
+[P1.4 Windows rebuild](../P1-provider-reuse/plan.md#windows-rebuild-after-the-upstream-fixture-fix)
+
+The Windows lock entry records the landed source and the three
+approved digests. Broader release qualification, other environments,
+the `chrono` advisory, the macOS CLI APFS case and Voiage admission
+remain open. [Provider lock](../../../providers.lock.json) ·
+[Companion plan](../P7-placeholder-assisted-qualification/plan.md#p74--external-qualifications-blocked-not-accepted)

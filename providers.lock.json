@@ -39,13 +39,14 @@
         "windows-x86_64": {
           "platform": "Windows Server 2025 Datacenter x86_64 (build 26100)",
           "rust_target": "x86_64-pc-windows-msvc",
+          "source_commit": "33941aa22616629a26b58220f7e05ae615855072",
           "python": "3.15.2",
           "rustc": "1.99.1",
           "wheel_filename": "dapane-0.1.0-cp315-cp315-win_amd64.whl",
-          "wheel_sha256": "7cf76e21e2f585cd2f989fef8535195f410c4451d24b21047c9d2ce9d743df0a",
+          "wheel_sha256": "3a90c828d90cd67b0f86918a911b3ecc3959e0111c0a1975437834b68389c04d",
           "native_extension": "dapane/_native.cp315-win_amd64.pyd",
-          "binary_sha256": "4a341947403bdf6e8f51f2c662a9689a1e9aaa3a72cb3020f06df5ba30ab6ec3",
-          "native_execution_receipt_sha256": "6fda176961458c429447438e67139e58fc265e0f2cfade5b27def04e91488198",
+          "binary_sha256": "3d75649ce806874fb1c2ef52de7e5346ab270ec466907ec9c7fee9380d7d2b6b",
+          "native_execution_receipt_sha256": "3a9d1df8e5f8afe831829a8c7a59d907fdf1e37d72edcf096da8b52a59cc8035",
           "reviewed_on": "2026-11-19"
         }
       },
