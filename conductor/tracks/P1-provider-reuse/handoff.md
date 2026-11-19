@@ -23,3 +23,25 @@ user-provided dedicated repository can receive the portable implementation.
 Source labels from previous conversation material remain curated, rather than
 raw private chat exports. Hospital observations are not introduced. Downstream
 P2 clinical/economic specification should not be inferred as completed by P1.
+
+## macOS arm64 / Python 3.15.2 native qualification update — 19 November 2026
+
+Executed P1.4 in an external Python 3.15.2 environment with Dapane `0.1.0`
+(`0658d94ad772023a0185a000b5254f9c2f4a63a9`) and PyPI Voiage `3.1.0`
+(`v3.1.0` / `d40af0276019a7d63657349b53dad96845e2b4c1`), recorded in
+`verification/p1-native-qualification-2026-11-19.json`,
+`verification/p0-native-providers-py315-2026-11-19.json`, and
+`verification/p0-py315-native-lock-2026-11-19.txt`.
+
+Observed outcomes and open caveats:
+- Native numerical oracles, PyPI PEP 740 + GitHub PGP attestations, cross-env
+  CLI byte-parity (`3.13.18` vs `3.15.2`), P5 `--dapane --voiage` +
+  `p5_review_cli` reconciliation, Dapane `dapane-core` (54/54) + Python (196/196),
+  Voiage core wheel tests (13/13), and Python 3.15.2 PyPI `pip-audit` (0 CVEs)
+  all passed.
+- Caveats kept open: `dapane-cli` had 1 macOS APFS non-UTF-8 filename test
+  failure, `cargo deny` flagged unmaintained `RUSTSEC-2026-0543` (`chrono 0.4.45`),
+  `requirements-ci.txt` flagged `setuptools==82.0.1` (`PYSEC-2026-3447`, `GHSA-xmj3-9gf7-h52w`),
+  unchanged `pytest` in Python 3.15.2 failed only the 2 P5 absent-Dapane tests,
+  Linux/Windows qualification is pending, and independent P7 adjudication of
+  `providers.lock.json` `binary_sha256` remains open.
