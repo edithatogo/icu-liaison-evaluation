@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-19-P10-prereg-v1",
+  "status": "draft_not_registered_or_approved",
+  "protocol_id": "chhhs-icu-liaison-inpatient-evaluation-draft-v1",
+  "data_class": "definition_only_no_local_records",
+  "target_population": {
+    "denominator_id": "D03",
+    "minimum_age_years_draft": 16,
+    "age_threshold_approved": false
+  },
+  "comparators": {
+    "observed_current_care": "existing_ICU_discharge_coordination_MET_and_ward_escalation_to_be_mapped",
+    "proposed_service": "incremental_nurse_led_discharge_coordination_and_ward_followup",
+    "existing_service_coverage_verified": false
+  },
+  "exposure_definition": {
+    "primary": "intention_to_cover_by_rostered_ward_shift_eligibility",
+    "secondary": "actual_liaison_contact_association_subject_to_indication_bias",
+    "implementation_start": null,
+    "existing_rostered_hours": null,
+    "incremental_rostered_hours": null,
+    "actual_contact_events": null,
+    "contact_time_before_or_after_icu_discharge": null,
+    "implementation_fidelity_status": "not_measured"
+  },
+  "outcomes": {
+    "primary_index_ready_delay_metric_id": null,
+    "index_ready_delay_gap": "new_index_cohort_D03_ready_time_valid_metric_required",
+    "descriptive_all_live_ready_delay_metric_id": "M05",
+    "descriptive_all_live_exit_block_metric_id": "M06",
+    "unplanned_index_return_metric_id": "M08",
+    "return_followup_hours": 72,
+    "mandatory_safety_endpoints": [
+      "delayed_escalation",
+      "post_icu_death",
+      "return_severity_and_appropriateness",
+      "treatment_limitations",
+      "ward_cardiac_arrest",
+      "ward_workload"
+    ]
+  },
+  "causal_design": {
+    "preferred": "controlled_interrupted_time_series_or_phased_rollout",
+    "actual_control_wards": null,
+    "rollout_date": null,
+    "pre_specified_covariates": [
+      "age",
+      "admission_diagnosis",
+      "severity",
+      "ventilation",
+      "surgical_elective_status",
+      "ward",
+      "weekday_shift",
+      "staffed_icu_occupancy",
+      "transport_constraints",
+      "treatment_limitations"
+    ],
+    "negative_controls": [
+      "pre_intervention_leads",
+      "no_liaison_coverage_shifts",
+      "unaffected_outcomes_where_clinically_defensible"
+    ],
+    "clustering": "unit_and_calendar_week",
+    "post_treatment_contact_not_baseline_confounder": true
+  },
+  "data_access_authorisation": null,
+  "pre_registration_timestamp": null,
+  "frozen_plan_sha256": null,
+  "independent_statistical_review": null,
+  "clinical_governance_review": null,
+  "finance_review": null,
+  "first_nations_review_where_applicable": null,
+  "observed_clinical_effect": null,
+  "causal_claim_status": "not_estimable_without_governed_data"
+}

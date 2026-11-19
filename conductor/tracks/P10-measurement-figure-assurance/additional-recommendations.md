@@ -14,3 +14,5 @@ Next recommended implementable slice: P10.10 source-to-output provenance digest 
 **P10.14 source-date update:** temporal validity, exclusive expiry, source version and revocation checks now have source-only tests. A trusted external verification/revocation workflow is not implemented and remains a high-priority acceptance gate.
 
 **P10.12 synthetic progress:** five adversarial P4 scenarios now have executable source-only accounting assertions. These are falsification fixtures, not observed harm or structural-model calibration.
+
+**P10.16 methodological finding:** define a distinct first-index, valid-readiness operational estimand before comparing local P2 endpoints with ANZICS all-live discharge benchmarks. Source-only preregistration exists; no frozen plan or measured fidelity does.
