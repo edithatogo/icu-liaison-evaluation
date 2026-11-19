@@ -100,3 +100,5 @@ until content is faithfully reconciled and a replacement is verified.
 Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 `[!]` is blocked on a stated dependency. Both P7 directories retain their
 historical phase identifiers; use the full track directory in handoffs.
+
+- [~] **P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Two request tables and source-level catalogues implemented; site-validated figures and independent review remain pending.

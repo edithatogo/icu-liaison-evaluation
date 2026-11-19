@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "track_id": "P9-reporting-contracts",
+  "status": "in_progress",
+  "source_phases_implemented": [
+    "P9.1",
+    "P9.2",
+    "P9.3"
+  ],
+  "blocked": [
+    "P9.4",
+    "P9.5"
+  ],
+  "native_provider_qualified": false,
+  "clinical_or_finance_approval": false
+}
