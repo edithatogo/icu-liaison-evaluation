@@ -23,7 +23,7 @@
 - [x] Check output finiteness, strategies, scope and financial-only meaning;
   regression with provider injection and an independent 2-state native oracle.
 
-## P1.4 — Installed runtime qualification (macOS arm64 executed; open gates remain)
+## P1.4 — Installed runtime qualification
 - [x] Obtain an authorised, exact-source Dapane 0.1 native wheel and released
   Voiage 3.1.0 distribution in an isolated CPython 3.15.2 environment; save
   inspected wheel and native-extension SHA-256 plus dependency resolution
@@ -161,6 +161,46 @@ The detailed receipt and dated verdict are retained privately. Broader Dapane
 platform and release qualification and Voiage admission remain open.
 [Provider lock](../../../providers.lock.json) ·
 [P7.5 native execution decision](../P7-technical-empirical-qualification/plan.md#dapane-native-execution-decision)
+
+### Linux and Windows x86-64 qualification
+
+Both x86-64 builds used Dapane source commit `0658d94ad772023a0185a000b5254f9c2f4a63a9`,
+Rust and Cargo 1.99.1, Maturin 1.16.0 and CPython 3.15.2. Each runner
+verified the 36 crate archives against `Cargo.lock` and built offline.
+The reviewer replayed the exact installed wheel in a fresh environment on
+each build runner, then independently checked the sealed evidence.
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer` approved
+the Linux wheel, loaded ELF extension and native execution receipt for
+Ubuntu 24.04.5 LTS x86-64 with glibc 2.39. The wheel's scope is the
+tested `linux_x86_64` environment. The Linux qualifier, 21 focused P1/P5
+tests, 62 vendor Rust tests and 196 vendor Python tests passed.
+[Linux native job](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44507492909/job/135502789559)
+
+On Windows Server 2025 Datacenter x86-64, the native qualifier, 21 focused
+P1/P5 tests and 61 vendor Rust tests passed. The unmodified vendor Python
+suite recorded 166 passes and 30 `KeyError` failures. Two test fixtures
+created dictionary keys with Windows path separators, then looked them up
+using forward slashes. A disposable test copy normalized those two keys
+with `.as_posix()` and ran all 196 tests against the wheel built from the
+unchanged pinned source. All 196 passed. The sealed evidence includes both
+test logs and the two-line fixture diff.
+[First Windows native job](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44507492909/job/135502789920) ·
+[Windows rerun](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44508599306/job/135506594520)
+
+The independent reviewer approved the exact follow-up Windows wheel,
+loaded PE32+ extension and native execution receipt on 19 November 2026
+AEST. The first Windows build produced different bytes and remains a
+historical result. The approved Linux and Windows digests are recorded
+by platform after sign-off. [Provider lock](../../../providers.lock.json) ·
+[P7.5 platform decisions](../P7-technical-empirical-qualification/plan.md#linux-and-windows-dapane-decisions)
+
+The three synthetic pairs exercised beneficial and adverse returns through
+the P1 entry point and distinct cost components through the native
+extension. Current care minus liaison was AUD +762.35, AUD −2,356.40 and
+AUD +1.53 respectively. The replay checked 15 lines, exact and rounded
+component conservation, rounding adjustments and six deterministic
+ledgers. Duplicate same-use component pricing failed closed.
 
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its

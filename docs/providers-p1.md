@@ -20,13 +20,14 @@ in the P1 plan.
 The lock does not pretend to freeze all transitive dependencies. Qualifying
 operators must record exact wheel hashes, native extension hashes, distribution
 RECORDs, dependency versions and platform/ABI on the selected supported host.
-An approved `binary_sha256` identifies the native extension. The lock's
-`reviewed_wheel` records the paired archive and its review scope. Dapane's
+An approved `binary_sha256` identifies the native extension.
 `native_execution_receipt_sha256` identifies the independently approved
-synthetic pricing receipt for that exact installation. The companion P7
-placeholder tracks the open qualification for the intended platforms in
-`provider_qualification_receipt_sha256`.
-[P7.5 native execution decision](../conductor/tracks/P7-technical-empirical-qualification/plan.md#dapane-native-execution-decision)
+synthetic pricing receipt for that exact installation. The original Dapane
+entry records the macOS wheel and its receipt. `reviewed_platforms` records
+each additional approved wheel, extension and receipt with its tested host
+and ABI. The companion P7 placeholder tracks broader provider qualification
+in `provider_qualification_receipt_sha256`.
+[P1.4 platform qualification](../conductor/tracks/P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
 
 ## Source-dependent runtime setup (on a network-enabled authorised workstation)
 

@@ -23,8 +23,34 @@
         "reviewed_on": "2026-11-19"
       },
       "native_execution_receipt_sha256": "589564b3a86da645ac671e02a82eced40373261a473b5c4bdeaff164f6568110",
+      "reviewed_platforms": {
+        "linux-x86_64": {
+          "platform": "Ubuntu 24.04.5 LTS x86_64 (glibc 2.39)",
+          "rust_target": "x86_64-unknown-linux-gnu",
+          "python": "3.15.2",
+          "rustc": "1.99.1",
+          "wheel_filename": "dapane-0.1.0-cp315-cp315-linux_x86_64.whl",
+          "wheel_sha256": "78b81a712f9f946abb56ca78c46bb5f08fa2060a8428949e0c0613e9a843a375",
+          "native_extension": "dapane/_native.cpython-315-x86_64-linux-gnu.so",
+          "binary_sha256": "38311344f8e5e434fe6fac4998be410d7af13b0e4f39b32e13158e11940b5b8d",
+          "native_execution_receipt_sha256": "e749056f6e8fc0e3a9d139b50cfd6c3ce3fd486e61fee1084c6b39b98273ae5b",
+          "reviewed_on": "2026-11-19"
+        },
+        "windows-x86_64": {
+          "platform": "Windows Server 2025 Datacenter x86_64 (build 26100)",
+          "rust_target": "x86_64-pc-windows-msvc",
+          "python": "3.15.2",
+          "rustc": "1.99.1",
+          "wheel_filename": "dapane-0.1.0-cp315-cp315-win_amd64.whl",
+          "wheel_sha256": "7cf76e21e2f585cd2f989fef8535195f410c4451d24b21047c9d2ce9d743df0a",
+          "native_extension": "dapane/_native.cp315-win_amd64.pyd",
+          "binary_sha256": "4a341947403bdf6e8f51f2c662a9689a1e9aaa3a72cb3020f06df5ba30ab6ec3",
+          "native_execution_receipt_sha256": "6fda176961458c429447438e67139e58fc265e0f2cfade5b27def04e91488198",
+          "reviewed_on": "2026-11-19"
+        }
+      },
       "provider_qualification_receipt_sha256": null,
-      "status": "macos_arm64_native_execution_reviewed_release_pending"
+      "status": "platform_scoped_native_execution_reviewed_release_pending"
     },
     "voiage": {
       "distribution": "voiage",

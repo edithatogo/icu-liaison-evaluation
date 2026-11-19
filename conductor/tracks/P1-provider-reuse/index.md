@@ -4,15 +4,11 @@
 [Ownership](agent-contract.md) · [Tests](test-matrix.md) ·
 [Risks](risk-register.md) · [Handoff](handoff.md)
 
-**Status: source implementation, contract tests, and macOS arm64 / Python 3.15.2
-native oracle, vendor-test, attestation, and P5 reconciliation runs recorded.
-Voiage admission, release review and Linux/Windows qualification remain open.** See
-[P1 native qualification receipt](../../../verification/p1-native-qualification-2026-11-19.json).
-
-The independent technical reviewer approved the corrected Dapane binary
-pin and its scoped native pricing and component conservation receipt for
-macOS arm64 and CPython 3.15.2. [P1.4 corrected candidate](plan.md#corrected-rust-1991-candidate) ·
-[P1.4 native execution](plan.md#native-counterfactual-pricing-and-component-conservation)
+The independent reviewer approved the exact Dapane wheels, loaded extensions
+and native pricing receipts for the recorded macOS arm64, Ubuntu x86-64
+and Windows Server x86-64 hosts on CPython 3.15.2. Broader release review
+and Voiage admission remain open. [macOS findings](plan.md#native-counterfactual-pricing-and-component-conservation) ·
+[Linux and Windows findings](plan.md#linux-and-windows-x86-64-qualification)
 
 [Provider execution guide](../../../docs/providers-p1.md) ·
 [Exact source reference lock](../../../providers.lock.json)

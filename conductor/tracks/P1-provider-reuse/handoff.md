@@ -54,3 +54,13 @@ pinned Dapane 0.1.0 installation. The lock records the receipt digest for
 macOS 27.2.1 arm64 and CPython 3.15.2. Broader platform and release
 qualification and Voiage admission remain open.
 [P1.4 findings](plan.md#native-counterfactual-pricing-and-component-conservation)
+
+## Linux and Windows Dapane decisions — 19 November 2026
+
+The independent reviewer approved the pinned-source Rust 1.99.1 builds
+for Ubuntu 24.04.5 LTS x86-64 and Windows Server 2025 Datacenter x86-64
+with CPython 3.15.2. The lock records each approved wheel, loaded extension
+and native pricing receipt. The Windows evidence includes the original
+vendor fixture failures and the full rerun with corrected path keys in
+a disposable test copy. Broader release qualification and Voiage
+admission remain open. [P1.4 platform findings](plan.md#linux-and-windows-x86-64-qualification)
