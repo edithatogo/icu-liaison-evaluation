@@ -133,9 +133,34 @@ members matched the installed files. The
 [provider lock](../../../providers.lock.json) records the extension SHA-256
 as `binary_sha256` and the paired archive SHA-256 in `reviewed_wheel`.
 
-The [P7.5 approval](../P7-technical-empirical-qualification/plan.md#corrected-dapane-artifact-decision)
-covers this binary pin. The separate native-execution and release
-decisions remain open.
+Release review remains open. [P7.5 binary-pin decision](../P7-technical-empirical-qualification/plan.md#corrected-dapane-artifact-decision)
+
+### Native counterfactual pricing and component conservation
+
+On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer` verified
+the pinned Dapane 0.1.0 wheel and the loaded native extension on macOS 27.2.1
+arm64 and CPython 3.15.2. The reviewer froze independent synthetic
+expectations before execution. The P1 counterfactual entry point priced
+current care less liaison at AUD +779.13 for the benefit case and AUD
+−1,471.62 for the adverse-return case.
+
+The separate native pricing pair used distinct labour and oncost quotes
+for the same use, repeated consumables and sub-cent amounts. Separately
+priced components reconciled to native line and ledger amounts in both
+exact values and rounded cents, including rounding adjustments. The
+rounded ledgers were AUD 289.69 and AUD 292.69, giving a signed difference
+of AUD −3.00. The exact difference before rounding was −1807/600 AUD.
+A duplicate same-use oncost was rejected as `component_overlap`. Across
+the three pairs, all 15 lines matched the frozen expectations and all six
+ledgers replayed byte for byte. The standard P1 native qualifier passed
+with both providers.
+
+The reviewer signed off on the exact receipt for that artifact and host.
+The lock records its digest in `native_execution_receipt_sha256`.
+The detailed receipt and dated verdict are retained privately. Broader Dapane
+platform and release qualification and Voiage admission remain open.
+[Provider lock](../../../providers.lock.json) ·
+[P7.5 native execution decision](../P7-technical-empirical-qualification/plan.md#dapane-native-execution-decision)
 
 ## P1.5 — Dedicated repository integration (in progress)
 - [~] Import P0/P1 into the user-provided repository, reconcile its

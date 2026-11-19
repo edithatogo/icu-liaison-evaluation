@@ -31,3 +31,12 @@ CPython 3.15.2. P1 and P5 passed on the exact installation. The lock now
 records the reviewed extension hash and its paired wheel. The dated
 technical verdict and reconstruction evidence are retained privately.
 [P7.5 corrected artifact decision](plan.md#corrected-dapane-artifact-decision)
+
+## Dapane native execution approval — 19 November 2026
+
+Separate Codex reviewer `dapane_reviewer` approved the native execution
+receipt for the pinned wheel and extension after verifying pricing and
+component conservation against frozen independent expectations. The lock
+records the receipt digest for macOS arm64 and CPython 3.15.2. Broader
+provider qualification, release review and Voiage admission remain open.
+[P7.5 native execution decision](plan.md#dapane-native-execution-decision)

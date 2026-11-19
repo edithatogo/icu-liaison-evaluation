@@ -661,7 +661,7 @@
     {
       "binding": {
         "artifact": "providers.lock.json",
-        "pointer": "/providers/dapane/native_execution_receipt_sha256",
+        "pointer": "/providers/dapane/provider_qualification_receipt_sha256",
         "shape": "unverified_provider"
       },
       "blocks": [
@@ -670,12 +670,12 @@
       "id": "native_dapane_receipt",
       "kind": "native_execution_receipt",
       "owner_role": "Software Assurance",
-      "prospective_source": "Dapane exact valuation Rust/Python provider",
+      "prospective_source": "Dapane exact valuation Rust/Python provider qualification for the intended platform scope",
       "replacement": {
         "evidence_type": "native_execution_receipt",
         "requirements": [
-          "Installed package and binary hash/ABI record",
-          "Independent native Dapane counterfactual pricing and component conservation"
+          "Installed package, binary hash and ABI record for the intended platforms",
+          "Independent native Dapane counterfactual pricing and component conservation for the intended platforms"
         ]
       },
       "source_class": "missing",
