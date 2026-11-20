@@ -44,8 +44,10 @@ def invoke(tmp_path, output, cases, style, *extra, expected=0, env_update=None):
     ]
     result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True, timeout=240)
     if result.returncode != expected:
+        diagnostic = '\n'.join(line for line in (result.stdout + '\n' + result.stderr).splitlines()
+                               if 'P11 INVALID' in line or 'Traceback' in line)
         pytest.fail(f'Snakemake returned {result.returncode} instead of {expected}\n'
-                    f'{result.stdout[-4000:]}\n{result.stderr[-6000:]}')
+                    f'{diagnostic}\n{result.stdout[-4000:]}\n{result.stderr[-6000:]}')
     return result
 
 
@@ -118,8 +120,10 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
     metadata = tmp_path / 'version-override' / 'matplotlib-99.0.0.dist-info'
     metadata.mkdir(parents=True)
     (metadata / 'METADATA').write_text('Metadata-Version: 2.1\nName: matplotlib\nVersion: 99.0.0\n')
-    invoke(tmp_path, output, cases, style,
-           env_update={'PYTHONPATH': str(metadata.parent)})
+    # Preserve the checkout's src/ when the distribution is installed as a
+    # wheel, as on hosted CI, instead of relying on an editable installation.
+    pythonpath = os.pathsep.join((str(metadata.parent), str(ROOT / 'src')))
+    invoke(tmp_path, output, cases, style, env_update={'PYTHONPATH': pythonpath})
     figures_after_runtime = pointer_set(output, 'figures', names)
     assert all(figures_after_runtime[name]['figure_revision'] != figures_after_style[name]['figure_revision']
                for name in names)

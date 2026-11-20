@@ -1,7 +1,8 @@
 # P11 — Implementation plan
 
-Local implementation and evidence are recorded below. P9 companion integration
-and its local workflow and recovery checks passed; integrated hosted CI remains open.
+The P9 companion, local workflow and recovery checks, and hosted checks for the
+integrated synthetic source revision have passed. Separate empirical and native
+qualification gates remain in their existing tracks.
 
 ## P11.1 — Reuse and qualification
 
@@ -60,7 +61,7 @@ and its local workflow and recovery checks passed; integrated hosted CI remains 
 
 ## P11.5 — Handoff
 
-- [~] P11.14 Run the relevant focused checks, full Python suite, synthetic
+- [x] P11.14 Run the relevant focused checks, full Python suite, synthetic
       workflow and exact-revision hosted CI. Record commands, versions, seeds,
       hashes, comparison outputs and failure/recovery evidence.
 - [x] P11.15 Document how to define and rerun a scenario, inspect A/B results,

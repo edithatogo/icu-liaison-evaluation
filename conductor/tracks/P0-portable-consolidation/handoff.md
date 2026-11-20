@@ -62,8 +62,8 @@ Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the scoped onboarding
 replacement in the managed worktree
 `/Users/doughnut/.codex/worktrees/icu-renovate-onboarding/icu-liaison-evaluation`
 on `codex/icu-renovate-onboarding`. Its scope is the project Renovate
-configuration, policy test, verification receipt, source manifest, and this
-handoff; native scope is none.
+configuration, policy test, verification receipt, source manifest, this
+handoff, and P11's synthetic acceptance closeout; native scope is none.
 The existing bot-owned PR #2 fails the source inventory and inherits automated
 patch and digest merges from the shared preset. The replacement preserves the
 shared preset at its verified commit while requiring review of those updates. The next operation is
