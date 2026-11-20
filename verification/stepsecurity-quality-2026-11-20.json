@@ -1,0 +1,41 @@
+{
+  "dependabot_scope": "github-actions weekly",
+  "existing_git_hooks": "retained; staged gitleaks remains enabled",
+  "formatting_fixture": "both Python formatting modules repaired a synthetic file and passed an unchanged rerun",
+  "gitleaks": "8.30.1",
+  "harden_runner": {
+    "egress_policy": "audit",
+    "hosted_run": "passed on the reviewed candidate",
+    "repository": "step-security/harden-runner",
+    "sha": "aebdcf6156ab6691adf63218240e476564a1ed4c",
+    "tag_matches_sha": true,
+    "version": "v2.23.0"
+  },
+  "hosted_ci": {
+    "commit": "19e971d1ef1b40aedc37f20039ef27ed26619f7a",
+    "quality_environment": "passed",
+    "run": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44677310647",
+    "runner_audit": "passed",
+    "shell_and_text_checks": "passed",
+    "snakemake_recovery": "passed",
+    "status": "passed"
+  },
+  "hosted_initial_failure": {
+    "failure": "pip check saw the project source egg-info through the job-wide PYTHONPATH=src and reported model packages absent from the independent quality environment",
+    "fix": "clear PYTHONPATH only for quality-environment setup and quality checks",
+    "local_reproduction": "CPython 3.15.2 pip check reproduced the three false missing model dependencies with PYTHONPATH=src; with PYTHONPATH cleared it reported no broken requirements",
+    "quality_install": "completed",
+    "run": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44676778850",
+    "runner_audit": "passed"
+  },
+  "local_precommit_config": "valid",
+  "pre_commit": "4.7.0",
+  "pre_commit_hooks": "6.0.0",
+  "provider_or_clinical_acceptance": false,
+  "quality_checks": "shellcheck, end-of-file and trailing-whitespace passed against isolated source fixture using repository-local Python",
+  "quality_lock_sha256": "63de357e57fcb0eba58517620ad8f4af9c679afb986e7dea877c733fdcac809e",
+  "quality_python": "3.15.2",
+  "scope": "synthetic CI and optional repository-local quality checks",
+  "shellcheck": "0.11.0",
+  "supersedes_pull_request": 25
+}

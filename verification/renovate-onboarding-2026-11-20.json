@@ -2,7 +2,18 @@
   "bot_refresh": "not_run",
   "config_sha256": "8448642a49b3d266074df8dbcdd3d9e65bacb8a4236521dc63bf913174c3b683",
   "effective_policy": "installed Renovate rule merger applied current shared preset and verified automerge=false and platformAutomerge=false for all 11 recognised update types",
-  "hosted_checks": "pending",
+  "hosted_bot_first_run": {
+    "author": "app/renovate",
+    "created_at": "2026-11-20T04:43:42Z",
+    "dashboard": "https://github.com/edithatogo/icu-liaison-evaluation/issues/30",
+    "status": "observed"
+  },
+  "hosted_checks": {
+    "head": "04115f5ff9077e8b8a2dfad2816a974e0d0e0d2d",
+    "pull_request": 29,
+    "run": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44675802901",
+    "status": "passed"
+  },
   "native_provider_promotion": "not_authorised",
   "project_python": "3.15.2",
   "renovate_cli": "44.255.2",

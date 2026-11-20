@@ -15,3 +15,18 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+      - id: quality-shellcheck
+        name: ShellCheck
+        entry: shellcheck -e SC1091
+        language: system
+        types: [shell]
+      - id: quality-eof
+        name: End-of-file formatting
+        entry: private/venv-quality/bin/python -m pre_commit_hooks.end_of_file_fixer
+        language: system
+        types: [text]
+      - id: quality-whitespace
+        name: Trailing whitespace
+        entry: private/venv-quality/bin/python -m pre_commit_hooks.trailing_whitespace_fixer
+        language: system
+        types: [text]
