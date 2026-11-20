@@ -5,13 +5,21 @@
   "gitleaks": "8.30.1",
   "harden_runner": {
     "egress_policy": "audit",
-    "hosted_run": "pending",
+    "hosted_run": "passed on the reviewed candidate",
     "repository": "step-security/harden-runner",
     "sha": "aebdcf6156ab6691adf63218240e476564a1ed4c",
     "tag_matches_sha": true,
     "version": "v2.23.0"
   },
-  "hosted_ci": "pending",
+  "hosted_ci": {
+    "commit": "19e971d1ef1b40aedc37f20039ef27ed26619f7a",
+    "quality_environment": "passed",
+    "run": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44677310647",
+    "runner_audit": "passed",
+    "shell_and_text_checks": "passed",
+    "snakemake_recovery": "passed",
+    "status": "passed"
+  },
   "hosted_initial_failure": {
     "failure": "pip check saw the project source egg-info through the job-wide PYTHONPATH=src and reported model packages absent from the independent quality environment",
     "fix": "clear PYTHONPATH only for quality-environment setup and quality checks",

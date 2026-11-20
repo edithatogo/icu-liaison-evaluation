@@ -96,4 +96,7 @@ fixture. Hosted execution of the exact candidate remains the merge gate.
 The initial hosted attempt passed the runner-audit step but its quality-env
 `pip check` picked up the project source metadata from the job-wide
 `PYTHONPATH`. The quality steps now clear that variable for their own isolated
-environment; the full hosted rerun remains required.
+environment. Hosted run 44677310647 passed the pinned audit action, all three
+quality checks and the synthetic Snakemake recovery suite on candidate commit
+`19e971d1ef1b40aedc37f20039ef27ed26619f7a`. The final evidence-only revision
+is subject to its own hosted checks before merging.
