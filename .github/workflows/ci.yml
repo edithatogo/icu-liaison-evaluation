@@ -15,6 +15,10 @@ jobs:
     env:
       PYTHONPATH: src
     steps:
+      - name: Audit runner egress
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with:
+          egress-policy: audit
       - name: Check out project and recorded dependency pins
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -48,6 +52,17 @@ jobs:
         run: .venv/bin/python -m pytest -q
       - name: Exercise synthetic reports and closed admission gates
         run: .venv/bin/python tools/ci_smoke.py
+      - name: Set up repository-local quality tools
+        run: |
+          .venv/bin/python -m venv private/venv-quality
+          test "$(private/venv-quality/bin/python --version)" = "Python $(cat .python-version)"
+          private/venv-quality/bin/python -m pip install -r requirements-quality.txt --build-constraint requirements-p11-build.txt
+          private/venv-quality/bin/python -m pip check
+      - name: Run shell and text quality checks
+        run: |
+          private/venv-quality/bin/python -m pre_commit run quality-shellcheck --all-files
+          private/venv-quality/bin/python -m pre_commit run quality-eof --all-files
+          private/venv-quality/bin/python -m pre_commit run quality-whitespace --all-files
       - name: Create isolated Snakemake environment
         run: |
           python -m venv private/venv-p11

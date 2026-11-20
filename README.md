@@ -73,6 +73,27 @@ environment, scenario definitions, output verification and interruption
 recovery. These outputs do not establish clinical safety, provider qualification
 or an investment case.
 
+## Optional shell and text checks
+
+The repository's existing Git hooks already run synthetic checks and a staged
+gitleaks scan. To run the additional ShellCheck and text-format checks locally,
+install ShellCheck and create the separately pinned, repository-local quality
+environment. These commands do not replace or install Git hooks.
+
+```sh
+uv venv --python "$(cat .python-version)" private/venv-quality
+uv pip install --python private/venv-quality/bin/python -r requirements-quality.txt \
+  --build-constraints requirements-p11-build.txt
+private/venv-quality/bin/python -m pre_commit run quality-shellcheck --all-files
+private/venv-quality/bin/python -m pre_commit run quality-eof --all-files
+private/venv-quality/bin/python -m pre_commit run quality-whitespace --all-files
+```
+
+The two text-format tools can update files when they find formatting issues;
+review those changes before committing. Hosted CI also runs the three checks
+and uses the pinned StepSecurity runner action in egress-audit mode; Dependabot
+monitors GitHub Actions versions.
+
 The P1 adapter now calls Voiage for financial-only EVPI, with an independent
 native two-state reference and a strict source lock. Install **Voiage v3.1**
 as an optional dependency in the separate P1 provider environment.

@@ -69,3 +69,22 @@ patch and digest merges from the shared preset. The replacement preserves the
 shared preset at its verified commit while requiring review of those updates. The next operation is
 local validation and hosted checks, then reconciliation with PR #2 after the
 replacement is integrated. The hosted bot's branch remains under its owner.
+
+## StepSecurity quality follow-through — 20 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the scoped replacement for
+PR #25 in the managed worktree
+`/Users/doughnut/.codex/worktrees/icu-liaison-scenario-workflow-plan/icu-liaison-evaluation`
+on `codex/icu-stepsecurity-quality`. Its scope is the existing CI workflow,
+quality-hook configuration, isolated Python 3.15 quality environment lock,
+Dependabot configuration, setup guidance, verification evidence and the
+source manifest. Native clinical/provider scope is none. Existing Git hooks
+and the bot-owned PR branch remain intact. The next operation is to qualify
+the quality checks with a repository-local interpreter and validate the
+pinned runner audit action in hosted CI.
+
+The replacement retains the requested egress-audit action and Dependabot
+monitoring. The added ShellCheck and formatting hooks use a separately locked,
+repository-local Python 3.15.2 environment; the existing staged gitleaks and
+Git hooks remain enabled. The local hooks passed against an isolated source
+fixture. Hosted execution of the exact candidate remains the merge gate.
