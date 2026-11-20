@@ -55,3 +55,17 @@ with Dapane 0.1.0 rebuilt from the locked revision. The
 [migration receipt](../../../verification/python-315-migration-2026-11-19.json)
 records the GitHub run, the Dapane wheel and native extension digests, and the
 synthetic P5 reconciliation. Independent artifact adjudication remains in P1.4/P7.
+
+## Renovate onboarding follow-through — 20 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the scoped onboarding
+replacement in the managed worktree
+`/Users/doughnut/.codex/worktrees/icu-renovate-onboarding/icu-liaison-evaluation`
+on `codex/icu-renovate-onboarding`. Its scope is the project Renovate
+configuration, policy test, verification receipt, source manifest, this
+handoff, and P11's synthetic acceptance closeout; native scope is none.
+The existing bot-owned PR #2 fails the source inventory and inherits automated
+patch and digest merges from the shared preset. The replacement preserves the
+shared preset at its verified commit while requiring review of those updates. The next operation is
+local validation and hosted checks, then reconciliation with PR #2 after the
+replacement is integrated. The hosted bot's branch remains under its owner.

@@ -47,8 +47,25 @@
     "output_sha256": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38",
     "seed": 20261117
   },
-  "integrated_hosted_ci": "pending",
+  "integrated_hosted_ci": {
+    "commit": "4398a032c6ba243cbeee6ad4bf2f65a47de282e8",
+    "run": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44675128191",
+    "snakemake_recovery": "passed",
+    "status": "passed"
+  },
   "investment_ready": false,
+  "merged_main_workflow": {
+    "commit": "4398a032c6ba243cbeee6ad4bf2f65a47de282e8",
+    "comparison_sha256": "f3e99ef0d22b5f1cb3fd144b18a54481beae2328e470ae01e2dff2bc5823ec27",
+    "draws_per_scenario": 5000,
+    "p9_figures": 36,
+    "paired_rows": 72,
+    "scenarios": 6,
+    "seed": 20261118,
+    "source_dirty": false,
+    "summary_id": "86861dc4e1adea18dacb6b1091ed33aae910d0f7b0753ed7a199089b1bf2541f",
+    "unchanged_rerun": "no analytical rebuild"
+  },
   "p9_f20_geometry_receipt": "verification/p9-f20-geometry-2026-11-20.json",
   "p9_figure_count": 36,
   "p9_source_sha256": {

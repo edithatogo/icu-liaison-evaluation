@@ -51,3 +51,10 @@ the Snakemake rerun and recovery tests passed. The next operation is the full
 hosted verification for PR #28. The full local suite passed 436 tests; its two
 Snakemake-specific skips passed in the separate P11 environment. The earlier separate-worktree
 notes above are retained as history.
+
+The synthetic workflow was rerun on merged `main` at
+`4398a032c6ba243cbeee6ad4bf2f65a47de282e8`, with six 5,000-draw cases,
+72 paired rows and 36 P9 figures. Its unchanged rerun was a no-op. Hosted
+synthetic validation and Snakemake recovery passed in run 44675128191 on that
+same merge revision. P11's synthetic implementation is complete; provider,
+site-data, clinical safety and investment gates remain with their owners.

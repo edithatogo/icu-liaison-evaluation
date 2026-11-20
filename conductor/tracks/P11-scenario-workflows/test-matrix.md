@@ -14,4 +14,4 @@
 | No-op rerun | Unchanged completed targets perform no analytical rebuild | Local pass |
 | Failure and recovery | Interrupted and concurrent synthetic runs preserve committed output and recover without partial publication | Local pass |
 | Privacy and readiness | Public fixture and metadata remain synthetic, and restricted material remains in its approved environment | Local synthetic checks pass; external gates remain open |
-| Integration | Full local suite and synthetic workflow plus hosted CI for the integrated source revision | Integrated workflow and full local suite passed; hosted CI pending |
+| Integration | Full local suite and synthetic workflow plus hosted CI for the integrated source revision | Passed locally and on integrated main commit 4398a03 |
