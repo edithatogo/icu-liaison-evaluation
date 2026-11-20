@@ -41,6 +41,8 @@
     "skip_reason": "Snakemake-specific tests passed in the separate P11 environment",
     "skipped": 2
   },
+  "hosted_ci_initial_failure": "PR run 44673532135 failed the renderer-version test because its temporary PYTHONPATH hid checkout source under a wheel installation",
+  "hosted_failure_reproduction_and_fix": "Confirmed installed-wheel import resolved project ROOT inside site-packages when checkout src was absent; preserved checkout src in the test subprocess",
   "illustrative_cli": {
     "output_sha256": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38",
     "seed": 20261117
@@ -201,5 +203,11 @@
   "summary_id": "476f16bffc4185a7932d14881f4367108d3c5c99afba297774726dd73b037941",
   "synthetic_smoke": "passed; native providers not executed",
   "unchanged_full_rerun": "nothing to be done",
+  "wheel_installed_workflow_tests": {
+    "command": "PYTHONPATH=src private/venv-p11-wheel/bin/python -m pytest -q tests/test_p11_workflow.py",
+    "elapsed_seconds": 132.74,
+    "passed": 2,
+    "python": "3.15.2"
+  },
   "workflow_recovery_tests": "2 passed: unchanged rerun; one-case change; style and renderer-version changes; invalid case; interrupted run; immutable outputs retained"
 }
