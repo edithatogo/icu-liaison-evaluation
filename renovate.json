@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>edithatogo/renovate-config"],
+  "extends": ["local>edithatogo/renovate-config#19c8297137dd58de7dbc83ba9de187bf7dc67e5f"],
   "automerge": false,
   "platformAutomerge": false,
   "packageRules": [

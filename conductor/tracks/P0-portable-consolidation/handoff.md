@@ -66,6 +66,6 @@ configuration, policy test, verification receipt, source manifest, and this
 handoff; native scope is none.
 The existing bot-owned PR #2 fails the source inventory and inherits automated
 patch and digest merges from the shared preset. The replacement preserves the
-shared preset while requiring review of those updates. The next operation is
+shared preset at its verified commit while requiring review of those updates. The next operation is
 local validation and hosted checks, then reconciliation with PR #2 after the
 replacement is integrated. The hosted bot's branch remains under its owner.
