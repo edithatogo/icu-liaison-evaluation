@@ -38,10 +38,10 @@
       }
     },
     "catalogue_revision": {
-      "const": "2026-11-19-P10-metric-assurance-v3"
+      "const": "2026-11-20-P9-synthetic-figures-v4"
     },
     "figure_register_status": {
-      "const": "specification_not_generated_outputs"
+      "const": "registered_figures_and_pending_designs"
     },
     "assurance_contract": {
       "const": "contracts/reporting/metrics.json"
@@ -398,6 +398,9 @@
             "scenario_assumptions_not_interval",
             "not_estimated"
           ]
+        },
+        "bundle": {
+          "const": "p9"
         }
       },
       "required": [
@@ -545,6 +548,33 @@
             "required": [
               "exploratory_reference"
             ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "bundle"
+            ]
+          },
+          "then": {
+            "properties": {
+              "id": {
+                "enum": [
+                  "F02",
+                  "F10",
+                  "F11",
+                  "F15",
+                  "F20",
+                  "F24"
+                ]
+              },
+              "status": {
+                "const": "implemented"
+              },
+              "evidence_tier": {
+                "const": "synthetic_implemented"
+              }
+            }
           }
         }
       ]

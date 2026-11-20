@@ -1,0 +1,45 @@
+{
+  "bundle_manifest_sha256": "4333d9bf786051d5efb8b5d1a365a685922aa3b1925ea85a00510e749bd389b0",
+  "clinical_safety_approved": false,
+  "draws": 5000,
+  "f20_new_png_sha256": "5e6d6c584fa1b6c17121f083a28283440188ec1c0a1d6957c6f209de891a0978",
+  "f20_old_and_new_png_sha256": "5e6d6c584fa1b6c17121f083a28283440188ec1c0a1d6957c6f209de891a0978",
+  "f20_png_matches_prior_render": true,
+  "figure_svg_sha256": {
+    "F02": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+    "F10": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+    "F11": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+    "F15": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+    "F20": "b721809cdb3565f5c213c3a8b98947bf3ac624e42bbc7dfe8cdebcb405dcc54c",
+    "F24": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8"
+  },
+  "figures_checked": [
+    "F02",
+    "F10",
+    "F11",
+    "F15",
+    "F20",
+    "F24"
+  ],
+  "independent_human_visual_signoff": null,
+  "investment_ready": false,
+  "prior_visual_receipt": "verification/p9-synthetic-figures-2026-11-20.json",
+  "python": "3.15.2",
+  "reconciled_p5_draws": 5000,
+  "rehashed_geometry_tests": "missing, displaced and invisible coverage; displaced demand; missing demand cell rejected",
+  "same_svg_as_prior_visual_review": {
+    "F02": true,
+    "F10": true,
+    "F11": true,
+    "F15": true,
+    "F20": false,
+    "F24": true
+  },
+  "scope": "synthetic P9 review follow-through",
+  "seed": 20261118,
+  "source_hashes": {
+    "src/icu_liaison/p9_figure_render.py": "c51f8671758d344957cf08442eb208bb01b636ee0096a122368c05f5700c281a",
+    "src/icu_liaison/p9_figure_review.py": "0d47a44e7bb53111016e5be4002b7077a8009a2b636228c5612af040ec82763c",
+    "tests/test_p9_figures.py": "edac09a3fdce4b4d49159e6db29a65984e6801c8326baaed553727104a790ba3"
+  }
+}

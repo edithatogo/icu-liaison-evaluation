@@ -1,0 +1,498 @@
+{
+  "canonical_model_input_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+  "clinical_safety_approved": false,
+  "codex_browser_index": {
+    "accessible_image_descriptions": 6,
+    "figure_anchor_exercised": "F24",
+    "horizontal_overflow": false,
+    "loaded_figures_per_profile": 6,
+    "responsive_widths_px": [
+      360,
+      768,
+      1280,
+      794
+    ]
+  },
+  "date_reviewed_australia_brisbane": "2026-11-20",
+  "figure_source_and_mark_review": {
+    "figures_checked": [
+      "F02",
+      "F10",
+      "F11",
+      "F15",
+      "F20",
+      "F24"
+    ],
+    "independent_p4_sample_checks": 9,
+    "investment_ready": false,
+    "manifest_sha256": "d52ae12ebb970a62df0bbcc33d82c93d25349684c8422d86d30ebaa12c821ab5",
+    "p5_draws_reconciled": 5000,
+    "source_rows_checked": {
+      "F02": 4,
+      "F10": 289,
+      "F11": 5000,
+      "F15": 6,
+      "F20": 168,
+      "F24": 12
+    },
+    "status": "synthetic_source_and_marks_verified"
+  },
+  "independent_human_visual_signoff": null,
+  "input_and_artifact_digests": {
+    "data_class": "synthetic",
+    "draws": 5000,
+    "figures": [
+      {
+        "csv": "f02.csv",
+        "denominator_ids": [
+          "D08",
+          "D09"
+        ],
+        "id": "F02",
+        "metric_ids": [
+          "M17",
+          "M24",
+          "M25"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p4_model_code",
+          "p5_model_summary"
+        ],
+        "svg": "f02.svg"
+      },
+      {
+        "csv": "f10.csv",
+        "denominator_ids": [
+          "D08",
+          "D09"
+        ],
+        "id": "F10",
+        "metric_ids": [
+          "M17",
+          "M25",
+          "M27"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p4_model_code"
+        ],
+        "svg": "f10.svg"
+      },
+      {
+        "csv": "f11.csv",
+        "denominator_ids": [
+          "D09"
+        ],
+        "id": "F11",
+        "metric_ids": [
+          "M21",
+          "M25"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p4_model_code",
+          "p5_manifest",
+          "p5_draws"
+        ],
+        "svg": "f11.svg"
+      },
+      {
+        "csv": "f15.csv",
+        "denominator_ids": [
+          "D04",
+          "D12"
+        ],
+        "id": "F15",
+        "metric_ids": [
+          "M05",
+          "M13"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p3_manifest",
+          "p3_episodes",
+          "p9_fixture"
+        ],
+        "svg": "f15.svg"
+      },
+      {
+        "csv": "f20.csv",
+        "denominator_ids": [
+          "D03",
+          "D11"
+        ],
+        "id": "F20",
+        "metric_ids": [
+          "M03",
+          "M16"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p9_fixture"
+        ],
+        "svg": "f20.svg"
+      },
+      {
+        "csv": "f24.csv",
+        "denominator_ids": [
+          "D05",
+          "D09"
+        ],
+        "id": "F24",
+        "metric_ids": [
+          "M08",
+          "M23",
+          "M25",
+          "M27"
+        ],
+        "sources": [
+          "scenario",
+          "p9_catalogue",
+          "p10_metrics",
+          "p9_data_code",
+          "p9_renderer_code",
+          "p4_model_code",
+          "p5_draws"
+        ],
+        "svg": "f24.svg"
+      }
+    ],
+    "files_sha256": {
+      "f02.csv": "cfd3c43fe196a88b9d6d0e0ae6a09f487c1a198d8e36f85ababac67a54c2f623",
+      "f02.svg": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+      "f10.csv": "7ef314177be75e506ce5805828a9a29ebeaa6b92bbba392fa7a2b5f9633e6e63",
+      "f10.svg": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+      "f11.csv": "fcd228f01beeeae77c4c0bb2b71f1407259bc950907c538e8ea41e2d4c34c4c6",
+      "f11.svg": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+      "f15.csv": "b8f5fa096bb25236c2f11fa69a551dbe9f0df57f7bb7ae5c5f7cbd482d258fe1",
+      "f15.svg": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+      "f20.csv": "f5f25b8fa71b087f992c13c181167f68d0875a10cc4202788cae6d23e6c5375b",
+      "f20.svg": "44b6c1118bfbdd67d6ea7477d13c58932c5f8d64d696a343f769c160afa0792d",
+      "f24.csv": "cf28d5774bdcd47a6ee5f3d0848de44d873c701632adc3401fb9a7ad4016ee39",
+      "f24.svg": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+      "index.html": "d86f533d14127b7fee6a4bf5ad03e00c66f3cf46c216c647f3b173059cb7c638"
+    },
+    "inputs_sha256": {
+      "p10_metrics": "aff953bd59e9f38fce678c9f799e8ec95132e3edf5546a3cd430678f55bd40de",
+      "p3_episodes": "d821175ddc6d3b6ea912c9dd7e811788bfa27df2a024ba16a0b4d47dee45d8e5",
+      "p3_manifest": "3f780d06a55ab0966a8516dbc1e37e19c890e8247706c45974fb2609cc911a44",
+      "p4_model_code": "ce63accb416f4c40e02b87b3be086c52b1dd038f70e0374f2e8a7a1a75ffb63b",
+      "p5_draws": "3a656881b69e7aa95b0a5ab568983b12be7dc9adb1955a0452f08c696d106bcc",
+      "p5_manifest": "614d09976d21afdf3c5361b919a7e8c4ab8c3e5a47988ff357d4b9e1c1052d9e",
+      "p5_model_summary": "32ef489eb5b193e6588ac34e60181886d06fd35aa92ab9c293cddff6dd5e9aac",
+      "p9_bundle_code": "36acfd368f000aaea3b874e3075dd9fa056f8b180d211f676aa195c01a304922",
+      "p9_catalogue": "2dffdfd4bcd87620524c5cea7a8cf649ed73f7d4b469515415498e110e30ca03",
+      "p9_data_code": "446946a33ff8ae4fe89015d7d3a089107af102148ed2948de93cf3154ee29e5e",
+      "p9_fixture": "9a6d6752e59de45c83077608c2989fa7f8e3d319ab2e36ba3c1f554b91e19952",
+      "p9_mark_review_code": "95fd3c2eee930562b8123f15c1aec27cf4d48f93f28091999fb17bc103aa7e47",
+      "p9_renderer_code": "256ccd9e9f977613263ffe9c4c3292d9730ddbdcf29a172c82408c85752e818f",
+      "scenario": "9dad28695fe920cff9118e8cbd83147c983121077702f2eed63e71ab0cac734b"
+    },
+    "investment_ready": false,
+    "model_input_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+    "price_year": 2026,
+    "python": "3.15.2",
+    "scenario_id": "icu-liaison-p4-public-proxy-synthetic",
+    "scenario_seed": 20261118,
+    "schema_version": 1,
+    "versions": {
+      "matplotlib": "3.11.2",
+      "numpy": "2.5.5",
+      "scipy": "1.18.1"
+    }
+  },
+  "investment_ready": false,
+  "local_visual_edits_verified": [
+    "Separated subtitles, axes and legends on narrow viewports.",
+    "Improved the contrast of the joint-null outlines and the value labels."
+  ],
+  "observed_site_data_used": false,
+  "python": "3.15.2",
+  "rendered_review": {
+    "bundle_manifest_sha256": "d52ae12ebb970a62df0bbcc33d82c93d25349684c8422d86d30ebaa12c821ab5",
+    "captures": [
+      {
+        "capture_sha256": "74f1fe3c74dc6a364193f95c47e645e87c4f81b02ce03ea369a24d95df2b479b",
+        "figure": "F02",
+        "file": "F02-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+        "width": 360
+      },
+      {
+        "capture_sha256": "31ed960d90936e45a5ef82f8f5c4e8196607c0349c76bc16034058a4784ec162",
+        "figure": "F02",
+        "file": "F02-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+        "width": 768
+      },
+      {
+        "capture_sha256": "32b86c291d463625569e39a416101bd1c499c05eb781b9c5ab6ab90d2f41c266",
+        "figure": "F02",
+        "file": "F02-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "e5911181b3642d4a30149dc3b8474962d25c4ec2cf46ed6392a8dd295eb9e98b",
+        "figure": "F02",
+        "file": "F02-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+        "width": 794
+      },
+      {
+        "capture_sha256": "975f2bb8e9886c42a0b1861db181a4e695d9bc6bf4b46e25e98b6b6493e1b03d",
+        "figure": "F10",
+        "file": "F10-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+        "width": 360
+      },
+      {
+        "capture_sha256": "fe967e0c358b88a0ff516568e74d55eff639a28b1a0d05b7e1b7f48abbc98c18",
+        "figure": "F10",
+        "file": "F10-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+        "width": 768
+      },
+      {
+        "capture_sha256": "5b2dd16cd2f0cdfd3d66a21d10127d55de3e2451000e514306f36f98ffc14950",
+        "figure": "F10",
+        "file": "F10-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "3e09c317483193ec4f24794ea71863e847a32f51595dab2bcfbe8378f0cc3972",
+        "figure": "F10",
+        "file": "F10-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "e88d3d62f378af19f6103a1c6b9f5988aacdfa0ea55c805ae35b6b97cdea2012",
+        "width": 794
+      },
+      {
+        "capture_sha256": "a3a6bc2ea2d80fd0b224653375d5c7b9b1e36bd1cb65dd75562003f3b1e7c5cc",
+        "figure": "F11",
+        "file": "F11-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+        "width": 360
+      },
+      {
+        "capture_sha256": "554c13d77eb0b5d80303096c5de4e27ab4622657bf6a43a8a449e2d7338cfe5d",
+        "figure": "F11",
+        "file": "F11-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+        "width": 768
+      },
+      {
+        "capture_sha256": "635ae8929716dcf7a17f5a4b424e2806fc173c20499ed6deb740808552c1c5a7",
+        "figure": "F11",
+        "file": "F11-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "a9164e930f8fbf74f38189ffdc9031061eacec5941ffe20049eb6a1c66ac5583",
+        "figure": "F11",
+        "file": "F11-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+        "width": 794
+      },
+      {
+        "capture_sha256": "81a48ef6949941d197494000c07c2431a5d8ffa6a74b5abbba6013f8829a2d7a",
+        "figure": "F15",
+        "file": "F15-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+        "width": 360
+      },
+      {
+        "capture_sha256": "ba413323b73d2ab785f91d6a4c43cc640c209ff2be75db41d88d0868d79e55f8",
+        "figure": "F15",
+        "file": "F15-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+        "width": 768
+      },
+      {
+        "capture_sha256": "d003461e1659e9791d8ec102907d227d445d9680f7183bad22523db72a1db465",
+        "figure": "F15",
+        "file": "F15-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "04bebbb9da8353396fe70215121fa420891d2b99c7e00434ce2d9bb038a4fc10",
+        "figure": "F15",
+        "file": "F15-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+        "width": 794
+      },
+      {
+        "capture_sha256": "3f552768019bac551c28b2bb6dafe05758cce6af849845145331d6e87a4c77ff",
+        "figure": "F20",
+        "file": "F20-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "44b6c1118bfbdd67d6ea7477d13c58932c5f8d64d696a343f769c160afa0792d",
+        "width": 360
+      },
+      {
+        "capture_sha256": "17f79552c448407d07e25f73b32d0d64fc35a63341bccb205fe6ecd8656d3c97",
+        "figure": "F20",
+        "file": "F20-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "44b6c1118bfbdd67d6ea7477d13c58932c5f8d64d696a343f769c160afa0792d",
+        "width": 768
+      },
+      {
+        "capture_sha256": "7c354b78b8b3219cbc83b2a579224877fbdb70580b0dab2c7c650f4814c6128c",
+        "figure": "F20",
+        "file": "F20-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "44b6c1118bfbdd67d6ea7477d13c58932c5f8d64d696a343f769c160afa0792d",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "16dde4e250d301f2b0e7bef786cd836ec791f07fca78e9f4bfa7b7f20c7cfeb0",
+        "figure": "F20",
+        "file": "F20-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "44b6c1118bfbdd67d6ea7477d13c58932c5f8d64d696a343f769c160afa0792d",
+        "width": 794
+      },
+      {
+        "capture_sha256": "bc1aa7034d93b3994449a7e337b48517871110043dccb29db51b4baa131ac9e4",
+        "figure": "F24",
+        "file": "F24-mobile.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "mobile",
+        "svg_sha256": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+        "width": 360
+      },
+      {
+        "capture_sha256": "1fad537cc0adbf493fa5435c5873b56ff241eef2b1de7636cd459bbc5830b34f",
+        "figure": "F24",
+        "file": "F24-tablet.png",
+        "grayscale": false,
+        "height": 1024,
+        "profile": "tablet",
+        "svg_sha256": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+        "width": 768
+      },
+      {
+        "capture_sha256": "c8e2496519dcf0f342e39f2a6d6e810e052260136df7c75e843c56251d21cce2",
+        "figure": "F24",
+        "file": "F24-desktop.png",
+        "grayscale": false,
+        "height": 720,
+        "profile": "desktop",
+        "svg_sha256": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+        "width": 1280
+      },
+      {
+        "capture_sha256": "039f6231cc7a410a3965d1a2996a6b74ea7b68e3a7cca5eba1780d57836fd0fe",
+        "figure": "F24",
+        "file": "F24-print_a4.png",
+        "grayscale": true,
+        "height": 1123,
+        "profile": "print_a4",
+        "svg_sha256": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+        "width": 794
+      }
+    ],
+    "pillow": "13.0.0",
+    "status": "rasters_captured_for_visual_review",
+    "svg_renderer": "rsvg-convert version 2.63.4"
+  },
+  "reviewer": "Codex implementation chat",
+  "runtime": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1"
+  },
+  "scenario_file_sha256": "9dad28695fe920cff9118e8cbd83147c983121077702f2eed63e71ab0cac734b",
+  "scenario_seed": 20261118,
+  "schema_version": 1,
+  "status": "six_priority_synthetic_figures_visually_reviewed",
+  "visual_findings": {
+    "F02": "Signed labels and the zero reference remain distinguishable.",
+    "F10": "The tested grid is entirely below break-even and the chart displays no zero contour.",
+    "F11": "Paired data marks remain visible on both sides of the zero-benefit line.",
+    "F15": "Hatching and a readably labelled blank journey distinguish stages and missing readiness.",
+    "F20": "Numbers and hatching keep readiness counts and roster states distinguishable in grayscale.",
+    "F24": "Negative return effects and the two dashed null cells remain distinguishable in grayscale."
+  }
+}

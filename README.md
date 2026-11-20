@@ -251,6 +251,26 @@ programme choice, not a patient-level scaled decision. The P5 method, audit
 and remaining review obligations are in
 [the P5 track](conductor/tracks/P5-reporting-independent-review/index.md).
 
+## P9 priority synthetic figures
+
+Generate and independently check the six companion figures from a P5 fictional
+report and the same P4 scenario. The output is a separate, immutable bundle
+with an HTML index, six SVGs, their source CSVs and a SHA-256 manifest.
+
+```sh
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p9_figures \
+  model-inputs/p4/illustrative.json --p5-report outputs/p5-synthetic \
+  --output-dir outputs/p9-figures
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p9_figures \
+  model-inputs/p4/illustrative.json --p5-report outputs/p5-synthetic \
+  --review outputs/p9-figures
+```
+
+Open `outputs/p9-figures/index.html` to view the figures and source rows. P5
+output from the P3–P6 fictional dry run can also be used as input. The optional
+[raster capture command](contracts/reporting/README.md#visual-review) produces
+review images in a separate directory.
+
 ## P5 source completion and P6 entry (18 November 2026)
 
 The prior P5 reporting engine now supports explicit `--dapane` opt-in, which

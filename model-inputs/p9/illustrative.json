@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "journeys": [
+    {"episode_id": "SYNICU001", "referral_minute": 75, "ward_bed_minute": 660},
+    {"episode_id": "SYNICU004", "referral_minute": 45, "ward_bed_minute": null},
+    {"episode_id": "SYNICU003", "referral_minute": null, "ward_bed_minute": null}
+  ],
+  "week": {
+    "shifts": [
+      {"day": 0, "start": 8, "end": 16, "productive_start": 9, "productive_end": 15},
+      {"day": 1, "start": 8, "end": 16, "productive_start": 9, "productive_end": 15},
+      {"day": 2, "start": 8, "end": 16, "productive_start": 9, "productive_end": 15},
+      {"day": 3, "start": 8, "end": 16, "productive_start": 9, "productive_end": 15},
+      {"day": 4, "start": 8, "end": 16, "productive_start": 9, "productive_end": 15},
+      {"day": 5, "start": 9, "end": 13, "productive_start": 10, "productive_end": 12}
+    ],
+    "demand_by_hour": [
+      [0,0,0,0,0,0,0,1,0,1,2,0,0,1,0,2,1,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,1,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,1,2,1,0,1,0,2,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,1,2,0,1,0,0,1,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,0,1,0,2,1,0,0,1,1,0,0,1,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0,0,0,1,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0]
+    ]
+  }
+}
