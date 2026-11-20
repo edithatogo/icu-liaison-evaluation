@@ -165,13 +165,14 @@ def test_p9_expanded_figure_programme_and_priorities():
     validate_catalogue(c)
     assert [f["id"] for f in c["figures"]] == [f"F{i:02d}" for i in range(1, 25)]
     assert {f["id"] for f in c["figures"] if f.get("bundle") == "p9" and f["evidence_tier"] == "synthetic_implemented"} == {"F02", "F10", "F11", "F15", "F20", "F24"}
-    assert sum(f["evidence_tier"] == "external_exploratory_only" for f in c["figures"]) == 5
+    assert {f["id"] for f in c["figures"] if f.get("bundle") == "p9_supplement"} == {
+        "F05", "F06", "F07", "F08", "F09", "F13", "F18"}
 
 
 def test_external_figures_cannot_be_falsely_promoted():
     c = load()
     f = c["figures"][4]
-    assert f["artifact"] is None and f["exploratory_reference"]["in_repo"] is False
+    assert f["artifact"] == "f05.svg" and f["exploratory_reference"]["in_repo"] is False
     f["artifact"] = "fabricated.svg"
     f["status"] = "implemented_optional"
     with pytest.raises(ValueError, match="schema|unqualified"):
@@ -190,3 +191,13 @@ def test_future_figure_denominator_is_required():
     del c["figures"][10]["denominator"]
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
+
+
+@pytest.mark.parametrize('key', ['F03', 'F04', 'F12', 'F14', 'F16', 'F17', 'F19', 'F21', 'F22', 'F23'])
+def test_site_and_provider_outputs_require_admitted_sources(key):
+    catalogue = load()
+    figure = next(f for f in catalogue['figures'] if f['id'] == key)
+    figure.update(artifact=f'{key.lower()}.svg', status='implemented_optional',
+                  evidence_tier='synthetic_implemented', privacy='synthetic_only', bundle='p9_supplement')
+    with pytest.raises(ValueError):
+        validate_catalogue(catalogue)

@@ -2,8 +2,8 @@
 
 This is the source project for [edithatogo/icu-liaison-evaluation](https://github.com/edithatogo/icu-liaison-evaluation).
 Track ownership and phase status are explicit in [the registry](tracks.md).
-Current scope is the initial P7/P8 source reconciliation and repository import;
-native providers, CHHHS calibration and clinical/Finance acceptance stay separate.
+The portable workflow covers intake, modelling, A/B comparisons, stress tests and reports.
+CHHHS calibration, outstanding provider qualification and clinical and Finance review have separate owners.
 
 - [Product](product.md) and [guidelines](product-guidelines.md)
 - [Technical stack](tech-stack.md) and [workflow](workflow.md)
@@ -39,6 +39,8 @@ native providers, CHHHS calibration and clinical/Finance acceptance stay separat
 - [P1 provider reuse](tracks/P1-provider-reuse/index.md).
 - [P7 technical and empirical qualification](tracks/P7-technical-empirical-qualification/index.md).
 - [P7 placeholder workflow](tracks/P7-placeholder-assisted-qualification/index.md): companion track preserving the later portable branch.
+
+- [P9 reporting and figures](tracks/P9-reporting-contracts/index.md) covers the catalogue, executable fictional figures and their source rows.
 
 - [P10 measurement and claim assurance](tracks/P10-measurement-figure-assurance/index.md): canonical metrics/denominators and fail-closed evidence gates for P7 and P9.
 

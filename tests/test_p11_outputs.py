@@ -119,12 +119,14 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
     result = build_summary(suite, output, [model_pointer], audit, pointer)
     verified = verify_output(output)
     assert verified['scenarios'] == 1 and verified['priority_figures'] == 6
-    f20 = output / 'priority-figures' / p9['figure_revision'] / 'bundle/f20.svg'
-    original = f20.read_bytes()
-    f20.write_bytes(original + b' ')
-    with pytest.raises(ValueError, match='inventory or digest'):
-        verify_output(output)
-    f20.write_bytes(original)
+    assert verified['supplementary_figures'] == 7
+    for name in ('f20.svg', 'f18.svg'):
+        svg = output / 'priority-figures' / p9['figure_revision'] / 'bundle' / name
+        original = svg.read_bytes()
+        svg.write_bytes(original + b' ')
+        with pytest.raises(ValueError, match='inventory or digest'):
+            verify_output(output)
+        svg.write_bytes(original)
     folder = output / 'summaries' / result['summary_id']
     comparison = folder / 'scenario-comparison.csv'
     comparison.write_text(comparison.read_text().replace('within_run_paired_parameter_draws', 'false', 1))
@@ -138,3 +140,56 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
     with pytest.raises(ValueError, match='summary rows'):
         verify_output(output)
     assert (output / 'models' / model['model_run_id']).is_dir()
+
+
+def test_rehashed_f01_interval_is_checked_against_model(tmp_path):
+    import re
+
+    output = tmp_path / 'store'
+    _, pointer = build_short_case(tmp_path, output, 'base')
+    receipt = build_figure(pointer, STYLE, output, tmp_path / 'f01.json')
+    folder = output / 'figures' / receipt['figure_revision']
+    svg = folder / 'scenario-comparison.svg'
+    text = svg.read_text()
+    # Change only a plotted percentile, retaining the title, description and mean bars.
+    changed, count = re.subn(r'(<path d="M [\d.]+ )[\d.]+( \nL [\d.]+ [\d.]+ \n" clip-path=[^>]+stroke-width: 1.8)',
+                             r'\g<1>999.5\2', text, count=1)
+    assert count == 1
+    svg.write_text(changed)
+    record_file = folder / 'figure.json'
+    record = json.loads(record_file.read_text())
+    record['files_sha256'][svg.name] = hashlib.sha256(svg.read_bytes()).hexdigest()
+    record_file.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match='mark'):
+        verify_figure(folder)
+
+
+@pytest.mark.parametrize('alter', ['bundle_file', 'source_hash'])
+def test_archived_p9_checks_its_inner_manifest_even_when_replay_is_unavailable(tmp_path, monkeypatch, alter):
+    import icu_liaison.p11_p9 as figures
+    from icu_liaison.p11_records import digest_file, inventory
+
+    output = tmp_path / 'store'
+    model, pointer = build_short_case(tmp_path, output, 'base')
+    result = build_p9(pointer, output, tmp_path / 'figures.json')
+    folder = output / 'priority-figures' / result['figure_revision']
+    monkeypatch.setattr(figures, 'fingerprint', lambda: {'archived': True})
+    assert figures.verify_p9(folder, output / 'models' / model['model_run_id'])
+    if alter == 'bundle_file':
+        svg = folder / 'bundle/f18.svg'
+        svg.write_bytes(svg.read_bytes() + b' ')
+    else:
+        manifest_file = folder / 'bundle/manifest.json'
+        manifest = json.loads(manifest_file.read_bytes())
+        manifest['inputs_sha256']['p3_episodes'] = '1' * 64
+        manifest_file.write_text(json.dumps(manifest))
+        review_file = folder / 'review.json'
+        review = json.loads(review_file.read_bytes())
+        review['manifest_sha256'] = digest_file(manifest_file)
+        review_file.write_text(json.dumps(review))
+    record_file = folder / 'figure-set.json'
+    record = json.loads(record_file.read_bytes())
+    record['files_sha256'] = inventory(folder, exclude='figure-set.json')
+    record_file.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match='manifest'):
+        figures.verify_p9(folder, output / 'models' / model['model_run_id'])

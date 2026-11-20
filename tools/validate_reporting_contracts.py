@@ -61,6 +61,15 @@ def validate_catalogue(c: dict) -> None:
     from icu_liaison.p9_figure_data import FIGURE_IDS
     if tuple(f["id"] for f in c["figures"] if f.get("bundle") == "p9") != FIGURE_IDS:
         raise ValueError("priority P9 figure registration differs from the renderer")
+    from icu_liaison.p9_supplement_data import SUPPLEMENT_IDS
+    if tuple(f["id"] for f in c["figures"] if f.get("bundle") == "p9_supplement") != SUPPLEMENT_IDS:
+        raise ValueError("supplementary P9 figure registration differs from the renderer")
+    rendered = {"F01", *FIGURE_IDS, *SUPPLEMENT_IDS}
+    for figure in c["figures"]:
+        if figure["id"] not in rendered and figure["status"] != "placeholder":
+            raise ValueError("unqualified empirical or provider figure promoted")
+        if figure.get("bundle") and figure["artifact"] != figure["id"].lower() + ".svg":
+            raise ValueError("unqualified companion artifact path")
     byid = {t["id"]:t for t in c["tables"]}
     if byid["T06"]["perspective"] != "weighted_activity_not_actual_revenue":
         raise ValueError("NWAU must not become hospital revenue")
@@ -86,7 +95,7 @@ def validate_report(folder: Path, c: dict) -> dict:
         if f["status"] == "placeholder":
             continue
         path=folder/f["artifact"]
-        if f.get("bundle") == "p9":
+        if f.get("bundle") in {"p9", "p9_supplement"}:
             if path.exists() or path.is_symlink():
                 raise ValueError("P9 companion figure is misplaced in the P5 report")
             continue

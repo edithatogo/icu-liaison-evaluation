@@ -32,8 +32,16 @@ def validate_preregistration(value: dict | None = None) -> dict:
     metrics = {m["id"]:m for m in json.loads(METRICS.read_text())["metrics"]}
     if metrics["M05"]["denominator_id"] != "D04":
         raise ValueError("descriptive ready-time denominator is unrecognised")
-    if data["outcomes"]["primary_index_ready_delay_metric_id"] is not None:
-        raise ValueError("unqualified index-specific delay metric claimed")
+    outcome = data["outcomes"]
+    if (outcome["primary_index_ready_delay_metric_id"] != "M31"
+            or metrics["M31"]["denominator_id"] != outcome["index_ready_delay_denominator_id"]
+            or outcome["index_ready_delay_denominator_id"] != "D14"):
+        raise ValueError("index readiness metric or denominator drift")
+    fields = outcome["index_ready_delay_crosswalk"]
+    crosswalk = json.loads((ROOT / fields["field_source"]).read_text())
+    episode_fields = {f["p2_field"] for f in crosswalk["mappings"] if f["dataset_id"] == "icu_episodes"}
+    if not set(fields["eligibility"] + fields["timing"]) <= episode_fields:
+        raise ValueError("index readiness field missing from episode crosswalk")
     if data["outcomes"]["descriptive_all_live_ready_delay_metric_id"] != "M05":
         raise ValueError("descriptive and index estimand confused")
     if metrics["M08"]["denominator_id"] != "D05" or data["outcomes"]["return_followup_hours"] != 72:
@@ -48,9 +56,10 @@ def validate_preregistration(value: dict | None = None) -> dict:
         "fidelity_observed":False,
         "analysis_frozen":False,
         "site_approved":False,
-        "index_delay_metric_gap":data["outcomes"]["index_ready_delay_gap"],
+        "index_delay_metric_gap":None,
+        "index_delay_metric_id":outcome["primary_index_ready_delay_metric_id"],
         "denominators":{"clinical_index":"D03","ANZICS_ready_valid":"D04",
-                        "index_return_72h":"D05"},
+                        "index_return_72h":"D05", "index_ready_valid":"D14"},
     }
 
 

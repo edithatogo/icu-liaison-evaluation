@@ -9,14 +9,14 @@ from tools.validate_measurement_contracts import (
 def load(name):
     return json.loads((CONTRACTS / name).read_text(encoding="utf-8"))
 
-def test_all_seven_tables_and_24_figures_link_to_30_metrics():
+def test_all_seven_tables_and_24_figures_link_to_registered_metrics():
     result=validate_assurance()
-    assert (result["tables"],result["figures"],result["metrics"],result["denominators"])==(7,24,30,13)
+    assert (result["tables"],result["figures"],result["metrics"],result["denominators"])==(7,24,31,14)
     assert result["authorities_verified"]==0 and result["visual_checks_executed"]==0
 
 @pytest.mark.parametrize("id,wrong",[
     ("M02","D03"),("M03","D02"),("M06","D03"),
-    ("M08","D02"),("M20","D08"),("M25","D08")
+    ("M08","D02"),("M20","D08"),("M25","D08"),("M05","D14"),("M31","D04"),("M31","D03")
 ])
 def test_denominator_drift_is_rejected(id,wrong):
     data=load("metrics.json")

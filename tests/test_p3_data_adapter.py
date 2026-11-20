@@ -229,3 +229,14 @@ def test_extraction_cannot_predate_observed_episode_departure(tmp_path):
     mf.write_text(json.dumps(m))
     with pytest.raises(LocalDatasetError,match='extraction'):
         load_and_audit(mf)
+
+
+def test_index_delay_mean_excludes_repeats_home_and_unknown_readiness(tmp_path):
+    directory = fixture(tmp_path)
+    metric = load_and_audit(directory / 'manifest.json')['index_ready_delay']
+    assert metric == {'metric_id': 'M31', 'population_id': 'D03', 'denominator_id': 'D14',
+                      'eligible': 3, 'valid': 2, 'missing': 1, 'mean_hours': 8.5}
+    rewrite_csv(directory, 'episodes.csv', lambda rows: [
+        row.update(icu_medically_ready_at='') for row in rows])
+    empty = load_and_audit(directory / 'manifest.json')['index_ready_delay']
+    assert (empty['valid'], empty['missing'], empty['mean_hours']) == (0, 3, None)

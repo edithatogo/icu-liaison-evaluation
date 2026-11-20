@@ -12,9 +12,9 @@
 
 ## Evidence-dependent implementation tasks (unaccepted)
 - [ ] P10.09 Implement independent verifier for CHHHS custodian and external provider signatures, including revocation/expiry, with no public signing material.
-- [ ] P10.10 Generate output-level provenance DAG and recompute actual source/model/renderer/SVG digests.
-- [ ] P10.11 Qualify visual regressions across mobile/tablet/desktop/A4: actual screenshots, contrast and independent data-mark audits.
-- [ ] P10.12 Implement factorial sensitivity decomposition with null/harm clinical effects and structural alternatives, without causal claims.
+- [~] P10.10 Generate output-level provenance DAG and recompute actual source/model/renderer/SVG digests.
+- [~] P10.11 Qualify visual regressions across mobile/tablet/desktop/A4: actual screenshots, contrast and independent data-mark audits.
+- [~] P10.12 Implement factorial sensitivity decomposition with null/harm clinical effects and structural alternatives, without causal claims.
 - [ ] P10.13 Reconcile P7 governed data with M-IDs and register external clinical/Finance review receipts.
 - [ ] P10.14 Implement approval validity, protocol freeze and staleness notifications before site reports.
 
@@ -22,7 +22,7 @@
 
 - [x] **P10.10a:** independently recompute P4 canonical scenario digest, P5 model identity/manifest, F01 SVG hash and P5/P9 reviews; emit a reproducible directed source→table→figure graph outside the P5 bundle. This certifies **computational consistency only**.
 - [x] **P10.10b:** negative fixtures for changed input seed, missing SVG and rehashed tampering; verify stored receipts against fresh source hashes. No editable receipt grants an external authority.
-- [ ] **P10.10c:** add actual independent SVG mark/visual receipts before any `accepted_synthetic` status or human visual acceptance.
+- [x] **P10.10c:** add actual independent SVG mark/visual receipts before any `accepted_synthetic` status or human visual acceptance.
 
 - [x] **P10.15a:** register all six mandatory P2 safety outcomes as unmeasured with null noninferiority margins and no invented local source.
 - [x] **P10.15b:** reject positive synthetic net resource benefit as clinical investment authorisation; test unknowns, fake margins/signoffs, endpoint omissions, nonfinite economics and incorrectly substituted endpoints.
@@ -34,9 +34,10 @@
 
 - [x] **P10.12a:** execute five adversarial, paired, seeded P4 synthetic scenarios: null effect, harmful returns, no addressable delay, no usable capacity and no cash realisability; preserve P4/P5 kernel authority.
 - [x] **P10.12b:** assert independent accounting/capacity invariants and fail-closed P10 safety policy for each proposed strategy in CI.
+- [x] P10.12 synthetic factorial analysis in F24. Each paired grid cell reports the joint null, delay contrast, return contrast and interaction in annual AUD.
 - [ ] **P10.12c:** add separately qualified structural-model and observed-data uncertainty decomposition after actual CHHHS/clinical evidence and methods review.
 
 - [x] **P10.16a:** source-only draft study preregistration and intervention-fidelity contract; distinguish roster eligibility from realised liaison contacts and avoid adjustment for post-treatment exposure as baseline confounding.
 - [x] **P10.16b:** prespecified comparison/design, mandatory clinical safety outcomes, negative controls and draft-case mix requirements; reject fake registration, site approval and missing outcomes.
-- [ ] **P10.16c:** resolve missing D03 index-specific valid-ready discharge-delay metric separately from M05/D04 all-live descriptive reporting, before a site primary outcome or statistical analysis can be frozen.
+- [x] **P10.16c:** define the D03 index-specific valid-ready discharge-delay metric separately from M05/D04 all-live descriptive reporting, before a site primary outcome or statistical analysis can be frozen.
 - [ ] **P10.16d:** clinically approve pre-registration, current-care comparator, roster/contact definitions, intervention start, safety margins, data governance and independent analysis lock.

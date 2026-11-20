@@ -31,13 +31,17 @@ private/venv-p11/bin/python -m icu_liaison.p11_verify --output outputs/p11
 The workflow's default profile selects Snakemake's built-in greedy scheduler;
 the bundled CBC solver was not executable on the qualified macOS ARM host. This
 does not change the model. The normal base commands in the README remain available.
-The model is run without installed Dapane or Voiage execution and records that
-fact. Each scenario has an F01 figure and a separate P9 bundle containing F02,
-F10, F11, F15, F20 and F24. P9 independently replays P4 draws and reviews source
-rows and SVG marks; this verification replay does not rebuild the P5 report.
-When an F10 input is fixed, that dimension has one stated value and is shown as
-points, not an invented interval. F15 and F20 use separate fictional journey
-and roster fixtures; they are not simulated episode-level outcomes of P4.
+Each scenario produces F01 and 13 companion figures. Six priority plots cover
+resources, break-even, paired capacity, discharge journeys, nursing coverage
+and clinical-effect sensitivity. Seven more cover resources versus cash, the
+sign and distribution of paired differences, one-way sensitivity, occupancy,
+index discharge flow and a fictional controlled event-study design. F09, F13,
+F15, F18 and F20 use separate fictional fixtures shared across scenarios.
+
+The F24 CSV expresses each cell as the joint-null resource result plus delay,
+return and interaction contrasts, computed on the same parameter draws. F10
+displays a fixed parameter as one value. P11 records the provider execution
+status and checks source values against the rendered SVG marks.
 
 ## Define a scenario
 
@@ -82,9 +86,9 @@ constituent model records. `state/models/<case>.json` identifies each immutable
 paired outcomes, independent numerical review, run metadata and SHA-256 hashes.
 `state/figures/<case>.json` links to its immutable F01 figure revision.
 `state/priority-figures/<case>.json` links to the corresponding immutable
-`priority-figures/<revision>/bundle/index.html`, six SVGs, source CSVs and
-P9 manifest. The revision also retains the P9 fixture, episode-feed, catalogue
-and metric snapshots and an independent review. Attempt files under `attempts/`
+`priority-figures/<revision>/bundle/index.html`, 13 SVGs, source CSVs and
+a P9 manifest. Each new revision retains the P3 feeds and dictionary, P6 trace,
+P9 fixtures, catalogue, metric registry and a separate mark review. Attempt files under `attempts/`
 record model execution separately from model identity.
 
 The run identity uses input snapshots, the effective scenario, relevant source
@@ -97,8 +101,9 @@ hashes support integrity checks, not scientific
 approval. Existing content-addressed objects are never silently overwritten.
 
 Run `icu_liaison.p11_verify` after a workflow run to check current pointers,
-file hashes, model and figure links, the six P9 outputs per scenario and the
-combined rows. For matching source, inputs and runtime it also replays the P4/P5
+file hashes, model and figure links, the F01 bars and percentile intervals, the
+registered P9 outputs per scenario and the combined rows. Edition 1 retains its
+six-figure inventory. Edition 2 requires all 13 P9 figures. For matching source, inputs and runtime it also replays the P4/P5
 and P9 numerical and mark reviews; historical runs with a different runtime are
 checked for recorded file integrity without claiming a new replay. Snakemake's
 no-op check alone checks workflow freshness,

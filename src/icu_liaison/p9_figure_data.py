@@ -227,4 +227,13 @@ def sensitivity_grid(run: P4Run) -> list[dict]:
                 'mean_returns_avoided': float(result.readmissions_avoided.mean()),
                 'mean_net_resource_aud': float(result.net_resource_benefit_aud.mean()),
             })
+    cells = {(r['delay_success'], r['relative_return_reduction']): r['mean_net_resource_aud']
+             for r in rows}
+    joint_null = cells[0., 0.]
+    for row in rows:
+        delay_only = cells[row['delay_success'], 0.] - joint_null
+        return_only = cells[0., row['relative_return_reduction']] - joint_null
+        row.update(joint_null_aud=joint_null, delay_contrast_aud=delay_only,
+                   return_contrast_aud=return_only,
+                   interaction_aud=row['mean_net_resource_aud'] - joint_null - delay_only - return_only)
     return rows

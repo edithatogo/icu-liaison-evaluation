@@ -50,7 +50,7 @@ def validate_assurance(*, catalogue: dict | None = None,
             raise ValueError("unknown source or denominator reference")
         if item["followup_hours"] and item["time_anchor"] != "physical_icu_departure":
             raise ValueError("follow-up anchored before ICU departure")
-    fixed = {"M02":"D02","M03":"D03","M06":"D04","M08":"D05",
+    fixed = {"M02":"D02","M03":"D03","M05":"D04","M06":"D04","M08":"D05","M31":"D14",
              "M09":"D01","M11":"D06","M20":"D10","M25":"D09","M26":"D09"}
     for name, denominator in fixed.items():
         if name not in ids or ids[name]["denominator_id"] != denominator:

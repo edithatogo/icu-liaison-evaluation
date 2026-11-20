@@ -289,6 +289,10 @@ _RENDERERS = {
 
 
 def render_svg(path: Path, figure: dict, rows: list[dict], price_year: int, cohort: int) -> None:
+    from .p9_supplement_render import RENDERERS
+    from matplotlib.ticker import ScalarFormatter
+
+    render = _RENDERERS.get(figure['id']) or RENDERERS[figure['id']]
     rc = {
         'font.family': 'DejaVu Sans', 'font.size': 11, 'text.color': INK,
         'axes.labelcolor': INK, 'axes.edgecolor': INK,
@@ -297,7 +301,14 @@ def render_svg(path: Path, figure: dict, rows: list[dict], price_year: int, coho
         'svg.hashsalt': 'icu-liaison-p9-v1', 'path.simplify': False,
     }
     with mpl.rc_context(rc):
-        canvas = _RENDERERS[figure['id']](rows, price_year, cohort)
+        canvas = render(rows, price_year, cohort)
+        if figure['id'] in RENDERERS:
+            for axes in canvas.axes:
+                for axis in (axes.xaxis, axes.yaxis):
+                    formatter = axis.get_major_formatter()
+                    if isinstance(formatter, ScalarFormatter):
+                        formatter.set_useOffset(False)
+                        formatter.set_scientific(False)
         canvas.savefig(path, format='svg', metadata={
             'Date': None, 'Title': figure['title'], 'Description': figure['alt_text'],
         })

@@ -160,6 +160,16 @@ def test_clinical_stress_grid_retains_null_and_harm(scenario):
     adverse = [row for row in rows if row['effect_class'] == 'more_returns']
     assert adverse and all(row['mean_returns_avoided'] < 0 for row in adverse)
     assert all(row['draws'] == scenario.iterations for row in rows)
+    for row in rows:
+        assert row['joint_null_aud'] == joint_null['mean_net_resource_aud']
+        assert (row['joint_null_aud'] + row['delay_contrast_aud'] + row['return_contrast_aud']
+                + row['interaction_aud']) == pytest.approx(row['mean_net_resource_aud'], abs=1e-7)
+        # The current P4 resource kernel adds the two pathways independently.
+        assert row['interaction_aud'] == pytest.approx(0, abs=1e-7)
+        if row['delay_success'] == 0:
+            assert row['delay_contrast_aud'] == 0
+        if row['relative_return_reduction'] == 0:
+            assert row['return_contrast_aud'] == 0
 
 
 def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path, scenario):

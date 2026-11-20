@@ -1,0 +1,249 @@
+{
+  "scope": "Portable fictional implementation and baseline visual review",
+  "date": "2026-11-20",
+  "python": "3.15.2",
+  "snakemake": "9.27.2",
+  "fictional_suite": {
+    "clinical_safety_approved": false,
+    "investment_ready": false,
+    "paired_rows": 72,
+    "priority_figures": 36,
+    "scenarios": 6,
+    "status": "verified_synthetic_outputs",
+    "summary_id": "8432a2d1b04eccc9c9544f427aba62a46c2183d4bdba29a708b94d01c945c790",
+    "supplementary_figures": 42,
+    "seed": 20261118,
+    "draws_per_case": 5000,
+    "f01_figures": 6,
+    "comparison_csv_sha256": "f3e99ef0d22b5f1cb3fd144b18a54481beae2328e470ae01e2dff2bc5823ec27",
+    "unchanged_rerun": "nothing_to_be_done",
+    "recovery_exercised": [
+      "invalid case, then repair",
+      "process-group interruption before publication, then resume"
+    ],
+    "archived_six_figure_edition": {
+      "clinical_safety_approved": false,
+      "investment_ready": false,
+      "paired_rows": 72,
+      "priority_figures": 36,
+      "scenarios": 6,
+      "status": "verified_synthetic_outputs",
+      "summary_id": "86861dc4e1adea18dacb6b1091ed33aae910d0f7b0753ed7a199089b1bf2541f",
+      "supplementary_figures": 0
+    },
+    "comparison_rows_matching_prior_edition_excluding_model_id": 72
+  },
+  "basic_cli": {
+    "seed": 20261117,
+    "iterations": 5000,
+    "input_digest_sha256": "ec3777ad8cd3c8e90b85cb76e9796b7380b0457443c3030830387a7649717aed"
+  },
+  "P7_progress": {
+    "investment_ready": false,
+    "manifest_verified": true,
+    "native_kairos_executed": false,
+    "status": "synthetic_progress_complete_external_gates_open",
+    "unresolved_count": 33
+  },
+  "first_index_delay": {
+    "metric_id": "M31",
+    "population_id": "D03",
+    "denominator_id": "D14",
+    "eligible": 3,
+    "valid": 2,
+    "missing": 1,
+    "mean_hours": 8.5
+  },
+  "baseline_visual_review": {
+    "figure_set_revision": "c080e61592a42d47150c03eb9d52f204a828e0cdace95ebcc6061a556bb24845",
+    "f01_revision": "b890ddb6ae150c45b060ce0e4ac647f7ff3cf523a15e8f20f7e9ee88eadd0c6d",
+    "bundle_manifest_sha256": "6b98e2ece24d9704d8e5bcb61fc411d11d437a93231e966298a2c7bb28c9f11c",
+    "index_sha256": "54816bd9302313b80a48a7704153504eff343a1ff387b04f22831e0b5ff0ef54",
+    "captures": 56,
+    "capture_manifest_sha256": "8bef839faecc5e4b337cde42077c69d6c3b6812e556f437d18a4813a1c2e9981",
+    "renderer": "rsvg-convert version 2.63.4",
+    "pillow": "13.0.0",
+    "matplotlib": "3.11.2",
+    "figures": {
+      "F01": {
+        "svg_sha256": "ddbe4edc83f5930732787310b94197bc48d39b933a18d419944aa16a43fccdaa",
+        "raster_sha256": {
+          "mobile": "cf4cf1db52615cdfcc36f7a5e97ce06c11570f3e48cb3a6a44699bc07859d065",
+          "tablet": "9c5e63b56adca78dc4a01b993517b5f6b3234b7962aa4e49113eb484821c4a39",
+          "desktop": "cbf0d045f864e03cb5324dd875aa94c78068598e8a4223b2dff7b0afba0d840c",
+          "print_a4": "d19daf80b6f8ae9b5919f5d641c6f1116640354dceed9d50bda88142256e2200"
+        }
+      },
+      "F02": {
+        "svg_sha256": "d0e7df132f635297422b54ceb0e740636272de03c2ae5ce4902234cd397f0ae5",
+        "raster_sha256": {
+          "mobile": "74f1fe3c74dc6a364193f95c47e645e87c4f81b02ce03ea369a24d95df2b479b",
+          "tablet": "31ed960d90936e45a5ef82f8f5c4e8196607c0349c76bc16034058a4784ec162",
+          "desktop": "32b86c291d463625569e39a416101bd1c499c05eb781b9c5ab6ab90d2f41c266",
+          "print_a4": "e5911181b3642d4a30149dc3b8474962d25c4ec2cf46ed6392a8dd295eb9e98b"
+        }
+      },
+      "F05": {
+        "svg_sha256": "d1e26077073e37d0426525e299976acd8b945d1a19fdc6956b5f56c7ea7a1583",
+        "raster_sha256": {
+          "mobile": "2a4e9e6f53f3a8392f9c6945cd9353a7b52788828c372d5d50a148ad02f26d0b",
+          "tablet": "3cbbef3200eb5d3d00a50645d53fbf921fd183cfc9cd344433d7c3808059fb24",
+          "desktop": "be559a995dd6c572b4eab9b581567b8a789b76d46f6f2ad0dd8eda3c16e9aa6a",
+          "print_a4": "a0da69b0734d86f977555a5b19557afa5f16caa2bda9948314505dadaa142825"
+        }
+      },
+      "F06": {
+        "svg_sha256": "4f50f81e45cf2aa428562d636d2273525bd565cfa0988e584ad4cb0fae031891",
+        "raster_sha256": {
+          "mobile": "cca79f003f29d59b6a89f6b778038e31699fad3fa046cf0f8e660d92a1fb021a",
+          "tablet": "ed1afc5cb1e2c9d599eae3e22f21d9b60e03c2ac26b641a55962b0d33472cea9",
+          "desktop": "273a2673c3fa7428cba5385fbd4321cde9f71cfe5e717655b3d318f62d94b61c",
+          "print_a4": "8c38fbffd7ae138d00d1fa7f6a4edc7fe18c21eb0ef4cd4b9ca9228a7d9c3e54"
+        }
+      },
+      "F07": {
+        "svg_sha256": "82f5128e6190418e28a78dea433cc2f1794ba183f2e7de86b5bf860e8eb8c0a8",
+        "raster_sha256": {
+          "mobile": "b25f55ec328b7b1daa36d6d7c99dbaa31fd01c9afb91493cb9d54e0c7e8a4836",
+          "tablet": "18533eca8c8aaf09bfb7fb8c6149019bd339370247480335a3ebf68c5540518d",
+          "desktop": "bea84b24a9d3ae85d103f12ee3e03c2ccc5b07b4c666285aef4f86b69d09e150",
+          "print_a4": "10b8b60a35fb7be6d0c9710fd3c0d40f96b911c05e979fa0572cb2385840abe3"
+        }
+      },
+      "F08": {
+        "svg_sha256": "cee48247bd819f3c3d442088aafbff345a48704fc64a7034aceb80547cdd4e81",
+        "raster_sha256": {
+          "mobile": "6c085e6dacddcab94029c24d24301b512e72ec0faa58d5ff48131cba6d1afaee",
+          "tablet": "3747b227848b1e64d460a2a768a7db1ab00f7ae4fc42b1f25b45da759619aca8",
+          "desktop": "bc4cefc13953d47aa1cebeb54dcf25dbbd0f1784862cdde17194c697d9862879",
+          "print_a4": "7d1c43d3fd7114307633ce94898aa701b9997e37805fe04b2c44d8dca6b275c4"
+        }
+      },
+      "F09": {
+        "svg_sha256": "300904cfade5caeabe979e0183158a5d8fde79914606bb0c878dabe442cf15f8",
+        "raster_sha256": {
+          "mobile": "29455a99724ec7b1099456dcfdc5eeb955fa6d8b2992fcd9a5bc6b7130e19f50",
+          "tablet": "9885ccc2cebb93d725599b6de5130d71b7a6ba39c7caabae29fb3ec7f9593423",
+          "desktop": "2b2509ce0f7cbcee6128cd2346c7a554f0c602bb8e1fea0c75b9f80a2c6e1edb",
+          "print_a4": "d7f615709be1840d46fefb0d09efe2663d1edc128cc6e57dd4b45a1e74eb2284"
+        }
+      },
+      "F10": {
+        "svg_sha256": "30772beb6271619b99ec39497ec077aee7bdb1377a480d821adfb0824cda0c67",
+        "raster_sha256": {
+          "mobile": "975f2bb8e9886c42a0b1861db181a4e695d9bc6bf4b46e25e98b6b6493e1b03d",
+          "tablet": "fe967e0c358b88a0ff516568e74d55eff639a28b1a0d05b7e1b7f48abbc98c18",
+          "desktop": "5b2dd16cd2f0cdfd3d66a21d10127d55de3e2451000e514306f36f98ffc14950",
+          "print_a4": "3e09c317483193ec4f24794ea71863e847a32f51595dab2bcfbe8378f0cc3972"
+        }
+      },
+      "F11": {
+        "svg_sha256": "4feb8ec6cf10f229081f78984f4939bed95bfe2f64c2a8cd3dd358f303b83e90",
+        "raster_sha256": {
+          "mobile": "a3a6bc2ea2d80fd0b224653375d5c7b9b1e36bd1cb65dd75562003f3b1e7c5cc",
+          "tablet": "554c13d77eb0b5d80303096c5de4e27ab4622657bf6a43a8a449e2d7338cfe5d",
+          "desktop": "635ae8929716dcf7a17f5a4b424e2806fc173c20499ed6deb740808552c1c5a7",
+          "print_a4": "a9164e930f8fbf74f38189ffdc9031061eacec5941ffe20049eb6a1c66ac5583"
+        }
+      },
+      "F13": {
+        "svg_sha256": "befda7f44ebd41d5b94d756c96a54442c3fded1c1be280d5981f3d58a07a1d77",
+        "raster_sha256": {
+          "mobile": "41e829a7b2a4b677263be067ae50a7281fb875287d04e2517678a704e53162d3",
+          "tablet": "c7c5700d7452cc5a658c0db4605f16a0ef0a1adbe56ccc7b78952c4a53a42425",
+          "desktop": "f34d9dd545a1fe01dfb6585585b80747c5c4cd9b6c96c53699d77e993a39b36b",
+          "print_a4": "a2caac91b96977a1d3526c02e66b7833abaf2f62136217c708d2e5d29c4d4517"
+        }
+      },
+      "F15": {
+        "svg_sha256": "5adc11181cd00037aa1cb8a30aa2650c73ae137fcce04cf826d6d496515bdd56",
+        "raster_sha256": {
+          "mobile": "81a48ef6949941d197494000c07c2431a5d8ffa6a74b5abbba6013f8829a2d7a",
+          "tablet": "ba413323b73d2ab785f91d6a4c43cc640c209ff2be75db41d88d0868d79e55f8",
+          "desktop": "d003461e1659e9791d8ec102907d227d445d9680f7183bad22523db72a1db465",
+          "print_a4": "04bebbb9da8353396fe70215121fa420891d2b99c7e00434ce2d9bb038a4fc10"
+        }
+      },
+      "F18": {
+        "svg_sha256": "3c51e649287647244fd9d7078a3ec64a2c4094b11a15bcadcf7b9e604e9eb7c0",
+        "raster_sha256": {
+          "mobile": "6f80e0c94380ea14dce90d30f66ed12958a26ded29b38e4571538e4f3c91cd84",
+          "tablet": "7022b3ec8bd856e38c9bc1f0a3c7be5820f83ce4d2324593b3a460a7a812ef6d",
+          "desktop": "8eb8b55db4395bcf2fe16e8d58c77c2b93ddfea67c44113beaf231db6f83e120",
+          "print_a4": "533589144be90d53ab229b34450ccd1a4e4be416699df013d40befc41488bcb3"
+        }
+      },
+      "F20": {
+        "svg_sha256": "b721809cdb3565f5c213c3a8b98947bf3ac624e42bbc7dfe8cdebcb405dcc54c",
+        "raster_sha256": {
+          "mobile": "3f552768019bac551c28b2bb6dafe05758cce6af849845145331d6e87a4c77ff",
+          "tablet": "17f79552c448407d07e25f73b32d0d64fc35a63341bccb205fe6ecd8656d3c97",
+          "desktop": "7c354b78b8b3219cbc83b2a579224877fbdb70580b0dab2c7c650f4814c6128c",
+          "print_a4": "16dde4e250d301f2b0e7bef786cd836ec791f07fca78e9f4bfa7b7f20c7cfeb0"
+        }
+      },
+      "F24": {
+        "svg_sha256": "4edee0d897e1d69df2a2a4afe5daf02bf5431d79129ea6f00131e60c681bacc8",
+        "raster_sha256": {
+          "mobile": "bc1aa7034d93b3994449a7e337b48517871110043dccb29db51b4baa131ac9e4",
+          "tablet": "1fad537cc0adbf493fa5435c5873b56ff241eef2b1de7636cd459bbc5830b34f",
+          "desktop": "c8e2496519dcf0f342e39f2a6d6e810e052260136df7c75e843c56251d21cce2",
+          "print_a4": "039f6231cc7a410a3965d1a2996a6b74ea7b68e3a7cca5eba1780d57836fd0fe"
+        }
+      }
+    },
+    "scope": "F01 and 13 P9 figures from the baseline run. Each other case had individual source and SVG mark checks.",
+    "observations": [
+      "F01 bars and percentile ends match their labelled strategies and summary statistics. A 12-point style improves the phone view; the SVG supports enlargement.",
+      "Bar patterns, zero references, separate trace styles and labelled flow counts remain distinguishable in grayscale.",
+      "The flow retains the zero-count unknown category. The event study shows the reference week and its fictional ward-period means.",
+      "Charts, legends, axis titles and source links fit the reviewed layouts."
+    ],
+    "internal_browser": {
+      "index_width_checks": [
+        {
+          "name": "mobile",
+          "allInside": true,
+          "allLoaded": true,
+          "alt": true,
+          "images": 13,
+          "pageWidth": 360,
+          "width": 360
+        },
+        {
+          "name": "tablet",
+          "allInside": true,
+          "allLoaded": true,
+          "alt": true,
+          "images": 13,
+          "pageWidth": 768,
+          "width": 768
+        },
+        {
+          "name": "desktop",
+          "allInside": true,
+          "allLoaded": true,
+          "alt": true,
+          "images": 13,
+          "pageWidth": 1280,
+          "width": 1280
+        }
+      ],
+      "browser": "Codex internal browser",
+      "screenshots_sha256": {
+        "mobile": "55fbf1f01be4f0dfbb478c4523862f18ede62eeb9a42667ac4e7802ed92a0cc4",
+        "tablet": "4ed4b3bb4a4ad65e58964ade7a3519926cffc234bcfd7cc3ce459e5770d9a931",
+        "desktop": "6963c9f95706176252a77fbfdfe3a24ec079dad76246deecaad1e93d54097ae7",
+        "print-a4": "4859e1b4dd1237b90d9d10b7a0d246f94b6c57b49f5742d8e3523bab099443a3"
+      },
+      "pdf_pages": 14,
+      "paper": "A4",
+      "page_inventory": "index then one page for each of the 13 companion figures",
+      "pdf_sha256": "f7d9c1cff6e8f58bd886bd9f95eca2d83445f6d318cb54229387203524a5fa52",
+      "css_print_figure_filter": "grayscale(1)"
+    }
+  },
+  "scientific_approval": false,
+  "native_provider_execution_in_p11": false,
+  "site_data_used": false
+}

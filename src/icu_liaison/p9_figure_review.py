@@ -102,6 +102,9 @@ def review_svg(path, figure, rows):
             or description is None or description.text != figure['alt_text']):
         raise ValueError('SVG accessibility title or description differs from the catalogue')
     nodes = {node.get('id'): node for node in svg.iter() if node.get('id')}
+    marks = [node.get('id') for node in svg.iter() if node.get('id', '').startswith('data-')]
+    if len(set(marks)) != len(marks):
+        raise ValueError('duplicate SVG data mark')
     figure_id = figure['id']
     if figure_id == 'F02':
         _zero(nodes, _bars(nodes, rows, 'waterfall-bar', 'start_aud', 'end_aud'), 0)
@@ -216,4 +219,8 @@ def review_svg(path, figure, rows):
             if f'null-{panel}' not in nodes:
                 raise ValueError('SVG mark for the joint null is missing')
     else:
-        raise ValueError('unregistered synthetic figure')
+        from .p9_supplement_data import SUPPLEMENT_IDS
+        from .p9_supplement_review import check_supplement
+        if figure_id not in SUPPLEMENT_IDS:
+            raise ValueError('unregistered synthetic figure')
+        check_supplement(nodes, figure_id, rows)

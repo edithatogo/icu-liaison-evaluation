@@ -7,6 +7,7 @@ from io import BytesIO
 import json
 from pathlib import Path
 import subprocess
+import sys
 from tempfile import TemporaryDirectory
 
 from PIL import Image, ImageOps, __version__ as pillow_version
@@ -14,7 +15,7 @@ from PIL import Image, ImageOps, __version__ as pillow_version
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def capture(bundle: Path, output: Path) -> dict:
+def capture(bundle: Path, output: Path, f01: Path | None = None) -> dict:
     if output.exists() or output.is_symlink() or output.resolve().is_relative_to(bundle.resolve()):
         raise ValueError('choose a fresh capture directory outside the figure bundle')
     manifest_file = bundle / 'manifest.json'
@@ -22,6 +23,21 @@ def capture(bundle: Path, output: Path) -> dict:
     manifest = json.loads(manifest_bytes)
     if manifest.get('data_class') != 'synthetic' or manifest.get('investment_ready') is not False:
         raise ValueError('expected a fictional P9 figure bundle')
+    figures = []
+    for record in manifest['figures']:
+        key, filename = record['id'], record['svg']
+        if not key.isascii() or len(key) != 3 or key[0] != 'F' or not key[1:].isdigit() or filename != f'{key.lower()}.svg':
+            raise ValueError('unsafe figure identity')
+        figures.append((key, bundle / filename, manifest['files_sha256'][filename]))
+    if f01 is not None:
+        from icu_liaison.p11_figure import verify_figure
+        record = verify_figure(f01)
+        model = f01.parent.parent / 'models' / record['model_run_id']
+        summary = json.loads((model / 'p5-report/model-summary.json').read_bytes())
+        if summary['input_digest_sha256'] != manifest['model_input_sha256']:
+            raise ValueError('F01 and P9 describe different scenarios')
+        filename = 'scenario-comparison.svg'
+        figures.insert(0, ('F01', f01 / filename, record['files_sha256'][filename]))
     profiles = json.loads((ROOT / 'contracts/reporting/visual-review.json').read_text())['required_profiles']
     version = subprocess.check_output(['rsvg-convert', '--version'], text=True, timeout=10).splitlines()[0]
     entries = []
@@ -29,17 +45,12 @@ def capture(bundle: Path, output: Path) -> dict:
     with TemporaryDirectory(prefix='.p9-capture-', dir=output.parent) as temporary:
         staging = Path(temporary) / 'captures'
         staging.mkdir()
-        for record in manifest['figures']:
-            key = record['id']
-            filename = record['svg']
-            if not key.isascii() or len(key) != 3 or key[0] != 'F' or not key[1:].isdigit() or filename != f'{key.lower()}.svg':
-                raise ValueError('unsafe figure identity')
-            svg = bundle / filename
+        for key, svg, expected_hash in figures:
             if svg.is_symlink() or not svg.is_file():
                 raise ValueError('missing or symlinked SVG')
             source_bytes = svg.read_bytes()
             source_sha256 = hashlib.sha256(source_bytes).hexdigest()
-            if source_sha256 != manifest['files_sha256'][filename]:
+            if source_sha256 != expected_hash:
                 raise ValueError('SVG changed since its bundle was reviewed')
             for profile in profiles:
                 name = profile['id']
@@ -83,10 +94,13 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument('figures', type=Path)
     cli.add_argument('output', type=Path)
+    cli.add_argument('--f01', type=Path, help='Matching P11 F01 revision directory')
     args = cli.parse_args()
-    record = capture(args.figures, args.output)
+    record = capture(args.figures, args.output, args.f01)
     print(json.dumps({'status': record['status'], 'captures': len(record['captures'])}))
 
 
 if __name__ == '__main__':
+    # The optional P11 reader also imports repository-owned workflow tools.
+    sys.path.insert(0, str(ROOT))
     main()

@@ -4,4 +4,7 @@
 
 Defines source-only metric/denominator identities, P9 table/figure links, uncertainty taxonomy, provenance templates, visual acceptance and a fail-closed claim policy.
 
-**Status:** Source definitions and negative tests implemented. No CHHHS data, trusted signing/approval verifier or real visual regression is present.
+The source registry contains 31 metrics and 14 denominators. Synthetic
+mark checks and responsive and print evidence are available for the 14
+implemented figures. CHHHS data admission, trusted authority verification and
+clinical review remain open. [Synthetic verification](../../../verification/portable-synthetic-2026-11-20.json)
