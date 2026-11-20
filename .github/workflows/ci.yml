@@ -53,12 +53,16 @@ jobs:
       - name: Exercise synthetic reports and closed admission gates
         run: .venv/bin/python tools/ci_smoke.py
       - name: Set up repository-local quality tools
+        env:
+          PYTHONPATH: ""
         run: |
           .venv/bin/python -m venv private/venv-quality
           test "$(private/venv-quality/bin/python --version)" = "Python $(cat .python-version)"
           private/venv-quality/bin/python -m pip install -r requirements-quality.txt --build-constraint requirements-p11-build.txt
           private/venv-quality/bin/python -m pip check
       - name: Run shell and text quality checks
+        env:
+          PYTHONPATH: ""
         run: |
           private/venv-quality/bin/python -m pre_commit run quality-shellcheck --all-files
           private/venv-quality/bin/python -m pre_commit run quality-eof --all-files
