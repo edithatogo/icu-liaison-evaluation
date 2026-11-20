@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "track_id": "P11-scenario-workflows",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-11-20",
+  "updated_at": "2026-11-20",
+  "scope": "synthetic scenario suite, versioned run records and Snakemake pilot",
+  "depends_on": [
+    "P4-economic-decision-model",
+    "P5-reporting-independent-review",
+    "P7-placeholder-assisted-qualification",
+    "P10-measurement-figure-assurance"
+  ],
+  "optional_integration": [
+    "P9-reporting-contracts"
+  ],
+  "implementation_status": "planned",
+  "snakemake_qualified": false,
+  "local_data_admitted": false,
+  "clinical_safety_approved": false,
+  "investment_ready": false
+}
