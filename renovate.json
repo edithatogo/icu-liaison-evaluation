@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["local>edithatogo/renovate-config"],
+  "automerge": false,
+  "platformAutomerge": false,
+  "packageRules": [
+    {
+      "description": "Require reviewed dependency and provider promotions",
+      "matchUpdateTypes": [
+        "major", "minor", "patch", "pin", "pinDigest", "digest",
+        "lockFileMaintenance", "lockfileUpdate", "rollback", "bump", "replacement"
+      ],
+      "automerge": false,
+      "platformAutomerge": false
+    }
+  ]
+}
