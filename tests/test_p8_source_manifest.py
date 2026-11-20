@@ -67,6 +67,17 @@ def test_build_metadata_does_not_hide_unexpected_project_files(tmp_path):
     assert 'unexpected file: src/unexpected.py' in verify_manifest(tmp_path, manifest)
 
 
+def test_snakemake_scheduler_metadata_does_not_change_source_inventory(tmp_path):
+    (tmp_path/'source.py').write_text('source')
+    manifest = {'file_sha256': source_files(tmp_path)}
+    metadata = tmp_path/'.snakemake'/'metadata'
+    metadata.mkdir(parents=True)
+    (metadata/'state').write_text('scheduler-generated state')
+    assert verify_manifest(tmp_path, manifest) == []
+    (tmp_path/'unreviewed.py').write_text('project source')
+    assert 'unexpected file: unreviewed.py' in verify_manifest(tmp_path, manifest)
+
+
 def test_submodule_inventory_is_stable_with_or_without_checkout(tmp_path):
     manifest = pinned_repository(tmp_path)
     manifest['file_sha256'] = source_files(tmp_path, submodule_paths=frozenset({CONDUCTOR_PATH}))

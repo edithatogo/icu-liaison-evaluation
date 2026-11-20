@@ -1,0 +1,4 @@
+# Isolated build dependencies qualified with CPython 3.15.2.
+setuptools==84.2.1
+Cython==3.3.1
+wheel==0.48.0

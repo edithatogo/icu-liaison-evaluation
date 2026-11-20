@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "cases": [
+    "base",
+    "no_effect",
+    "harmful_returns",
+    "zero_addressable_delay",
+    "zero_usable_capacity",
+    "zero_cash_realisability"
+  ]
+}

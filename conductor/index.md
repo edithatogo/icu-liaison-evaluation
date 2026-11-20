@@ -42,4 +42,4 @@ native providers, CHHHS calibration and clinical/Finance acceptance stay separat
 
 - [P10 measurement and claim assurance](tracks/P10-measurement-figure-assurance/index.md): canonical metrics/denominators and fail-closed evidence gates for P7 and P9.
 
-- [P11 scenario workflows and versioned runs](tracks/P11-scenario-workflows/index.md): planned synthetic A/B and stress scenarios, linked run records and a Snakemake pilot.
+- [P11 scenario workflows and versioned runs](tracks/P11-scenario-workflows/index.md): locally tested synthetic A/B and stress scenarios, versioned run records and a Snakemake pilot; P9 integration and hosted CI remain open.

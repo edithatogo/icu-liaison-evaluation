@@ -20,6 +20,8 @@ test = ["pytest>=9,<10", "jsonschema>=4.26,<5"]
 # Optional provider for the separate P1 qualification environment.
 voiage = ["voiage==3.1.0"]
 report = ["matplotlib>=3.10,<4"]
+# Optional scheduler, installed in its own locked environment (see README).
+workflow = ["snakemake==9.27.2"]
 
 [project.scripts]
 icu-liaison-evaluate = "icu_liaison.cli:main"

@@ -63,6 +63,16 @@ quantities and their assumed uncertainty live in the JSON file, including
 status, source, units and ranges. The output includes source-hash, seed,
 intervals and `P(net resource benefit >= 0)`.
 
+## P11: reproducible synthetic scenario workflows
+
+The optional Snakemake pilot runs the P4/P5 paired current-care versus liaison
+comparison for six fictional scenarios, retaining independently reviewed,
+versioned inputs, model runs, comparisons and F01 figures. The separate
+[P11 workflow guide](docs/p11-scenario-workflows.md) covers the locked Python
+environment, scenario definitions, output verification and interruption
+recovery. These outputs do not establish clinical safety, provider qualification
+or an investment case; P9's separate figure work remains a conditional integration.
+
 The P1 adapter now calls Voiage for financial-only EVPI, with an independent
 native two-state reference and a strict source lock. Install **Voiage v3.1**
 as an optional dependency in the separate P1 provider environment.

@@ -1,0 +1,104 @@
+{
+  "base_git_revision": "91d8dadacb42e579f51924af1f0839c2a699597e",
+  "build_constraints_sha256": "803cc42b28ac08a043460823e8f2f13de84ebd26485f475c6d7eff88f629f43b",
+  "case_change": "one changed case rebuilt its own model and figure plus summary; other models retained",
+  "cases": [
+    {
+      "case_id": "base",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "119a703106ad8d59707541c95c116a18651edac921d7e5ff7cab5015d0b51c32",
+      "model_run_id": "b42a2110dcf6dd35facfd9de07b1a995df5de9cdae820e3fc0a2a6d52b77d455",
+      "run_record_sha256": "4675178df6b2e4fb9b01e1051d406c6f65ea297b2922700347315a0d0291a552",
+      "seed": 20261118
+    },
+    {
+      "case_id": "no_effect",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "9e9ce1e8c7be8e8a8d96804303c6455687b3ff0de1120822f1812321846010a1",
+      "model_run_id": "c599f22f2d53d2899b53ae43f21a18880ad85b857b901008903f4b075908666a",
+      "run_record_sha256": "8a4fd25ce396de7a5132679de23b16b9fec259115d5632b75329af3598ebebb9",
+      "seed": 20261118
+    },
+    {
+      "case_id": "harmful_returns",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "9a88a705b92c1d7f9c381b4e24c08c7c5c6c6e5ff6a0ca68eb600c3c23ce5876",
+      "model_run_id": "e0ea8a1911d04336974e7b7182b5c9ece93a56cf7cc5ec8e756f1e3a23c90035",
+      "run_record_sha256": "6866269026ac35a915e7b1bf87bd183f15ce15d445881aa56abafd09bff54a02",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_addressable_delay",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "97c601bba0701d61dc075b03041480977c8971df2739de7ec665f6427a203a2d",
+      "model_run_id": "c10658b43f475c2d1c8ec7ed9aca98878d06097401174b601609766f88b5b9c7",
+      "run_record_sha256": "008fca1e43cfe8635ac657043c114cfb54508c3b692fb0ea73feda3c5319ec95",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_usable_capacity",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "d4f314f09ae84f0fb0adcae28df6432ca8e11c9001dafd0a5b6e955c3f1abaab",
+      "model_run_id": "dc0b3e5fb703c04e11a133a3ea269ac6a6e6b2fa2bf716bb8d4dcac089e86cee",
+      "run_record_sha256": "3f1c2de8f18027da392231989e3422637deb7202fecf87b9897b36119d220448",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_cash_realisability",
+      "draws": 5000,
+      "executed_source_dirty": true,
+      "figure_revision": "56fe07869901b29e64860e9d3d05fe58dbe50ce35c4332bb041037575edefe96",
+      "model_run_id": "e26dcdb01ccb2e00f5c6077dab9af351d843d0fd2bdbf07574030d5c18e5fcc8",
+      "run_record_sha256": "8b56f4ff06e30f10acd4e4b5e6ca83fbb112bd36015ba0e2f2b79994515fb1c6",
+      "seed": 20261118
+    }
+  ],
+  "clinical_safety_approved": false,
+  "comparison_rows": 72,
+  "comparison_sha256": "276ca028fec7729bf0effacc29ff94127e296e6e6d8d6a6e7416fd00b39a28dd",
+  "concurrent_publication": "same-ID parallel publication preserved a valid immutable record",
+  "date": "2026-11-20",
+  "exact_revision_hosted_ci": "pending",
+  "figure_review": "F01 base SVG rendered to PNG and visually inspected for labels, synthetic title and intervals",
+  "focused_tests": {
+    "command": "private/venv-p11/bin/python -m pytest -q tests/test_p11_cases.py tests/test_p11_outputs.py tests/test_p11_workflow.py",
+    "passed": 17
+  },
+  "full_local_suite": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 420,
+    "skip_reason": "Snakemake-specific tests run separately in private/venv-p11",
+    "skipped": 2
+  },
+  "illustrative_cli": {
+    "input_sha256": "8367b9a48323294d910b1140ff527516e2e83279a5167cc90f1f46a3b81c745a",
+    "output_sha256": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38",
+    "python": "3.15.2",
+    "seed": 20261117
+  },
+  "integrity": "current pointer and output verification, including paired-row numerical replay, passed",
+  "investment_ready": false,
+  "lock_sha256": "54bc449b9ef7452aadc3fff919c60c8bf8a93b8aea33e65e1c37b045fab68d5e",
+  "model_input_sha256": "9dad28695fe920cff9118e8cbd83147c983121077702f2eed63e71ab0cac734b",
+  "p9_six_figure_companion": "separate unmerged PR #26; integration pending",
+  "provider_execution": {
+    "dapane": "not_executed",
+    "voiage": "not_executed"
+  },
+  "python": "3.15.2",
+  "recovery": "failed case and SIGINT of an unpublished run recovered without losing previous immutable model objects",
+  "renderer_change": "source-only renderer change created new figure revision while retaining the model; style change also rebuilt figures only",
+  "rerun": "unchanged completed targets scheduled no analytical rebuild",
+  "scheduler": "greedy",
+  "scope": "fictional public synthetic scenarios only",
+  "snakemake": "9.27.2",
+  "suite_sha256": "e7d124aef3d647875fbfa69907f9a87ccc1ec56f8dc5abcf9be28fc23a0e950a",
+  "summary_id": "a022d6c4099b68eaa09c43b5e9860f062c5343496d9f5359c54f532aa4b00a03",
+  "summary_record_sha256": "7868089d131502cd0f6cc10a082084a36f1d6e22aa483651d4b3ed1c5363668c",
+  "synthetic_cli_smoke": "passed; providers not executed"
+}
