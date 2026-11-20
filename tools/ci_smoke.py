@@ -46,6 +46,13 @@ def main() -> int:
         require(reviewed['status'] == 'self_consistency_verified_not_empirically_accepted'
                 and reviewed['provider_qualification'] is False,
                 'independent review must preserve source-only qualification')
+        figures = json.loads(run(
+            'icu_liaison.p9_figures', ROOT/'model-inputs/p4/illustrative.json',
+            '--p5-report', report, '--output-dir', Path(temp)/'priority-figures',
+        ).stdout)
+        require(figures['figures_checked'] == ['F02', 'F10', 'F11', 'F15', 'F20', 'F24']
+                and figures['p5_draws_reconciled'] == reviewed['draws_checked'] and figures['investment_ready'] is False,
+                'all six P9 figures must match their fictional source rows and SVG marks')
         # Rehashing a fabricated readiness label must not evade semantic review.
         summary = report/'model-summary.json'
         model = json.loads(summary.read_text(encoding='utf-8'))

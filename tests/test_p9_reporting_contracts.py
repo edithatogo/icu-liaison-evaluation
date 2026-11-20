@@ -164,7 +164,7 @@ def test_p9_expanded_figure_programme_and_priorities():
     c = load()
     validate_catalogue(c)
     assert [f["id"] for f in c["figures"]] == [f"F{i:02d}" for i in range(1, 25)]
-    assert {f["id"] for f in c["figures"] if f["priority"] == 1 and f["evidence_tier"] == "synthetic_design_pending"} == {"F02", "F10", "F11", "F15", "F20", "F24"}
+    assert {f["id"] for f in c["figures"] if f.get("bundle") == "p9" and f["evidence_tier"] == "synthetic_implemented"} == {"F02", "F10", "F11", "F15", "F20", "F24"}
     assert sum(f["evidence_tier"] == "external_exploratory_only" for f in c["figures"]) == 5
 
 

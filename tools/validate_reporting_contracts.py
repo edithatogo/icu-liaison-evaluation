@@ -58,6 +58,9 @@ def validate_catalogue(c: dict) -> None:
     else:
         from validate_measurement_contracts import validate_assurance
     validate_assurance(catalogue=c)
+    from icu_liaison.p9_figure_data import FIGURE_IDS
+    if tuple(f["id"] for f in c["figures"] if f.get("bundle") == "p9") != FIGURE_IDS:
+        raise ValueError("priority P9 figure registration differs from the renderer")
     byid = {t["id"]:t for t in c["tables"]}
     if byid["T06"]["perspective"] != "weighted_activity_not_actual_revenue":
         raise ValueError("NWAU must not become hospital revenue")
@@ -83,6 +86,10 @@ def validate_report(folder: Path, c: dict) -> dict:
         if f["status"] == "placeholder":
             continue
         path=folder/f["artifact"]
+        if f.get("bundle") == "p9":
+            if path.exists() or path.is_symlink():
+                raise ValueError("P9 companion figure is misplaced in the P5 report")
+            continue
         if path.exists():
             if path.suffix != ".svg" or b"<svg" not in path.read_bytes()[:5000]:
                 raise ValueError("not SVG")
