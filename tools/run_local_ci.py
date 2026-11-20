@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Iterable
 from datetime import datetime
 import json
 import os
@@ -14,33 +13,12 @@ import sys
 import time
 from typing import Literal
 
-FORBIDDEN_SUFFIXES = frozenset({".xlsx", ".xlsm", ".parquet", ".npz"})
-FORBIDDEN_PREFIXES = ("private/", "outputs/", "results/")
-FORBIDDEN_BASENAMES = frozenset({".env"})
+if __package__:
+    from .publication_guard import find_forbidden_paths, index_violations
+else:
+    from publication_guard import find_forbidden_paths, index_violations
 
 Mode = Literal["pre-commit", "full", "manifest-only"]
-
-
-def find_forbidden_paths(paths: Iterable[str]) -> list[str]:
-    """Return sorted paths violating privacy, data-output, or secret file exclusions."""
-    violations: list[str] = []
-    for raw in paths:
-        norm = raw.replace("\\", "/")
-        while norm.startswith("./"):
-            norm = norm[2:]
-        norm = norm.lstrip("/")
-        if not norm:
-            continue
-        basename = Path(norm).name
-        suffix = Path(norm).suffix.lower()
-        if (
-            norm.startswith(FORBIDDEN_PREFIXES)
-            or suffix in FORBIDDEN_SUFFIXES
-            or basename in FORBIDDEN_BASENAMES
-            or basename.startswith(".env.")
-        ):
-            violations.append(norm)
-    return sorted(set(violations))
 
 
 def _git_paths(root: Path, *args: str) -> list[str]:
@@ -54,16 +32,6 @@ def _git_paths(root: Path, *args: str) -> list[str]:
     if proc.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {proc.stderr.strip()}")
     return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
-
-
-def staged_paths(root: Path) -> list[str]:
-    """List staged files scheduled for commit/merge."""
-    return _git_paths(root, "diff", "--cached", "--name-only", "--diff-filter=ACMR")
-
-
-def tracked_paths(root: Path) -> list[str]:
-    """List files tracked by Git in the repository index."""
-    return _git_paths(root, "ls-files")
 
 
 def _git_branch(root: Path) -> str:
@@ -245,9 +213,7 @@ def run_local_ci(
             f"but {exe} is Python {py_ver_str}. Set up .venv using README.md."
         )
 
-    tracked_bad = find_forbidden_paths(tracked_paths(repo_root))
-    staged_bad = find_forbidden_paths(staged_paths(repo_root)) if check_staged else []
-    forbidden = sorted(set(tracked_bad) | set(staged_bad))
+    forbidden = index_violations(repo_root)
 
     summary: dict = {
         "schema_version": 1,

@@ -43,6 +43,10 @@ def test_find_forbidden_paths_rejects_private_outputs_data_and_env() -> None:
         "private/chhhs_cohort.csv",
         "outputs/run1.json",
         "results/table.csv",
+        "model/observations.CSV",
+        "nested/.local/feed.json",
+        "nested/private/contract.json",
+        "report/database.sqlite",
         "model/workbook.xlsx",
         "model/macro.xlsm",
         "data/episodes.parquet",
@@ -57,13 +61,112 @@ def test_find_forbidden_paths_rejects_private_outputs_data_and_env() -> None:
             "arrays/draws.npz",
             "data/episodes.parquet",
             "model/macro.xlsm",
+            "model/observations.CSV",
             "model/workbook.xlsx",
+            "nested/.local/feed.json",
+            "nested/private/contract.json",
             "outputs/run1.json",
             "private/chhhs_cohort.csv",
+            "report/database.sqlite",
             "results/table.csv",
         ]
     )
     assert find_forbidden_paths(["README.md", "tests/test_p0_local_ci.py"]) == []
+
+
+def _temporary_git(root: Path, *args: str) -> str:
+    return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
+
+
+def _start_publication_fixture(root: Path) -> None:
+    _temporary_git(root, "init", "-q")
+    _temporary_git(root, "config", "core.autocrlf", "false")
+    _temporary_git(root, "config", "user.email", "test@example.invalid")
+    _temporary_git(root, "config", "user.name", "Fictional fixture")
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"data_class": "restricted", "fixture": "invented"},
+        {"value": [{"id": "FICTIONAL"}]},
+        {"file_sha256": {".local/fictional.json": "0" * 64}},
+        {"source": "https://example." + "sharepoint.com/sites/fictional"},
+    ],
+)
+def test_publication_guard_reads_staged_blob_instead_of_working_file(tmp_path: Path, payload: dict) -> None:
+    from tools.publication_guard import index_violations
+
+    _start_publication_fixture(tmp_path)
+    path = tmp_path / "metadata.json"
+    path.write_text(json.dumps(payload))
+    _temporary_git(tmp_path, "add", "metadata.json")
+    path.write_text(json.dumps({"data_class": "synthetic"}))
+    assert index_violations(tmp_path) == ["metadata.json"]
+
+
+def test_private_local_files_are_excluded_from_source_inventory(tmp_path: Path) -> None:
+    from tools.verify_source_manifest import source_files
+
+    d = tmp_path / "nested" / ".local"
+    d.mkdir(parents=True)
+    (d / "fictional.json").write_text("{}")
+    assert source_files(tmp_path) == {}
+
+
+def test_only_frozen_public_csv_bytes_are_admitted(tmp_path: Path) -> None:
+    from tools.publication_guard import index_violations
+
+    _start_publication_fixture(tmp_path)
+    name = "tests/fixtures/p3_episodes/episodes.csv"
+    path = tmp_path / name
+    path.parent.mkdir(parents=True)
+    path.write_bytes((ROOT / name).read_bytes())
+    _temporary_git(tmp_path, "add", name)
+    assert index_violations(tmp_path) == []
+    path.write_bytes(path.read_bytes() + b"\n")
+    _temporary_git(tmp_path, "add", name)
+    assert index_violations(tmp_path) == [name]
+
+
+def test_pending_push_checks_intermediate_commit_even_with_clean_tip(tmp_path: Path) -> None:
+    from tools.publication_guard import pending_push_violations
+
+    _start_publication_fixture(tmp_path)
+    _temporary_git(tmp_path, "commit", "-q", "--allow-empty", "-m", "Public source baseline")
+    base = _temporary_git(tmp_path, "rev-parse", "HEAD")
+    path = tmp_path / "fixture.csv"
+    path.write_text("id,measure\nFICTIONAL,1\n")
+    _temporary_git(tmp_path, "add", "fixture.csv")
+    _temporary_git(tmp_path, "commit", "-qm", "Fictional export")
+    _temporary_git(tmp_path, "rm", "-q", "fixture.csv")
+    _temporary_git(tmp_path, "commit", "-qm", "Remove fictional export")
+    tip = _temporary_git(tmp_path, "rev-parse", "HEAD")
+    rejected = f"refs/heads/topic {tip} refs/heads/topic {base}"
+    assert pending_push_violations(tmp_path, [rejected]) == ["fixture.csv"]
+    clean = f"refs/heads/topic {base} refs/heads/topic {'0' * len(base)}"
+    assert pending_push_violations(tmp_path, [clean]) == []
+
+    # Use the real pre-push hook against an isolated bare repository.
+    for name in [".githooks/pre-push", "tools/publication_guard.py"]:
+        f = tmp_path / name
+        f.parent.mkdir(exist_ok=True)
+        f.write_bytes((ROOT / name).read_bytes())
+        f.chmod((ROOT / name).stat().st_mode)
+    interpreter = tmp_path / ".venv/bin/python"
+    interpreter.parent.mkdir(parents=True)
+    interpreter.symlink_to(sys.executable)
+    _temporary_git(tmp_path, "config", "core.hooksPath", ".githooks")
+    remote = tmp_path / "remote.git"
+    _temporary_git(tmp_path, "init", "-q", "--bare", str(remote))
+    result = subprocess.run(
+        ["git", "-C", str(tmp_path), "push", str(remote), "HEAD:refs/heads/topic"],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 1
+    assert "Public-data check rejected 1 path(s)" in result.stderr
+    assert "fixture.csv" not in result.stderr
+    assert not _temporary_git(remote, "for-each-ref", "--format=%(refname)")
 
 
 def test_build_steps_matches_modes() -> None:

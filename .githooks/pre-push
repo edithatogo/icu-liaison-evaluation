@@ -10,4 +10,5 @@ if [[ ! -x "$PY" ]]; then
   exit 1
 fi
 
+"$PY" "$ROOT/tools/publication_guard.py" --pre-push
 exec "$PY" "$ROOT/tools/run_local_ci.py" --mode full
