@@ -100,3 +100,23 @@ environment. Hosted run 44677310647 passed the pinned audit action, all three
 quality checks and the synthetic Snakemake recovery suite on candidate commit
 `19e971d1ef1b40aedc37f20039ef27ed26619f7a`. The final evidence-only revision
 is subject to its own hosted checks before merging.
+
+PR #31 subsequently passed its exact-head hosted checks and merged at
+`32545bd1f7335373314b264ab7e70a6da560e2a7`; PR #25 was closed as superseded.
+The post-merge synthetic validation also passed in run 44678495849.
+
+## GitHub Actions update follow-through — 20 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the scoped update in
+`/Users/doughnut/.codex/worktrees/icu-liaison-scenario-workflow-plan/icu-liaison-evaluation`
+on `codex/icu-actions-qualification`. Its scope is the two action pins in the
+synthetic CI workflow, this handoff and the source manifest; native scope is
+none. The next operation is to qualify the combined candidate in hosted CI.
+
+Dependabot PRs #32 and #33 each failed hosted validation because the workflow
+file changed without its source-manifest hash. Their action steps reached the
+manifest check. The upstream version tags were checked against the proposed
+commit hashes and both actions use Node 24. The combined candidate preserves
+the workflow's Python version file, checkout options and permissions; it does
+not use the removed setup-python pip input or a pull-request-target checkout.
+The original bot branches remain untouched until the candidate is qualified.
