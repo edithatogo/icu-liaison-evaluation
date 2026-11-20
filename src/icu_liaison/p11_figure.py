@@ -13,6 +13,7 @@ import sys
 import tempfile
 from xml.etree import ElementTree
 
+from .f01_review import review_f01
 from .p11_model import verify_case
 from .p11_records import atomic_json, digest_bytes, digest_file, digest_json, inventory, read_json, valid_digest
 from .p5_reporting import _plot
@@ -23,7 +24,7 @@ DESCRIPTION = (
 )
 
 
-def verify_figure(folder: Path) -> dict:
+def verify_figure(folder: Path, *, model: Path | None = None) -> dict:
     folder = Path(folder)
     if folder.is_symlink() or not folder.is_dir():
         raise ValueError('synthetic figure directory is missing or unsafe')
@@ -42,6 +43,15 @@ def verify_figure(folder: Path) -> dict:
         raise ValueError('synthetic figure description differs from P5 contract')
     if digest_file(folder / 'style.json') != record['identity']['style_sha256']:
         raise ValueError('synthetic figure style snapshot changed')
+    model_id = record['identity'].get('model_run_id')
+    if not valid_digest(model_id) or model_id != record.get('model_run_id'):
+        raise ValueError('invalid F01 model identity')
+    model = model or folder.parent.parent / 'models' / model_id
+    summary = model / 'p5-report/model-summary.json'
+    if (model.name != model_id or digest_file(model / 'run.json') != record['identity']['run_record_sha256']
+            or digest_file(summary) != read_json(model / 'run.json')['files_sha256']['p5-report/model-summary.json']):
+        raise ValueError('F01 model source linkage mismatch')
+    review_f01(folder / 'scenario-comparison.svg', read_json(summary))
     return record
 
 
@@ -77,6 +87,7 @@ def build_figure(model_pointer: Path, style_file: Path, output: Path, pointer: P
             Path(__file__).name: digest_file(Path(__file__)),
             'p5_reporting.py': digest_file(Path(__file__).with_name('p5_reporting.py')),
             'p11_records.py': digest_file(Path(__file__).with_name('p11_records.py')),
+            'f01_review.py': digest_file(Path(__file__).with_name('f01_review.py')),
         },
         'matplotlib': metadata.version('matplotlib'),
     }
@@ -102,7 +113,7 @@ def build_figure(model_pointer: Path, style_file: Path, output: Path, pointer: P
                 'files_sha256': inventory(staging, exclude='figure.json'),
             }
             (staging / 'figure.json').write_text(json.dumps(record, indent=2, sort_keys=True) + '\n')
-            verify_figure(staging)
+            verify_figure(staging, model=model)
             try:
                 os.rename(staging, target)
             except OSError as exc:

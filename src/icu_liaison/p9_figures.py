@@ -21,6 +21,9 @@ from .p9_figure_data import (
     resource_waterfall, sensitivity_grid,
 )
 from .qualification_independent import audit_p4_draws
+from .p9_supplement_data import (
+    DESIGN, DICTIONARY, SUPPLEMENT_IDS, TRACE, capacity_rows, economic_rows, event_rows, flow_rows,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONTRACTS = ROOT / 'contracts/reporting'
@@ -49,12 +52,13 @@ def _load(file: Path):
     return json.loads(file.read_text(encoding='utf-8'))
 
 
-def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
+def _source_figures(scenario_file: Path, p5: Path, include_supplement: bool) -> SourceFigures:
     if p5.is_symlink() or not p5.is_dir():
         raise ValueError('P5 report directory is missing or symlinked')
     catalogue_file = DEFAULT_CONTRACTS / 'catalogue.json'
     metrics_file = DEFAULT_CONTRACTS / 'metrics.json'
-    feed = DatasetManifest.model_validate_json(DEFAULT_P3.read_bytes()).files['episodes']
+    feeds = DatasetManifest.model_validate_json(DEFAULT_P3.read_bytes()).files
+    feed = feeds['episodes']
     episodes = (DEFAULT_P3.parent / feed.path)
     if not episodes.resolve().is_relative_to(DEFAULT_P3.parent.resolve()):
         raise ValueError('P3 feed path escapes the synthetic fixture directory')
@@ -69,6 +73,19 @@ def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
         'p9_renderer_code': Path(__file__).with_name('p9_figure_render.py'),
         'p9_mark_review_code': Path(__file__).with_name('p9_figure_review.py'),
     }
+    if include_supplement:
+        for key, spec in feeds.items():
+            path = DEFAULT_P3.parent / spec.path
+            if not path.resolve().is_relative_to(DEFAULT_P3.parent.resolve()) or path.is_symlink():
+                raise ValueError('P3 figure source escapes the fixture directory')
+            input_files[f'p3_{key}'] = path
+        input_files.update(p6_trace=TRACE, event_study=DESIGN, p3_dictionary=DICTIONARY,
+                          p5_consequences=p5 / 'cost-consequence.csv',
+                          p5_comparisons=p5 / 'paired-comparisons.csv',
+                          p5_sensitivity=p5 / 'one-way-sensitivity.csv')
+        for module in ('p9_supplement_data', 'p9_supplement_render', 'p9_supplement_review',
+                       'p6_capacity', 'local_data', 'endpoints', 'protocol'):
+            input_files[module] = Path(__file__).with_name(f'{module}.py')
     inputs = {key: _hash(file) for key, file in input_files.items()}
     numeric = review_report(p5)
     manifest = _load(p5 / 'manifest.json')
@@ -82,10 +99,11 @@ def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
         raise ValueError('P5 report and scenario do not match')
     audit = audit_p4_draws(run)
     fixture = Fixtures.model_validate_json(DEFAULT_FIXTURE.read_bytes())
-    descriptions = {figure['id']: figure for figure in _load(catalogue_file)['figures']
-                    if figure.get('bundle') == 'p9'}
-    if tuple(descriptions) != FIGURE_IDS:
-        raise ValueError('P9 catalogue does not register the six priority figures')
+    bundles = {'p9', 'p9_supplement'} if include_supplement else {'p9'}
+    descriptions = {f['id']: f for f in _load(catalogue_file)['figures'] if f.get('bundle') in bundles}
+    expected_ids = sorted((*FIGURE_IDS, *SUPPLEMENT_IDS)) if include_supplement else list(FIGURE_IDS)
+    if list(descriptions) != expected_ids:
+        raise ValueError('P9 catalogue differs from the selected figure set')
     denominators = {metric['id']: metric['denominator_id'] for metric in _load(metrics_file)['metrics']}
     shared = ['scenario', 'p9_catalogue', 'p10_metrics', 'p9_data_code', 'p9_renderer_code']
     additional = {
@@ -95,6 +113,14 @@ def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
         'F15': ['p3_manifest', 'p3_episodes', 'p9_fixture'],
         'F20': ['p9_fixture'],
         'F24': ['p4_model_code', 'p5_draws'],
+        'F05': ['p4_model_code', 'p5_consequences'],
+        'F06': ['p4_model_code', 'p5_draws', 'p5_comparisons'],
+        'F07': ['p4_model_code', 'p5_sensitivity'],
+        'F08': ['p4_model_code', 'p5_draws'],
+        'F09': ['p6_trace', 'p6_capacity'],
+        'F13': ['p3_manifest', 'p3_dictionary', 'local_data', 'protocol', 'endpoints',
+                *(f'p3_{name}' for name in feeds)],
+        'F18': ['event_study'],
     }
     records = []
     for key, figure in descriptions.items():
@@ -107,7 +133,9 @@ def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
             'id': key, 'svg': figure['artifact'], 'csv': f'{key.lower()}.csv',
             'metric_ids': figure['metric_ids'],
             'denominator_ids': sorted({denominators[metric] for metric in figure['metric_ids']}),
-            'sources': shared + additional[key],
+            'sources': shared + additional[key] + (
+                ['p9_supplement_data', 'p9_supplement_render', 'p9_supplement_review']
+                if key in SUPPLEMENT_IDS else []),
         })
     rows = {
         'F02': resource_waterfall(scenario),
@@ -117,6 +145,9 @@ def _source_figures(scenario_file: Path, p5: Path) -> SourceFigures:
         'F20': coverage_rows(fixture.week),
         'F24': sensitivity_grid(run),
     }
+    if include_supplement:
+        rows.update(economic_rows(run, p5, rows['F11']))
+        rows.update(F09=capacity_rows(TRACE), F13=flow_rows(DEFAULT_P3), F18=event_rows(DESIGN))
     if any(_hash(input_files[key]) != digest for key, digest in inputs.items()):
         raise ValueError('figure input changed during source reconciliation')
     return SourceFigures(scenario, run.input_digest_sha256, rows, descriptions, records, inputs, {
@@ -230,21 +261,21 @@ def _review(folder: Path, sources: SourceFigures) -> dict:
         review_svg(folder / record['svg'], sources.descriptions[key], sources.rows[key])
     return {
         'status': 'synthetic_source_and_marks_verified',
-        'figures_checked': list(FIGURE_IDS), 'investment_ready': False,
+        'figures_checked': list(sources.descriptions), 'investment_ready': False,
         'manifest_sha256': _hash(manifest_file),
-        'source_rows_checked': {key: len(sources.rows[key]) for key in FIGURE_IDS},
+        'source_rows_checked': {key: len(sources.rows[key]) for key in sources.descriptions},
         **sources.numerical_review,
     }
 
 
-def build_figures(scenario: Path, p5: Path, destination: Path) -> dict:
+def build_figures(scenario: Path, p5: Path, destination: Path, *, include_supplement=False) -> dict:
     from .p9_figure_render import render_svg
 
     if destination.exists() or destination.is_symlink():
         raise FileExistsError('refuse to overwrite a synthetic figure bundle')
     if destination.resolve().is_relative_to(p5.resolve()):
         raise ValueError('figure bundle must be outside the immutable P5 report')
-    sources = _source_figures(scenario, p5)
+    sources = _source_figures(scenario, p5, include_supplement)
     destination.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(prefix='.p9-figures-', dir=destination.parent) as tmp:
         staging = Path(tmp) / 'figures'
@@ -267,23 +298,38 @@ def build_figures(scenario: Path, p5: Path, destination: Path) -> dict:
     return receipt
 
 
-def review_figures(scenario: Path, p5: Path, folder: Path) -> dict:
-    return _review(folder, _source_figures(scenario, p5))
+def review_figures(scenario: Path, p5: Path, folder: Path, *, include_supplement=False) -> dict:
+    sources = _source_figures(scenario, p5, include_supplement)
+    receipt = _review(folder, sources)
+    if include_supplement:
+        # Independent coordinates cover the data. Replay also covers labels,
+        # transforms, clipping and presentation changes on the recorded runtime.
+        from .p9_figure_render import render_svg
+        with TemporaryDirectory() as tmp:
+            for key in SUPPLEMENT_IDS:
+                filename = sources.descriptions[key]['artifact']
+                replay = Path(tmp) / filename
+                render_svg(replay, sources.descriptions[key], sources.rows[key], sources.scenario.price_year,
+                           sources.scenario.annual_eligible_discharges)
+                if _hash(replay) != _hash(folder / filename):
+                    raise ValueError(f'{key} rendering differs from its source replay')
+    return receipt
 
 
 def main() -> int:
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument('scenario', type=Path)
     cli.add_argument('--p5-report', type=Path, required=True)
+    cli.add_argument('--include-supplement', action='store_true', help='Include all seven supplementary figures')
     mode = cli.add_mutually_exclusive_group(required=True)
     mode.add_argument('--output-dir', type=Path)
     mode.add_argument('--review', type=Path)
     args = cli.parse_args()
     try:
         if args.output_dir:
-            receipt = build_figures(args.scenario, args.p5_report, args.output_dir)
+            receipt = build_figures(args.scenario, args.p5_report, args.output_dir, include_supplement=args.include_supplement)
         else:
-            receipt = review_figures(args.scenario, args.p5_report, args.review)
+            receipt = review_figures(args.scenario, args.p5_report, args.review, include_supplement=args.include_supplement)
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         print(f'P9 INVALID_OR_UNVERIFIED: {type(exc).__name__}', file=sys.stderr)
         return 2

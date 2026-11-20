@@ -294,6 +294,7 @@ def load_and_audit(
     cohort['hospitalisations']=len(by_hosp)
     reasons=Counter()
     expected=0
+    index_delay_hours = 0.0
     for hospital, episodes in ordered.items():
         eligible=[e for e in episodes if e.adult_age_at_icu_admission_years >= 16 and
                   e.destination_category in {'ward_same_hospital','ward_same_hhs'}]
@@ -319,6 +320,8 @@ def load_and_audit(
         except ValueError as e:
             raise LocalDatasetError('clinical transition timing or followup invalid') from e
         cohort['index_with_readiness'] += result.delay_hours is not None
+        if result.delay_hours is not None:
+            index_delay_hours += result.delay_hours
         cohort['index_exit_block_ge12h'] += result.exit_block_ge12h is True
         cohort['index_after_hours_departure'] += result.after_hours_departure
         cohort['unplanned_return_within_72h'] += result.unplanned_return_within_72h is True
@@ -364,6 +367,13 @@ def load_and_audit(
             'feed_sha256':{k:v.sha256 for k,v in manifest.files.items()},
         },
         'cohort':dict(cohort),
+        'index_ready_delay': {
+            'metric_id': 'M31', 'population_id': 'D03', 'denominator_id': 'D14',
+            'eligible': expected, 'valid': cohort['index_with_readiness'],
+            'missing': expected - cohort['index_with_readiness'],
+            'mean_hours': index_delay_hours / cohort['index_with_readiness']
+            if cohort['index_with_readiness'] else None,
+        },
         'quality':{'field_completeness':fields, 'followup_censor_reason_counts':dict(reasons),
                    'missing_source_classes':['CHHHS_incident_MET','CHHHS_workforce',
                                              'CHHHS_patient_experience'],

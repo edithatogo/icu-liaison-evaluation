@@ -105,6 +105,7 @@ rule figure:
         model=MODEL_POINTER,
         style=str(STYLE),
         code=str(ROOT / "src/icu_liaison/p11_figure.py"),
+        review=str(ROOT / "src/icu_liaison/f01_review.py"),
     output:
         FIGURE_POINTER,
     params:

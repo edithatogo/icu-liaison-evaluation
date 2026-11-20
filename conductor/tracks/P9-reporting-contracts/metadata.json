@@ -9,16 +9,19 @@
     "P9.3e",
     "P9.3f",
     "P9.4",
-    "P9.4d"
+    "P9.4d",
+    "P9.4b",
+    "P9.4.08",
+    "P9.4.09",
+    "P9.6"
   ],
   "blocked": [
-    "P9.4b",
     "P9.4c",
     "P9.5"
   ],
   "native_provider_qualified": false,
   "clinical_or_finance_approval": false,
-  "catalogue_revision": "2026-11-20-P9-synthetic-figures-v4",
+  "catalogue_revision": "2026-11-20-P9-supplement-v5",
   "figures_total": 24,
   "tables_total": 7,
   "external_exploratory_figures": [
@@ -37,5 +40,15 @@
     "F20",
     "F24"
   ],
-  "synthetic_visual_review_receipt": "verification/p9-synthetic-figures-2026-11-20.json"
+  "synthetic_visual_review_receipt": "verification/p9-synthetic-figures-2026-11-20.json",
+  "supplementary_synthetic_figures": [
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F13",
+    "F18"
+  ],
+  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json"
 }

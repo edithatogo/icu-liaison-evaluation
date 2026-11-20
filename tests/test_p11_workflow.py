@@ -69,8 +69,8 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
     priorities = pointer_set(output, 'priority-figures', names)
     for priority in priorities.values():
         bundle = output / 'priority-figures' / priority['figure_revision'] / 'bundle'
-        assert all((bundle / f'{figure}.svg').is_file()
-                   for figure in ('f02', 'f10', 'f11', 'f15', 'f20', 'f24'))
+        assert {path.stem for path in bundle.glob('*.svg')} == {
+            'f02', 'f05', 'f06', 'f07', 'f08', 'f09', 'f10', 'f11', 'f13', 'f15', 'f18', 'f20', 'f24'}
     assert summary['scenario_count'] == 6 and summary['investment_ready'] is False
     summary_csv = output / 'summaries' / summary['summary_id'] / 'scenario-comparison.csv'
     with summary_csv.open(newline='') as stream:

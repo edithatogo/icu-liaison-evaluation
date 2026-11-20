@@ -67,7 +67,8 @@ intervals and `P(net resource benefit >= 0)`.
 
 The optional Snakemake pilot runs the P4/P5 paired current-care versus liaison
 comparison for six fictional scenarios, retaining independently reviewed,
-versioned inputs, model runs, comparisons and F01/P9 figures. The separate
+versioned inputs, model runs, 72 paired comparison rows and 14 figures per
+scenario. The separate
 [P11 workflow guide](docs/p11-scenario-workflows.md) covers the locked Python
 environment, scenario definitions, output verification and interruption
 recovery. These outputs do not establish clinical safety, provider qualification
@@ -284,9 +285,10 @@ and remaining review obligations are in
 
 ## P9 priority synthetic figures
 
-Generate and independently check the six companion figures from a P5 fictional
-report and the same P4 scenario. The output is a separate, immutable bundle
-with an HTML index, six SVGs, their source CSVs and a SHA-256 manifest.
+The P9 renderer produces the original six priority figures by default. Add
+`--include-supplement` to both commands for all 13 companion figures. P11
+uses this complete set and produces the F01 strategy comparison separately.
+Each companion bundle contains an HTML index, SVGs, source CSVs and a SHA-256 manifest.
 
 ```sh
 PYTHONPATH=src .venv/bin/python -m icu_liaison.p9_figures \

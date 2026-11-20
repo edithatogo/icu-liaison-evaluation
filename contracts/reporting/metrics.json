@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "registry_revision": "2026-11-19-P10-measurement-v1",
+  "registry_revision": "2026-11-20-P10-measurement-v2",
   "status": "definitions_only_no_site_data",
   "scope": "Cairns ICU liaison evaluation and ANZICS-compatible descriptive comparators",
   "denominators": [
@@ -107,6 +107,14 @@
       "grain": "eligible patients with complete endpoint ascertainment",
       "inclusion": "index discharges with endpoint-specific follow-up and censoring",
       "missingness": "competing events and unknown follow-up reported separately"
+    },
+    {
+      "id": "D14",
+      "label": "Readiness-valid first eligible adult ward discharge",
+      "time_anchor": "clinical_ready_time",
+      "grain": "one first eligible index per hospitalisation",
+      "inclusion": "subset of D03 with valid clinical readiness and physical departure in that index episode",
+      "missingness": "select the D03 index before checking readiness; report missing readiness against all D03 indices"
     }
   ],
   "metrics": [
@@ -779,6 +787,28 @@
       "uncertainty_classes": [
         "data_quality",
         "clinical_effect"
+      ],
+      "missingness_rule": "unknown_remains_unknown",
+      "calibration_status": "not_empirically_qualified"
+    },
+    {
+      "id": "M31",
+      "label": "Mean index readiness-to-departure delay",
+      "clinical_director_kpi": "Index discharge-ready delay",
+      "domain": "flow",
+      "unit": "hours",
+      "numerator": "sum of elapsed hours from index clinical readiness to physical ICU departure across D14",
+      "denominator_id": "D14",
+      "source_datasets": [
+        "icu_episodes"
+      ],
+      "evidence_basis": "requires_governed_site_data",
+      "claim_class": "descriptive",
+      "time_anchor": "clinical_ready_time",
+      "followup_hours": null,
+      "uncertainty_classes": [
+        "data_quality",
+        "operational"
       ],
       "missingness_rule": "unknown_remains_unknown",
       "calibration_status": "not_empirically_qualified"

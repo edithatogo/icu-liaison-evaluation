@@ -26,6 +26,7 @@ def test_genuine_synthetic_figure_has_recomputed_lineage_not_approval(source_bun
     report, scenario, _ = source_bundle
     receipt = compile_receipt(report, scenario)
     assert receipt["figure_id"] == "F01"
+    assert receipt["svg_mark_review"] == {"mean_bars": 3, "percentile_intervals": 3, "zero_reference": True}
     assert receipt["provenance"]["status"] == "rendered_unqualified"
     assert receipt["provenance"]["visual_receipt_sha256"] is None
     assert receipt["provenance"]["approval_authority"] is None

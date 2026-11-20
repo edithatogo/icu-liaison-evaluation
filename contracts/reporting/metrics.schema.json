@@ -16,7 +16,7 @@
       "const": 1
     },
     "registry_revision": {
-      "const": "2026-11-19-P10-measurement-v1"
+      "const": "2026-11-20-P10-measurement-v2"
     },
     "status": {
       "const": "definitions_only_no_site_data"

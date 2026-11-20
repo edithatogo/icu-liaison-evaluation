@@ -17,7 +17,9 @@ def test_draft_preregistration_preserves_clinical_index_and_all_live_denominator
     assert result["denominators"]["clinical_index"] == "D03"
     assert result["denominators"]["ANZICS_ready_valid"] == "D04"
     assert result["denominators"]["index_return_72h"] == "D05"
-    assert result["index_delay_metric_gap"]
+    assert result["index_delay_metric_gap"] is None
+    assert result["index_delay_metric_id"] == "M31"
+    assert result["denominators"]["index_ready_valid"] == "D14"
     assert result["site_approved"] is False
 
 

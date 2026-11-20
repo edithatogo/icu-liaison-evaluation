@@ -10,7 +10,19 @@
     "P10.05",
     "P10.06",
     "P10.07",
-    "P10.08"
+    "P10.08",
+    "P10.10a",
+    "P10.10b",
+    "P10.10c",
+    "P10.12a",
+    "P10.12b",
+    "P10.14a",
+    "P10.14b",
+    "P10.15a",
+    "P10.15b",
+    "P10.16a",
+    "P10.16b",
+    "P10.16c"
   ],
   "blocked": [
     "P10.09",
@@ -27,5 +39,7 @@
   ],
   "data_class": "public_synthetic_source_contract_only",
   "claims_verified": 0,
-  "visual_checks_executed": 0
+  "visual_checks_executed": 56,
+  "visual_scope": "Four rendered profiles for 14 figures on the fictional baseline",
+  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json"
 }

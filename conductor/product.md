@@ -5,7 +5,8 @@ service. The intended users are clinical, service-planning, research and Finance
 reviewers. It provides explicit cohort/outcome contracts, traceable assumptions,
 cost-consequence scenarios, synthetic capacity diagnostics and reviewable reports.
 
-Current source comprises P0–P8 and the companion P7 placeholder workflow. The
+The source covers P0–P11, including measurement contracts, reporting and
+the versioned synthetic scenario workflow. The
 repository is the owner of this evaluation's consumer code. Dapane owns exact
 valuation; Voiage owns VOI; Kairos owns scheduling; MCHS owns its annual activity
 calculator; the workforce provider owns roster quotation rules. Their source

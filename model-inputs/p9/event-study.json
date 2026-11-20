@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic_design",
+  "reference_week": -1,
+  "rollout_week": 0,
+  "periods": [
+    {"week": -3, "intervention_hours": 9.0, "control_hours": 8.0},
+    {"week": -2, "intervention_hours": 9.5, "control_hours": 8.5},
+    {"week": -1, "intervention_hours": 9.0, "control_hours": 8.0},
+    {"week": 0, "intervention_hours": 8.5, "control_hours": 8.0},
+    {"week": 1, "intervention_hours": 8.0, "control_hours": 8.5},
+    {"week": 2, "intervention_hours": 8.5, "control_hours": 9.0}
+  ]
+}

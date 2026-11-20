@@ -1,4 +1,4 @@
-"""Publish six reviewed P9 figures for each synthetic P11 model run."""
+"""Publish and verify the P9 figures for each synthetic P11 model run."""
 from __future__ import annotations
 
 import argparse
@@ -15,15 +15,20 @@ import tempfile
 from .p11_model import MODEL_SOURCES, verify_case
 from .p11_records import atomic_json, digest_file, digest_json, inventory, read_json, valid_digest
 from .p9_figures import FIGURE_IDS, build_figures, review_figures
+from .p9_supplement_data import SUPPLEMENT_IDS
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_PATHS = tuple(dict.fromkeys((*MODEL_SOURCES,
+LEGACY_SOURCE_PATHS = tuple(dict.fromkeys((*MODEL_SOURCES,
     'src/icu_liaison/p11_p9.py', 'src/icu_liaison/p11_records.py',
     'src/icu_liaison/p9_figures.py', 'src/icu_liaison/p9_figure_data.py',
     'src/icu_liaison/p9_figure_render.py', 'src/icu_liaison/p9_figure_review.py',
     'src/icu_liaison/local_data.py', 'src/icu_liaison/endpoints.py',
     'src/icu_liaison/p4_model.py', 'src/icu_liaison/qualification_independent.py',
 )))
+SOURCE_PATHS = (*LEGACY_SOURCE_PATHS, 'src/icu_liaison/p9_supplement_data.py',
+                'src/icu_liaison/p9_supplement_render.py', 'src/icu_liaison/p9_supplement_review.py',
+                'src/icu_liaison/p6_capacity.py')
+LEGACY_INPUTS = {'p9_fixture.json', 'p3_manifest.json', 'p3_episodes.csv', 'catalogue.json', 'metrics.json'}
 
 
 def source_hashes() -> dict[str, str]:
@@ -32,15 +37,20 @@ def source_hashes() -> dict[str, str]:
 
 def input_files() -> dict[str, Path]:
     p3 = ROOT / 'model-inputs/placeholders/p3-synthetic/manifest.json'
-    relative = read_json(p3)['files']['episodes']['path']
-    episode_file = p3.parent / relative
-    if (Path(relative).is_absolute() or not episode_file.resolve().is_relative_to(p3.parent.resolve())
-            or episode_file.is_symlink()):
-        raise ValueError('P9 synthetic episode feed escapes its fixture')
+    feeds = {}
+    for key, spec in read_json(p3)['files'].items():
+        relative = Path(spec['path'])
+        path = p3.parent / relative
+        if relative.is_absolute() or not path.resolve().is_relative_to(p3.parent.resolve()) or path.is_symlink():
+            raise ValueError('P9 synthetic feed escapes its fixture')
+        feeds[f'p3_{key}.csv'] = path
     return {
         'p9_fixture.json': ROOT / 'model-inputs/p9/illustrative.json',
         'p3_manifest.json': p3,
-        'p3_episodes.csv': episode_file,
+        **feeds,
+        'p3_dictionary.json': ROOT / 'model-inputs/clinical-data-dictionary.json',
+        'p6_trace.json': ROOT / 'model-inputs/p6/synthetic-trace.json',
+        'event_study.json': ROOT / 'model-inputs/p9/event-study.json',
         'catalogue.json': ROOT / 'contracts/reporting/catalogue.json',
         'metrics.json': ROOT / 'contracts/reporting/metrics.json',
     }
@@ -60,6 +70,28 @@ def fingerprint() -> dict:
             'runtime': runtime()}
 
 
+def _bundle_inputs(identity: dict, run: dict) -> dict:
+    """Reconstruct the inner manifest's source hashes from the frozen outer records."""
+    names = {'catalogue': 'p9_catalogue', 'metrics': 'p10_metrics'}
+    expected = {names.get(Path(name).stem, Path(name).stem): digest
+                for name, digest in identity['inputs_sha256'].items()}
+    model_files = {'scenario': 'inputs/effective-scenario.json', 'p5_manifest': 'p5-report/manifest.json',
+                   'p5_model_summary': 'p5-report/model-summary.json', 'p5_draws': 'p5-report/decision-surface.csv'}
+    modules = {'p4_model_code': 'p4_model', 'p9_bundle_code': 'p9_figures', 'p9_data_code': 'p9_figure_data',
+               'p9_renderer_code': 'p9_figure_render', 'p9_mark_review_code': 'p9_figure_review'}
+    if identity['schema_version'] == 2:
+        model_files.update(p5_consequences='p5-report/cost-consequence.csv',
+                           p5_comparisons='p5-report/paired-comparisons.csv',
+                           p5_sensitivity='p5-report/one-way-sensitivity.csv')
+        for name in ('p9_supplement_data', 'p9_supplement_render', 'p9_supplement_review',
+                     'p6_capacity', 'local_data', 'endpoints', 'protocol'):
+            modules[name] = name
+    expected.update({key: run['files_sha256'][name] for key, name in model_files.items()})
+    expected.update({key: identity['sources_sha256'][f'src/icu_liaison/{module}.py']
+                     for key, module in modules.items()})
+    return expected
+
+
 def verify_p9(folder: Path, model: Path) -> dict:
     folder, model = Path(folder), Path(model)
     if folder.is_symlink() or not folder.is_dir():
@@ -67,7 +99,8 @@ def verify_p9(folder: Path, model: Path) -> dict:
     record = read_json(folder / 'figure-set.json')
     identity = record['identity']
     revision = record.get('figure_revision')
-    if (record.get('schema_version') != 1 or record.get('data_class') != 'synthetic'
+    edition = record.get('schema_version')
+    if (edition not in (1, 2) or identity.get('schema_version') != edition or record.get('data_class') != 'synthetic'
             or record.get('investment_ready') is not False
             or record.get('clinical_safety_approved') is not False
             or not valid_digest(revision) or folder.name != revision
@@ -80,8 +113,9 @@ def verify_p9(folder: Path, model: Path) -> dict:
             or identity['model_run_id'] != run['model_run_id']
             or identity['run_record_sha256'] != digest_file(model / 'run.json')):
         raise ValueError('P9 figure revision does not match its scenario model')
-    if (set(identity['inputs_sha256']) != set(input_files())
-            or set(identity['sources_sha256']) != set(SOURCE_PATHS)):
+    expected_ids = list(FIGURE_IDS) if edition == 1 else sorted((*FIGURE_IDS, *SUPPLEMENT_IDS))
+    if (set(identity['inputs_sha256']) != (LEGACY_INPUTS if edition == 1 else set(input_files()))
+            or set(identity['sources_sha256']) != set(LEGACY_SOURCE_PATHS if edition == 1 else SOURCE_PATHS)):
         raise ValueError('P9 source or input snapshot inventory mismatch')
     for name, expected in identity['inputs_sha256'].items():
         if digest_file(folder / 'inputs' / name) != expected:
@@ -89,17 +123,25 @@ def verify_p9(folder: Path, model: Path) -> dict:
     bundle = folder / 'bundle'
     manifest = read_json(bundle / 'manifest.json')
     review = read_json(folder / 'review.json')
+    expected_files = {'index.html', *(f'{key.lower()}.{ext}' for key in expected_ids for ext in ('svg', 'csv'))}
+    inner_files = inventory(bundle, exclude='manifest.json')
+    if (set(inner_files) != expected_files or manifest.get('files_sha256') != inner_files
+            or manifest.get('inputs_sha256') != _bundle_inputs(identity, run)
+            or any(item['svg'] != f"{item['id'].lower()}.svg" or item['csv'] != f"{item['id'].lower()}.csv"
+                   for item in manifest['figures'])):
+        raise ValueError('P9 inner manifest disagrees with its frozen inputs or figure files')
     if (review.get('status') != 'synthetic_source_and_marks_verified'
             or review.get('investment_ready') is not False
-            or review.get('figures_checked') != list(FIGURE_IDS)
+            or review.get('figures_checked') != expected_ids
             or review.get('manifest_sha256') != digest_file(bundle / 'manifest.json')
             or manifest.get('data_class') != 'synthetic'
             or manifest.get('investment_ready') is not False
-            or [item['id'] for item in manifest['figures']] != list(FIGURE_IDS)):
+            or [item['id'] for item in manifest['figures']] != expected_ids):
         raise ValueError('P9 figure bundle review or catalogue mismatch')
     recorded = {key: identity[key] for key in ('sources_sha256', 'inputs_sha256', 'runtime')}
     if recorded == fingerprint():
-        replay = review_figures(model / 'inputs/effective-scenario.json', model / 'p5-report', bundle)
+        replay = review_figures(model / 'inputs/effective-scenario.json', model / 'p5-report', bundle,
+                                include_supplement=edition == 2)
         if replay != review:
             raise ValueError('P9 numerical and visual-mark review differs from replay')
     return record
@@ -118,7 +160,7 @@ def build_p9(model_pointer: Path, output: Path, pointer: Path) -> dict:
             or link.get('run_record_sha256') != digest_file(model / 'run.json')):
         raise ValueError('P9 model pointer differs from its scenario source')
     before = fingerprint()
-    identity = {'schema_version': 1, 'case_id': run['case_id'], 'model_run_id': model_id,
+    identity = {'schema_version': 2, 'case_id': run['case_id'], 'model_run_id': model_id,
                 'run_record_sha256': link['run_record_sha256'], **before}
     revision = digest_json(identity)
     parent = output / 'priority-figures'
@@ -132,11 +174,11 @@ def build_p9(model_pointer: Path, output: Path, pointer: Path) -> dict:
             for name, path in input_files().items():
                 (inputs / name).write_bytes(path.read_bytes())
             review = build_figures(model / 'inputs/effective-scenario.json',
-                                   model / 'p5-report', staging / 'bundle')
+                                   model / 'p5-report', staging / 'bundle', include_supplement=True)
             if fingerprint() != before:
                 raise ValueError('P9 source or input changed during figure production')
             (staging / 'review.json').write_text(json.dumps(review, indent=2, sort_keys=True) + '\n')
-            record = {'schema_version': 1, 'data_class': 'synthetic', 'figure_revision': revision,
+            record = {'schema_version': 2, 'data_class': 'synthetic', 'figure_revision': revision,
                       'identity': identity, 'created_at_utc': datetime.now(timezone.utc).isoformat(),
                       'clinical_safety_approved': False, 'investment_ready': False,
                       'files_sha256': inventory(staging, exclude='figure-set.json')}

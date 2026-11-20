@@ -16,6 +16,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from icu_liaison.f01_review import review_f01
 from icu_liaison.p4_model import EconomicScenario
 from icu_liaison.p5_reporting import review_report
 from tools.validate_reporting_contracts import CATALOGUE, ROOT, validate_report
@@ -82,6 +83,7 @@ def compile_receipt(report: Path, scenario_file: Path) -> dict:
     artifact_digest = _digest(svg)
     if manifest["files_sha256"].get(ARTIFACT) != artifact_digest:
         raise ValueError("F01 SVG differs from report manifest")
+    marks = review_f01(svg, model)
     matplotlib_version = metadata.version("matplotlib")
     provenance = {
         "schema_version": 1,
@@ -105,6 +107,7 @@ def compile_receipt(report: Path, scenario_file: Path) -> dict:
         "p9_catalogue_sha256": _digest(CATALOGUE),
         "report_manifest_sha256": _digest(folder / "manifest.json"),
         "figure_svg_sha256": artifact_digest,
+        "mark_reader_sha256": _digest(ROOT / "src/icu_liaison/f01_review.py"),
     }
     return {
         "schema_version": 1,
@@ -114,6 +117,7 @@ def compile_receipt(report: Path, scenario_file: Path) -> dict:
         "provenance": provenance,
         "sources": sources,
         "numerical_review": numeric,
+        "svg_mark_review": marks,
         "p9_review_status": p9["status"],
         "directed_edges": [
             ["scenario_input", "P4_paired_draws"],
@@ -121,6 +125,7 @@ def compile_receipt(report: Path, scenario_file: Path) -> dict:
             ["T01_cost_consequences", F_ID],
             ["P5_numeric_review", F_ID],
             ["P9_structural_review", F_ID],
+            ["model_summary_mean_and_percentiles", "F01_SVG_marks"],
         ],
         "unverified": [
             "visual_human_or_multiviewport_acceptance",
@@ -141,7 +146,7 @@ def verify_receipt(report: Path, scenario: Path, receipt: dict) -> dict:
         "status": "rendered_unqualified",
         "figure_id": F_ID,
         "checks": ["source_sha256", "canonical_input_digest", "P5_numeric_review",
-                   "P9_figure_contract", "SVG_and_manifest_sha256"],
+                   "P9_figure_contract", "SVG_and_manifest_sha256", "F01_mean_and_percentile_marks"],
         "visual_checks_executed": 0,
         "external_claims_approved": False,
     }

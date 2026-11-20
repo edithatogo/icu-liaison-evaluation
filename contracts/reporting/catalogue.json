@@ -180,7 +180,8 @@
         "M14",
         "M15",
         "M29",
-        "M30"
+        "M30",
+        "M31"
       ],
       "uncertainty_classes": [
         "clinical_effect",
@@ -360,34 +361,34 @@
     {
       "id": "F05",
       "title": "Resource versus budget comparison",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f05.svg",
+      "status": "implemented",
       "source_table": "T01",
       "plot_type": "grouped_bar",
       "x": "strategy_id",
       "y": "economic_and_cash_benefit",
       "y_unit": "AUD_2026",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Resource versus budget comparison: earlier synthetic exploratory PNG exists outside the repository.",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "Bars compare mean paired annual net resource and hypothetical cash differences for each liaison strategy.",
       "privacy": "synthetic_only",
       "decision_question": "How do resource and budget outcomes differ?",
       "estimand": "separate annual accounting totals",
-      "evidence_tier": "external_exploratory_only",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
       "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "annual programme",
+      "denominator": "Eligible annual synthetic cohort",
       "missingness": "synthetic_no_observed_missingness",
-      "pairing": "not_applicable",
+      "pairing": "paired",
       "time_horizon": "annual or endpoint-specific horizon",
       "x_scale": "categorical",
       "y_scale": "linear",
       "source_requirements": [
-        "Rebuild external PNG from source-bound model"
+        "P4 ordered strategy draws and P5 cost consequences"
       ],
-      "release_gate": "Rebuild external PNG from source-bound model",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "Cash and resource not fungible",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "external_file_digest_only_not_git_report",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "exploratory_reference": {
         "package": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip",
         "relative_path": "figures/02_resource_vs_budget.png",
@@ -402,39 +403,40 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "not_estimated"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F06",
       "title": "Positive draw fraction",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f06.svg",
+      "status": "implemented",
       "source_table": "T02",
       "plot_type": "bar",
       "x": "strategy_id",
       "y": "positive_draw_fraction",
       "y_unit": "proportion",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Positive draw fraction: earlier synthetic exploratory PNG exists outside the repository.",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "Stacked bars show positive, tied and negative resource differences across all paired synthetic draws.",
       "privacy": "synthetic_only",
       "decision_question": "How often is net benefit strictly positive?",
       "estimand": "fraction >0, ties separate",
-      "evidence_tier": "external_exploratory_only",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
       "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "same paired valid draws",
+      "denominator": "All paired draws within each strategy comparison",
       "missingness": "synthetic_no_observed_missingness",
       "pairing": "paired",
       "time_horizon": "annual or endpoint-specific horizon",
       "x_scale": "categorical",
       "y_scale": "linear",
       "source_requirements": [
-        "Rebuild external PNG with exact denominator"
+        "P5 decision surface and strictly positive and equal fractions"
       ],
-      "release_gate": "Rebuild external PNG with exact denominator",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "No empirical superiority probability",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "external_file_digest_only_not_git_report",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "exploratory_reference": {
         "package": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip",
         "relative_path": "figures/03_positive_draw_fraction.png",
@@ -448,39 +450,40 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "psa_percentile_not_confidence_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F07",
       "title": "One-way sensitivity tornado",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f07.svg",
+      "status": "implemented",
       "source_table": "T03",
       "plot_type": "tornado",
       "x": "input_parameter",
       "y": "range_in_net_benefit",
       "y_unit": "AUD_2026",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "One-way sensitivity tornado: earlier synthetic exploratory PNG exists outside the repository.",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "A tornado shows the largest nominal resource swings with one prior varied and other inputs fixed. The dashed line marks the nominal result.",
       "privacy": "synthetic_only",
-      "decision_question": "Which assumptions move mean benefit?",
+      "decision_question": "Which assumptions move nominal net resource benefit?",
       "estimand": "one-at-a-time range",
-      "evidence_tier": "external_exploratory_only",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
       "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "declared prior bounds",
+      "denominator": "One liaison scenario with one prior varied",
       "missingness": "synthetic_no_observed_missingness",
       "pairing": "not_applicable",
       "time_horizon": "annual or endpoint-specific horizon",
       "x_scale": "categorical",
       "y_scale": "linear",
       "source_requirements": [
-        "Rebuild external PNG and verify pivot/bounds"
+        "P4 nominal and one-way prior quantiles reconciled to P5 sensitivity"
       ],
-      "release_gate": "Rebuild external PNG and verify pivot/bounds",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "Not a joint uncertainty estimate",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "external_file_digest_only_not_git_report",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "exploratory_reference": {
         "package": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip",
         "relative_path": "figures/04_one_way_sensitivity.png",
@@ -495,39 +498,40 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "not_estimated"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F08",
       "title": "Paired PSA distribution",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f08.svg",
+      "status": "implemented",
       "source_table": "T04",
       "plot_type": "histogram",
       "x": "net_benefit",
       "y": "draw_frequency",
       "y_unit": "frequency",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Paired PSA distribution: earlier synthetic exploratory PNG exists outside the repository.",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "Histogram counts liaison minus current-care annual resource differences from matched synthetic draws.",
       "privacy": "synthetic_only",
       "decision_question": "What is spread and skew of synthetic draws?",
       "estimand": "paired draw histogram",
-      "evidence_tier": "external_exploratory_only",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
       "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "5,000 declared draws or scenario count",
+      "denominator": "All paired liaison and current-care draws",
       "missingness": "synthetic_no_observed_missingness",
       "pairing": "paired",
       "time_horizon": "annual or endpoint-specific horizon",
       "x_scale": "linear",
       "y_scale": "linear",
       "source_requirements": [
-        "Rebuild external PNG from draw identifiers"
+        "Ordered P5 decision surface matched to seeded P4 draws"
       ],
-      "release_gate": "Rebuild external PNG from draw identifiers",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "Not observed outcome distribution",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "external_file_digest_only_not_git_report",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "exploratory_reference": {
         "package": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip",
         "relative_path": "figures/05_resource_draw_distributions.png",
@@ -541,39 +545,40 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "psa_percentile_not_confidence_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F09",
       "title": "Synthetic capacity trace",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f09.svg",
+      "status": "implemented",
       "source_table": "T07",
       "plot_type": "time_series",
       "x": "elapsed_minutes",
       "y": "beds_and_waits",
-      "y_unit": "beds_minutes_separate",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Synthetic capacity trace: earlier synthetic exploratory PNG exists outside the repository.",
+      "y_unit": "bed_and_request_counts",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "Two panels show staffed beds, occupied beds and waiting admitted requests in a fictional capacity trace.",
       "privacy": "synthetic_only",
       "decision_question": "What happens under temporal capacity constraints?",
       "estimand": "trace conservation by arm",
-      "evidence_tier": "external_exploratory_only",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
       "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "four-hour synthetic events",
+      "denominator": "Declared P6 fixture horizon and common requests",
       "missingness": "synthetic_no_observed_missingness",
       "pairing": "not_applicable",
-      "time_horizon": "declared fixture horizon",
+      "time_horizon": "declared P6 fixture horizon",
       "x_scale": "time",
       "y_scale": "linear",
       "source_requirements": [
-        "P6 fixture and conservation checks"
+        "P6 synthetic trace and occupied bed-minute conservation"
       ],
-      "release_gate": "P6 fixture and conservation checks",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "Not yearly Cairns throughput",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "external_file_digest_only_not_git_report",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "exploratory_reference": {
         "package": "ICU_Liaison_Synthetic_Outputs_2026-11-19.zip",
         "relative_path": "figures/06_synthetic_capacity_trace.png",
@@ -588,7 +593,8 @@
         "operational",
         "parameter_psa"
       ],
-      "interval_semantics": "not_estimated"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F10",
@@ -719,44 +725,44 @@
     {
       "id": "F13",
       "title": "Patient flow Sankey",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f13.svg",
+      "status": "implemented",
       "source_table": "T07",
       "plot_type": "sankey",
       "x": "icu_disposition",
       "y": "ward_and_return",
-      "y_unit": "patients",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Patient flow Sankey: synthetic illustration planned, no validated output yet.",
+      "y_unit": "index_discharges",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "Ribbon widths count linked first ward discharges by 72-hour return, known follow-up, competing death and unknown status.",
       "privacy": "synthetic_only",
       "decision_question": "Where do eligible patients go?",
       "estimand": "mutually exclusive movement flows",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "one index episode and complete event status",
+      "population": "P3 synthetic linked index discharges",
+      "denominator": "All first eligible ward discharges, including unknown outcomes",
       "missingness": "unknown_never_zero",
       "pairing": "not_applicable",
-      "time_horizon": "annual or endpoint-specific horizon",
+      "time_horizon": "72 hours after index departure",
       "x_scale": "categorical",
       "y_scale": "linear",
       "source_requirements": [
-        "Synthetic P3 linked fixture; conservation checks"
+        "P3 synthetic linkage, follow-up and conservation of all eligible indices"
       ],
-      "release_gate": "Synthetic P3 linked fixture; conservation checks",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "Synthetic flow not Cairns counts",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M03",
         "M08",
         "M15"
       ],
       "uncertainty_classes": [
-        "parameter_psa",
-        "structural"
+        "data_quality"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F14",
@@ -929,44 +935,42 @@
     {
       "id": "F18",
       "title": "Controlled event-study",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f18.svg",
+      "status": "implemented",
       "source_table": "T07",
       "plot_type": "event_study",
       "x": "relative_time",
-      "y": "adjusted_outcome",
-      "y_unit": "endpoint_units",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Controlled event-study: synthetic illustration planned, no validated output yet.",
+      "y": "change_in_between_ward_gap_from_reference_week",
+      "y_unit": "hours",
+      "uncertainty": "conditional_fictional_inputs",
+      "alt_text": "A fictional design example plots the difference between two ward means over time, centred on the week before a hypothetical rollout.",
       "privacy": "synthetic_only",
       "decision_question": "Could phased rollout identify an effect?",
-      "estimand": "controlled ITS design demonstration",
-      "evidence_tier": "synthetic_design_pending",
+      "estimand": "reference-centred difference in fictional ward mean index delay",
+      "evidence_tier": "synthetic_implemented",
       "priority": 2,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
-      "denominator": "defined units and complete pre/post periods",
+      "population": "fictional rollout and comparison ward periods",
+      "denominator": "Paired fictional ward-period means across a complete illustrative window",
       "missingness": "unknown_never_zero",
       "pairing": "not_applicable",
       "time_horizon": "annual or endpoint-specific horizon",
       "x_scale": "time",
       "y_scale": "linear",
       "source_requirements": [
-        "Synthetic design only; empirical data before inference"
+        "Versioned synthetic ward-period means and pre-rollout reference contrast"
       ],
-      "release_gate": "Synthetic design only; empirical data before inference",
+      "release_gate": "Synthetic source and mark reconciliation",
       "safety_boundary": "No synthetic causal treatment effect",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
-        "M05",
-        "M06",
-        "M08"
+        "M31"
       ],
       "uncertainty_classes": [
-        "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9_supplement"
     },
     {
       "id": "F19",
@@ -1222,7 +1226,7 @@
       "bundle": "p9"
     }
   ],
-  "catalogue_revision": "2026-11-20-P9-synthetic-figures-v4",
+  "catalogue_revision": "2026-11-20-P9-supplement-v5",
   "figure_register_status": "registered_figures_and_pending_designs",
   "assurance_contract": "contracts/reporting/metrics.json"
 }
