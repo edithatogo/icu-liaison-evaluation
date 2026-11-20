@@ -232,21 +232,21 @@
     {
       "id": "F02",
       "title": "Incremental cost and resource waterfall",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f02.svg",
+      "status": "implemented",
       "source_table": "T01",
       "plot_type": "waterfall",
       "x": "resource_component",
       "y": "incremental_resource_benefit_aud",
       "y_unit": "AUD_2026",
       "uncertainty": "Finance_reconciliation_pending",
-      "alt_text": "Incremental cost and resource waterfall: synthetic illustration planned, no validated output yet.",
+      "alt_text": "Fictional annual resource waterfall. ICU delay and return resource values minus the liaison service cost reconcile to net resource benefit.",
       "privacy": "synthetic_only",
       "decision_question": "Which incremental costs drive value?",
       "estimand": "signed component sum",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "modelled annual eligible ICU discharge cohort",
       "denominator": "annual programme components",
       "missingness": "unknown_never_zero",
       "pairing": "not_applicable",
@@ -259,7 +259,7 @@
       "release_gate": "P4 nominal source and exact reconciliation",
       "safety_boundary": "Released capacity is not cash savings",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M17",
         "M24",
@@ -269,7 +269,8 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9"
     },
     {
       "id": "F03",
@@ -591,22 +592,22 @@
     },
     {
       "id": "F10",
-      "title": "Two-way break-even boundary",
-      "artifact": null,
-      "status": "placeholder",
+      "title": "Resource break-even under tested assumptions",
+      "artifact": "f10.svg",
+      "status": "implemented",
       "source_table": "T03",
       "plot_type": "heatmap_contour",
       "x": "intervention_effectiveness",
       "y": "service_cost",
       "y_unit": "AUD_2026",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Two-way break-even boundary: synthetic illustration planned, no validated output yet.",
+      "uncertainty": "fixed_fictional_scenario_assumptions",
+      "alt_text": "Fictional resource benefit by delay resolution and service cost: a heatmap for varying inputs or points when an input is fixed. Break-even is shown only within tested values.",
       "privacy": "synthetic_only",
       "decision_question": "When does annual net benefit cross zero?",
       "estimand": "zero contour across bounded assumptions",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "modelled annual eligible ICU discharge cohort",
       "denominator": "feasible parameter grid",
       "missingness": "unknown_never_zero",
       "pairing": "paired",
@@ -619,7 +620,7 @@
       "release_gate": "Independent grid oracle and finite bounded domain",
       "safety_boundary": "Safety threshold separate from financial break-even",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M17",
         "M25",
@@ -629,26 +630,27 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9"
     },
     {
       "id": "F11",
       "title": "Paired resource-capacity plane",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f11.svg",
+      "status": "implemented",
       "source_table": "T04",
       "plot_type": "scatter",
       "x": "icu_bed_days_released",
       "y": "net_resource_benefit",
       "y_unit": "AUD_2026",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Paired resource-capacity plane: synthetic illustration planned, no validated output yet.",
+      "uncertainty": "joint_paired_parameter_draws",
+      "alt_text": "Fictional paired scatter of ICU bed-days released and annual net resource benefit for liaison versus current care, with a zero-benefit line.",
       "privacy": "synthetic_only",
       "decision_question": "Do favourable resource draws release capacity?",
       "estimand": "joint draw-level relation",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "modelled annual eligible ICU discharge cohort",
       "denominator": "one-to-one paired iterations",
       "missingness": "unknown_never_zero",
       "pairing": "paired",
@@ -661,7 +663,7 @@
       "release_gate": "Stable IDs and independent paired draw check",
       "safety_boundary": "Never monetise same bed-day twice",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M21",
         "M25"
@@ -670,7 +672,8 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "psa_percentile_not_confidence_interval"
+      "interval_semantics": "psa_percentile_not_confidence_interval",
+      "bundle": "p9"
     },
     {
       "id": "F12",
@@ -800,21 +803,21 @@
     {
       "id": "F15",
       "title": "Patient journey decomposition",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f15.svg",
+      "status": "implemented",
       "source_table": "T07",
       "plot_type": "timeline",
       "x": "journey_stage",
       "y": "time_in_stage",
       "y_unit": "minutes",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Patient journey decomposition: synthetic illustration planned, no validated output yet.",
+      "uncertainty": "fixed_fictional_scenario_assumptions",
+      "alt_text": "Three fictional ICU-to-ward journeys. Elapsed stages are shown from readiness. A hatched stage and a missing readiness label identify unknown timing.",
       "privacy": "synthetic_only",
       "decision_question": "Which discharge intervals are possibly addressable?",
       "estimand": "nonoverlapping elapsed intervals",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "selected fictional P3 ICU-to-ward episode journeys",
       "denominator": "ordered readiness/referral/bed/transfer states",
       "missingness": "unknown_never_zero",
       "pairing": "not_applicable",
@@ -827,7 +830,7 @@
       "release_gate": "Synthetic event fixture and interval conservation",
       "safety_boundary": "Potentially addressable not necessarily preventable",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M05",
         "M13"
@@ -836,7 +839,8 @@
         "parameter_psa",
         "structural"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9"
     },
     {
       "id": "F16",
@@ -1010,21 +1014,21 @@
     {
       "id": "F20",
       "title": "Nursing coverage versus demand",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f20.svg",
+      "status": "implemented",
       "source_table": "T05",
       "plot_type": "shift_heatmap",
       "x": "weekday_hour",
       "y": "staffing_vs_demand",
       "y_unit": "hours_and_cases_separate",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Nursing coverage versus demand: synthetic illustration planned, no validated output yet.",
+      "uncertainty": "fixed_fictional_scenario_assumptions",
+      "alt_text": "Two fictional weekly grids show rostered hours and eligible readiness counts separately. Hatching distinguishes paid-only hours from productive hours.",
       "privacy": "synthetic_only",
       "decision_question": "Do roster hours overlap eligible discharge demand?",
       "estimand": "hourly service overlap",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "one fictional weekly liaison roster and readiness schedule",
       "denominator": "paid/productive hours and synthetic eligible demand",
       "missingness": "unknown_never_zero",
       "pairing": "not_applicable",
@@ -1037,7 +1041,7 @@
       "release_gate": "Hypothetical roster and hour-conservation checks",
       "safety_boundary": "No Queensland pay rate or actual demand claimed",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M03",
         "M16"
@@ -1046,7 +1050,8 @@
         "operational",
         "parameter_psa"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9"
     },
     {
       "id": "F21",
@@ -1174,21 +1179,21 @@
     {
       "id": "F24",
       "title": "Clinical-effect prior sensitivity",
-      "artifact": null,
-      "status": "placeholder",
+      "artifact": "f24.svg",
+      "status": "implemented",
       "source_table": "T03",
       "plot_type": "two_way_sensitivity",
       "x": "return_effect",
       "y": "delay_success",
       "y_unit": "dimensionless",
-      "uncertainty": "source_or_model_uncertainty_pending",
-      "alt_text": "Clinical-effect prior sensitivity: synthetic illustration planned, no validated output yet.",
+      "uncertainty": "effect_assumption_grid_with_shared_parameter_draws",
+      "alt_text": "Fictional resource benefit and expected ICU return sensitivity to clinical assumptions. Negative effects show additional returns and a dashed outline marks joint null.",
       "privacy": "synthetic_only",
       "decision_question": "What happens under null and adverse effects?",
       "estimand": "bounded P4 clinical-effect scenario surface",
-      "evidence_tier": "synthetic_design_pending",
+      "evidence_tier": "synthetic_implemented",
       "priority": 1,
-      "population": "defined synthetic cohort or approved hospitalisation episode",
+      "population": "modelled annual eligible ICU discharge cohort",
       "denominator": "matched paired seeds incl harm/no effect",
       "missingness": "unknown_never_zero",
       "pairing": "paired",
@@ -1201,7 +1206,7 @@
       "release_gate": "P4 prior/source controls and independent bounds tests",
       "safety_boundary": "Never claim observed clinical noninferiority",
       "accessibility": "label_and_pattern_not_colour_alone",
-      "reproducibility": "versioned_input_seed_renderer_and_artifact_receipt_required",
+      "reproducibility": "p9_input_seed_source_rows_renderer_and_mark_review",
       "metric_ids": [
         "M08",
         "M23",
@@ -1213,10 +1218,11 @@
         "clinical_effect",
         "structural"
       ],
-      "interval_semantics": "scenario_assumptions_not_interval"
+      "interval_semantics": "scenario_assumptions_not_interval",
+      "bundle": "p9"
     }
   ],
-  "catalogue_revision": "2026-11-19-P10-metric-assurance-v3",
-  "figure_register_status": "specification_not_generated_outputs",
+  "catalogue_revision": "2026-11-20-P9-synthetic-figures-v4",
+  "figure_register_status": "registered_figures_and_pending_designs",
   "assurance_contract": "contracts/reporting/metrics.json"
 }

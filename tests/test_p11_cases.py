@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from icu_liaison.p11_model import build_case, verify_case
+from icu_liaison.p11_cases import materialise
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / 'model-inputs/p4/illustrative.json'
@@ -26,6 +27,25 @@ def case_file(tmp_path):
 def rows(folder):
     with (folder / 'paired-outcomes.csv').open(newline='') as stream:
         return list(csv.DictReader(stream))
+
+
+def test_fixed_override_preserves_other_dependence_submatrix():
+    base = json.loads(BASE.read_text())
+    groups = base['dependence_groups']
+    groups[1]['variables'].append('resource.hours_released_per_improved_case')
+    groups[1]['gaussian_correlation'] = [[1, .2, .1], [.2, 1, .3], [.1, .3, 1]]
+    case = json.loads((CASES / 'base.json').read_text())
+    case['overrides'] = {'resource.addressable_delay_fraction': {
+        'family': 'fixed', 'params': {'value': .3}, 'unit': 'proportion',
+        'evidence_status': 'illustrative_assumption', 'source_ref': 'P4-ILLUSTRATIVE',
+    }}
+    _, result = materialise(json.dumps(case).encode(), json.dumps(base).encode())
+    assert result.resource.addressable_delay_fraction.params['value'] == .3
+    assert result.dependence_groups[0].model_dump() == groups[0]
+    assert result.dependence_groups[1].model_dump() == {
+        'variables': groups[1]['variables'][1:],
+        'gaussian_correlation': [[1, .3], [.3, 1]],
+    }
 
 
 def test_base_run_preserves_paired_p5_comparisons(tmp_path, case_file):

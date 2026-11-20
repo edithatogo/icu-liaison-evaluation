@@ -67,11 +67,11 @@ intervals and `P(net resource benefit >= 0)`.
 
 The optional Snakemake pilot runs the P4/P5 paired current-care versus liaison
 comparison for six fictional scenarios, retaining independently reviewed,
-versioned inputs, model runs, comparisons and F01 figures. The separate
+versioned inputs, model runs, comparisons and F01/P9 figures. The separate
 [P11 workflow guide](docs/p11-scenario-workflows.md) covers the locked Python
 environment, scenario definitions, output verification and interruption
 recovery. These outputs do not establish clinical safety, provider qualification
-or an investment case; P9's separate figure work remains a conditional integration.
+or an investment case.
 
 The P1 adapter now calls Voiage for financial-only EVPI, with an independent
 native two-state reference and a strict source lock. Install **Voiage v3.1**
@@ -260,6 +260,26 @@ represented as a cost-per-QALY or clinical benefit analysis. It is one annual
 programme choice, not a patient-level scaled decision. The P5 method, audit
 and remaining review obligations are in
 [the P5 track](conductor/tracks/P5-reporting-independent-review/index.md).
+
+## P9 priority synthetic figures
+
+Generate and independently check the six companion figures from a P5 fictional
+report and the same P4 scenario. The output is a separate, immutable bundle
+with an HTML index, six SVGs, their source CSVs and a SHA-256 manifest.
+
+```sh
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p9_figures \
+  model-inputs/p4/illustrative.json --p5-report outputs/p5-synthetic \
+  --output-dir outputs/p9-figures
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p9_figures \
+  model-inputs/p4/illustrative.json --p5-report outputs/p5-synthetic \
+  --review outputs/p9-figures
+```
+
+Open `outputs/p9-figures/index.html` to view the figures and source rows. P5
+output from the P3–P6 fictional dry run can also be used as input. The optional
+[raster capture command](contracts/reporting/README.md#visual-review) produces
+review images in a separate directory.
 
 ## P5 source completion and P6 entry (18 November 2026)
 

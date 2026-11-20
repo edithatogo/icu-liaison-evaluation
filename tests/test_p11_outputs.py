@@ -7,6 +7,7 @@ import pytest
 
 from icu_liaison.p11_figure import build_figure, verify_figure
 from icu_liaison.p11_model import build_case, verify_case
+from icu_liaison.p11_p9 import build_p9
 from icu_liaison.p11_summary import build_summary, verify_summary
 from icu_liaison.p11_verify import verify_output
 from tools.p10_falsification import run_suite
@@ -109,13 +110,21 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
     model_pointer = output / 'state/models/base.json'
     model = build_case(case, BASE, output, model_pointer)
     build_figure(model_pointer, STYLE, output, output / 'state/figures/base.json')
+    p9 = build_p9(model_pointer, output, output / 'state/priority-figures/base.json')
     suite = tmp_path / 'suite.json'
     suite.write_text(json.dumps({'schema_version': 1, 'data_class': 'synthetic', 'cases': ['base']}))
     audit = tmp_path / 'audit.json'
     audit.write_text(json.dumps(run_suite(32)))
     pointer = output / 'state/summary.json'
     result = build_summary(suite, output, [model_pointer], audit, pointer)
-    assert verify_output(output)['scenarios'] == 1
+    verified = verify_output(output)
+    assert verified['scenarios'] == 1 and verified['priority_figures'] == 6
+    f20 = output / 'priority-figures' / p9['figure_revision'] / 'bundle/f20.svg'
+    original = f20.read_bytes()
+    f20.write_bytes(original + b' ')
+    with pytest.raises(ValueError, match='inventory or digest'):
+        verify_output(output)
+    f20.write_bytes(original)
     folder = output / 'summaries' / result['summary_id']
     comparison = folder / 'scenario-comparison.csv'
     comparison.write_text(comparison.read_text().replace('within_run_paired_parameter_draws', 'false', 1))

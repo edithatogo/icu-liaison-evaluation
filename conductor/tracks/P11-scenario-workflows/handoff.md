@@ -29,3 +29,25 @@ operation is hosted checks for an exact P11 revision. The full base suite passed
 420 tests with the two Snakemake-specific tests skipped in that environment;
 those tests passed separately in the qualified P11 environment. The
 implementation does not own any native provider or local data.
+
+## P9/P11 integration assignment
+
+On 20 November 2026, chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the
+P9/P11 integration and repository promotion. The P11 checkout remains
+`/Users/doughnut/.codex/worktrees/icu-liaison-scenario-workflow-plan/icu-liaison-evaluation`
+on `codex/p11-scenario-workflows`; its scope is the P11 workflow, scenario and
+figure publication code, integration tests, documentation, track records and
+source manifest. The same chat is the sole writer for the terminal P9 review
+fix in `/Users/doughnut/.codex/worktrees/icu-liaison-p9-synthetic-figures/icu-liaison-evaluation`
+on `codex/p9-synthetic-figures`. The native scope is none. The next operation is
+to address the recorded PR reviews, qualify P9 against current main, and then
+reconcile the P9 and P11 source manifests during integration.
+
+PR #26 is merged at `abeed009a8fcb5e4291e6859da9f4815f7358335`; P11 now
+contains a versioned P9 figure bundle for every case. The F10 display retains
+a single fixed value when a scenario removes an effect or cost distribution.
+The integrated synthetic rerun produced 36 checked figures and 72 paired rows;
+the Snakemake rerun and recovery tests passed. The next operation is the full
+hosted verification for PR #28. The full local suite passed 436 tests; its two
+Snakemake-specific skips passed in the separate P11 environment. The earlier separate-worktree
+notes above are retained as history.

@@ -29,12 +29,13 @@ def pointer_set(root, category, cases):
     }
 
 
-def invoke(tmp_path, output, cases, style, *extra, expected=0):
+def invoke(tmp_path, output, cases, style, *extra, expected=0, env_update=None):
     directory = tmp_path / 'scheduler'
     directory.mkdir(exist_ok=True)
     env = os.environ.copy()
     env.update(MPLBACKEND='Agg', PYTHONDONTWRITEBYTECODE='1',
                MPLCONFIGDIR=str(tmp_path / 'mpl'))
+    env.update(env_update or {})
     command = [
         str(SNAKEMAKE), '--snakefile', str(SNAKEFILE), '--directory', str(directory),
         '--cores', '2', '--printshellcmds', '--rerun-incomplete',
@@ -63,6 +64,11 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
     models = pointer_set(output, 'models', names)
     figures = pointer_set(output, 'figures', names)
     summary = json.loads((output / 'state/summary.json').read_text())
+    priorities = pointer_set(output, 'priority-figures', names)
+    for priority in priorities.values():
+        bundle = output / 'priority-figures' / priority['figure_revision'] / 'bundle'
+        assert all((bundle / f'{figure}.svg').is_file()
+                   for figure in ('f02', 'f10', 'f11', 'f15', 'f20', 'f24'))
     assert summary['scenario_count'] == 6 and summary['investment_ready'] is False
     summary_csv = output / 'summaries' / summary['summary_id'] / 'scenario-comparison.csv'
     with summary_csv.open(newline='') as stream:
@@ -75,6 +81,7 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
     assert 'Nothing to be done' in no_op.stdout + no_op.stderr
     assert pointer_set(output, 'models', names) == models
     assert pointer_set(output, 'figures', names) == figures
+    assert pointer_set(output, 'priority-figures', names) == priorities
     assert sorted((output / 'attempts').rglob('*.json')) == attempts_before
 
     case_file = cases / 'base.json'
@@ -85,11 +92,15 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
     models_after_case = pointer_set(output, 'models', names)
     figures_after_case = pointer_set(output, 'figures', names)
     summary_after_case = json.loads((output / 'state/summary.json').read_text())
+    priorities_after_case = pointer_set(output, 'priority-figures', names)
     assert models_after_case['base']['model_run_id'] != models['base']['model_run_id']
     assert all(models_after_case[name] == models[name] for name in names if name != 'base')
     assert figures_after_case['base']['figure_revision'] != figures['base']['figure_revision']
     assert all(figures_after_case[name] == figures[name] for name in names if name != 'base')
     assert summary_after_case['summary_id'] != summary['summary_id']
+    assert priorities_after_case['base']['figure_revision'] != priorities['base']['figure_revision']
+    assert all(priorities_after_case[name] == priorities[name] for name in names if name != 'base')
+    assert (output / 'priority-figures' / priorities['base']['figure_revision']).is_dir()
 
     settings = json.loads(style.read_text())
     settings['bar_color'] = '#9c4128'
@@ -100,6 +111,23 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
                for name in names)
     assert pointer_set(output, 'models', names) == models_after_case
     assert json.loads((output / 'state/summary.json').read_text()) == summary_after_case
+    assert pointer_set(output, 'priority-figures', names) == priorities_after_case
+
+    # Exercise a renderer distribution version change without replacing the
+    # real environment: metadata is shadowed only in this subprocess.
+    metadata = tmp_path / 'version-override' / 'matplotlib-99.0.0.dist-info'
+    metadata.mkdir(parents=True)
+    (metadata / 'METADATA').write_text('Metadata-Version: 2.1\nName: matplotlib\nVersion: 99.0.0\n')
+    invoke(tmp_path, output, cases, style,
+           env_update={'PYTHONPATH': str(metadata.parent)})
+    figures_after_runtime = pointer_set(output, 'figures', names)
+    assert all(figures_after_runtime[name]['figure_revision'] != figures_after_style[name]['figure_revision']
+               for name in names)
+    assert pointer_set(output, 'models', names) == models_after_case
+    assert json.loads((output / 'state/summary.json').read_text()) == summary_after_case
+    priorities_after_runtime = pointer_set(output, 'priority-figures', names)
+    assert all(priorities_after_runtime[name]['figure_revision'] != priorities_after_case[name]['figure_revision']
+               for name in names)
 
     old_models = set((output / 'models').iterdir())
     previous = dict(value)

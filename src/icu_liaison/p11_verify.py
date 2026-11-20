@@ -9,6 +9,7 @@ import sys
 
 from .p11_figure import verify_figure
 from .p11_model import verify_case
+from .p11_p9 import verify_p9
 from .p11_records import digest_file, read_json, valid_digest
 from .p11_summary import validate_suite, verify_summary
 
@@ -75,8 +76,23 @@ def verify_output(output: Path) -> dict:
         actual_rows = list(csv.DictReader(stream))
     if actual_rows != expected_rows:
         raise ValueError('summary rows differ from verified paired model outcomes')
+    for link in links:
+        case_id = link['case_id']
+        priority = read_json(output / 'state/priority-figures' / f'{case_id}.json')
+        figure_id = priority.get('figure_revision')
+        if (not valid_digest(figure_id) or priority.get('case_id') != case_id
+                or priority.get('data_class') != 'synthetic'
+                or priority.get('investment_ready') is not False
+                or priority.get('model_run_id') != link['model_run_id']):
+            raise ValueError('invalid P9 scenario figure pointer')
+        figure_folder = output / 'priority-figures' / figure_id
+        model = output / 'models' / link['model_run_id']
+        verify_p9(figure_folder, model)
+        if priority.get('figure_record_sha256') != digest_file(figure_folder / 'figure-set.json'):
+            raise ValueError('P9 figure pointer differs from its revision record')
     return {'status': 'verified_synthetic_outputs', 'summary_id': summary_id,
             'scenarios': len(names), 'paired_rows': len(actual_rows),
+            'priority_figures': 6 * len(names),
             'investment_ready': False, 'clinical_safety_approved': False}
 
 

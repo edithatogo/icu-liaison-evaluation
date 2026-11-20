@@ -1,7 +1,7 @@
 # P11 — Implementation plan
 
 Local implementation and evidence are recorded below. P9 companion integration
-and hosted CI for the integrated revision remain open.
+and its local workflow and recovery checks passed; integrated hosted CI remains open.
 
 ## P11.1 — Reuse and qualification
 
@@ -46,7 +46,7 @@ and hosted CI for the integrated revision remain open.
 
 ## P11.4 — Snakemake pilot
 
-- [~] P11.11 Wrap the existing synthetic validation, model, reporting,
+- [x] P11.11 Wrap the existing synthetic validation, model, reporting,
       independent review and scenario-summary entry points with declared
       dependencies. Include figure rendering when the P9 companion is
       integrated. Preserve direct CLI use and the existing P5 output contract.

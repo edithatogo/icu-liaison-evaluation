@@ -10,7 +10,8 @@
 | Output revision and integrity | Linked report/figure revisions, file hashes, tamper and missing-file checks, and prior outputs retained | Local pass |
 | Scenario change | Only the changed scenario and its downstream aggregate rebuild | Local pass |
 | Figure-only change | P5 model report reused, affected figures rebuilt, and any numerical verification replay reported | Local pass, renderer and style |
+| P9 companion | Six independently reviewed figures per scenario; fixed-prior F10 does not invent a range | Local 36-figure run and recovery tests passed |
 | No-op rerun | Unchanged completed targets perform no analytical rebuild | Local pass |
 | Failure and recovery | Interrupted and concurrent synthetic runs preserve committed output and recover without partial publication | Local pass |
 | Privacy and readiness | Public fixture and metadata remain synthetic, and restricted material remains in its approved environment | Local synthetic checks pass; external gates remain open |
-| Integration | Full local suite and synthetic workflow plus hosted CI for the integrated source revision | Local suite and workflow passed; hosted CI pending |
+| Integration | Full local suite and synthetic workflow plus hosted CI for the integrated source revision | Integrated workflow and full local suite passed; hosted CI pending |

@@ -7,9 +7,11 @@ The synthetic P11 implementation provides a recurring scenario suite,
 content-addressed inputs and outputs, paired comparisons and a local Snakemake
 pilot. It reuses the P4 model, P5 reporting and review, P10 assurance contracts
 and P7 evidence boundaries. Local rerun and recovery evidence is recorded in
-[the verification receipt](../../../verification/p11-synthetic-workflow-2026-11-20.json).
+[the original receipt](../../../verification/p11-synthetic-workflow-2026-11-20.json)
+and the [P9 integration receipt](../../../verification/p11-p9-integration-2026-11-20.json).
 
-The independent P9 six-figure companion remains in its own unmerged PR and is
-not included in the P11 scheduler. Integration and exact-revision hosted CI
-remain open; this is synthetic source qualification, not local clinical or
-provider acceptance.
+P9 PR #26 is merged. The P11 scheduler now builds its six-figure companion for
+each synthetic scenario, including fixed-input break-even displays. Integrated
+local workflow and recovery tests passed; exact-revision hosted CI remains
+the current gate. This is
+synthetic source qualification, not local clinical or provider acceptance.

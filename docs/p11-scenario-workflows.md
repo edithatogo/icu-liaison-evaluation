@@ -32,8 +32,12 @@ The workflow's default profile selects Snakemake's built-in greedy scheduler;
 the bundled CBC solver was not executable on the qualified macOS ARM host. This
 does not change the model. The normal base commands in the README remain available.
 The model is run without installed Dapane or Voiage execution and records that
-fact. An F01 figure is rendered from each P5 model report; the separate P9 figure
-implementation must be integrated and qualified before it can be included here.
+fact. Each scenario has an F01 figure and a separate P9 bundle containing F02,
+F10, F11, F15, F20 and F24. P9 independently replays P4 draws and reviews source
+rows and SVG marks; this verification replay does not rebuild the P5 report.
+When an F10 input is fixed, that dimension has one stated value and is shown as
+points, not an invented interval. F15 and F20 use separate fictional journey
+and roster fixtures; they are not simulated episode-level outcomes of P4.
 
 ## Define a scenario
 
@@ -58,8 +62,11 @@ the ID to the suite. The following replaces the existing P4 prior in that case:
 
 Use complete P4 prior objects and existing keys from the baseline input; case
 and underlying P4 validation reject unknown or invalid fields. Add only
-synthetic/public assumptions to this portable suite. After an input change,
-rerun the command above. Snakemake rebuilds the affected model, its figure and
+synthetic/public assumptions to this portable suite. Fixed-value overrides
+remove those variables from inherited correlation groups; any remaining
+correlations are retained, and the effective scenario snapshot records the
+resulting groups. After an input change,
+rerun the command above. Snakemake rebuilds the affected model, its figures and
 the comparison, while other model runs remain available. Presentation settings
 are in `model-inputs/p11/f01-style.json`; changing them creates new figure
 revisions without rebuilding the model reports.
@@ -73,22 +80,28 @@ The corresponding `summary.json` binds the suite, falsification audit and
 constituent model records. `state/models/<case>.json` identifies each immutable
 `models/<model-run-id>/` bundle: input snapshots, effective scenario, P5 report,
 paired outcomes, independent numerical review, run metadata and SHA-256 hashes.
-`state/figures/<case>.json` links to its immutable figure revision. Attempt files
-under `attempts/` record execution separately from model identity.
+`state/figures/<case>.json` links to its immutable F01 figure revision.
+`state/priority-figures/<case>.json` links to the corresponding immutable
+`priority-figures/<revision>/bundle/index.html`, six SVGs, source CSVs and
+P9 manifest. The revision also retains the P9 fixture, episode-feed, catalogue
+and metric snapshots and an independent review. Attempt files under `attempts/`
+record model execution separately from model identity.
 
 The run identity uses input snapshots, the effective scenario, relevant source
 hashes, Python and numerical runtime versions, and provider execution status.
 It records the Git revision and whether executed source was dirty separately;
 timestamps do not change the run ID. A relevant code, runtime, input or seed
-change makes a new ID. A figure revision binds the model record, renderer, style
-and Matplotlib version. File hashes support integrity checks, not scientific
+change makes a new ID. Figure revisions bind the model record, renderer source,
+relevant input snapshots and Matplotlib version; F01 also binds its style. File
+hashes support integrity checks, not scientific
 approval. Existing content-addressed objects are never silently overwritten.
 
 Run `icu_liaison.p11_verify` after a workflow run to check current pointers,
-file hashes, model and figure links, and the combined rows. For matching model
-code and runtime it also replays the numerical review; historical runs with a
-different runtime are checked for recorded file integrity without claiming a
-new numerical replay. Snakemake's no-op check alone checks workflow freshness,
+file hashes, model and figure links, the six P9 outputs per scenario and the
+combined rows. For matching source, inputs and runtime it also replays the P4/P5
+and P9 numerical and mark reviews; historical runs with a different runtime are
+checked for recorded file integrity without claiming a new replay. Snakemake's
+no-op check alone checks workflow freshness,
 not corruption inside published object directories.
 
 ## Reruns and recovery

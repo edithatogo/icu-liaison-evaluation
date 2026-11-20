@@ -47,6 +47,19 @@ def materialise(case_bytes: bytes, base_bytes: bytes) -> tuple[ScenarioCase, Eco
             arm[parts[2]] = value
         else:
             data[parts[0]][parts[1]] = value
+    # A fixed value has no random correlation. Preserve the remaining principal
+    # submatrix rather than dropping unrelated correlations from the group.
+    fixed = {key for key, value in case.overrides.items() if value.get('family') == 'fixed'}
+    groups = []
+    for group in data['dependence_groups']:
+        keep = [index for index, path in enumerate(group['variables']) if path not in fixed]
+        if len(keep) >= 2:
+            groups.append({
+                'variables': [group['variables'][index] for index in keep],
+                'gaussian_correlation': [[group['gaussian_correlation'][i][j] for j in keep]
+                                         for i in keep],
+            })
+    data['dependence_groups'] = groups
     result = EconomicScenario.model_validate(data)
     if any(prior.evidence_status == 'local_aggregate_unvalidated'
            for prior in result.all_priors().values()):
