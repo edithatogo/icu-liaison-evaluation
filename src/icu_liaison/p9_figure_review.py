@@ -66,6 +66,28 @@ def _zero(nodes, origin, dimension):
         raise ValueError('SVG resource zero mark differs from the data axis')
 
 
+def _rectangle(node):
+    if node is None:
+        raise ValueError('SVG coverage mark is missing its rectangle')
+    points = _points(node)
+    if points.shape != (4, 2) or not np.isfinite(points).all():
+        raise ValueError('SVG coverage mark has invalid rectangle geometry')
+    x0, x1 = points[:, 0].min(), points[:, 0].max()
+    y0, y1 = points[:, 1].min(), points[:, 1].max()
+    corners = {(round(float(x), 3), round(float(y), 3)) for x, y in points}
+    expected = {(round(float(x), 3), round(float(y), 3)) for x in (x0, x1) for y in (y0, y1)}
+    if x0 >= x1 or y0 >= y1 or corners != expected:
+        raise ValueError('SVG coverage mark is not a rectangle')
+    return np.array([x0, x1, y0, y1])
+
+
+def _cell_bounds(bounds, day, hour):
+    x0, x1, y0, y1 = bounds
+    dx, dy = (x1 - x0) / 24, (y1 - y0) / 7
+    return np.array([x0 + hour * dx, x0 + (hour + 1) * dx,
+                     y0 + day * dy, y0 + (day + 1) * dy])
+
+
 def review_svg(path, figure, rows):
     try:
         svg = ET.parse(path).getroot()
@@ -119,19 +141,44 @@ def review_svg(path, figure, rows):
                 if f'journey-bar-{idx}' in nodes:
                     raise ValueError('SVG mark replaces unknown readiness with a numeric bar')
     elif figure_id == 'F20':
+        coverage_grid = _rectangle(nodes.get('coverage-grid-background'))
+        demand_grid = _rectangle(nodes.get('demand-grid-background'))
+        view = np.asarray([float(v) for v in svg.get('viewBox', '').split()])
+        if (view.shape != (4,) or not np.isfinite(view).all()
+                or view[2] <= 0 or view[3] <= 0):
+            raise ValueError('SVG coverage chart has invalid view bounds')
+        for x0, x1, y0, y1 in (coverage_grid, demand_grid):
+            if x0 < view[0] or x1 > view[0] + view[2] or y0 < view[1] or y1 > view[1] + view[3]:
+                raise ValueError('SVG coverage chart grid is outside the view')
         for row in rows:
             suffix = f"{row['day']}-{row['hour']}"
             paid = nodes.get(f'coverage-{suffix}')
             if (paid is not None) != bool(row['paid_staff_hours']):
                 raise ValueError('SVG paid coverage mark differs from fixture')
             if paid is not None:
-                hatched = any('fill: url(' in node.get('style', '') for node in paid.iter())
+                if not np.allclose(_rectangle(paid), _cell_bounds(coverage_grid, row['day'], row['hour']),
+                                   atol=.01, rtol=0):
+                    raise ValueError('SVG paid coverage geometry differs from its source hour')
+                mark = paid.find(f'.//{SVG}path')
+                style = mark.get('style', '')
+                hatched = 'fill: url(' in style
                 if hatched == bool(row['productive_staff_hours']):
                     raise ValueError('SVG productive coverage hatch differs from fixture')
+                if (row['productive_staff_hours'] and 'fill: #196872' not in style
+                        or 'opacity: 0' in style or 'display: none' in style):
+                    raise ValueError('SVG paid coverage mark is not visible')
             count = row['eligible_readiness_cases']
+            cell = nodes.get(f'demand-cell-{suffix}')
             if count:
-                _text(nodes, f'demand-{suffix}', str(count))
-            elif f'demand-{suffix}' in nodes:
+                bounds = _cell_bounds(demand_grid, row['day'], row['hour'])
+                if not np.allclose(_rectangle(cell), bounds, atol=.01, rtol=0):
+                    raise ValueError('SVG demand cell geometry differs from its source hour')
+                if 'fill: #dce9ec' not in cell.find(f'.//{SVG}path').get('style', ''):
+                    raise ValueError('SVG demand mark is not visible')
+                x, y = _text(nodes, f'demand-{suffix}', str(count))
+                if not np.isclose(x, (bounds[0] + bounds[1]) / 2, atol=.01, rtol=0) or not bounds[2] <= y <= bounds[3]:
+                    raise ValueError('SVG demand mark lies outside its source hour')
+            elif f'demand-{suffix}' in nodes or cell is not None:
                 raise ValueError('SVG mark invents demand for a known empty hour')
     elif figure_id == 'F24':
         for panel, field, divisor in (('money', 'mean_net_resource_aud', 1000),

@@ -162,6 +162,8 @@ def _coverage(rows, _year, _cohort):
              f'One liaison post · {paid} paid h · {productive} productive h · {demand} cases\n'
              'Fictional week · hours and readiness counts shown separately')
     coverage, cases = fig.subplots(2, 1)
+    coverage.patch.set_gid('coverage-grid-background')
+    cases.patch.set_gid('demand-grid-background')
     fig.subplots_adjust(left=.13, right=.96, bottom=.18, top=.735, hspace=.45)
     coverage.set_title('Roster hours per hour of day', loc='left', fontsize=12, weight='bold')
     cases.set_title('Eligible readiness cases per hour of day', loc='left', fontsize=12, weight='bold')
@@ -185,7 +187,9 @@ def _coverage(rows, _year, _cohort):
             coverage.add_patch(box)
         count = row['eligible_readiness_cases']
         if count:
-            cases.add_patch(Rectangle((hour, day), 1, 1, facecolor=PALE, edgecolor=INK, linewidth=.45))
+            box = Rectangle((hour, day), 1, 1, facecolor=PALE, edgecolor=INK, linewidth=.45)
+            box.set_gid(f'demand-cell-{day}-{hour}')
+            cases.add_patch(box)
             cases.text(hour + .5, day + .5, str(count), ha='center', va='center',
                        fontsize=10.2, weight='bold').set_gid(f'demand-{day}-{hour}')
     fig.legend([Patch(facecolor=TEAL, edgecolor=INK),

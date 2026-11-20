@@ -2,6 +2,7 @@
 import csv
 import hashlib
 import json
+import re
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -147,4 +148,40 @@ def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path, scenario):
     manifest['files_sha256'][table.name] = hashlib.sha256(table.read_bytes()).hexdigest()
     manifest_file.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match='source rows'):
+        review_figures(scenario_file, p5, out)
+
+
+@pytest.mark.parametrize('mutation', ['missing_coverage', 'displaced_coverage',
+                                       'invisible_coverage', 'off_canvas_demand',
+                                       'missing_demand_cell'])
+def test_f20_rejects_rehashed_geometry_or_missing_marks(tmp_path, scenario, mutation):
+    p5, out = tmp_path / 'p5', tmp_path / 'p9'
+    scenario_file = tmp_path / 'scenario.json'
+    scenario_file.write_text(scenario.model_dump_json())
+    build_report(scenario, p5)
+    build_figures(scenario_file, p5, out)
+    plot = out / 'f20.svg'
+    svg = ET.fromstring(plot.read_bytes())
+    nodes = {node.get('id'): node for node in svg.iter() if node.get('id')}
+    if mutation == 'missing_coverage':
+        group = nodes['coverage-0-9']
+        group.remove(next(child for child in group if child.tag.endswith('}path')))
+    elif mutation == 'displaced_coverage':
+        path = next(child for child in nodes['coverage-0-9'] if child.tag.endswith('}path'))
+        path.set('d', re.sub(r'(?<=M )[-+0-9.]+', '0', path.get('d'), count=1))
+    elif mutation == 'invisible_coverage':
+        path = next(child for child in nodes['coverage-0-9'] if child.tag.endswith('}path'))
+        path.set('style', path.get('style').replace('fill: #196872', 'fill: none'))
+    elif mutation == 'off_canvas_demand':
+        label = next(child for child in nodes['demand-0-7'] if child.tag.endswith('}text'))
+        label.set('x', '-1000')
+    else:
+        group = nodes['demand-cell-0-7']
+        group.remove(next(child for child in group if child.tag.endswith('}path')))
+    plot.write_bytes(ET.tostring(svg))
+    manifest_file = out / 'manifest.json'
+    manifest = json.loads(manifest_file.read_text())
+    manifest['files_sha256'][plot.name] = hashlib.sha256(plot.read_bytes()).hexdigest()
+    manifest_file.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match='coverage|demand|mark'):
         review_figures(scenario_file, p5, out)
