@@ -592,7 +592,7 @@
     },
     {
       "id": "F10",
-      "title": "Two-way break-even boundary",
+      "title": "Resource break-even under tested assumptions",
       "artifact": "f10.svg",
       "status": "implemented",
       "source_table": "T03",
@@ -601,7 +601,7 @@
       "y": "service_cost",
       "y_unit": "AUD_2026",
       "uncertainty": "fixed_fictional_scenario_assumptions",
-      "alt_text": "Fictional heatmap of annual resource benefit by delay resolution and service cost. Break-even is shown only when it falls in the tested grid.",
+      "alt_text": "Fictional resource benefit by delay resolution and service cost: a heatmap for varying inputs or points when an input is fixed. Break-even is shown only within tested values.",
       "privacy": "synthetic_only",
       "decision_question": "When does annual net benefit cross zero?",
       "estimand": "zero contour across bounded assumptions",

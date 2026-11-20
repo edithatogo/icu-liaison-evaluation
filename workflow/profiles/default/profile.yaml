@@ -1,0 +1,3 @@
+# PuLP's bundled CBC is not portable to every supported host architecture.
+# The built-in greedy scheduler has been qualified for this local pilot.
+scheduler: greedy

@@ -109,19 +109,41 @@ def review_svg(path, figure, rows):
             _text(nodes, f'waterfall-value-{idx}', f"{row['value_aud'] / 1000:+,.1f}")
     elif figure_id == 'F10':
         grid = nodes.get('breakeven-grid')
-        marks = list(grid.iter(f'{SVG}path')) if grid is not None else []
+        uses = list(grid.iter(f'{SVG}use')) if grid is not None else []
+        marks = uses or (list(grid.iter(f'{SVG}path')) if grid is not None else [])
         if len(marks) != len(rows):
             raise ValueError('SVG mark count differs from break-even grid')
         x_centres, y_centres = [], []
         net = np.array([row['net_resource_aud'] / 1000 for row in rows])
-        norm = Normalize(vmin=net.min(), vmax=net.max())
+        low, high = net.min(), net.max()
+        padding = max(.1, abs(low) * .01) if low == high else 0.
+        norm = Normalize(vmin=low - padding, vmax=high + padding)
         fills = [to_hex(value) for value in mpl.colormaps['cividis'](norm(net))]
         for mark, fill in zip(marks, fills, strict=True):
             if f'fill: {fill}' not in mark.get('style', ''):
                 raise ValueError('SVG heatmap mark differs from its source value')
-            points = np.array([float(v) for v in NUMBER.findall(mark.get('d', ''))]).reshape(-1, 2)
-            x_centres.append((points[:, 0].min() + points[:, 0].max()) / 2)
-            y_centres.append((points[:, 1].min() + points[:, 1].max()) / 2)
+            if uses:
+                reference = mark.get('{http://www.w3.org/1999/xlink}href', '')
+                shape = nodes.get(reference.removeprefix('#')) if reference.startswith('#') else None
+                if shape is None or shape.tag != f'{SVG}path' or not shape.get('d'):
+                    raise ValueError('SVG fixed-prior mark has no visible shape')
+                xpos, ypos = float(mark.get('x')), float(mark.get('y'))
+                vertices = np.array([float(v) for v in NUMBER.findall(shape.get('d'))]).reshape(-1, 2)
+                bounds = _rectangle(nodes.get('breakeven-background'))
+                if (vertices.shape != (4, 2)
+                        or not bounds[0] <= xpos + vertices[:, 0].min() < xpos + vertices[:, 0].max() <= bounds[1]
+                        or not bounds[2] <= ypos + vertices[:, 1].min() < ypos + vertices[:, 1].max() <= bounds[3]):
+                    raise ValueError('SVG fixed-prior mark is clipped by its chart')
+                view = [float(value) for value in svg.get('viewBox', '').split()]
+                if (len(view) != 4 or not view[0] <= xpos <= view[0] + view[2]
+                        or not view[1] <= ypos <= view[1] + view[3]):
+                    raise ValueError('SVG fixed-prior mark is outside the view')
+                x_centres.append(xpos)
+                y_centres.append(ypos)
+            else:
+                points = np.array([float(v) for v in NUMBER.findall(mark.get('d', ''))]).reshape(-1, 2)
+                x_centres.append((points[:, 0].min() + points[:, 0].max()) / 2)
+                y_centres.append((points[:, 1].min() + points[:, 1].max()) / 2)
         _affine([row['delay_success'] for row in rows], x_centres, 1)
         _affine([row['annual_cost_aud'] for row in rows], y_centres, -1)
         crossing, touching = net.min() < 0 < net.max(), net.min() == 0 or net.max() == 0

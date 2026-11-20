@@ -12,6 +12,7 @@ results/
 .venv/
 __pycache__/
 .pytest_cache/
+.snakemake/
 *.pyc
 *.egg-info/
 dist/

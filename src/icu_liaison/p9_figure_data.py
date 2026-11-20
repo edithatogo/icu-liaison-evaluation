@@ -93,9 +93,10 @@ def break_even_grid(scenario: EconomicScenario) -> list[dict]:
     axes = []
     for prior in (arm.delay_success_fraction, arm.annual_incremental_cost_aud):
         low, high = prior.support()
-        if not np.isfinite([low, high]).all() or low >= high:
-            raise ValueError('break-even grid needs two nondegenerate bounded priors')
-        axes.append(np.linspace(low, high, num=17))
+        if not np.isfinite([low, high]).all() or low > high:
+            raise ValueError('break-even grid needs bounded priors')
+        # A fixed prior contributes exactly one value; do not invent a range.
+        axes.append(np.array([low]) if low == high else np.linspace(low, high, num=17))
     success, cost = (values.ravel() for values in np.meshgrid(*axes))
     sampled = {key: np.full(success.size, p.nominal()) for key, p in scenario.all_priors().items()}
     sampled[f'strategy.{ARM}.delay_success_fraction'] = success

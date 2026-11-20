@@ -72,21 +72,58 @@ def _break_even_grid(rows, year, cohort):
     message = ('Zero contour inside the tested bounds' if crossing else
                'Break-even touches the tested grid' if low <= 0 <= high else
                'No break-even within the tested bounds')
-    fig, ax = _panel('Two-way resource break-even',
-                     f'{message}\nLiaison · {cohort:,} eligible discharges · other inputs nominal',
+    fixed_x, fixed_y = len(x) == 1, len(y) == 1
+    fixed = ('Both assumptions fixed' if fixed_x and fixed_y else
+             f'Delay resolution fixed at {x[0]:.0%}' if fixed_x else
+             f'Annual service cost fixed at {y[0]:,.1f} thousand AUD' if fixed_y else None)
+    subtitle = (f'{fixed}\n{message}\nLiaison · {cohort:,} eligible discharges · other inputs nominal'
+                if fixed else f'{message}\nLiaison · {cohort:,} eligible discharges · other inputs nominal')
+    title = 'Resource break-even: fixed input' if fixed else 'Two-way resource break-even'
+    fig, ax = _panel(title, subtitle,
                      left=.17, right=.97)
-    mesh = ax.pcolormesh(x, y, z, shading='nearest', cmap='cividis',
-                         norm=Normalize(vmin=low, vmax=high))
+    ax.patch.set_gid('breakeven-background')
+    padding = max(.1, abs(low) * .01) if low == high else 0.
+    norm = Normalize(vmin=low - padding, vmax=high + padding)
+    if fixed:
+        fig.subplots_adjust(top=.69)
+        mesh = ax.scatter([row['delay_success'] for row in rows],
+                          [row['annual_cost_aud'] / 1000 for row in rows],
+                          c=z.ravel(), marker='s', s=46, cmap='cividis',
+                          norm=norm)
+    else:
+        mesh = ax.pcolormesh(x, y, z, shading='nearest', cmap='cividis',
+                             norm=norm)
     mesh.set_gid('breakeven-grid')
     if crossing:
-        contour = ax.contour(x, y, z, levels=[0], colors=['white'], linewidths=2)
-        contour.set_gid('breakeven-zero')
-        ax.clabel(contour, fmt={0: 'Zero'}, fontsize=9)
+        if fixed:
+            values, axis = (z[:, 0], y) if fixed_x else (z[0, :], x)
+            idx = next(i for i in range(len(values) - 1) if values[i] * values[i + 1] <= 0)
+            fraction = -values[idx] / (values[idx + 1] - values[idx])
+            position = axis[idx] + fraction * (axis[idx + 1] - axis[idx])
+            marker = ax.axhline(position, color='white', linewidth=2) if fixed_x else ax.axvline(
+                position, color='white', linewidth=2)
+            marker.set_gid('breakeven-zero')
+        else:
+            contour = ax.contour(x, y, z, levels=[0], colors=['white'], linewidths=2)
+            contour.set_gid('breakeven-zero')
+            ax.clabel(contour, fmt={0: 'Zero'}, fontsize=9)
     elif low <= 0 <= high:
         y_idx, x_idx = np.where(z == 0)
         ax.scatter(np.asarray(x)[x_idx], np.asarray(y)[y_idx], marker='x', color='white',
                    linewidths=1.5).set_gid('breakeven-touch')
-    ax.set(xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
+    if fixed_x:
+        ax.set_xlim(x[0] - .05, x[0] + .05)
+        ax.set_xticks([x[0]])
+    else:
+        margin = (x[-1] - x[0]) * .04 if fixed else 0
+        ax.set_xlim(x[0] - margin, x[-1] + margin)
+    if fixed_y:
+        margin = max(1., abs(y[0]) * .05)
+        ax.set_ylim(y[0] - margin, y[0] + margin)
+        ax.set_yticks([y[0]])
+    else:
+        margin = (y[-1] - y[0]) * .04 if fixed else 0
+        ax.set_ylim(y[0] - margin, y[-1] + margin)
     ax.set_xlabel('Addressable delays resolved (%)')
     ax.set_ylabel(f'Annual service cost\n(thousand AUD {year})')
     ax.xaxis.set_major_formatter(PercentFormatter(1, decimals=0))

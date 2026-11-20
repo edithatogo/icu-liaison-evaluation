@@ -1,0 +1,130 @@
+"""Run the P11 synthetic scenario suite with immutable published objects."""
+from pathlib import Path
+import hashlib
+import json
+import sys
+from importlib import metadata
+
+ROOT = Path(workflow.basedir).resolve().parent
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
+
+from icu_liaison.p11_model import INPUTS, MODEL_SOURCES, _runtime, _source_hashes
+from icu_liaison.p11_p9 import SOURCE_PATHS as P9_SOURCES, fingerprint as p9_fingerprint, input_files as p9_inputs
+from icu_liaison.p11_summary import validate_suite
+
+PYTHON = sys.executable
+OUTPUT = Path(config.get("output", ROOT / "outputs/p11")).resolve()
+CASES_DIR = Path(config.get("cases", ROOT / "model-inputs/p11/cases")).resolve()
+SUITE = Path(config.get("suite", ROOT / "model-inputs/p11/suite.json")).resolve()
+BASE = Path(config.get("base", ROOT / "model-inputs/p4/illustrative.json")).resolve()
+STYLE = Path(config.get("style", ROOT / "model-inputs/p11/f01-style.json")).resolve()
+CASE_NAMES = validate_suite(SUITE)["cases"]
+MODEL_CODE = [str(ROOT / name) for name in MODEL_SOURCES]
+MODEL_INPUTS = [str(path) for path in INPUTS.values()]
+MODEL_POINTER = str(OUTPUT / "state/models/{case}.json")
+FIGURE_POINTER = str(OUTPUT / "state/figures/{case}.json")
+AUDIT_POINTER = str(OUTPUT / "state/falsification.json")
+SUMMARY_POINTER = str(OUTPUT / "state/summary.json")
+P9_POINTER = str(OUTPUT / "state/priority-figures/{case}.json")
+
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def model_parameters(wildcards):
+    return json.dumps({
+        "case_sha256": digest(CASES_DIR / f"{wildcards.case}.json"),
+        "base_sha256": digest(BASE),
+        "inputs_sha256": {name: digest(path) for name, path in INPUTS.items()},
+        "sources_sha256": _source_hashes(),
+        "runtime": _runtime(),
+    }, sort_keys=True)
+
+
+wildcard_constraints:
+    case="[a-z][a-z0-9_]{0,47}"
+
+
+rule all:
+    input:
+        summary=SUMMARY_POINTER,
+        figures=expand(FIGURE_POINTER, case=CASE_NAMES),
+        priority_figures=expand(P9_POINTER, case=CASE_NAMES),
+
+
+rule model:
+    input:
+        case=lambda wildcards: str(CASES_DIR / f"{wildcards.case}.json"),
+        base=str(BASE),
+        evidence=MODEL_INPUTS,
+        code=MODEL_CODE,
+    output:
+        MODEL_POINTER,
+    params:
+        provenance=model_parameters,
+    shell:
+        "cd {ROOT:q} && {PYTHON:q} -m icu_liaison.p11_model "
+        "--case {input.case:q} --base {input.base:q} --expected-case {wildcards.case:q} "
+        "--output {OUTPUT:q} --pointer {output:q}"
+
+
+rule falsification:
+    input:
+        base=str(ROOT / "model-inputs/p4/illustrative.json"),
+        matrix=str(ROOT / "contracts/reporting/falsification-matrix.json"),
+        policy=str(ROOT / "contracts/clinical/safety-decision.json"),
+        schema=str(ROOT / "contracts/clinical/safety-decision.schema.json"),
+        metrics=str(ROOT / "contracts/reporting/metrics.json"),
+        protocol=str(ROOT / "model-inputs/clinical-economic-protocol.json"),
+        code=MODEL_CODE,
+        summary=str(ROOT / "src/icu_liaison/p11_summary.py"),
+    output:
+        AUDIT_POINTER,
+    shell:
+        "cd {ROOT:q} && {PYTHON:q} -m icu_liaison.p11_summary audit --pointer {output:q}"
+
+
+rule scenario_summary:
+    input:
+        suite=str(SUITE),
+        audit=AUDIT_POINTER,
+        cases=expand(MODEL_POINTER, case=CASE_NAMES),
+        code=str(ROOT / "src/icu_liaison/p11_summary.py"),
+    output:
+        SUMMARY_POINTER,
+    shell:
+        "cd {ROOT:q} && {PYTHON:q} -m icu_liaison.p11_summary summary "
+        "--suite {input.suite:q} --output {OUTPUT:q} --audit {input.audit:q} "
+        "--pointer {output:q} --cases {input.cases:q}"
+
+
+rule figure:
+    input:
+        model=MODEL_POINTER,
+        style=str(STYLE),
+        code=str(ROOT / "src/icu_liaison/p11_figure.py"),
+    output:
+        FIGURE_POINTER,
+    params:
+        style_sha256=lambda wildcards: digest(STYLE),
+        matplotlib_version=metadata.version("matplotlib"),
+    shell:
+        "cd {ROOT:q} && {PYTHON:q} -m icu_liaison.p11_figure "
+        "--model-pointer {input.model:q} --style {input.style:q} "
+        "--output {OUTPUT:q} --pointer {output:q}"
+
+
+rule priority_figures:
+    input:
+        model=MODEL_POINTER,
+        resources=[str(path) for path in p9_inputs().values()],
+        code=[str(ROOT / path) for path in P9_SOURCES],
+    output:
+        P9_POINTER,
+    params:
+        provenance=lambda wildcards: json.dumps(p9_fingerprint(), sort_keys=True),
+    shell:
+        "cd {ROOT:q} && {PYTHON:q} -m icu_liaison.p11_p9 "
+        "--model-pointer {input.model:q} --output {OUTPUT:q} --pointer {output:q}"

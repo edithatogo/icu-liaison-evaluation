@@ -15,6 +15,8 @@ from icu_liaison.p9_figure_data import (
     resource_waterfall, sensitivity_grid,
 )
 from icu_liaison.p9_figures import build_figures, review_figures
+from icu_liaison.p11_cases import materialise
+from tools.p10_falsification import _variant
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_FILE = ROOT / 'model-inputs/p4/illustrative.json'
@@ -55,6 +57,54 @@ def test_break_even_limited_to_stated_priors(scenario):
     }
     results = break_even_grid(EconomicScenario.model_validate(variant))
     assert min(r['net_resource_aud'] for r in results) < 0 < max(r['net_resource_aud'] for r in results)
+
+
+def test_fixed_no_effect_prior_produces_a_one_dimensional_break_even(tmp_path, scenario):
+    no_effect = _variant(scenario.model_dump(mode='json'), 'no_effect')
+    rows = break_even_grid(no_effect)
+    assert len(rows) == 17
+    assert {row['delay_success'] for row in rows} == {0.0}
+    assert len({row['annual_cost_aud'] for row in rows}) == 17
+    assert all(row['net_resource_aud'] < 0 for row in rows)
+    scenario_file = tmp_path / 'scenario.json'
+    scenario_file.write_text(no_effect.model_dump_json())
+    p5, out = tmp_path / 'p5', tmp_path / 'figures'
+    build_report(no_effect, p5)
+    result = build_figures(scenario_file, p5, out)
+    assert result['figures_checked'] == ['F02', 'F10', 'F11', 'F15', 'F20', 'F24']
+    assert 'Delay resolution fixed at 0%' in (out / 'f10.svg').read_text()
+    assert review_figures(scenario_file, p5, out)['investment_ready'] is False
+
+
+@pytest.mark.parametrize('fixed_effect', [False, True])
+def test_fixed_cost_and_fixed_both_axes_use_only_stated_values(tmp_path, fixed_effect):
+    case = json.loads((ROOT / 'model-inputs/p11/cases/base.json').read_text())
+    case['iterations'] = 32
+    case['overrides']['strategy.liaison_service.annual_incremental_cost_aud'] = {
+        'family': 'fixed', 'params': {'value': 82000}, 'unit': 'AUD_per_year',
+        'evidence_status': 'illustrative_assumption', 'source_ref': 'P4-ILLUSTRATIVE',
+    }
+    if fixed_effect:
+        case['overrides']['strategy.liaison_service.delay_success_fraction'] = {
+            'family': 'fixed', 'params': {'value': .5}, 'unit': 'proportion',
+            'evidence_status': 'illustrative_assumption', 'source_ref': 'P4-ILLUSTRATIVE',
+        }
+    _, scenario = materialise(json.dumps(case).encode(), SCENARIO_FILE.read_bytes())
+    rows = break_even_grid(scenario)
+    assert {row['annual_cost_aud'] for row in rows} == {82000.0}
+    assert len(rows) == (1 if fixed_effect else 17)
+    if not fixed_effect:
+        assert min(row['net_resource_aud'] for row in rows) < 0 < max(row['net_resource_aud'] for row in rows)
+    scenario_file = tmp_path / 'scenario.json'
+    scenario_file.write_text(scenario.model_dump_json())
+    p5, out = tmp_path / 'p5', tmp_path / 'figures'
+    build_report(scenario, p5)
+    assert build_figures(scenario_file, p5, out)['investment_ready'] is False
+    assert review_figures(scenario_file, p5, out)['figures_checked'][1] == 'F10'
+    text = (out / 'f10.svg').read_text()
+    assert ('Both assumptions fixed' if fixed_effect else 'Annual service cost fixed') in text
+    if not fixed_effect:
+        assert 'breakeven-zero' in text
 
 
 def test_draw_order_must_match_the_seeded_model(tmp_path, scenario):

@@ -48,3 +48,11 @@ jobs:
         run: .venv/bin/python -m pytest -q
       - name: Exercise synthetic reports and closed admission gates
         run: .venv/bin/python tools/ci_smoke.py
+      - name: Create isolated Snakemake environment
+        run: |
+          python -m venv private/venv-p11
+          test "$(private/venv-p11/bin/python --version)" = "Python $(cat .python-version)"
+          private/venv-p11/bin/python -m pip install -r requirements-p11.txt -c requirements-p11.txt --build-constraint requirements-p11-build.txt '.[test,report,workflow]'
+          private/venv-p11/bin/python -m pip check
+      - name: Exercise Snakemake reruns and interrupted-run recovery
+        run: private/venv-p11/bin/python -m pytest -q tests/test_p11_workflow.py

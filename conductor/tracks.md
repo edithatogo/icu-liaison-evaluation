@@ -128,4 +128,4 @@ historical phase identifiers; use the full track directory in handoffs.
 
 - [~] **P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). Source-only M01–M30/D01–D13 contracts, T/F links, uncertainty, visual and claim-admission checks; no site/governance or real visual validation.
 
-- [ ] **P11 — Scenario workflows and versioned runs** ([index](tracks/P11-scenario-workflows/index.md), [spec](tracks/P11-scenario-workflows/spec.md), [plan](tracks/P11-scenario-workflows/plan.md)). Planned synthetic A/B and stress scenarios, input/model/output identities and a Snakemake pilot.
+- [~] **P11 — Scenario workflows and versioned runs** ([index](tracks/P11-scenario-workflows/index.md), [spec](tracks/P11-scenario-workflows/spec.md), [plan](tracks/P11-scenario-workflows/plan.md)). Synthetic A/B and stress scenarios, input/model/output identities and P9 figure integration; integrated verification remains in progress.

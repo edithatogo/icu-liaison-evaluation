@@ -1,0 +1,213 @@
+{
+  "baseline_raster_comparison": {
+    "F02": {
+      "new_png_sha256": "c2faf5d1ec00b417ad3bc01d11e68ac61ab0875b3f18b2b973b63f806010fabf",
+      "old_png_sha256": "c2faf5d1ec00b417ad3bc01d11e68ac61ab0875b3f18b2b973b63f806010fabf",
+      "same_pixels": true
+    },
+    "F10": {
+      "new_png_sha256": "d8f9ec4262d811c22c1ebbe95e0efcbb47c26c08564a535b8cb7e3d72d7ec8d9",
+      "old_png_sha256": "d8f9ec4262d811c22c1ebbe95e0efcbb47c26c08564a535b8cb7e3d72d7ec8d9",
+      "same_pixels": true
+    },
+    "F11": {
+      "new_png_sha256": "1f0c3359eb3e18bb70c596dae8ed10b43cbc6a25bfd2ba7ccbfbdfef4256ca48",
+      "old_png_sha256": "1f0c3359eb3e18bb70c596dae8ed10b43cbc6a25bfd2ba7ccbfbdfef4256ca48",
+      "same_pixels": true
+    },
+    "F15": {
+      "new_png_sha256": "a81ceac544d768d582ba8b3f4750f854862e18efad084a89f5347ab3ed3baf88",
+      "old_png_sha256": "a81ceac544d768d582ba8b3f4750f854862e18efad084a89f5347ab3ed3baf88",
+      "same_pixels": true
+    },
+    "F20": {
+      "new_png_sha256": "5e6d6c584fa1b6c17121f083a28283440188ec1c0a1d6957c6f209de891a0978",
+      "old_png_sha256": "5e6d6c584fa1b6c17121f083a28283440188ec1c0a1d6957c6f209de891a0978",
+      "same_pixels": true
+    },
+    "F24": {
+      "new_png_sha256": "7c3594f6f4526b84af33e57f53bd3c7a8f46975d6cffb0c39c0a5596bfd6c7f7",
+      "old_png_sha256": "7c3594f6f4526b84af33e57f53bd3c7a8f46975d6cffb0c39c0a5596bfd6c7f7",
+      "same_pixels": true
+    }
+  },
+  "clinical_safety_approved": false,
+  "comparison_sha256": "f3e99ef0d22b5f1cb3fd144b18a54481beae2328e470ae01e2dff2bc5823ec27",
+  "draws_per_scenario": 5000,
+  "fixed_no_effect_f10": "single stated delay resolution of zero; one-dimensional cost points visually inspected",
+  "focused_tests": "31 numerical, figure, case and output tests passed; additional reporting-contract tests brought focused count to 50",
+  "full_local_suite": {
+    "passed": 436,
+    "skip_reason": "Snakemake-specific tests passed in the separate P11 environment",
+    "skipped": 2
+  },
+  "hosted_ci_initial_failure": "PR run 44673532135 failed the renderer-version test because its temporary PYTHONPATH hid checkout source under a wheel installation",
+  "hosted_failure_reproduction_and_fix": "Confirmed installed-wheel import resolved project ROOT inside site-packages when checkout src was absent; preserved checkout src in the test subprocess",
+  "illustrative_cli": {
+    "output_sha256": "5443cff3023ddb3575e37b97bbba10eac958979e3a2df35b0d31de23e4cf1b38",
+    "seed": 20261117
+  },
+  "integrated_hosted_ci": "pending",
+  "investment_ready": false,
+  "p9_f20_geometry_receipt": "verification/p9-f20-geometry-2026-11-20.json",
+  "p9_figure_count": 36,
+  "p9_source_sha256": {
+    "src/icu_liaison/__init__.py": "f5cc5d8137732094bcec6ff0c7c481875bbca8b11d55f0fddc1af142975a0144",
+    "src/icu_liaison/adapters/__init__.py": "c042fcd8790cfb665ed11f1eb12f31284e1c1e7eec108a5c873b9a5fdf04adf2",
+    "src/icu_liaison/adapters/dapane.py": "2879a166eb972eca02f37dfde6efdea12a104c81fd9739b805342a45dae4f80e",
+    "src/icu_liaison/adapters/p4_dapane.py": "a09f443a42a38b66747f6b1ccd0fa231ee4144d1434c1cf9cefde539fa2f3d04",
+    "src/icu_liaison/adapters/voiage.py": "825ce273ca3120fa61b663779ea664d93eb95d4e21b9f38a01416e740d44186b",
+    "src/icu_liaison/endpoints.py": "841e4a858bdd2119995f1e6b408f5ef4d2f4d7f439bdc450f86bac6fe6e700a2",
+    "src/icu_liaison/local_data.py": "d3afb0db2ce9f0f8a231e641d8dd0e6aac77825507b9bf86a7bf70553f49a2d7",
+    "src/icu_liaison/model.py": "98142e3f5da09e5f6dfd6fba2e736154a02bcab3b309c3fd2da0731069ab5236",
+    "src/icu_liaison/p11_cases.py": "2adfbf774346c647b008270f84fc3cb549beb5f7e99566e8ae1b1158bbd0eddc",
+    "src/icu_liaison/p11_model.py": "6ebb51aa2e9ce6e46885bf714675ab1db549b741d81f39fb85906f75f72f9b9d",
+    "src/icu_liaison/p11_p9.py": "2bca1ffe7e63213b74e16f1e9ac6709b251e68166e0f9fc025cdcaa7267f684b",
+    "src/icu_liaison/p11_records.py": "de9cef8e9b416db94426d6f977d509f8996587ca47b1b194e62bec0a3efaba82",
+    "src/icu_liaison/p4_admission.py": "dc6c83046196e40d7635c396655f4a340e8e02beeba124db2cb0034e9d95c04d",
+    "src/icu_liaison/p4_model.py": "ce63accb416f4c40e02b87b3be086c52b1dd038f70e0374f2e8a7a1a75ffb63b",
+    "src/icu_liaison/p5_reporting.py": "52b8dc190f588f38c5049b312f085f05bbcda981afa887398c5cd00269b969a5",
+    "src/icu_liaison/p9_figure_data.py": "bf7e0f2eea50d9c7b0123ffc61f592f6c0f094e966864fc7a53c286ef6966399",
+    "src/icu_liaison/p9_figure_render.py": "93f315676c7386993f3969b9ae2bef3e327cc4ff0f95640c1f2fcf737866df89",
+    "src/icu_liaison/p9_figure_review.py": "8d1fd4955d1048a22aaef59dd8858dbaf499e1daa7eeecffbfc7428f25aabc0b",
+    "src/icu_liaison/p9_figures.py": "36acfd368f000aaea3b874e3075dd9fa056f8b180d211f676aa195c01a304922",
+    "src/icu_liaison/protocol.py": "22e57ddcfd9e959d68af4b02f9d1a9b905bef7a76f0b291c1bc196bd931fd05e",
+    "src/icu_liaison/provider_contracts.py": "8cabb0980bc7e831263dfcd424fc9959ae1158f9809487c69fcb4aa5b6a041e3",
+    "src/icu_liaison/public_evidence.py": "8ee75c3eef21cb2444e497a02b4fbedf3599972d09f19ad65de9b2cb6e6bf4f6",
+    "src/icu_liaison/qualification_independent.py": "5ea81ae60906d3e33e0ac6fa7a40eea93bff5f1ac84e17ffb6cd35205d3ce8c6",
+    "src/icu_liaison/schemas.py": "8764592e59c4886e2fdb261932d5ca618755e1ad08d7ac5098583a616f56f75d",
+    "tools/evaluate_safety_decision.py": "cf668b2abe9057bf621697ab8bcafc1dc50ab1e1040b33166395b96f27949b8f",
+    "tools/p10_falsification.py": "1851ea029969db08d0d60ccc173f9746ab85bd05b41ab31adbeecaff34972ac2"
+  },
+  "paired_comparison_rows": 72,
+  "previous_p9_visual_receipt": "verification/p9-synthetic-figures-2026-11-20.json",
+  "provider_execution": {
+    "dapane": "not_executed",
+    "voiage": "not_executed"
+  },
+  "python": "3.15.2",
+  "scenarios": [
+    {
+      "case_id": "base",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "63387954e5195d3db25c951b2b6cabd13c18c3f26127ad5200e02895a9400f22",
+      "model_run_id": "5368ddbc171468fac3d5ef7716caabf11611d71ad0acdcdb82bb0a044002a0a4",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "946897c28367642a5ec547c176675b52f4a888f0a03e93567d220bbaa71cfc42",
+      "p9_revision": "c4ccc4c4dd6ed1ae7d2a9b698bebcb9ac67da808cc10f41bb0507ca764517900",
+      "seed": 20261118
+    },
+    {
+      "case_id": "no_effect",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "2beeb8f98611251b3fc50b573d50fe3ce6246b810ebde70e49dfbe97102b9736",
+      "model_run_id": "67e17c2ae5abfdf778ec4081b92acddc0c00ce89f7fdf721ce0594f6a2323705",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "db59d79a1875f1555dc09960b7430f4f0b7bdb6eff7920763171c3219e38bb93",
+      "p9_revision": "b16ac5abd7c5e2490a814d0532b3bfc4dda0ec31366bfa3da0705cafc5b9522a",
+      "seed": 20261118
+    },
+    {
+      "case_id": "harmful_returns",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "5f89348cd73f7b5afd9ba87a937ae586cb45c257712623872d410a7e75a0fc51",
+      "model_run_id": "fc8ce7a40ea437dc0112c68400e57b624c3220743ad64ac5bdd3228dff8ff977",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "0c0df0308d6aed0f2409ece1e359137c1330fe9aba738b720e5b4246a2f90884",
+      "p9_revision": "680463b85bdb20d5b5281b1297258a1611197e6e7f919cf821695592a2ee1ff2",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_addressable_delay",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "5fa34edbac86a3070469bbb1af012dee7c25de8f68a6b7ff574e09c86bf67fc8",
+      "model_run_id": "8efdb4a4372710b40b0ed10ac009339cfc7e4fec41856c61224da9adf54b34a2",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "e06c948367194fd17ed12e40d2e0cc2690aea30dd272a9118df5117326bb77b8",
+      "p9_revision": "465d84b0f25de682ea26378969fd8533cd6efe478e4898d3f62404c1fca47852",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_usable_capacity",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "d62e967fdbb8ffe8b0250b694696296acd39e4c7128894b1ef4cfe7c502b0a7f",
+      "model_run_id": "f178f5eabfcf5f269d69948bc024b5aa102dccefc4abd9fec10c85a71061d628",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "e538c6e861a8ccad250fdd2dac6e29c2e5ce59bcdc860d6942891468d6b3e1ee",
+      "p9_revision": "5cf18eaf3a99b0cd84f53d50e79cd972a741bedd439bb3e7fbca37c73b79f8f6",
+      "seed": 20261118
+    },
+    {
+      "case_id": "zero_cash_realisability",
+      "draws": 5000,
+      "figures": [
+        "F02",
+        "F10",
+        "F11",
+        "F15",
+        "F20",
+        "F24"
+      ],
+      "model_record_sha256": "234c6245083c19c1266b0580484f88d52280e7b65dbb04e47e5dd5a402651c06",
+      "model_run_id": "e1dcb3c6d5ffe884142548903c7c3b4725e42be935e62e7c30905b72ae6b9e95",
+      "p5_draws_reconciled": 5000,
+      "p9_manifest_sha256": "99fd6ec4b158f6f34851728b1510575d9594ff035ddcb26a0f0ebd349c075fb7",
+      "p9_revision": "e6df469a3d545ab08184c68a9477c134058d4ab9cc3cf87e8128513f7ac8e0ce",
+      "seed": 20261118
+    }
+  ],
+  "scope": "synthetic only; six P9 figures for each of six scenario runs",
+  "seed": 20261118,
+  "snakemake": "9.27.2",
+  "source_state": "working tree included the in-progress P9/P11 integration at execution; source digests above identify executed bytes",
+  "summary_id": "476f16bffc4185a7932d14881f4367108d3c5c99afba297774726dd73b037941",
+  "synthetic_smoke": "passed; native providers not executed",
+  "unchanged_full_rerun": "nothing to be done",
+  "wheel_installed_workflow_tests": {
+    "command": "PYTHONPATH=src private/venv-p11-wheel/bin/python -m pytest -q tests/test_p11_workflow.py",
+    "elapsed_seconds": 132.74,
+    "passed": 2,
+    "python": "3.15.2"
+  },
+  "workflow_recovery_tests": "2 passed: unchanged rerun; one-case change; style and renderer-version changes; invalid case; interrupted run; immutable outputs retained"
+}
