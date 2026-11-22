@@ -42,7 +42,8 @@ jobs:
           # Candidate values can appear in scanner output, so publish only its exit status.
           status=0
           "$RUNNER_TEMP/trufflehog" git "file://$GITHUB_WORKSPACE" --branch HEAD --no-update \
-            --no-verification --results=unverified,unknown,verified --fail >/dev/null 2>&1 || status=$?
+            --no-verification --results=unverified,unknown,verified --fail --fail-on-scan-errors \
+            >/dev/null 2>&1 || status=$?
           case "$status" in
             0) echo 'TruffleHog completed with no findings.' ;;
             183) echo '::error::TruffleHog identified a potential credential. Review locally.' ;;
