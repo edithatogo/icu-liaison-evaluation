@@ -1,0 +1,51 @@
+name: Privacy and secrets
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Gitleaks, Presidio and TruffleHog
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out complete Git history
+        id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          submodules: false
+      - name: Scan with Gitleaks and Presidio
+        uses: edithatogo/repository-standards/.github/actions/privacy-secrets@5b6741ac12f3720834ff8605eeb603fc15f7e683
+        with:
+          profile: repository
+      - name: Scan with TruffleHog
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/trufflehog_3.100.0_linux_amd64.tar.gz"
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+            --output "$archive" \
+            https://github.com/trufflesecurity/trufflehog/releases/download/v3.100.0/trufflehog_3.100.0_linux_amd64.tar.gz
+          printf '%s  %s\n' b2d85eba59865e98f45c9fc9f77d2c6d62df529fdd5755af121304ea5a7cecbb "$archive" |
+            sha256sum --check --status
+          tar -xzf "$archive" -C "$RUNNER_TEMP" trufflehog
+          "$RUNNER_TEMP/trufflehog" --version
+
+          # Candidate values can appear in scanner output, so publish only its exit status.
+          status=0
+          "$RUNNER_TEMP/trufflehog" git "file://$GITHUB_WORKSPACE" --branch HEAD --no-update \
+            --no-verification --results=unverified,unknown,verified --fail >/dev/null 2>&1 || status=$?
+          case "$status" in
+            0) echo 'TruffleHog completed with no findings.' ;;
+            183) echo '::error::TruffleHog identified a potential credential. Review locally.' ;;
+            *) echo "::error::TruffleHog failed to scan (exit $status)." ;;
+          esac
+          exit "$status"
