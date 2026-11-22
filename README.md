@@ -95,6 +95,13 @@ review those changes before committing. Hosted CI also runs the three checks
 and uses the pinned StepSecurity runner action in egress-audit mode; Dependabot
 monitors GitHub Actions versions.
 
+[Privacy and secrets](.github/workflows/privacy-scan.yml) runs Gitleaks,
+Presidio and TruffleHog in GitHub Actions on pull requests, pushes to main and
+manual runs. The shared Gitleaks and Presidio checks report redacted results.
+TruffleHog scans reachable HEAD history without online credential verification
+and reports only the outcome. Presidio covers selected Git text. Submodules,
+binary documents and runtime data require separate review.
+
 The P1 adapter now calls Voiage for financial-only EVPI, with an independent
 native two-state reference and a strict source lock. Install **Voiage v3.1**
 as an optional dependency in the separate P1 provider environment.
