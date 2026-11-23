@@ -43,8 +43,10 @@
 - [x] Verify the current Conductor pin in Antigravity. A fresh workspace
   session exposed all six commands and the registry links all 13 plans.
   [P0 handoff](handoff.md)
-- [ ] Check the live interactive command and permission behaviour. The retired
-  Gemini extension check remains in the dated audit.
+- [x] Run the live interactive `/conductor-status` check in Antigravity.
+  The isolated public workspace prompted for local trust. Plan mode reported
+  the registry and left all tracked files unchanged.
+  [Interactive check](handoff.md#interactive-status-check-on-24-november-2026)
 - [x] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
   consumers with independent numerical oracles and dependency lockfiles in an
   isolated Python 3.15.2 scratch environment

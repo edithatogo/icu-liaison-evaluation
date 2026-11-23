@@ -13,13 +13,13 @@ until content is faithfully reconciled and a replacement is verified.
   enabled, hosted GitHub Actions CI passed on `main` (`1c7f640`, run
   `44444785989`), local CI/CD + `gitleaks` Git hooks (`pre-commit`,
   `pre-merge-commit`, `pre-push`) are active, the pinned Antigravity Conductor
-  plugin exposes six workspace commands, isolated Python 3.15.2 native
+  plugin exposes six workspace commands and passed an interactive read-only
+  status check in Antigravity, isolated Python 3.15.2 native
   Dapane `0.1.0` / Voiage `3.1.0` numerical oracles passed, and the 19-file
   PR #215 comparison is recorded. P0.5 completed the CPython 3.15.2 migration
   with 342 tests passing in hosted CI and locally with Dapane installed.
   [Migration receipt](../verification/python-315-migration-2026-11-19.json)
-  Independent Voiage artifact adjudication,
-  live interactive Conductor checks, CHHHS data, and independent
+  Independent Voiage artifact adjudication, CHHHS data, and independent
   sign-off to retire CareOps Sim PR #215 remain pending.
 - [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
