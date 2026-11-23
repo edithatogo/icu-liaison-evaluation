@@ -50,8 +50,8 @@ qualification, CHHHS data/calibration and clinical/Finance/cultural-governance
 reviews remain separate obligations. No clinical effect, actual funding, cash
 saving or investment readiness is established by the initial source import.
 
-The original CareOps Sim PR #215 is preserved. Its closure requires a separate
-source comparison and accepted migration record.
+The exploratory CareOps Sim PR #215 is closed and its source revision is
+preserved. See the [migration comparison and disposition](pr215-migration-comparison.md#source-pr-disposition).
 
 ## Initial push outcome
 
@@ -73,8 +73,8 @@ limit availability. To enforce CI locally without altering hosted gates, track
 versioned `.githooks/` (`pre-commit`, `pre-merge-commit`, `pre-push`), and
 `tools/audit_conductor_extension.py`. Local receipts are recorded in
 `verification/p0-local-ci-2026-11-19.json` and
-`verification/p0-gemini-conductor-audit-2026-11-19.json`; hosted CI, native
-providers, and CareOps Sim PR #215 retirement remain separate open gates.
+`verification/p0-gemini-conductor-audit-2026-11-19.json`. Hosted CI, native
+providers and CareOps Sim PR #215 retirement were still open at that checkpoint.
 
 ## Public visibility, hosted CI, native oracles, and PR #215 comparison (2026-11-19)
 
@@ -88,5 +88,6 @@ and PyPI Voiage `3.1.0` numerical oracles passed in
 `verification/p0-native-providers-py315-2026-11-19.json` (lockfile
 `verification/p0-py315-native-lock-2026-11-19.txt`), and the 19-file read-only
 comparison with CareOps Sim PR #215 is documented in `docs/pr215-migration-comparison.md`
-(`verification/p0-pr215-migration-comparison-2026-11-19.json`). Independent
-wheel-provenance adjudication and PR #215 retirement remain separate open gates.
+(`verification/p0-pr215-migration-comparison-2026-11-19.json`).
+The [disposition](pr215-migration-comparison.md#source-pr-disposition) links
+the later closure to the tested standalone migration.

@@ -11,10 +11,11 @@ completed. The repository is now public with GitHub Secret Scanning and Push
 Protection enabled. The Conductor submodule is pinned to
 `6e8f9a860bcdd6a2c423473c12e745200688c633`. Antigravity 1.5.14 loaded
 its six skills and project rule, and the track registry uses its current format.
+Antigravity 1.5.15 passed the interactive read-only status check.
 The [import record](../../../docs/repository-import.md) and
 [PR #215 comparison](../../../docs/pr215-migration-comparison.md) track
-reconciliation and checks. Independent wheel-provenance adjudication,
-original PR #215 closure and CHHHS calibration remain pending.
+reconciliation and closure. Independent provider and migration acceptance
+and CHHHS calibration remain pending.
 
 P0.5 completed the CPython 3.15.2 migration for local development, isolated
 builds, Git hooks and hosted synthetic CI. The

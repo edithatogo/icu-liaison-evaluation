@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-24",
+  "scope": "synthetic_workflow_and_base_figure_rasters",
+  "summary_id": "fcd07368543d479045efecfe9b291eb485c373547a1a53ce9bd99f3b955f3bf1",
+  "provenance_output_sha256": "c67a705f8a0cc111db8d1101e2527cb39272389399b8926a8aae2779a4f12931",
+  "scenarios": 6,
+  "paired_rows": 72,
+  "verified_figures": 84,
+  "table_ids": [
+    "T01",
+    "T02",
+    "T03",
+    "T04"
+  ],
+  "unchanged_rerun_no_op": true,
+  "base_figure_review": {
+    "capture_manifest_sha256": "05bed10a15fb9af17cc484b9558e53f214bdc0f63b9b54cdc76e210aae16fc0e",
+    "bundle_manifest_sha256": "8ad13a96d4dab5fb532b4c15da0a841204e5f1b308774eeaf15d6bbeb87ba7b6",
+    "renderer": "rsvg-convert version 2.63.4",
+    "review_scope": "local_review_of_chart_rasters",
+    "profiles": [
+      "desktop",
+      "mobile",
+      "print_a4",
+      "tablet"
+    ],
+    "count": 56,
+    "plot_bytes_unchanged_by_gallery_link_change": true,
+    "mobile_detail": "each gallery image links to its labelled full-size SVG",
+    "print": "A4 portrait greyscale captures checked"
+  },
+  "independent_visual_acceptance": "pending",
+  "clinical_safety_approved": false,
+  "investment_ready": false
+}

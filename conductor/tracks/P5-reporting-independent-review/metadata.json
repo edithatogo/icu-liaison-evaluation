@@ -4,16 +4,19 @@
   "title": "ICU liaison report packaging, audit and decision analysis transfer",
   "status": "in_progress",
   "created_at": "2026-11-18",
+  "updated_at": "2026-11-24",
   "implementation_started": true,
   "accepted_phases": [
     "P5.1-reporting",
     "P5.2-export-contracts",
     "P5.3-local-reproducibility",
-    "P5.3-independent-semantic-report-reader"
+    "P5.3-independent-semantic-report-reader",
+    "P5.2-platform-scoped-dapane",
+    "P5.4-hosted-synthetic-checks"
   ],
   "blocked_phases": [
-    "P5.2-installed-provider",
-    "P5.4-hosted-qualification",
+    "P5.2-voiage-and-broader-dapane-admission",
+    "P5.4-independent-code-and-supply-chain-release-review",
     "P5.4-independent-clinical-economic-review"
   ],
   "dependencies": [

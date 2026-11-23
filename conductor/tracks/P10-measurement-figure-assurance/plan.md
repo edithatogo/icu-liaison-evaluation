@@ -12,11 +12,16 @@
 
 ## Evidence-dependent implementation tasks (unaccepted)
 - [ ] P10.09 Implement independent verifier for CHHHS custodian and external provider signatures, including revocation/expiry, with no public signing material.
-- [~] P10.10 Generate output-level provenance DAG and recompute actual source/model/renderer/SVG digests.
-- [~] P10.11 Qualify visual regressions across mobile/tablet/desktop/A4: actual screenshots, contrast and independent data-mark audits.
+- [x] P10.10 Verify the directed lineage of every synthetic P11 figure, including
+  its frozen sources, metric and denominator IDs, table, SVG and mark review.
+- [~] P10.11 Review the four display profiles for generated synthetic figures.
+  The baseline raster inspection covers contrast, text and clipping.
+  [Synthetic review receipt](../../../verification/p10-p11-contract-review-2026-11-24.json)
+  records 56 checked captures. Independent visual acceptance remains open.
 - [~] P10.12 Implement factorial sensitivity decomposition with null/harm clinical effects and structural alternatives, without causal claims.
 - [ ] P10.13 Reconcile P7 governed data with M-IDs and register external clinical/Finance review receipts.
-- [ ] P10.14 Implement approval validity, protocol freeze and staleness notifications before site reports.
+- [~] P10.14 Validate approval validity and protocol state. Connect live
+  staleness notifications after trusted authority and revocation feeds are approved.
 
 **Lower-capability task rule:** Each task owns a non-overlapping file set, has a failing negative fixture before behaviour changes, one deterministic acceptance oracle, explicit prohibited P4/P5/provider-core paths, source manifest update, exact-head CI and a reviewer handoff. One integrator merges.
 

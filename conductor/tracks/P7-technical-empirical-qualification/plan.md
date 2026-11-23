@@ -1,13 +1,22 @@
 # P7 plan
 
-- [x] P7.1 Source and denominator reconciliation: ANZICS 2023/24 publisher text/page images; 2024/25 remains unverified.
+- [x] P7.1 Review the ANZICS 2023/24 publisher text and page images. P7.6 covers the 2024/25 edition.
 - [x] P7.2 Independent P4 draw accounting and P3 aggregate QA/unknowns; focused tests.
 - [x] P7.3 Typed CHHHS 11-dataset request pack and clinical/causal validation protocol; no observed data imported.
-- [ ] P7.4 Run qualified Kairos native consumer against pinned source and reviewed Cargo.lock; currently missing Rust toolchain and lock.
+- [x] P7.4 Run the pinned Kairos consumer with a reviewed Cargo.lock and check
+  byte-identical replay against the one-bed oracle. [P6 evidence](../../../docs/p6-native-qualification.md)
+- [ ] Independently attest the P7.4 build artifact and runner.
 - [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64 artifacts and native pricing receipts have scoped independent approval. Broader Dapane provider qualification and Voiage admission remain open.
-- [ ] P7.6 Authenticate 2024/25 ANZICS publisher PDF bytes, exact source hash and pages.
+- [x] P7.6 Retrieve the 2024/25 PDF directly from ANZICS and check the six
+  benchmark values and their page locators. [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
+- [ ] Independently review the 2024/25 source for admission and intended use.
 - [ ] P7.7 Receive authorised CHHHS activity, capacity, staffing and costing extracts; calibrate and validate prospectively with clinical/Finance/equity governance.
-- [ ] P7.8 Supply the selected dedicated GitHub repository, transplant sources, run hosted CI, independent review, and close exploratory careops-sim PR #215 after reconciliation.
+- [x] P7.8 Integrate the portable source into the dedicated repository and
+  verify the hosted synthetic and privacy workflows. [Import record](../../../docs/repository-import.md)
+- [x] Verify the disposition of CareOps Sim PR #215. GitHub records it as
+  closed, with the exploratory head preserved.
+  [Migration comparison](../../../docs/pr215-migration-comparison.md)
+- [ ] Independently accept the migration evidence for release.
 
 No missing item may be checked merely because synthetic source tests pass.
 

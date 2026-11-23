@@ -4,20 +4,22 @@
   "title": "MCHS annual ABF shadow and nursing workforce cost interoperability",
   "status": "in_progress",
   "created_at": "2026-11-18",
-  "updated_at": "2026-11-18",
+  "updated_at": "2026-11-24",
   "implementation_started": true,
   "accepted_phases": [
     "P8.0-source-reconciliation",
     "P8.1-contract-and-negative-controls",
     "P8.2-synthetic-annual-consumer-source-only",
     "P8.3-synthetic-workforce-Dapane-transport-source-only",
-    "P8.4-synthetic-cross-ledger-composition-source-only"
+    "P8.4-synthetic-cross-ledger-composition-source-only",
+    "P8.4.1a-scoped-native-fictional-valuation",
+    "P8.5.0-hosted-source-checks"
   ],
   "blocked_phases": [
-    "P8.2-official-parity-and-installed-MCHS",
+    "P8.2-full-official-annual-calculator-parity",
     "P8.3-QLD-nursing-classification-conditions-and-costing",
-    "P8.4-installed-Dapane-Voiage-and-P4-prior-reconciliation",
-    "P8.5-installed-clinical-finance-hosted-acceptance"
+    "P8.4-admitted-valuation-Voiage-and-P4-prior-reconciliation",
+    "P8.5-independent-site-clinical-and-finance-acceptance"
   ],
   "dependency_tracks": [
     "P0-portable-consolidation",
@@ -31,7 +33,7 @@
   "clinical_validation": false,
   "finance_validation": false,
   "data_class": "synthetic_and_public_source_metadata",
-  "owner": "dedicated_evaluation_project_pending_repository",
+  "owner": "icu-liaison-evaluation",
   "provider_owner_changes_committed": false,
   "evidence": {
     "source_references": "model-inputs/p8/provider-capabilities.json",
@@ -53,6 +55,7 @@
       "tests/test_p8_composition.py",
       "tests/test_p8_composition_cli.py"
     ],
-    "p8_composition_schema": "model-inputs/p8/p8-composition.schema.json"
+    "p8_composition_schema": "model-inputs/p8/p8-composition.schema.json",
+    "native_synthetic_valuation": "verification/p8-native-synthetic-valuation-2026-11-24.json"
   }
 }

@@ -1,5 +1,6 @@
 """End-to-end Snakemake rerun and recovery checks for synthetic scenarios."""
 import csv
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -8,6 +9,7 @@ import subprocess
 import sys
 
 import pytest
+from icu_liaison.p11_verify import verify_output
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAKEMAKE = Path(sys.executable).parent / 'snakemake'
@@ -77,6 +79,17 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
         actual = list(csv.DictReader(stream))
     assert {row['case_id'] for row in actual} == set(names)
     assert {row['reference_strategy'] for row in actual} == {'current_care'}
+    lineage = verify_output(output, include_provenance=True)['provenance']
+    assert lineage['scope'] == 'synthetic_computational_lineage'
+    assert lineage['edges'][-2:] == [['table', 'figure'], ['figure', 'review']]
+    assert [case['case_id'] for case in lineage['scenarios']] == names
+    for case in lineage['scenarios']:
+        assert len(case['figures']) == 14
+        for figure in case['figures']:
+            assert figure['metric_ids'] and figure['denominator_ids']
+            for role in ('table', 'figure'):
+                link = figure[role]
+                assert hashlib.sha256((output / link['path']).read_bytes()).hexdigest() == link['sha256']
     attempts_before = sorted((output / 'attempts').rglob('*.json'))
 
     no_op = invoke(tmp_path, output, cases, style)

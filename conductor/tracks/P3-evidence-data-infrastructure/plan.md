@@ -3,7 +3,10 @@
 ## P3.1 — Public benchmarks and provenance
 - [x] Record versioned ANZICS values, page, period, denominators and source-specific verification status without treating historical transcription as a newly reverified report.
 - [x] Implement metadata/source-register integrity checks, incompatible denominators and no public 72-hour unplanned-return assumption.
-- [ ] Admit actual publisher document digest with licensing/reviewer evidence; verify historical 2024/25 20.4% rate against independently accessible report bytes.
+- [x] Check the 2024/25 benchmark against the PDF served by ANZICS and record
+  its document digest and page. [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
+- [ ] Independently admit the report for the intended use with licensing and
+  reviewer evidence.
 
 ## P3.2 — Local source profiles and safe loading
 - [x] Create canonical CSV and Pydantic-JSON-Schema contracts with editable source column mapping, extraction freshness and SHA-256-pinned feed manifests.
@@ -19,6 +22,11 @@
 ## P3.4 — Reproducibility and handoff
 - [x] Write failing negative tests before implementation and test synthetic output, provenance, flags, privacy and source-schema publication.
 - [x] Package the portable consumer and append-only Conductor source/migration receipt without overwriting earlier P0/P1/P2 evidence.
-- [ ] Run installed native Dapane/Voiage and repository-hosted CI in the future dedicated repo; preserve unverified gates.
+- [x] Pass the hosted source and synthetic admission checks in the dedicated
+  repository. [Hosted record](../../../docs/repository-import.md)
+- [x] Record the native Dapane approval for the exact P1 artifacts and their
+  tested environments. [P1 platform evidence](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
+- [ ] Obtain independent Voiage admission and broader Dapane release review
+  through P1 and P7.
 
 This source handoff does not authorise reading real CHHHS data or label any clinical or financial result empirically validated.

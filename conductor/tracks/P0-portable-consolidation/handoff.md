@@ -130,3 +130,11 @@ readback of the installed Antigravity Conductor plugin and validation of the
 pinned workspace files. Antigravity 1.5.14 loaded all six skills and the project
 rule from `6e8f9a8`, and its installed files matched the Git checkout. All 13
 track plans resolve from the registry in the plugin's current format.
+
+## Interactive status check on 24 November 2026
+
+Antigravity CLI 1.5.15 prompted for trust in a disposable workspace archived
+from `27b53f82140a306ff0534935bd4ce1b8d3ea8dcb`. The Conductor plugin was
+enabled. The interactive `/conductor-status` request in sandboxed Plan mode
+reported the expected 13 registry entries, including P11 complete. Comparing
+all 429 archived files to their Git bytes after the session found an exact match.
