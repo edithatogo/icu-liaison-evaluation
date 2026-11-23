@@ -54,12 +54,11 @@
   [lockfile](../../../verification/p0-py315-native-lock-2026-11-19.txt)). Independent
   wheel-provenance adjudication (`providers.lock.json` `binary_sha256`) remains
   open in P1.4/P7. The corrected P5 regression rerun is recorded in P0.5.
-- [~] Open and complete a tested PR in the dedicated repository; independently
-  verify acceptance and only then retire CareOps Sim PR #215. Exact 19-file
-  comparison and central accounting parity verification are recorded in
+- [x] Complete the tested migration and verify that CareOps Sim PR #215 is closed.
+  The exact 19-file comparison, central accounting parity and closure are recorded in
   [PR #215 migration comparison](../../../docs/pr215-migration-comparison.md)
-  ([receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json));
-  PR #215 remains open pending independent sign-off.
+  and the [comparison receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json).
+- [ ] Independently accept the migration evidence for release.
 
 P0.4 pending does not block portable source tests. Completion of P0 cannot
 be claimed until target-repo and provider acceptance are obtained.

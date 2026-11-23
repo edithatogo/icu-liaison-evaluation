@@ -33,8 +33,8 @@
   build attestation remains open.
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
 - [~] 5. The portable source is in the selected repository with passing
-  hosted checks. Independent migration acceptance and PR #215 disposition
-  remain open.
+  hosted checks, and CareOps Sim PR #215 is closed. Independent migration
+  acceptance remains open.
 
 **P7.1–P7.3 passing means only synthetic implementation progress.** It cannot
 waive P7.4 or any other repository's validation and release gate.

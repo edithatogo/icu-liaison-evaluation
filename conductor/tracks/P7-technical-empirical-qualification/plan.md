@@ -13,7 +13,10 @@
 - [ ] P7.7 Receive authorised CHHHS activity, capacity, staffing and costing extracts; calibrate and validate prospectively with clinical/Finance/equity governance.
 - [x] P7.8 Integrate the portable source into the dedicated repository and
   verify the hosted synthetic and privacy workflows. [Import record](../../../docs/repository-import.md)
-- [ ] Independently accept the migration and disposition of CareOps Sim PR #215.
+- [x] Verify the disposition of CareOps Sim PR #215. GitHub records it as
+  closed, with the exploratory head preserved.
+  [Migration comparison](../../../docs/pr215-migration-comparison.md)
+- [ ] Independently accept the migration evidence for release.
 
 No missing item may be checked merely because synthetic source tests pass.
 

@@ -1,8 +1,8 @@
 # Track registry — independent ICU liaison economic evaluation
 
-The previous exploratory `careops-sim` R78–R81 tracks remain historical source
-context, not execution authority in this independent project. Retain PR #215
-until content is faithfully reconciled and a replacement is verified.
+The exploratory `careops-sim` R78–R81 tracks are historical source context.
+PR #215 was closed after the standalone migration. The exact exploratory head
+is retained in the [migration comparison](../docs/pr215-migration-comparison.md).
 
 - [~] **Track: P0 — Portable consolidation and Conductor handoff**
   ([index](tracks/P0-portable-consolidation/index.md),
@@ -19,8 +19,8 @@ until content is faithfully reconciled and a replacement is verified.
   PR #215 comparison is recorded. P0.5 completed the CPython 3.15.2 migration
   with 342 tests passing in hosted CI and locally with Dapane installed.
   [Migration receipt](../verification/python-315-migration-2026-11-19.json)
-  Independent Voiage artifact adjudication, CHHHS data, and independent
-  sign-off to retire CareOps Sim PR #215 remain pending.
+  Independent Voiage artifact adjudication, CHHHS data and independent
+  migration acceptance remain pending.
 - [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
    [spec](tracks/P1-provider-reuse/spec.md),
