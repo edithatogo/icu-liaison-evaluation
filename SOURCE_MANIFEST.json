@@ -9,7 +9,7 @@
     ".githooks/pre-push": "b6b3034bf42ba90758b35c3add8f50eb76e9c9709af9081752dee63412e18ce3",
     ".github/dependabot.yml": "eada67e1b7f73d16a4c240ede6193c4852a2b0887e678a23dc7a3462810502e7",
     ".github/workflows/ci.yml": "e5f668b8841a07247507a0bfd2ee70689ff25ec9cd23ec9591921cf375159347",
-    ".github/workflows/privacy-scan.yml": "3fdc3daa72dad4934fbe0ddfb4f5c63b6d93440a3c359df3573741e83e619742",
+    ".github/workflows/privacy-scan.yml": "8f73c4a88c68e804583fb08104f6a5a75e0cf7dcbe368aa5af408c807c7afe20",
     ".gitignore": "4430c9ec51e036f30670d1c392f06bd231487ff33671a9670d4786f8f310d169",
     ".gitmodules": "77a9ba6319e67c8923f1e848f965ffbd81ef6210680335f0bbc695f48a21c799",
     ".pre-commit-config.yaml": "7fce7d4f67441132d100c00fadcc73a898fb64a9bccced1ef509e07a1a921c8a",
