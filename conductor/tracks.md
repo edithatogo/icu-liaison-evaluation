@@ -107,9 +107,12 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   Source-pinned provider capability register, funding/workforce/resource
   separation contract, ADR, negative tests, bounded synthetic MCHS paired-episode
   and workforce-to-Dapane quotation consumers are **source-level complete**.
-  Official MCHS annual parity, nursing pay/roster qualification,
-  native Dapane/Voiage, actual hospital revenue and CHHHS clinical/Finance
-  approval are pending. Existing provider track ownership is retained.
+  The reviewed macOS Dapane build passed the fictional economic and cash
+  valuation and rejected a duplicated staffing component.
+  [P8 valuation receipt](../verification/p8-native-synthetic-valuation-2026-11-24.json)
+  Official MCHS annual parity, nursing pay/roster qualification, admitted
+  Dapane/Voiage valuation and decision analysis, actual hospital revenue and
+  CHHHS clinical/Finance approval are pending.
 
 - [~] **Track: P7 companion: placeholder-assisted progress and evidence closure**
   ([index](tracks/P7-placeholder-assisted-qualification/index.md),

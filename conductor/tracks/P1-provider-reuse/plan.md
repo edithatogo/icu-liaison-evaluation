@@ -30,19 +30,18 @@
   (`verification/p0-native-providers-py315-2026-11-19.json`,
   `verification/p0-py315-native-lock-2026-11-19.txt`,
   `verification/p1-native-qualification-2026-11-19.json`).
-- [~] Run `private/venv-p1/bin/python tools/qualify_providers.py --provider all`
-  in the reviewed provider environment,
-  record installed numerical reference outputs, compatibility, vendor tests,
-  security/licence results and exact source attestations:
-  macOS arm64 oracles (`NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING`),
-  GitHub PGP + PyPI PEP 740 attestations, Dapane `dapane-core` (54 passed) /
-  Python wheel (196 passed), Voiage core wheel tests (13 passed), and Python
-  3.15.2 `pip-audit` (0 CVEs) all passed (`verification/p1-native-qualification-2026-11-19.json`);
-  kept `[~]` because `dapane-cli` had 1 macOS APFS non-UTF-8 filename test
-  failure, `cargo deny` flagged unmaintained `RUSTSEC-2026-0543` (`chrono 0.4.45`),
-  `requirements-ci.txt` flagged `setuptools==82.0.1` (`PYSEC-2026-3447`, `GHSA-xmj3-9gf7-h52w`),
-  Linux/Windows qualification is pending, and independent P7 adjudication of
-  `providers.lock.json` `binary_sha256` remains open.
+- [x] Run the installed numerical oracles and record compatibility, vendor
+  tests, source attestations, security and licence findings on macOS arm64.
+  [Dated native receipt](../../../verification/p1-native-qualification-2026-11-19.json)
+- [x] Independently accept the exact Dapane wheels, loaded extensions and
+  pricing receipts for the tested macOS arm64, Ubuntu x86-64 and Windows
+  Server x86-64 hosts. The Windows rebuild includes the upstream fixture fix.
+  [Platform decisions](#linux-and-windows-x86-64-qualification) ·
+  [Provider lock](../../../providers.lock.json)
+- [ ] Independently admit the Voiage artifact and its source provenance.
+- [ ] Complete broader Dapane release review, including the recorded APFS
+  filename failure and `RUSTSEC-2026-0543` disposition. P0.5 records the
+  completed setuptools remediation for the evaluation repository.
 - [x] Run unchanged full tests using that runtime, compare cross-environment
   reproducibility/precision, record remaining qualification findings:
   `icu_liaison.cli` produced byte-identical JSON across Python `3.13.18` vs
@@ -222,17 +221,12 @@ Windows lock entry now records this source revision and the three signed
 digests. [Provider lock](../../../providers.lock.json) ·
 [P7.5 Windows decision](../P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 
-## P1.5 — Dedicated repository integration (in progress)
-- [~] Import P0/P1 into the user-provided repository, reconcile its
-  Conductor track registry, run hosted exact-head checks and independent review:
-  imported into `edithatogo/icu-liaison-evaluation`, Conductor reconciled, green
-  hosted CI verified on `main` (`44444785989`) and PRs; independent external
-  review remains open.
-- [~] Retire exploratory CareOps Sim PR #215 only after equivalent source,
-  evidence and test outcomes have been verified in the new repository:
-  19-file comparison completed (`docs/pr215-migration-comparison.md`); closing
-  PR #215 runs immediately after this P1 PR passes hosted CI and merges.
-
-Source-only completion is not native acceptance and is not a clinical or
-investment recommendation. Keep P1.4 and P1.5 unaccepted until their actual
-receipts exist.
+## P1.5 — Dedicated repository integration and release review
+- [x] Integrate P0/P1 into `edithatogo/icu-liaison-evaluation`, reconcile the
+  registry and pass hosted source checks on `main`.
+  [Hosted record](../../../docs/repository-import.md)
+- [x] Verify the closure of CareOps Sim PR #215 against the exact exploratory
+  head, the 19-file comparison and the tested standalone replacement.
+  [Migration disposition](../../../docs/pr215-migration-comparison.md#source-pr-disposition)
+- [ ] Obtain the independent release decision on the migration evidence
+  recorded in P0 and P7.

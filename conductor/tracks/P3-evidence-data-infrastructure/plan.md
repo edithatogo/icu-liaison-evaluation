@@ -22,6 +22,11 @@
 ## P3.4 — Reproducibility and handoff
 - [x] Write failing negative tests before implementation and test synthetic output, provenance, flags, privacy and source-schema publication.
 - [x] Package the portable consumer and append-only Conductor source/migration receipt without overwriting earlier P0/P1/P2 evidence.
-- [ ] Run installed native Dapane/Voiage and repository-hosted CI in the future dedicated repo; preserve unverified gates.
+- [x] Pass the hosted source and synthetic admission checks in the dedicated
+  repository. [Hosted record](../../../docs/repository-import.md)
+- [x] Record the native Dapane approval for the exact P1 artifacts and their
+  tested environments. [P1 platform evidence](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
+- [ ] Obtain independent Voiage admission and broader Dapane release review
+  through P1 and P7.
 
 This source handoff does not authorise reading real CHHHS data or label any clinical or financial result empirically validated.

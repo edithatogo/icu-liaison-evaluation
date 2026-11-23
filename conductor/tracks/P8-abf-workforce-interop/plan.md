@@ -60,7 +60,11 @@
   inconsistent, misclassified or promoted provider outputs. Publish a JSON
   Schema, small synthetic fixtures, CLI and reproducibility/negative tests.
   This **does not** perform Dapane valuation or Voiage EVPI.
-
+- [x] P8.4.1a Execute separate economic and cash cost comparisons for a fictional
+  episode with the reviewed macOS Dapane wheel. Check each staffing component
+  once and reject a duplicate salary component. Carry the hypothetical
+  case-level funding value separately from both valuation runs.
+  [Native synthetic valuation receipt](../../../verification/p8-native-synthetic-valuation-2026-11-24.json)
 
 - [ ] P8.4.1 Preserve separate economic/financial/funding runs and exact resource
   quantities in Dapane. Do not treat MCHS NWAU or an inpatient tariff as extra
