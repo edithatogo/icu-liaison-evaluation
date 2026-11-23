@@ -138,3 +138,11 @@ from `27b53f82140a306ff0534935bd4ce1b8d3ea8dcb`. The Conductor plugin was
 enabled. The interactive `/conductor-status` request in sandboxed Plan mode
 reported the expected 13 registry entries, including P11 complete. Comparing
 all 429 archived files to their Git bytes after the session found an exact match.
+
+## Privacy runner audit on 24 November 2026
+
+The privacy workflow now starts the pinned Harden-Runner action in egress
+audit mode. PR #43 restored the pre-commit configuration to the existing
+hook definitions and refreshed the source manifest. Both synthetic CI runs
+and the privacy scan passed before the merge at `1206a5a`.
+[PR #43](https://github.com/edithatogo/icu-liaison-evaluation/pull/43)

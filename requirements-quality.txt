@@ -1,14 +1,14 @@
 # Qualified Python 3.15.2 optional quality environment.
 cfgv==3.5.0
 distlib==0.4.4
-filelock==4.3.0
+filelock==4.3.1
 identify==2.6.20
 nodeenv==1.12.0
 packaging==26.3
 platformdirs==4.14.8
 pre-commit==4.7.0
 pre-commit-hooks==6.0.0
-python-discovery==1.9.6
+python-discovery==1.9.7
 pyyaml==6.0.4
 ruamel-yaml==0.19.1
-virtualenv==21.15.12
+virtualenv==21.15.13

@@ -120,3 +120,37 @@ The six scenarios produced 84 verified figure lineages and 72 paired outcome
 rows. The unchanged rerun scheduled no work. A fresh store requires
 `--config output=...` as well as the scheduler's `--directory` option.
 [Synthetic review receipt](../../../verification/p10-p11-contract-review-2026-11-24.json)
+
+## Dependency qualification after PR #43 on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the quality lock and
+Conductor reconciliation on `codex/icu-compatible-renovate` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The hosted source baseline is `1206a5a`. The next operation is exact-head CI.
+
+The refreshed Renovate dashboard proposed the three quality updates and the
+Kairos revision `273bf44`. The quality lock resolved and installed with
+Filelock 4.3.1, Python Discovery 1.9.7 and Virtualenv 21.15.13 on CPython 3.15.2.
+Dependency consistency, virtual environment creation, ShellCheck and both
+text-format hooks passed. The Kairos replay is recorded in P6.
+[Renovate dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30) ·
+[P6 native handoff](../P6-kairos-capacity-validation/handoff.md#kairos-compatibility-review-after-pr-43-on-24-november-2026)
+
+The resolver rejected the eight workflow updates against the pinned
+Snakemake 9.27.2 environment.
+
+| Proposed update | Blocking dependency range |
+| --- | --- |
+| Docutils 0.23 | Snakemake requires Docutils below 0.23. |
+| Packaging 26.3 | Snakemake requires Packaging below 26. |
+| PuLP 4.3.1 | Snakemake requires PuLP below 3.4. |
+| Smart Open 10.0.0 | Snakemake requires Smart Open below 8. |
+| Interface Common 1.24.1 | Interface Common requires Packaging 26.1 or later. |
+| Report Plugins 2.0.1 | Snakemake requires Report Plugins below 2. |
+| SQLModel 0.0.50 | Snakemake requires SQLModel below 0.0.38. |
+| SQLAlchemy 2.1.9 | The pinned SQLModel requires SQLAlchemy below 2.1. |
+
+The combined Packaging and interface-plugin proposals and the combined
+SQLModel and SQLAlchemy proposals also failed to resolve. Interface Common
+1.23.1 and 1.24.0 likewise require Packaging 26.1 or later. The existing
+workflow lock remains the qualified combination.
