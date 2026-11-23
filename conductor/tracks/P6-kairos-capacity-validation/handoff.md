@@ -41,3 +41,19 @@ fixture. Upstream advanced from the dashboard's `35f588a` to `d1d07fa`.
 The new lock resolves both pins to the same revision and retains all reviewed
 registry packages. The local locked build and replay passed on Rust 1.100.0.
 The next operation is source and hosted CI review of the combined pin change.
+
+## Kairos compatibility review after PR #43 on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the P6 pin update on
+`codex/icu-compatible-renovate` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The native scope is the locked one-bed consumer built in an isolated copy
+of the public source. The next operation is hosted integration.
+
+The refreshed dashboard proposed `273bf44`. GitHub confirmed the exact
+commit and the three inspected provider blobs. The lock retains 30 packages
+and the reviewed registry checksums, with five crates at the new Kairos
+revision. Formatting, Clippy, Rust tests and the locked build passed on Rust
+1.100.0. Two replays matched byte-for-byte and agreed with the one-bed
+reference. Independent build attestation and site validation remain open.
+[Native qualification](../../../docs/p6-native-qualification.md)

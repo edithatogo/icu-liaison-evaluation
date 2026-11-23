@@ -6,7 +6,7 @@
   "producer_contract_version": "0.1.0",
   "provider": {
     "repository": "https://github.com/edithatogo/kairos",
-    "source_commit": "d1d07fa6825fa8c7d938b46ac9e49584a4b11d38",
+    "source_commit": "273bf44956dfadd31336a9f9f645eba6b39779f9",
     "api": "kairo-ecs-des::StagedResourceRuntime"
   },
   "scenario_id": "syn-icu-liaison-kairos-4h-1bed-fixture",
