@@ -201,3 +201,26 @@ def test_site_and_provider_outputs_require_admitted_sources(key):
                   evidence_tier='synthetic_implemented', privacy='synthetic_only', bundle='p9_supplement')
     with pytest.raises(ValueError):
         validate_catalogue(catalogue)
+
+
+def test_joint_figure_inventory_preserves_contract_status():
+    from tools.validate_reporting_contracts import DECK_PROFILE, figure_inventory
+
+    result = figure_inventory(load(), json.loads(DECK_PROFILE.read_text()))
+    by_id = {row["id"]: row for row in result}
+    assert len(result) == len(by_id) == 28
+    assert sum(row["status"] == "placeholder" for row in result) == 10
+    assert by_id["F03"]["artifacts"] == []
+    assert by_id["F03"]["evidence_tier"] == "empirical_blocked"
+    assert by_id["E01"]["related_catalogue_ids"] == ["F03", "F09"]
+    assert by_id["E01"]["status"] == "renderer_available"
+    assert by_id["E04"]["status"] == "private_deck_chart"
+
+
+def test_joint_figure_inventory_rejects_unknown_reference():
+    from tools.validate_reporting_contracts import DECK_PROFILE, figure_inventory
+
+    deck = json.loads(DECK_PROFILE.read_text())
+    deck["figures"][0]["related_catalogue_ids"] = ["F99"]
+    with pytest.raises(ValueError, match="unknown P9 figure reference"):
+        figure_inventory(load(), deck)

@@ -32,6 +32,22 @@ The capture uses locally installed `rsvg-convert` and records the renderer
 version, SVG and raster hashes and exact dimensions. A capture requires an
 actual visual check for typography, clipping, tonal contrast and interpretation.
 
+## Figure inventory
+
+Use the read-only inventory to see both contracts together. It lists each
+figure's stable ID, contract, evidence tier, production route and related
+P9 IDs. The status describes the contract and renderer. Check a run manifest
+to verify actual artifacts.
+
+```sh
+PYTHONPATH=src .venv/bin/python tools/validate_reporting_contracts.py --inventory
+```
+
+P11 versions the P9 catalogue as a workflow input. The presentation profile
+has its own inputs and output manifest, so edits to it leave the P11 figure
+fingerprint intact. The inventory check validates cross-references between
+the two contracts without changing either renderer's evidence rules.
+
 ## Private evaluation presentation
 
 The [evaluation-deck profile](evaluation-deck.json) requires three additional

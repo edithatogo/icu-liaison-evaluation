@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "contracts/reporting/catalogue.json"
 SCHEMA = ROOT / "contracts/reporting/catalogue.schema.json"
+DECK_PROFILE = CATALOGUE.with_name("evaluation-deck.json")
 
 
 def validate_catalogue(c: dict) -> None:
@@ -120,14 +121,56 @@ def validate_report(folder: Path, c: dict) -> dict:
     return {"status":"synthetic_source_consistent_not_clinically_validated","checked":checked}
 
 
+def figure_inventory(catalogue: dict, deck: dict) -> list[dict]:
+    """List both contracts without making the deck a P11 input."""
+    figures = [
+        {
+            "id": row["id"],
+            "title": row["title"],
+            "contract": "p9",
+            "status": row["status"],
+            "evidence_tier": row["evidence_tier"],
+            "artifacts": [row["artifact"]] if row["artifact"] else [],
+            "related_catalogue_ids": [],
+        }
+        for row in catalogue["figures"]
+    ]
+    catalogue_ids = {row["id"] for row in figures}
+    registered = set(catalogue_ids)
+    for row in [*deck["figures"], deck["companion"]]:
+        figure_id = row["id"]
+        related = row["related_catalogue_ids"]
+        if figure_id in registered:
+            raise ValueError(f"duplicate figure inventory ID: {figure_id}")
+        if not related or not set(related) <= catalogue_ids:
+            raise ValueError(f"unknown P9 figure reference in {figure_id}")
+        registered.add(figure_id)
+        stem = row.get("artifact_stem")
+        figures.append({
+            "id": figure_id,
+            "title": row["title"],
+            "contract": "evaluation_deck",
+            "status": "renderer_available" if stem else "private_deck_chart",
+            "evidence_tier": "private_aggregate",
+            "artifacts": [f"{stem}.png", f"{stem}.svg"] if stem else [row["kind"]],
+            "related_catalogue_ids": list(related),
+        })
+    return figures
+
+
 def main() -> int:
-    p=argparse.ArgumentParser()
-    p.add_argument("--report",type=Path)
-    args=p.parse_args()
-    c=json.loads(CATALOGUE.read_text())
-    print(json.dumps(validate_report(args.report,c)) if args.report else "catalogue valid")
-    if not args.report:
-        validate_catalogue(c)
+    parser = argparse.ArgumentParser()
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--report", type=Path)
+    mode.add_argument("--inventory", action="store_true", help="List both figure contracts as JSON")
+    args = parser.parse_args()
+    catalogue = json.loads(CATALOGUE.read_text())
+    if args.report:
+        print(json.dumps(validate_report(args.report, catalogue)))
+        return 0
+    validate_catalogue(catalogue)
+    inventory = figure_inventory(catalogue, json.loads(DECK_PROFILE.read_text()))
+    print(json.dumps(inventory, indent=2) if args.inventory else "catalogue valid")
     return 0
 
 

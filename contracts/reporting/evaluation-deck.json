@@ -8,6 +8,7 @@
   "figures": [
     {
       "id": "E01",
+      "title": "Monthly ICU activity and occupancy",
       "artifact_stem": "icu-activity-occupancy",
       "related_catalogue_ids": [
         "F03",
@@ -19,6 +20,7 @@
     },
     {
       "id": "E02",
+      "title": "Pathway screening and modelled ICU reuse",
       "artifact_stem": "pathway-screening-and-reuse",
       "related_catalogue_ids": [
         "F13",
@@ -30,6 +32,7 @@
     },
     {
       "id": "E03",
+      "title": "Cash sensitivity to QWAU payment",
       "artifact_stem": "cash-funding-sensitivity",
       "related_catalogue_ids": [
         "F07",
@@ -45,6 +48,7 @@
     }
   ],
   "companion": {
+    "id": "E04",
     "title": "Full-time liaison role",
     "kind": "editable PowerPoint chart",
     "related_catalogue_ids": [
