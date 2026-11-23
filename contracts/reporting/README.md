@@ -20,8 +20,9 @@ Every figure specifies a decision question, estimand, source table, units, denom
 Generate the figures using the [repository workflow](../../README.md#p9-priority-synthetic-figures).
 The report reader checks source values and visible SVG data marks independently
 of the plot-writing step. Its receipt is scoped to synthetic computation and
-rendered marks. Use the optional local capture command to inspect mobile, tablet,
-desktop and A4 portrait grayscale renders.
+rendered marks. Each gallery preview links to a full-size SVG for dense charts
+on narrow screens. Use the optional local capture command to inspect mobile,
+tablet, desktop and A4 portrait grayscale renders.
 
 ```sh
 .venv/bin/python tools/capture_p9_visuals.py outputs/p9-figures outputs/p9-captures

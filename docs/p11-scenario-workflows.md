@@ -109,6 +109,10 @@ checked for recorded file integrity without claiming a new replay. Snakemake's
 no-op check alone checks workflow freshness,
 not corruption inside published object directories.
 
+Add `--provenance` to include the source, metric and denominator IDs, table
+and SVG hashes, and mark-review evidence for each figure. The command checks
+the output first and writes the receipt to standard output.
+
 ## Reruns and recovery
 
 An unchanged second execution schedules no analytical rebuild. On failure or
@@ -116,9 +120,11 @@ interruption, retain the existing output directory and rerun the same command
 with `--rerun-incomplete`: staging is separate from published objects, and
 atomic pointer updates expose only completed objects. Previous immutable runs
 remain available. A missing or altered immutable object is rejected by the
-verification command; retain it for inspection and run into a fresh output
-directory if recovery is needed. Do not treat a matching hash or successful
-retry as clinical acceptance, real-data admission or provider qualification.
+verification command. For recovery into a fresh store, keep the original and
+pass the new absolute directory as both `--directory /path/to/fresh-store`
+and `--config output=/path/to/fresh-store`. The first flag sets the scheduler's
+working directory and the second selects the analytical store. Site and
+installed-provider acceptance have their own evidence requirements.
 
 The synthetic rerun, change and interruption tests can be repeated with:
 

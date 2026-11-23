@@ -107,3 +107,16 @@ both as a batch and individually. Snakemake 9.27.2 remains the latest published
 release. Interface Common requires Packaging 26.1 or later, while Snakemake
 caps it below 26. SQLAlchemy 2.1 needs a SQLModel release outside Snakemake's
 supported range. The reviewed Kairos update follows the P6 native replay.
+
+## Contract closeout on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the reporting lineage and
+Conductor closeout in `/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`
+on `codex/icu-contract-closeout`. The scope is P9/P10/P11 source, public
+reference checks and synthetic evidence. Site admission and provider promotion
+remain with their established owners.
+
+The six scenarios produced 84 verified figure lineages and 72 paired outcome
+rows. The unchanged rerun scheduled no work. A fresh store requires
+`--config output=...` as well as the scheduler's `--directory` option.
+[Synthetic review receipt](../../../verification/p10-p11-contract-review-2026-11-24.json)

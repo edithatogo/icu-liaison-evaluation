@@ -1,8 +1,8 @@
 # Migration Comparison: CareOps Sim PR #215 vs `icu-liaison-evaluation`
 
-- **Source PR:** `https://github.com/edithatogo/careops-sim/pull/215` (branch `feat/icu-liaison-anzics-economic-psa-20261117`, inspected head SHA `e6caa16c5b87cbfadd2b10588ed10b7c6d60b637`, state: **OPEN draft, untouched**).
+- **Source PR** [CareOps Sim #215](https://github.com/edithatogo/careops-sim/pull/215), branch `feat/icu-liaison-anzics-economic-psa-20261117`, inspected head `e6caa16c5b87cbfadd2b10588ed10b7c6d60b637`.
 - **Target repository:** `https://github.com/edithatogo/icu-liaison-evaluation`.
-- **Scope:** Exact 19-file provenance mapping and central accounting parity verification. This comparison does **not** close CareOps Sim PR #215; retiring PR #215 requires separate independent review and user sign-off.
+- **Scope** Exact 19-file provenance mapping and central accounting parity verification.
 
 ## Central Fixed-Input Numerical & Scientific Parity
 
@@ -41,6 +41,12 @@ Comparing `model-inputs/icu-liaison/illustrative.json` (PR #215) with [`model-in
 | 18 | `model-inputs/icu-liaison/illustrative.json` | Added (+82/-0) | `migrated_and_expanded` | [`model-inputs/illustrative.json`](../model-inputs/illustrative.json) (all 9 values/bounds/seed preserved; units & cohort source note added). |
 | 19 | `tools/install_gemini_conductor.sh` | Added (+18/-0) | `migrated_and_expanded` | [`tools/prepare_conductor_submodule.sh`](../tools/prepare_conductor_submodule.sh), [`.gitmodules`](../.gitmodules), and `extensions/conductor` submodule pinned at `7a5c560a4fdf5297be58594cc37527eb12790272`. |
 
-## Preservation & Retirement Gate
+## Source PR disposition
 
-CareOps Sim PR #215 (`e6caa16c5b87cbfadd2b10588ed10b7c6d60b637`) remains **open and untouched**. Retiring or closing PR #215 is deferred until independent reviewer sign-off confirms acceptance of the standalone repository.
+GitHub shows CareOps Sim PR #215 closed on 19 November 2026 at 14:04 AEST,
+with its exploratory head preserved as an unmerged source revision. The
+closure cites standalone PR #5, merge commit `1ff7ca460ac135a3cd545701d22ddf82d2d97d90`
+and its passing hosted checks. Independent release review remains tracked in P7.
+[CareOps Sim PR #215](https://github.com/edithatogo/careops-sim/pull/215) ·
+[Standalone PR #5](https://github.com/edithatogo/icu-liaison-evaluation/pull/5) ·
+[Hosted run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44455595345)

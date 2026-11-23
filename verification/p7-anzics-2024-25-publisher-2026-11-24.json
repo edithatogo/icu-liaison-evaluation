@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "source_id": "ANZICS-CCR-2024-25",
+  "publisher": "ANZICS CORE",
+  "publisher_url": "https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf",
+  "checked_on": "2026-11-24",
+  "document": {
+    "http_status": 200,
+    "content_type": "application/pdf",
+    "pages": 67,
+    "size_bytes": 4449008,
+    "sha256": "b790d0097e7f2e0b85a302045c6a53768b4e98192ab9b42442e42aa7e88842a6"
+  },
+  "checked_locators": [
+    {"outcome": "live_ward_home_discharge_delay_ge12h", "page": 20, "value": 0.204, "contributors": 162},
+    {"outcome": "live_ward_home_after_hours_discharge", "page": 19, "value": 0.184, "contributors": 167},
+    {"outcome": "return_icu_hdu_admission_episodes", "page": 19, "value": 0.045, "contributors": 168},
+    {"outcome": "rural_regional_occupancy_matched", "page": 23, "table": 9, "value": 0.742, "contributors": 38},
+    {"outcome": "queensland_occupancy_matched", "page": 23, "table": 10, "value": 0.724, "contributors": 31},
+    {"outcome": "average_expenditure_per_available_bed", "page": 36, "value": 1524354, "contributors": 104}
+  ],
+  "scope": "direct_publisher_retrieval_and_page_checks",
+  "independent_source_admission": "pending",
+  "local_calibration": false
+}

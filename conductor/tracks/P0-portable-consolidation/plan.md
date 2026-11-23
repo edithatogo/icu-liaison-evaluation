@@ -40,11 +40,13 @@
   Secret Scanning + Push Protection enabled.
 - [x] Register and check out Conductor at the reviewed SHA as a Git submodule
   (`7a5c560a4fdf5297be58594cc37527eb12790272`).
-- [~] Qualify the installed Gemini extension commands and permissions: static
-  SHA-256 parity of all 22 runtime, command, and `ask_user`-only policy files
-  passed (`verification/p0-gemini-conductor-audit-2026-11-19.json`), while
-  `autoUpdate: true` on the user `github-release` install and live interactive
-  Gemini CLI slash-command execution remain open.
+- [x] Verify the current Conductor pin in Antigravity. A fresh workspace
+  session exposed all six commands and the registry links all 13 plans.
+  [P0 handoff](handoff.md)
+- [x] Run the live interactive `/conductor-status` check in Antigravity.
+  The isolated public workspace prompted for local trust. Plan mode reported
+  the registry and left all tracked files unchanged.
+  [Interactive check](handoff.md#interactive-status-check-on-24-november-2026)
 - [x] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
   consumers with independent numerical oracles and dependency lockfiles in an
   isolated Python 3.15.2 scratch environment
@@ -52,12 +54,11 @@
   [lockfile](../../../verification/p0-py315-native-lock-2026-11-19.txt)). Independent
   wheel-provenance adjudication (`providers.lock.json` `binary_sha256`) remains
   open in P1.4/P7. The corrected P5 regression rerun is recorded in P0.5.
-- [~] Open and complete a tested PR in the dedicated repository; independently
-  verify acceptance and only then retire CareOps Sim PR #215. Exact 19-file
-  comparison and central accounting parity verification are recorded in
+- [x] Complete the tested migration and verify that CareOps Sim PR #215 is closed.
+  The exact 19-file comparison, central accounting parity and closure are recorded in
   [PR #215 migration comparison](../../../docs/pr215-migration-comparison.md)
-  ([receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json));
-  PR #215 remains open pending independent sign-off.
+  and the [comparison receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json).
+- [ ] Independently accept the migration evidence for release.
 
 P0.4 pending does not block portable source tests. Completion of P0 cannot
 be claimed until target-repo and provider acceptance are obtained.

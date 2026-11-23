@@ -19,6 +19,12 @@
 
 - [x] P8.2.0 Implement a synthetic-only single-episode counterfactual consumer that calls existing annual `calculate_acute` twice, holds every non-ICU-hour column fixed, rejects wrong annual output labels/errors, and never converts NWAU into revenue. Source-level tests only.
 
+- [x] Exercise the installed pinned MCHS consumer for a fictional episode in
+  each of 2024–25 and 2025–26. Both pairs match the archived IHACPA acute SAS
+  calculation and source tables for the tested inlier case. Each unchanged pair
+  produces exactly zero. The locked macOS arm64 Rust canary also passed.
+  [Scoped execution receipt](../../../verification/p8-mchs-paired-acute-2026-11-24.json)
+
 - [ ] P8.2.1 Record pricing-year, AR-DRG/coding edition and hospital episode
   identity, ICU-eligible hours, whole-stay LOS, patient and establishment
   eligibility, HAC/AHR adjustments; freeze complete current-care and intervention
@@ -65,6 +71,9 @@
 
 ## P8.5 — Native, independent and clinical gates (pending)
 
+- [x] P8.5.0 Integrate the source-side contracts and their synthetic tests in
+  the dedicated repository with hosted CI. See the
+  [hosted source receipt](../../../verification/hosted-ci-public-2026-11-19.json).
 - [ ] P8.5.1 Execute installed MCHS 2024–25/2025–26 parity fixtures, current-year
   qualification where supported, workforce full-roster cases, Dapane and Voiage
   native consumers; record SHA/lock/host and independent numeric results.
@@ -72,9 +81,9 @@
   approved nursing classification/roster/leave cover and funding mechanism.
   Verify direct resource costs, incremental budgets and activity shadows
   independently, including negative effect and double-counting oracles.
-- [ ] P8.5.3 Obtain clinical/Finance/data-governance and equity review and
-  integrate in the *user-supplied* dedicated repository with hosted CI. Only
-  then consider intervention effect and financial approval.
+- [ ] P8.5.3 Obtain clinical, Finance, data-governance and equity review for the
+  qualified provider and site analysis before considering intervention effect
+  and financial approval.
 
 P8.0–P8.1 and the narrow source-adapter subincrements P8.2.0/P8.3.0 are implemented. Annual official-calculator parity, real nursing source/roster qualification, native providers and CHHHS acceptance are **not accepted**.
 Existing provider owners retain their code and their historical track IDs.

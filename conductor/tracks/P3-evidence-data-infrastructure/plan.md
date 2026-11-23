@@ -3,7 +3,10 @@
 ## P3.1 — Public benchmarks and provenance
 - [x] Record versioned ANZICS values, page, period, denominators and source-specific verification status without treating historical transcription as a newly reverified report.
 - [x] Implement metadata/source-register integrity checks, incompatible denominators and no public 72-hour unplanned-return assumption.
-- [ ] Admit actual publisher document digest with licensing/reviewer evidence; verify historical 2024/25 20.4% rate against independently accessible report bytes.
+- [x] Check the 2024/25 benchmark against the PDF served by ANZICS and record
+  its document digest and page. [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
+- [ ] Independently admit the report for the intended use with licensing and
+  reviewer evidence.
 
 ## P3.2 — Local source profiles and safe loading
 - [x] Create canonical CSV and Pydantic-JSON-Schema contracts with editable source column mapping, extraction freshness and SHA-256-pinned feed manifests.
