@@ -31,3 +31,13 @@ lock on `codex/icu-kairos-p6-native` in
 local one-bed fixture. On Rust 1.100.0 the locked build, tests and two identical
 replays passed. The fixture's time and occupancy values were preserved.
 Independent build attestation and site validation remain open.
+
+## Immediate Renovate review on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the Kairos pins, lock and
+synthetic consumer in `/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`
+on `codex/icu-renovate-update-now`. The native scope is the single-bed P6
+fixture. Upstream advanced from the dashboard's `35f588a` to `d1d07fa`.
+The new lock resolves both pins to the same revision and retains all reviewed
+registry packages. The local locked build and replay passed on Rust 1.100.0.
+The next operation is source and hosted CI review of the combined pin change.

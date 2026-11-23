@@ -99,3 +99,11 @@ independent synthetic one-bed fixture.
 PyPI's latest Snakemake release remains 9.27.2. The eight queued Python
 updates have no newer compatible releases within the current constraints.
 Review the Python locks again once compatible releases are published.
+
+## Immediate Renovate review on 24 November 2026
+
+Dependency resolution on CPython 3.15.2 rejected the eight Python proposals
+both as a batch and individually. Snakemake 9.27.2 remains the latest published
+release. Interface Common requires Packaging 26.1 or later, while Snakemake
+caps it below 26. SQLAlchemy 2.1 needs a SQLModel release outside Snakemake's
+supported range. The reviewed Kairos update follows the P6 native replay.
