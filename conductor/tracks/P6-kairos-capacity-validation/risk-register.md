@@ -19,9 +19,9 @@
 Stop if any capacity, provenance, pairing or governance gate fails; do not
 replace a refused case with assumed clinical effectiveness or cash value.
 
-8. **Unverified source binary:** API inspected at exact git commit and tested
-   source contracts do not establish that the Rust example compiles or executes;
-   no Cargo.lock existed in the authoring container.
+8. **Unattested build:** the pinned local executable passed the one-bed
+   fixture and deterministic replay. Independent build attestation is still
+   required before treating it as a portable provider artifact.
 9. **Static single-bed model:** variable staffing, ward friction, clinical
    readmission and multi-bed competition are unsupported by the native source
    candidate and must never be inferred from neutral trace-validator features.

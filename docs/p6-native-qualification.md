@@ -1,29 +1,30 @@
-# P6.3 source-level native consumer and P6.4 holdout checklist
+# P6.3 native consumer and P6.4 holdout checklist
 
 ## Native provider
 
 `native/kairos-icu-liaison` consumes the immutable Kairos
-`kairo-ecs-des::StagedResourceRuntime` API; **it has NOT been compiled** in this
-portable execution environment. No clinical/Finance data are included. The
-provider's exact commit, API and inspected Git blob SHAs are in
+`kairo-ecs-des::StagedResourceRuntime` API. The provider's exact commit, API
+and inspected Git blob SHAs are in
 `model-inputs/p6/kairos-provider-lock.json`.
 
-After the dedicated repository is supplied, use a separately authorised Rust
-runner with the source lock and an independently reviewed Cargo.lock:
+On 23 November 2026, Rust 1.100.0 built and tested the consumer at Kairos
+`bebb65c`. Two executions returned identical bytes and matched the
+independent synthetic one-bed reference. The committed Cargo.lock fixes all
+30 packages, including the five Kairos crates from that exact revision. The
+24 registry checksums were checked against their published entries.
+
+To repeat the check, use a supported Rust toolchain and the committed lock.
 
 ```sh
-cd native/kairos-icu-liaison
-cargo generate-lockfile            # one-time reviewed dependency resolution
-cd ../..
+cargo fetch --locked --manifest-path native/kairos-icu-liaison/Cargo.toml
 PYTHONPATH=src .venv/bin/python tools/qualify_p6_native.py
 ```
 
 The script executes actual Cargo format, Clippy, tests and build, performs
 replay and source-pin checks, and compares the binary's output to an independent
-one-bed fixture. A compiler-free test does **not** satisfy those gates. The
-separate `icu-liaison-p6-native` CLI requires the actual binary and its
-expected SHA-256; it never invents patient-flow events or silently substitutes
-Python calculations when Rust is unavailable.
+one-bed fixture. The `icu-liaison-p6-native` CLI checks the supplied binary's
+SHA-256 before invoking it. Independent build attestation, CHHHS calibration
+and clinical and Finance review are separate acceptance steps.
 
 ### Limits of the native scenario
 

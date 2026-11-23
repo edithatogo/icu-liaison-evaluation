@@ -22,3 +22,12 @@ Cargo.lock, running provider and exact native replay have NOT occurred.
 The synthetic holdout validator reuses SciPy Wasserstein/KS and rejects
 identity leakage and real-record inputs; no CHHHS calibration or independent
 safety/economic review. Carry this exact boundary into any future repository.
+
+## Kairos dependency review on 23 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the ICU P6 consumer and its
+lock on `codex/icu-kairos-p6-native` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/kairos`. The exact native scope is the
+local one-bed fixture. On Rust 1.100.0 the locked build, tests and two identical
+replays passed. The fixture's time and occupancy values were preserved.
+Independent build attestation and site validation remain open.

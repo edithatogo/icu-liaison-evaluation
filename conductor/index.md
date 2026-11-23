@@ -29,9 +29,9 @@ CHHHS calibration, outstanding provider qualification and clinical and Finance r
   standalone JSON/CSV/Markdown/SVG reports, retained evidence fingerprints,
   independent accounting checks and unavailable-native-provider gates.
 
-- [P6 time-aware capacity qualification](tracks/P6-kairos-capacity-validation/index.md): neutral synthetic trace auditor and optional future Kairos dependency; no DES activation.
+- [P6 time-aware capacity qualification](tracks/P6-kairos-capacity-validation/index.md) covers a neutral synthetic trace auditor and the optional local Kairos one-bed replay.
 
-- [P6 optional Kairos source and synthetic holdout](../docs/p6-native-qualification.md): pinned Rust source contract; no actual provider compilation or CHHHS calibration.
+- [P6 optional Kairos replay and synthetic holdout](../docs/p6-native-qualification.md) records the pinned build, independent fixture and outstanding CHHHS calibration.
 
 - [P8 MCHS, workforce and valuation boundary](tracks/P8-abf-workforce-interop/index.md):
   source contracts and proposed provider changes; **not native/local qualification**.

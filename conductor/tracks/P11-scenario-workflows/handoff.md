@@ -86,3 +86,16 @@ The same chat owns the Renovate selector correction in this worktree on
 URL as the package name and the individual crate names as dependency names.
 The correction matches both extracted crate names to one review group. Verify
 the hosted dashboard after the change reaches `main`.
+
+## Scheduled dependency follow-through on 23 November 2026
+
+The same chat integrates the P0 and P6 source changes in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor` on `codex/icu-remaining-upgrades`.
+The P0 Antigravity workspace session exposed all six Conductor commands at
+`6e8f9a8`, and the registry check resolved all 13 track plans. The P6 local
+locked build at `bebb65c` produced byte-identical replays and matched the
+independent synthetic one-bed fixture.
+
+PyPI's latest Snakemake release remains 9.27.2. The eight queued Python
+updates have no newer compatible releases within the current constraints.
+Review the Python locks again once compatible releases are published.

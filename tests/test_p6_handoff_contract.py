@@ -3,22 +3,34 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_track_metadata_does_not_claim_executed_or_clinically_valid_des() -> None:
+def test_track_metadata_records_local_replay_and_outstanding_qualification() -> None:
     metadata = json.loads((ROOT / 'conductor/tracks/P6-kairos-capacity-validation/metadata.json').read_text())
     assert metadata['status'] == 'in_progress'
-    assert metadata['native_execution'].startswith('not_executed')
+    assert metadata['native_execution'] == 'local_synthetic_replay_passed_unattested'
     assert metadata['clinical_validation'] is False
-    assert 'P6.3-installed-native-Kairos-producer-and-replay' in metadata['blocked_phases']
+    assert 'P6.3-local-native-Kairos-producer-and-replay' in metadata['accepted_phases']
+    assert 'P6.3-independent-native-build-attestation' in metadata['blocked_phases']
     assert 'P6.4-CHHHS-calibration' in metadata['blocked_phases']
 
 
 def test_source_lock_is_immutable_but_does_not_fake_an_installed_binary() -> None:
     lock = json.loads((ROOT / 'model-inputs/p6/kairos-provider-lock.json').read_text())
-    assert lock['source_commit'] == 'a1f6283575ad26918230adc122a99b5c08fc4da3'
+    revision = lock['source_commit']
+    assert revision == 'bebb65c45b3055d5f743566631de12061bac4e78'
+    consumer = ROOT / 'native/kairos-icu-liaison'
+    manifest = tomllib.loads((consumer / 'Cargo.toml').read_text())
+    resolved = tomllib.loads((consumer / 'Cargo.lock').read_text())
+    names = {'kairo-ecs-des', 'kairo-ecs-types'}
+    assert all(manifest['dependencies'][name]['rev'] == revision for name in names)
+    kairos = {package['name']: package['source'] for package in resolved['package']
+              if package.get('source', '').startswith('git+')}
+    assert names <= kairos.keys()
+    assert set(kairos.values()) == {f"git+{lock['repository']}?rev={revision}#{revision}"}
     assert lock['binary_sha256'] is None
     assert lock['clinical_or_occupancy_validation'] is False
     assert set(lock['inspected_upstream_blob_shas']) == {
@@ -34,4 +46,4 @@ def test_public_project_excludes_restricted_inputs_and_outputs() -> None:
         assert forbidden in lines
     policy = (ROOT / 'docs/p6-native-qualification.md').read_text().lower()
     assert 'chhhs' in policy and 'not' in policy
-    assert 'not been compiled' in policy or 'no native' in policy or 'unverified' in policy
+    assert 'independent build attestation' in policy

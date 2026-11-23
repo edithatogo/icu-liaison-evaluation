@@ -8,10 +8,10 @@ JSON Schema support contract checks. Matplotlib is optional for report plots.
 `pyproject.toml` defines supported ranges. `requirements-ci.txt` pins
 source, test, report and isolated build dependencies.
 
-The optional Rust consumer under `native/kairos-icu-liaison` remains uncompiled
-and unqualified in this import. The dedicated provider environments and exact
-source/binary provenance requirements remain in their locks and tracks. The
-base Python CI must not silently install or substitute these native providers.
+The optional Rust consumer under `native/kairos-icu-liaison` has a committed
+Cargo lock and a verified local synthetic replay. Independent build attestation
+and site use remain in the [P6 qualification track](tracks/P6-kairos-capacity-validation/index.md).
+The base Python CI exercises the portable source contracts.
 
 Project records live in `conductor/`. The upstream Conductor agent plugin is
 versioned by the Git link at `extensions/conductor`. The [workspace setup](../GEMINI.md#conductor-agent-plugin)
