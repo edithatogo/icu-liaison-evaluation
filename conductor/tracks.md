@@ -4,7 +4,7 @@ The previous exploratory `careops-sim` R78–R81 tracks remain historical source
 context, not execution authority in this independent project. Retain PR #215
 until content is faithfully reconciled and a replacement is verified.
 
-- [~] **P0 — Portable consolidation and Conductor handoff**
+- [~] **Track: P0 — Portable consolidation and Conductor handoff**
   ([index](tracks/P0-portable-consolidation/index.md),
    [spec](tracks/P0-portable-consolidation/spec.md),
    [plan](tracks/P0-portable-consolidation/plan.md)).
@@ -21,7 +21,7 @@ until content is faithfully reconciled and a replacement is verified.
   Independent wheel-provenance adjudication,
   live Gemini runtime command qualification, CHHHS data, and independent
   sign-off to retire CareOps Sim PR #215 remain pending.
-- [~] **P1 — Runtime provider reuse qualification**
+- [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
    [spec](tracks/P1-provider-reuse/spec.md),
    [plan](tracks/P1-provider-reuse/plan.md)).
@@ -40,7 +40,7 @@ until content is faithfully reconciled and a replacement is verified.
   x86-64 and Windows Server x86-64 hosts. The Windows rebuild passed
   all 215 vendor tests directly from the upstream fixture fix.
   [P1.4 Windows rebuild](tracks/P1-provider-reuse/plan.md#windows-rebuild-after-the-upstream-fixture-fix)
-- [~] **P2 — Clinical/economic model and CHHHS data specification**
+- [~] **Track: P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
    [plan](tracks/P2-clinical-economic-protocol/plan.md)).
@@ -51,7 +51,7 @@ until content is faithfully reconciled and a replacement is verified.
   **P2.5 site clinical/Nursing/Finance/HREC/First Nations approvals, real
   CHHHS data, safety thresholds, and P1/P7 provider provenance adjudication
   remain open**.
-- [~] **P3 — Public evidence provenance and controlled data admission**
+- [~] **Track: P3 — Public evidence provenance and controlled data admission**
   ([index](tracks/P3-evidence-data-infrastructure/index.md),
    [spec](tracks/P3-evidence-data-infrastructure/spec.md),
    [plan](tracks/P3-evidence-data-infrastructure/plan.md)).
@@ -61,7 +61,7 @@ until content is faithfully reconciled and a replacement is verified.
   2024/25 PDF document re-verification, Searchright run, CHHHS local data and
   clinical/governance/Finance approval remain **blocked**. Source tests do not
   certify deployed or native-provider operation.
-- [~] **P4 — Reconciled probabilistic cost-consequence model**
+- [~] **Track: P4 — Reconciled probabilistic cost-consequence model**
   ([index](tracks/P4-economic-decision-model/index.md),
    [spec](tracks/P4-economic-decision-model/spec.md),
    [plan](tracks/P4-economic-decision-model/plan.md)).
@@ -70,7 +70,7 @@ until content is faithfully reconciled and a replacement is verified.
   have source-level local tests. **Clinical validation, CHHHS data, exact
   publisher document admission and native Dapane/Voiage qualification remain
   blocked**. No experimental clinical or financial effect is admitted.
-- [~] **P5 — Reproducible reporting and independent checks**
+- [~] **Track: P5 — Reproducible reporting and independent checks**
   ([index](tracks/P5-reporting-independent-review/index.md),
    [spec](tracks/P5-reporting-independent-review/spec.md),
    [plan](tracks/P5-reporting-independent-review/plan.md)).
@@ -80,7 +80,7 @@ until content is faithfully reconciled and a replacement is verified.
   synthetic P5 report smoke test passed in hosted CPython 3.15.2 CI.
   **Independent clinical/economic review, provider artifact qualification
   and observed CHHHS validation remain open.**
-- [~] **P6 — Optional Kairos time-aware capacity modelling**
+- [~] **Track: P6 — Optional Kairos time-aware capacity modelling**
   ([index](tracks/P6-kairos-capacity-validation/index.md),
    [spec](tracks/P6-kairos-capacity-validation/spec.md),
    [plan](tracks/P6-kairos-capacity-validation/plan.md)).
@@ -91,7 +91,7 @@ until content is faithfully reconciled and a replacement is verified.
   and approved CHHHS data, clinical/Finance governance remain **unverified**. No financial
   or empirical effect is inferred from synthetic trace differences.
 
-- [~] **P7 — Technical, primary-source and empirical qualification closeout**
+- [~] **Track: P7 — Technical, primary-source and empirical qualification closeout**
   ([index](tracks/P7-technical-empirical-qualification/index.md),
   [plan](tracks/P7-technical-empirical-qualification/plan.md)).
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
@@ -102,7 +102,7 @@ until content is faithfully reconciled and a replacement is verified.
   Hosted integration evidence is tracked in the repository import record.
   [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 
-- [~] **P8 — MCHS ABF, nursing workforce and valuation interoperability**
+- [~] **Track: P8 — MCHS ABF, nursing workforce and valuation interoperability**
   ([index](tracks/P8-abf-workforce-interop/index.md),
   [plan](tracks/P8-abf-workforce-interop/plan.md)).
   Source-pinned provider capability register, funding/workforce/resource
@@ -112,7 +112,7 @@ until content is faithfully reconciled and a replacement is verified.
   native Dapane/Voiage, actual hospital revenue and CHHHS clinical/Finance
   approval are pending. Existing provider track ownership is retained.
 
-- [~] **P7 companion: placeholder-assisted progress and evidence closure**
+- [~] **Track: P7 companion: placeholder-assisted progress and evidence closure**
   ([index](tracks/P7-placeholder-assisted-qualification/index.md),
    [plan](tracks/P7-placeholder-assisted-qualification/plan.md)).
   The independent placeholder branch is preserved alongside the technical P7
@@ -124,8 +124,8 @@ Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 `[!]` is blocked on a stated dependency. Both P7 directories retain their
 historical phase identifiers; use the full track directory in handoffs.
 
-- [~] **P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Two request tables, 14 synthetic figures and source-level catalogues implemented. Ten figures require site or provider evidence.
+- [~] **Track: P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Two request tables, 14 synthetic figures and source-level catalogues implemented. Ten figures require site or provider evidence.
 
-- [~] **P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). M01–M31 and D01–D14, source-linked figures, synthetic mark and visual checks. Site governance and professional review remain open.
+- [~] **Track: P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). M01–M31 and D01–D14, source-linked figures, synthetic mark and visual checks. Site governance and professional review remain open.
 
-- [x] **P11 — Scenario workflows and versioned runs** ([index](tracks/P11-scenario-workflows/index.md), [spec](tracks/P11-scenario-workflows/spec.md), [plan](tracks/P11-scenario-workflows/plan.md)). Synthetic A/B and stress scenarios, input/model/output identities and P9 figures passed local and integrated hosted checks; clinical and provider gates remain separate.
+- [x] **Track: P11 — Scenario workflows and versioned runs** ([index](tracks/P11-scenario-workflows/index.md), [spec](tracks/P11-scenario-workflows/spec.md), [plan](tracks/P11-scenario-workflows/plan.md)). Synthetic A/B and stress scenarios, input/model/output identities and P9 figures passed local and integrated hosted checks; clinical and provider gates remain separate.

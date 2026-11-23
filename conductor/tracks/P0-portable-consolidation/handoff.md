@@ -120,3 +120,13 @@ commit hashes and both actions use Node 24. The combined candidate preserves
 the workflow's Python version file, checkout options and permissions; it does
 not use the removed setup-python pip input or a pull-request-target checkout.
 The original bot branches remain untouched until the candidate is qualified.
+
+## Conductor plugin migration on 23 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the dependency pin and registry
+format on `codex/icu-conductor-plugin` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`. Native scope is
+readback of the installed Antigravity Conductor plugin and validation of the
+pinned workspace files. Antigravity 1.5.14 loaded all six skills and the project
+rule from `6e8f9a8`, and its installed files matched the Git checkout. All 13
+track plans resolve from the registry in the plugin's current format.

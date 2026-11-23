@@ -20,6 +20,7 @@ results/
 .env
 .env.*
 .venv/
+/.agents/plugins/conductor
 __pycache__/
 .pytest_cache/
 .snakemake/

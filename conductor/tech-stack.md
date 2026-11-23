@@ -13,9 +13,9 @@ and unqualified in this import. The dedicated provider environments and exact
 source/binary provenance requirements remain in their locks and tracks. The
 base Python CI must not silently install or substitute these native providers.
 
-Project records live in `conductor/`. Upstream Conductor 0.4.1 is a gitlink at
-`extensions/conductor`, pinned to `7a5c560a4fdf5297be58594cc37527eb12790272`.
-Checking out that dependency does not qualify an installed Gemini extension.
+Project records live in `conductor/`. The upstream Conductor agent plugin is
+versioned by the Git link at `extensions/conductor`. The [workspace setup](../GEMINI.md#conductor-agent-plugin)
+checks its pinned source with Antigravity.
 
 Inputs and reports use versioned JSON/JSON Schema, CSV and Markdown. Public
 source metadata and synthetic fixtures are tracked. Permissioned clinical or
