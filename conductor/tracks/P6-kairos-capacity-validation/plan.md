@@ -13,17 +13,17 @@
 - [x] Provide CLI and synthetic fixture demonstrating discharge/access timing
   without monetisation or generalisation to CHHHS.
 
-## P6.3 — Kairos native source and contract (source implemented, native blocked)
+## P6.3 — Kairos native source and local replay
+
 - [x] Inspect immutable upstream Kairos staged runtime API and file blob SHAs;
-  pin a single-ICU-bed Rust consumer to commit a1f6283575ad26918230adc122a99b5c08fc4da3.
+  pin a single-ICU-bed Rust consumer to commit `bebb65c45b3055d5f743566631de12061bac4e78`.
 - [x] Author native source, synthetic fixture and independent consumer contract,
   with standalone Cargo format, build and test qualification runner.
-- [ ] **Native execution pending:** generate/review Cargo.lock, compile, run,
-  attest actual binary and confirm exact-head tests/replay in a Rust environment.
+- [x] Review Cargo.lock against its sources and pass the Rust format, lint,
+  test and build checks. Match the one-bed reference and repeat the replay.
 - [x] Implement strict native-output normalisation into the existing NumPy
   trace audit with paired-demand and physical conservation checks.
-- [ ] **Actual producer run pending:** no compiled executable available here;
-  do not claim native seeded replay or time-varying staffing support.
+- [ ] Independently attest the built artifact and runner.
 - [x] Preserve synthetic-only provider/seed/input/source identity and refuse
   conversion of capacity to cash or clinical benefit; require source-byte proof
   and reject false direct native claims.

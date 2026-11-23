@@ -9,20 +9,20 @@
     "P6.1-neutral-trace",
     "P6.2-synthetic-conformance",
     "P6.3-provider-source-and-trace-contract",
+    "P6.3-local-native-Kairos-producer-and-replay",
     "P6.4-synthetic-holdout-diagnostics"
   ],
   "blocked_phases": [
-    "P6.3-installed-native-Kairos-producer-and-replay",
+    "P6.3-independent-native-build-attestation",
     "P6.3-ward-costing-and-safety-integration",
     "P6.4-CHHHS-calibration",
-    "P6.4-independent-clinical-Finance-governance-review",
-    "dedicated-repository-hosted-CI"
+    "P6.4-independent-clinical-Finance-governance-review"
   ],
   "dependencies": [
     "P4-economic-decision-model",
     "P3-evidence-data-infrastructure"
   ],
-  "source_provider_revision": "a1f6283575ad26918230adc122a99b5c08fc4da3",
-  "native_execution": "not_executed_no_rust_toolchain",
+  "source_provider_revision": "bebb65c45b3055d5f743566631de12061bac4e78",
+  "native_execution": "local_synthetic_replay_passed_unattested",
   "clinical_validation": false
 }
