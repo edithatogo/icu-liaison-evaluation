@@ -60,7 +60,7 @@
       "id": "kairos",
       "repository": "https://github.com/edithatogo/kairos",
       "source_ref": "main",
-      "source_revision": "bebb65c45b3055d5f743566631de12061bac4e78",
+      "source_revision": "d1d07fa6825fa8c7d938b46ac9e49584a4b11d38",
       "domain_scope": "Deterministic DES staged resource leases, queues, timing and optional neutral resource-use exports under planned Track 114",
       "ledger": "temporal_capacity_optional",
       "declared_contract": "StagedResourceRuntime experimental; quantitative usage export not native-qualified",

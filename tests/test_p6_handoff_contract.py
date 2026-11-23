@@ -21,7 +21,7 @@ def test_track_metadata_records_local_replay_and_outstanding_qualification() -> 
 def test_source_lock_is_immutable_but_does_not_fake_an_installed_binary() -> None:
     lock = json.loads((ROOT / 'model-inputs/p6/kairos-provider-lock.json').read_text())
     revision = lock['source_commit']
-    assert revision == 'bebb65c45b3055d5f743566631de12061bac4e78'
+    assert revision == 'd1d07fa6825fa8c7d938b46ac9e49584a4b11d38'
     consumer = ROOT / 'native/kairos-icu-liaison'
     manifest = tomllib.loads((consumer / 'Cargo.toml').read_text())
     resolved = tomllib.loads((consumer / 'Cargo.lock').read_text())
