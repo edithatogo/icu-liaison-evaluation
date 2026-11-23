@@ -31,3 +31,41 @@ Supply `--f01 outputs/p11/figures/<revision>` to include the matching F01.
 The capture uses locally installed `rsvg-convert` and records the renderer
 version, SVG and raster hashes and exact dimensions. A capture requires an
 actual visual check for typography, clipping, tonal contrast and interpretation.
+
+## Private evaluation presentation
+
+The [evaluation-deck profile](evaluation-deck.json) requires three additional
+figures for a presentation based on verified aggregate inputs.
+
+| ID | Figure | Relation to the P9 catalogue |
+| --- | --- | --- |
+| E01 | Monthly ICU admissions and funded-bed occupancy | Complements F03 and F09. Missing observations are visible gaps. |
+| E02 | ED screening and modelled ICU reuse | Complements F13 and F15. Observed counts and modelled changes are separate panels. |
+| E03 | Cash sensitivity to QWAU payment and care costs | Complements F07 and F10. The scenario lines hold physical reuse at 100%. |
+
+The profile also records the editable one-FTE funding comparison in the deck.
+The new profile does not change the 24 P9 figure IDs or promote any empirical
+or provider placeholder. P11 still runs F01 and the 13 synthetic P9 figures.
+Use the existing figure bundle for portable fiction. Run the deck renderer
+separately for a local presentation.
+
+The renderer accepts a JSON object with `input_class`, `period_months`,
+`activity`, `pathways` and `funding`. Activity rows contain `month` (YYYY-MM),
+`admissions`, `icu1_pct` and `icu2_pct` (0–100 or null).
+The pathway fields are `screen_months`, `adult_icu_destinations`, `labelled`,
+`chart_review`, `avoided`, `reused_hours` and `added`. The four funding rows
+are named `reference`, `longer_stays`, `longer_flat_weight` and
+`higher_care_cost`. Each has `full_net_payment` and `incremental_spending` in
+Australian dollars for the full period.
+
+```sh
+.venv/bin/python tools/render_evaluation_figures.py \
+  --inputs /absolute/private/path/aggregates.json \
+  --output /absolute/private/path/new-figure-directory
+```
+
+Declare actual inputs `private_aggregate` and use an owner-only directory outside
+Git. The renderer rejects private inputs and outputs in Git worktrees. Fictional
+examples use `synthetic_only` and display a visible label. The output has PNGs
+for slide inclusion, SVGs for review and an input, contract, renderer and
+artifact hash manifest.

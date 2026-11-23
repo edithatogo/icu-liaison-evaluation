@@ -45,3 +45,14 @@ model identifier. The source and browser checks, four display profiles,
 unchanged rerun, recovery and P3 denominator result are recorded in the
 [synthetic verification](../../../verification/portable-synthetic-2026-11-20.json).
 The 33 P7 evidence obligations retain their existing owners.
+
+## Evaluation presentation figure follow-through
+
+On 23 November 2026, chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the
+bounded evaluation presentation figure profile, renderer and focused tests
+on `codex/icu-evaluation-figures` in
+`/Users/doughnut/.codex/worktrees/icu-evaluation-figures.sO8uJL/icu-liaison-evaluation`.
+The worktree starts at `213afb3`. Native scope is none. The profile links the
+presentation's aggregate figures to related P9 IDs while keeping the P11
+synthetic inventory and unresolved evidence gates in force. Local analysis,
+generated private figures and the presentation stay outside the repository.

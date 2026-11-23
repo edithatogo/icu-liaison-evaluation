@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "name": "Private ICU liaison evaluation deck figure profile",
+  "input_classes": [
+    "synthetic_only",
+    "private_aggregate"
+  ],
+  "figures": [
+    {
+      "id": "E01",
+      "artifact_stem": "icu-activity-occupancy",
+      "related_catalogue_ids": [
+        "F03",
+        "F09"
+      ],
+      "input_section": "activity",
+      "evidence": "Monthly ICU admission counts and recorded monthly funded-bed occupancy by unit. Retain calendar coverage and missing occupancy. Keep the admission count and occupancy percentage on separate axes.",
+      "alt_text": "Monthly ICU admissions followed by a panel of funded-bed occupancy by ICU unit. Gaps mark months without occupancy records."
+    },
+    {
+      "id": "E02",
+      "artifact_stem": "pathway-screening-and-reuse",
+      "related_catalogue_ids": [
+        "F13",
+        "F15"
+      ],
+      "input_section": "pathways",
+      "evidence": "Observed direct ICU destinations, sepsis or DKA labels and screen-positive records are aggregate counts in the same ED extract. Display modelled ICU avoidance, reuse and additional admissions in a separate panel. Screening does not establish whether ICU could safely have been avoided.",
+      "alt_text": "Two separate flows show observed ED screening and the modelled effect of the higher-effect pathways on ICU capacity. The observed flow does not connect to the modelled flow."
+    },
+    {
+      "id": "E03",
+      "artifact_stem": "cash-funding-sensitivity",
+      "related_catalogue_ids": [
+        "F07",
+        "F10"
+      ],
+      "input_section": "funding",
+      "evidence": "Cash surplus is full net QWAU payment times the fraction paid, less incremental spending. Keep physical reuse at 100%. Scenario lines show sensitivity to case mix, episode weights and marginal care costs over the same period.",
+      "payment_range_percent": [
+        75,
+        100
+      ],
+      "alt_text": "Cash surplus or shortfall against the percentage of net additional QWAU paid. Four scenario lines cross or remain below the horizontal break-even line."
+    }
+  ],
+  "companion": {
+    "title": "Full-time liaison role",
+    "kind": "editable PowerPoint chart",
+    "related_catalogue_ids": [
+      "F21"
+    ],
+    "evidence": "Compare annualised pathway surplus and the upper bound from displacing programme costs with one fully loaded FTE before extra relief. Show the remaining gap and conditional extra reused hours. This comparison is separate from the full workforce-cost breakdown."
+  }
+}
