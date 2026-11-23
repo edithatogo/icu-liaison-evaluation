@@ -12,6 +12,49 @@
       ],
       "automerge": false,
       "platformAutomerge": false
+    },
+    {
+      "description": "Review compatible Python lock maintenance together",
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchFileNames": [
+        "requirements-ci.txt",
+        "requirements-p11.txt",
+        "requirements-quality.txt"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchPackageNames": [
+        "certifi",
+        "charset-normalizer",
+        "filelock",
+        "platformdirs",
+        "pydantic",
+        "pydantic-core",
+        "pyyaml",
+        "virtualenv"
+      ],
+      "groupName": "ICU Python lock maintenance"
+    },
+    {
+      "description": "Review both Kairos crate revisions in the same change",
+      "matchManagers": [
+        "cargo"
+      ],
+      "matchFileNames": [
+        "native/kairos-icu-liaison/Cargo.toml"
+      ],
+      "matchPackageNames": [
+        "kairo-ecs-des",
+        "kairo-ecs-types"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "groupName": "ICU Kairos native crate pins"
     }
   ]
 }
