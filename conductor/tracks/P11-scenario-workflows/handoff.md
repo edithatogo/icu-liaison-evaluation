@@ -80,3 +80,9 @@ Monday 05:00. Maintainers still review every promotion.
 | SQLModel and SQLAlchemy | Check the pair after the Snakemake release admits SQLModel 0.0.50. SQLModel 0.0.37 caps SQLAlchemy below 2.1. |
 | Kairos | Review both crate pins at the same source revision and run P6 native qualification with the reviewed Cargo lock. |
 | Conductor | Verify command and project behaviour after the upstream switch from the Gemini extension to the agent plugin. |
+
+The same chat owns the Renovate selector correction in this worktree on
+`codex/icu-kairos-renovate-group`. Renovate's Cargo manager records the Git
+URL as the package name and the individual crate names as dependency names.
+The correction matches both extracted crate names to one review group. Verify
+the hosted dashboard after the change reaches `main`.
