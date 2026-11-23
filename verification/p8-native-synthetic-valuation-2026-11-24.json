@@ -1,0 +1,51 @@
+{
+  "annual_calculator_parity_accepted": false,
+  "assumptions": {
+    "cash_icu_rate_aud_per_hour": "10",
+    "economic_icu_rate_aud_per_hour": "100",
+    "icu_hours_current": "58.25",
+    "icu_hours_liaison": "54.25",
+    "liaison_oncost_aud_per_hour": "25",
+    "liaison_salary_aud_per_hour": "50",
+    "paid_liaison_hours": "2"
+  },
+  "economic_cost": {
+    "current_aud": "5825.00",
+    "liaison_aud": "5575.00",
+    "resource_benefit_aud": "250.00"
+  },
+  "financial_cost": {
+    "change_aud": "110.00",
+    "current_aud": "582.50",
+    "duplicate_staffing_rejected": "component_overlap",
+    "included_staffing_aud": "150.00",
+    "liaison_aud": "692.50"
+  },
+  "hypothetical_episode_funding": {
+    "actual_revenue_change_aud": null,
+    "assumed_aud_per_nwau": "1000",
+    "change_aud": "-176.80",
+    "change_nwau": "-0.1768000000",
+    "pricing_year": 2025
+  },
+  "runtime": {
+    "native_extension_sha256": "473c9f9adf0f4cbcb46a2f2ea5987e42349d6ce1a44e62a1a0e283cf322ead5d",
+    "platform": "macOS 27.2.1 arm64",
+    "provider": "dapane",
+    "python": "3.15.2",
+    "source_commit": "0658d94ad772023a0185a000b5254f9c2f4a63a9",
+    "version": "0.1.0",
+    "wheel_sha256": "457410fc635ab954b94c127da745c58b93a235d82c15c71aa84ae0a8dec90528"
+  },
+  "schema_version": 1,
+  "scope": "fictional_p8_native_costs_and_hypothetical_episode_funding",
+  "site_investment_approved": false,
+  "source_sha256": {
+    "model-inputs/p8/synthetic-mchs-pair.json": "de6ed46bf2fc9fa52cea8c601c6abb604c17fcdf9ffbc0e18bea87f0232ccecb",
+    "providers.lock.json": "8b048812379ac5c94effa98f11fd4f64c39283e08ae1adbdcae70032173c94f2",
+    "src/icu_liaison/adapters/dapane.py": "2879a166eb972eca02f37dfde6efdea12a104c81fd9739b805342a45dae4f80e",
+    "src/icu_liaison/provider_contracts.py": "8cabb0980bc7e831263dfcd424fc9959ae1158f9809487c69fcb4aa5b6a041e3",
+    "tools/qualify_p8_synthetic_valuation.py": "90a16e5e0899e0c3de43170d0120111107370cac5b21c6f0d20dc8f3abbecb64",
+    "verification/p8-mchs-paired-acute-2026-11-24.json": "2b1ce4ff2c2dafbb0fae899624411a569a9b23fbf8bb1bba2638e0bc96e429a0"
+  }
+}

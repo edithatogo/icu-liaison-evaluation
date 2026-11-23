@@ -19,4 +19,9 @@
   The publisher byte and value checks are recorded by P7.
   [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
 - [ ] Reconcile actual CHHHS activity, case mix, readmission/safety outcomes, workforce/Finance costs, risk adjustment and causal effect.
-- [ ] Execute installed Dapane/Voiage and independent hosted checks at exact revision in future dedicated repository.
+- [x] Pass the source and synthetic model checks at an exact revision in the
+  dedicated repository. [Hosted record](../../../docs/repository-import.md)
+- [x] Record the installed numerical checks and scope the Dapane approval to
+  the exact artifacts and hosts in the P1 lock. [P1 plan](../P1-provider-reuse/plan.md)
+- [ ] Complete independent model review and the outstanding P1 provider
+  admission for the intended analysis.

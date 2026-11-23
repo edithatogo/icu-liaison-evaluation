@@ -42,3 +42,27 @@ CHHHS income, clinical validation and private repository creation remain
 unqualified. Reuse only the existing provider owners' contracts. No original
 provider source, payroll formula, patient extract, hospital revenue or private
 quote is packaged here.
+
+### Native fictional valuation on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the bounded P8.4 valuation and
+Conductor reconciliation on `codex/icu-review-readiness` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The runtime scope is the approved Dapane 0.1.0 wheel and CPython 3.15.2 on
+the recorded macOS arm64 host. The next operation is exact-head source and
+privacy checks.
+
+For the fictional MCHS pair, Dapane valued resource use and cash costs in
+separate requests. Both views included the salary and on-cost components once
+for the same paid shift. A repeated salary component failed with
+`component_overlap`. The NWAU change was multiplied by a fictional price
+and recorded as an episode funding sensitivity. Actual revenue stays null.
+[Valuation receipt](../../../verification/p8-native-synthetic-valuation-2026-11-24.json)
+
+Repeat with the reviewed wheel installed into an isolated directory for the
+verified repository interpreter.
+
+```sh
+PYTHONPATH="src:$icu_dapane_overlay" .venv/bin/python \
+  tools/qualify_p8_synthetic_valuation.py --wheel "$icu_dapane_wheel"
+```
