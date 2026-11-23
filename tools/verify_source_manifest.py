@@ -53,7 +53,7 @@ def verify_git_submodules(root: Path, manifest: dict) -> list[str]:
     """Check declared path/URL and the Git index's exact mode and commit.
 
     A normal clone need not initialise the dependency to verify its gitlink.
-    Installed Gemini commands and native providers are separate acceptance gates.
+    Installed agent plugins and native providers require runtime verification.
     """
     pins = manifest.get('git_submodules', {})
     if not isinstance(pins, dict):

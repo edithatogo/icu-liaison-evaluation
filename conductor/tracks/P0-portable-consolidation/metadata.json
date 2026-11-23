@@ -14,7 +14,7 @@
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Independent wheel-provenance adjudication (providers.lock.json binary_sha256), live Gemini interactive slash-command check, independent review/retirement of CareOps Sim PR #215, and CHHHS calibration remain outstanding.",
+  "blocker": "Independent wheel-provenance adjudication (providers.lock.json binary_sha256), independent review/retirement of CareOps Sim PR #215, and CHHHS calibration remain outstanding.",
   "dependencies": [],
   "external_dependencies": [
     {
@@ -27,11 +27,11 @@
     },
     {
       "provider": "gemini-cli-extensions/conductor",
-      "pin": "7a5c560a4fdf5297be58594cc37527eb12790272",
-      "required": "actual gitlink and reviewed local install"
+      "pin": "6e8f9a860bcdd6a2c423473c12e745200688c633",
+      "required": "exact gitlink and Antigravity plugin and workspace registry checks"
     }
   ],
-  "updated_at": "2026-11-19",
+  "updated_at": "2026-11-23",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
   "current_task": "P0.4 public hosted CI passed, local gitleaks hooks active, Python 3.15.2 native Dapane/Voiage oracles executed, and PR #215 comparison recorded; independent review and PR #215 retirement remain open",
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",

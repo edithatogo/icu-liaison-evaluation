@@ -22,8 +22,9 @@ then the repository's full test suite and deterministic CLI smoke.
   and provenance refusal. This is *not* an actual Rust-run acceptance test.
 - `pytest -q tests/test_p6_holdout.py tests/test_p6_qualification_gates.py`
   covers SciPy holdout metrics, data-leakage refusal and missing-provider failure.
-- Future native gate: `.venv/bin/python tools/qualify_p6_native.py` must validate installed
+- Native replay: `PYTHONPATH=src .venv/bin/python tools/qualify_p6_native.py` validates the installed
   Rust compiler, reviewed lock, `cargo fmt/clippy/test/build`, real Kairos output,
-  independent oracle and byte-identical replay; reject missing artifacts.
+  independent oracle and byte-identical replay. The local run passed on Rust
+  1.100.0 against the updated Kairos pin.
 - Site gate: validated CHHHS input sources, holdout, clinical safety/governance
   and Finance review cannot be substituted by synthetic fixtures.

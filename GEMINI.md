@@ -1,18 +1,30 @@
-# Gemini project context (extension runtime not yet qualified)
-
-Upstream Gemini Conductor extension: `gemini-cli-extensions/conductor`,
-reviewed commit `7a5c560a4fdf5297be58594cc37527eb12790272`, release 0.4.1.
-It is registered as a pinned Git submodule at `extensions/conductor`.
-Use `git submodule update --init -- extensions/conductor` to retrieve the
-reviewed source, then verify `git submodule status`.
-After reviewing the extension scripts/permissions in that checkout, a user may
-explicitly install it into Gemini CLI with `gemini extensions install
-./extensions/conductor`.
+# Gemini project context
 
 Read `AGENTS.md`, `conductor/index.md`, `conductor/tracks.md` and the active
 track before changes. The repository includes P0–P8 source and synthetic
 qualification work; local CHHHS calibration remains blocked on permissioned data.
 The original CareOps Sim PR and existing third-party repos retain their owners.
+
+## Conductor agent plugin
+
+The project pins Conductor at `extensions/conductor`. Prepare the exact
+checkout and validate it with Antigravity from the repository root.
+
+```sh
+bash tools/prepare_conductor_submodule.sh
+agy plugin validate ./extensions/conductor
+```
+
+For a workspace installation, link the validated checkout once. Use
+`/conductor-status` in Antigravity to read the project's track registry.
+
+```sh
+mkdir -p .agents/plugins
+ln -s ../../extensions/conductor .agents/plugins/conductor
+```
+
+The optional upstream marketplace listing requires a version field in the
+plugin manifest. The validated workspace source is identified by its Git commit.
 
 ## P3 source provenance and restricted-data boundary
 

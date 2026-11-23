@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 
 import pytest
@@ -10,7 +11,7 @@ import pytest
 from tools.verify_source_manifest import source_files, verify_git_submodules, verify_manifest
 
 
-CONDUCTOR_PIN = '7a5c560a4fdf5297be58594cc37527eb12790272'
+CONDUCTOR_PIN = '6e8f9a860bcdd6a2c423473c12e745200688c633'
 CONDUCTOR_PATH = 'extensions/conductor'
 
 
@@ -52,6 +53,16 @@ def test_source_manifest_is_current_and_has_no_private_material():
     assert manifest['git_submodules'] == {CONDUCTOR_PATH: CONDUCTOR_PIN}
     assert manifest['native_provider_qualified'] is False
     assert not any(p.startswith('private/') or p.endswith('.xlsx') for p in manifest['file_sha256'])
+
+
+def test_conductor_registry_links_every_track_in_the_plugin_format():
+    conductor = Path(__file__).resolve().parents[1] / 'conductor'
+    entries = re.split(r'(?m)^- \[[ x~]\] \*\*Track: ', (conductor / 'tracks.md').read_text())[1:]
+    links = [re.search(r'\(tracks/([^/]+)/index\.md\)', entry) for entry in entries]
+    assert all(links)
+    expected = {plan.parent.name for plan in (conductor / 'tracks').glob('*/plan.md')}
+    assert len(links) == len(expected)
+    assert {link.group(1) for link in links} == expected
 
 
 def test_build_metadata_does_not_hide_unexpected_project_files(tmp_path):

@@ -17,6 +17,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CONSUMER = ROOT / 'native/kairos-icu-liaison'
+TARGET = CONSUMER / 'build'
 SCENARIO = ROOT / 'model-inputs/p6/kairos-synthetic-input.json'
 SOURCE_LOCK = ROOT / 'model-inputs/p6/kairos-provider-lock.json'
 REFERENCE = ROOT / 'tests/fixtures/p6_native/independent-reference.json'
@@ -24,6 +25,7 @@ REFERENCE = ROOT / 'tests/fixtures/p6_native/independent-reference.json'
 
 def _call(argv: list[str], *, timeout: int = 240) -> subprocess.CompletedProcess[str]:
     p = subprocess.run(argv, cwd=CONSUMER, capture_output=True, text=True,
+                       env={**os.environ, 'CARGO_TARGET_DIR': str(TARGET)},
                        timeout=timeout, check=False)
     if p.returncode:
         raise RuntimeError(f'{argv[0]} {argv[1]} failed (exit {p.returncode})')
@@ -53,7 +55,7 @@ def main() -> int:
         _call([cargo, 'test', '--locked', '--offline'], timeout=300)
         _call([cargo, 'build', '--locked', '--offline'], timeout=300)
         binary_name = 'icu-liaison-kairos-consumer.exe' if os.name == 'nt' else 'icu-liaison-kairos-consumer'
-        binary = CONSUMER / 'target/debug' / binary_name
+        binary = TARGET / 'debug' / binary_name
         if not binary.is_file():
             raise RuntimeError('built binary not present')
         digest = hashlib.sha256(binary.read_bytes()).hexdigest()

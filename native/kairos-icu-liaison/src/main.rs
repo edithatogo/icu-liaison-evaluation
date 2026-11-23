@@ -12,7 +12,7 @@ use kairo_ecs_des::{StagedRequestState, StagedResourceRuntime};
 use kairo_ecs_types::SimTime;
 use serde::{Deserialize, Serialize};
 
-const PROVIDER_SHA: &str = "a1f6283575ad26918230adc122a99b5c08fc4da3";
+const PROVIDER_SHA: &str = "bebb65c45b3055d5f743566631de12061bac4e78";
 const PRODUCER: &str = "icu-liaison-kairos-consumer";
 const MAX_REQUESTS: usize = 1000;
 
@@ -100,30 +100,43 @@ fn is_synthetic_id(value: &str) -> bool {
         return false;
     };
     (1..=80).contains(&rest.len())
-        && rest.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'_')
+        && rest
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'_')
 }
 
 fn is_strategy_id(value: &str) -> bool {
     let bytes = value.as_bytes();
     (2..=49).contains(&bytes.len())
         && bytes[0].is_ascii_lowercase()
-        && bytes.iter().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || *b == b'_')
+        && bytes
+            .iter()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || *b == b'_')
 }
 
 fn check(input: &Input) -> Result<(), String> {
-    if input.schema_version != 1 || input.data_class != "synthetic"
-        || input.staffed_beds != 1 || !(2..=525_600).contains(&input.horizon_minutes)
-        || !input.scenario_id.starts_with("syn-") || input.scenario_id.len() > 128
-        || !input.scenario_id.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'_')
+    if input.schema_version != 1
+        || input.data_class != "synthetic"
+        || input.staffed_beds != 1
+        || !(2..=525_600).contains(&input.horizon_minutes)
+        || !input.scenario_id.starts_with("syn-")
+        || input.scenario_id.len() > 128
+        || !input
+            .scenario_id
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'_')
     {
         return Err("invalid synthetic scenario contract".into());
     }
-    if !(2..=8).contains(&input.strategies.len()) || input.strategies[0].strategy_id != "current_care" {
+    if !(2..=8).contains(&input.strategies.len())
+        || input.strategies[0].strategy_id != "current_care"
+    {
         return Err("current_care and at least one alternative required".into());
     }
     let mut names = HashSet::new();
     for arm in &input.strategies {
-        if !is_strategy_id(&arm.strategy_id) || !names.insert(&arm.strategy_id)
+        if !is_strategy_id(&arm.strategy_id)
+            || !names.insert(&arm.strategy_id)
             || arm.initial_departure_minute == 0
             || arm.initial_departure_minute > input.horizon_minutes
         {
@@ -149,31 +162,51 @@ fn check(input: &Input) -> Result<(), String> {
 
 fn simulate_arm(input: &Input, arm: &StrategyInput) -> Result<Arm, String> {
     let mut runtime = StagedResourceRuntime::new().map_err(|e| format!("native runtime: {e:?}"))?;
-    let resource = runtime.create_resource(1).map_err(|e| format!("resource: {e:?}"))?;
-    let resident = runtime.spawn_actor().map_err(|e| format!("resident: {e:?}"))?;
-    let index = runtime.submit(resource, resident, SimTime::ZERO)
+    let resource = runtime
+        .create_resource(1)
+        .map_err(|e| format!("resource: {e:?}"))?;
+    let resident = runtime
+        .spawn_actor()
+        .map_err(|e| format!("resident: {e:?}"))?;
+    let index = runtime
+        .submit(resource, resident, SimTime::ZERO)
         .map_err(|e| format!("resident submit: {e:?}"))?;
-    let events = runtime.run_for(1).map_err(|e| format!("resident dispatch: {e:?}"))?;
+    let events = runtime
+        .run_for(1)
+        .map_err(|e| format!("resident dispatch: {e:?}"))?;
     if events != 1 {
         return Err("resident admission not dispatched".into());
     }
-    let original = runtime.request(index).map_err(|e| format!("resident snapshot: {e:?}"))?;
+    let original = runtime
+        .request(index)
+        .map_err(|e| format!("resident snapshot: {e:?}"))?;
     if original.state != StagedRequestState::Active {
         return Err("resident was not allocated the ICU bed".into());
     }
     if arm.initial_departure_minute < input.horizon_minutes {
-        runtime.release(original.lease.ok_or("missing resident lease")?,
-                        SimTime::from_ticks(u128::from(arm.initial_departure_minute)))
+        runtime
+            .release(
+                original.lease.ok_or("missing resident lease")?,
+                SimTime::from_ticks(u128::from(arm.initial_departure_minute)),
+            )
             .map_err(|e| format!("resident release: {e:?}"))?;
     }
 
     let mut admitted = vec![None; input.arrivals.len()];
     let mut handles = Vec::with_capacity(input.arrivals.len());
     for arrival in &input.arrivals {
-        let actor = runtime.spawn_actor().map_err(|e| format!("demand actor: {e:?}"))?;
-        handles.push(runtime.submit(resource, actor,
-                        SimTime::from_ticks(u128::from(arrival.request_minute)))
-            .map_err(|e| format!("demand submission: {e:?}"))?);
+        let actor = runtime
+            .spawn_actor()
+            .map_err(|e| format!("demand actor: {e:?}"))?;
+        handles.push(
+            runtime
+                .submit(
+                    resource,
+                    actor,
+                    SimTime::from_ticks(u128::from(arrival.request_minute)),
+                )
+                .map_err(|e| format!("demand submission: {e:?}"))?,
+        );
     }
     let mut occupancies = vec![Occupancy {
         episode_id: "syn-index-1".into(),
@@ -184,7 +217,9 @@ fn simulate_arm(input: &Input, arm: &StrategyInput) -> Result<Arm, String> {
     // each newly activated lease schedules its own later release in Kairos.
     let max_events = 2 * input.arrivals.len() + 2;
     for _ in 0..max_events {
-        let dispatched = runtime.run_for(1).map_err(|e| format!("native step: {e:?}"))?;
+        let dispatched = runtime
+            .run_for(1)
+            .map_err(|e| format!("native step: {e:?}"))?;
         if dispatched == 0 {
             break;
         }
@@ -197,12 +232,15 @@ fn simulate_arm(input: &Input, arm: &StrategyInput) -> Result<Arm, String> {
             if admitted[idx].is_some() {
                 continue;
             }
-            let snapshot = runtime.request(*handle).map_err(|e| format!("native request: {e:?}"))?;
+            let snapshot = runtime
+                .request(*handle)
+                .map_err(|e| format!("native request: {e:?}"))?;
             if snapshot.state != StagedRequestState::Active {
                 continue;
             }
             let arrival = &input.arrivals[idx];
-            let finish = now.saturating_add(arrival.occupied_duration_minutes)
+            let finish = now
+                .saturating_add(arrival.occupied_duration_minutes)
                 .min(input.horizon_minutes);
             if finish <= now {
                 return Err("invalid native occupancy interval".into());
@@ -214,13 +252,20 @@ fn simulate_arm(input: &Input, arm: &StrategyInput) -> Result<Arm, String> {
                 end_minute: finish,
             });
             if finish < input.horizon_minutes {
-                runtime.release(snapshot.lease.ok_or("missing demand lease")?,
-                                SimTime::from_ticks(u128::from(finish)))
+                runtime
+                    .release(
+                        snapshot.lease.ok_or("missing demand lease")?,
+                        SimTime::from_ticks(u128::from(finish)),
+                    )
                     .map_err(|e| format!("demand lease release: {e:?}"))?;
             }
         }
     }
-    if runtime.run_for(1).map_err(|e| format!("bounded event drain: {e:?}"))? != 0 {
+    if runtime
+        .run_for(1)
+        .map_err(|e| format!("bounded event drain: {e:?}"))?
+        != 0
+    {
         return Err("too many native events; refusal rather than partial output".into());
     }
     let mut requests = Vec::with_capacity(input.arrivals.len());
@@ -228,11 +273,19 @@ fn simulate_arm(input: &Input, arm: &StrategyInput) -> Result<Arm, String> {
         requests.push(Request {
             request_id: arrival.request_id.clone(),
             request_minute: arrival.request_minute,
-            disposition: if admitted[i].is_some() { "admitted" } else { "censored" },
+            disposition: if admitted[i].is_some() {
+                "admitted"
+            } else {
+                "censored"
+            },
             admitted_minute: admitted[i],
         });
     }
-    Ok(Arm { strategy_id: arm.strategy_id.clone(), occupancies, requests })
+    Ok(Arm {
+        strategy_id: arm.strategy_id.clone(),
+        occupancies,
+        requests,
+    })
 }
 
 fn run(input: Input) -> Result<Output, String> {
@@ -256,7 +309,9 @@ fn run(input: Input) -> Result<Output, String> {
         seed: input.seed,
         horizon_minutes: input.horizon_minutes,
         capacity: vec![Window {
-            start_minute: 0, end_minute: input.horizon_minutes, staffed_beds: input.staffed_beds,
+            start_minute: 0,
+            end_minute: input.horizon_minutes,
+            staffed_beds: input.staffed_beds,
         }],
         strategies,
     })
@@ -274,11 +329,13 @@ fn main() -> ExitCode {
     }
     let output = fs::read_to_string(path)
         .map_err(|_| "cannot read synthetic input".to_string())
-        .and_then(|bytes| serde_json::from_str::<Input>(&bytes)
-            .map_err(|_| "invalid synthetic JSON".to_string()))
+        .and_then(|bytes| {
+            serde_json::from_str::<Input>(&bytes).map_err(|_| "invalid synthetic JSON".to_string())
+        })
         .and_then(run)
-        .and_then(|value| serde_json::to_string(&value)
-            .map_err(|_| "cannot serialize native result".to_string()));
+        .and_then(|value| {
+            serde_json::to_string(&value).map_err(|_| "cannot serialize native result".to_string())
+        });
     match output {
         Ok(out) => {
             println!("{out}");
@@ -296,8 +353,10 @@ mod tests {
     use super::*;
 
     fn fixture() -> Input {
-        serde_json::from_str(include_str!("../../../model-inputs/p6/kairos-synthetic-input.json"))
-            .expect("synthetic contract fixture must parse")
+        serde_json::from_str(include_str!(
+            "../../../model-inputs/p6/kairos-synthetic-input.json"
+        ))
+        .expect("synthetic contract fixture must parse")
     }
 
     #[test]
@@ -360,5 +419,4 @@ mod tests {
         scenario.staffed_beds = 2;
         assert!(run(scenario).is_err());
     }
-
 }

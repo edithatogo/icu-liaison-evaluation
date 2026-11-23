@@ -25,8 +25,9 @@ def test_native_domain_source_uses_staged_resource_leases():
     assert 'VecDeque' not in text
 
 
-def test_native_source_is_explicitly_unqualified_until_compiled():
+def test_native_guide_requires_the_locked_build_and_independent_attestation():
     guide = (SRC / 'README.md').read_text()
-    assert 'NOT EXECUTED' in guide
-    assert 'cargo build --locked' in guide
+    assert 'Independent build attestation' in guide
+    assert 'cargo fetch --locked' in guide
+    assert 'tools/qualify_p6_native.py' in guide
     assert 'no CHHHS' in guide.lower() or 'CHHHS' in guide

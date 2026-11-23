@@ -47,8 +47,8 @@ an exact reconciled migration.
 
 ## P6 native and clinical boundary
 
-Native Rust source in `native/kairos-icu-liaison` is uncompiled. Do not
-mark P6.3 native execution complete from synthetic fixtures. Run
+The optional Rust consumer in `native/kairos-icu-liaison` has a checked local
+one-bed replay. Keep independent build attestation and site acceptance open. Run
 `tools/qualify_p6_native.py` only with an approved toolchain, reviewed lock
 and exact upstream source. No direct patient records in public Git.
 
