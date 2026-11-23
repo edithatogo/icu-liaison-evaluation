@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 import subprocess
 
-EXCLUDED_DIRS = frozenset({".git", ".pytest_cache", ".snakemake", "__pycache__", ".venv", "private", "outputs", "results", "dist", "build"})
+EXCLUDED_DIRS = frozenset({".git", ".local", ".pytest_cache", ".snakemake", "__pycache__", ".venv", "private", "outputs", "results", "dist", "build"})
 EXCLUDED_FILES = frozenset({"SOURCE_MANIFEST.json", ".git"})
 EXCLUDED_SUFFIXES = frozenset({".pyc", ".xlsx", ".xlsm", ".parquet", ".npz"})
 SUBMODULE_URLS = {

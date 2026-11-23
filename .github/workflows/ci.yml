@@ -34,6 +34,8 @@ jobs:
           version="$(.venv/bin/python --version)"
           echo "$version"
           test "$version" = "Python $(cat .python-version)"
+      - name: Check the public data boundary
+        run: .venv/bin/python tools/publication_guard.py
       - name: Install pinned source, test and report dependencies
         run: .venv/bin/python -m pip install -c requirements-ci.txt --build-constraint requirements-ci.txt '.[test,report]'
       - name: Verify project hashes and Conductor gitlink

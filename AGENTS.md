@@ -1,7 +1,7 @@
 # Agent ownership and safety map
 
-This private repository owns the ICU liaison evaluation source. It is not a
-deployed service or an approved local evaluation. Preserve original sources,
+This public repository owns the portable ICU liaison evaluation source.
+The deployment and local evaluation require separate approvals. Preserve original sources,
 the separate workbook and exploratory CareOps Sim PR #215 until its migration
 comparison and acceptance are complete.
 
@@ -10,6 +10,10 @@ Sim, Dapane, Voiage, Kairos, Searchright or CareOps Finance tasks. No private
 patient episodes, hospital staff information, internal costing, credentials or
 verbatim conversations enter public Git. Clinical intervention effects remain
 uncertain assumptions until approved local evidence supports replacement.
+Keep candidate data from parallel repositories, SharePoint or OneDrive in
+their approved private storage. This applies to derived results, source links
+and access receipts. Public Git and hosted CI use the fictional fixtures and
+admitted public references.
 
 Set up and verify the repository-local Python in [README](README.md#tested-basic-workflow).
 Run `.venv/bin/python -m pytest -q` and

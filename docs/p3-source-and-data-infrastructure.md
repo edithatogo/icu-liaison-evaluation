@@ -67,6 +67,21 @@ PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli audit \
 
 The CLI requires a separate private output location, creates an aggregate output with mode 0600 (on platforms supporting it), does not print restricted counts, and refuses writing into source-controlled directories except explicitly ignored `.local/` or `private/`. This is a **defence in depth**, not a certified secure environment. No interactive upload, Git commit, third-party API call, automated extraction or publication is performed.
 
+## Public repository boundary
+
+Keep source files from parallel repositories, SharePoint and OneDrive in their
+approved private environments. Keep extracts, links, evidence receipts,
+derived aggregate results and site-calibrated outputs there as well. The public
+workflow uses fictional fixtures and admitted public references.
+
+The commit and push checks read Git objects. They reject private working
+directories, common export formats, restricted JSON, raw SharePoint exports
+and tenant links. The CSV checks bind the existing fictional fixtures to their
+exact bytes. The push check also inspects intermediate commits whose files
+were subsequently removed. Hosted CI checks the public checkout with
+path-redacted diagnostics. Keep these protections enabled and review any
+fixture change for accidental disclosure before pushing.
+
 ## Outcome and denominator integrity
 
 A continuous hospitalisation may contain multiple ICU stays. P3 sorts every episode, rejects missing/duplicate keys and overlaps, and chooses the **first eligible live adult ward discharge per continuous hospitalisation** as the index. Additional ICU admissions remain in the same hospitalisation for readmission ascertainment, not as independent clinical index records.
