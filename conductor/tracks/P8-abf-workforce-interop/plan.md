@@ -19,6 +19,12 @@
 
 - [x] P8.2.0 Implement a synthetic-only single-episode counterfactual consumer that calls existing annual `calculate_acute` twice, holds every non-ICU-hour column fixed, rejects wrong annual output labels/errors, and never converts NWAU into revenue. Source-level tests only.
 
+- [x] Exercise the installed pinned MCHS consumer for a fictional episode in
+  each of 2024–25 and 2025–26. Both pairs match the archived IHACPA acute SAS
+  calculation and source tables for the tested inlier case. Each unchanged pair
+  produces exactly zero. The locked macOS arm64 Rust canary also passed.
+  [Scoped execution receipt](../../../verification/p8-mchs-paired-acute-2026-11-24.json)
+
 - [ ] P8.2.1 Record pricing-year, AR-DRG/coding edition and hospital episode
   identity, ICU-eligible hours, whole-stay LOS, patient and establishment
   eligibility, HAC/AHR adjustments; freeze complete current-care and intervention

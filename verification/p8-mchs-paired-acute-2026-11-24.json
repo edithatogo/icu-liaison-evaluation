@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-24",
+  "scope": "synthetic_paired_inlier_and_native_canary",
+  "provider_source_revision": "125933c7770e9a6bed9b62e354a6380d3dac3d47",
+  "runtime": {
+    "python": "3.15.2",
+    "nwau_py": "0.2.2",
+    "rustc": "1.100.0",
+    "os": "macOS",
+    "arch": "arm64"
+  },
+  "uv_lock_sha256": "a77276d8144eb0092377c880fc1cae0f59ee27f15218112c8fe638d5ae908fa6",
+  "cargo_lock_sha256": "7446d4aa8383ef34414fcbe09570d98e7a6129bf1df7725297c7461872ffc100",
+  "native_canary": {
+    "extension_sha256": "ab671cc187726a0ac600b9989c33124daa8d4121940d7799a4f2a74be076bf2f",
+    "build_profile": "dev",
+    "macos_extension_linker_args": [
+      "-undefined",
+      "dynamic_lookup"
+    ],
+    "test_file": "tests/test_acute.py",
+    "passed": 11,
+    "skipped": [
+      {
+        "count": 1,
+        "reason": "2018 edition not supported (vendor test)"
+      }
+    ],
+    "native_polars_test": "test_calculate_acute_polars_native_input_and_output"
+  },
+  "fixture": "model-inputs/p8/synthetic-mchs-pair.json",
+  "oracle": "direct arithmetic from archived IHACPA SAS code and source tables for an eligible unbundled inlier stay",
+  "comparative_output_precision_decimal_places": 10,
+  "annual_reference_hash_basis": "SHA-256 of json.dumps with sorted keys of SAS table basenames and their SHA-256 digests",
+  "cases": [
+    {
+      "pricing_year": 2024,
+      "icu_excluded_stay_days": 4,
+      "icu_rate_nwau_per_hour": "0.0441",
+      "inlier_weight_nwau": "0.8547",
+      "oracle_current_nwau": "3.4235250000",
+      "oracle_intervention_nwau": "3.2471250000",
+      "oracle_change_nwau": "-0.1764000000",
+      "provider_current_nwau_raw": "3.4235249999999997",
+      "provider_intervention_nwau_raw": "3.2471249999999996",
+      "provider_change_nwau_raw": "-0.1764000000000001",
+      "no_effect_nwau": "0.0000000000000000",
+      "reference_bundle_hash": "e7bb0fb6b0f01211760e8c342d9dd74fabb293ca90ce5585775b08ece0f5ac08",
+      "oracle_source_sha256": {
+        "NWAU24_CALCULATOR_ACUTE.sas": "904f3404b891827db1eb14574caac0e3c6dca12fc7da829dfce66a4d97284578",
+        "nep24_aa_adj_icu.sas7bdat": "a39666f508f524a58142a6b620d3b8f2f9955c0aa468ac3673d452f8a031b688",
+        "nep24_aa_price_weights.sas7bdat": "782fcc46222cd97147b8a64545e7465f3b9c22a1a8816cf52ad0f6b9e571fae7"
+      }
+    },
+    {
+      "pricing_year": 2025,
+      "icu_excluded_stay_days": 4,
+      "icu_rate_nwau_per_hour": "0.0442",
+      "inlier_weight_nwau": "0.7946",
+      "oracle_current_nwau": "3.3692500000",
+      "oracle_intervention_nwau": "3.1924500000",
+      "oracle_change_nwau": "-0.1768000000",
+      "provider_current_nwau_raw": "3.36925",
+      "provider_intervention_nwau_raw": "3.19245",
+      "provider_change_nwau_raw": "-0.17680",
+      "no_effect_nwau": "0.00000",
+      "reference_bundle_hash": "e3fa229523be91c1778952c7e8d50e82eb1201203b707aac13e98ebad510699b",
+      "oracle_source_sha256": {
+        "NWAU25_CALCULATOR_ACUTE.sas": "5057172ba2e88e835ceeb2a57bb6273bea64967400b30fb27b53391fb56f3f4d",
+        "nep25_aa_adj_icu.sas7bdat": "4004ec0585f207f09636db0cec46487f84a1229a8e8962b254648eadeb213c32",
+        "nep25_aa_price_weights.sas7bdat": "7dff0a3013ffdb40e6ea4b956c75ad12c130e3c93de17a2da793bece4520b2dd"
+      }
+    }
+  ],
+  "annual_official_engine_parity_accepted": false,
+  "clinical_case_mix_accepted": false,
+  "actual_revenue_aud": null
+}
