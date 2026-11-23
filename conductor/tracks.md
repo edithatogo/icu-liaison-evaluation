@@ -12,14 +12,14 @@ until content is faithfully reconciled and a replacement is verified.
   the repository is now public with GitHub Secret Scanning + Push Protection
   enabled, hosted GitHub Actions CI passed on `main` (`1c7f640`, run
   `44444785989`), local CI/CD + `gitleaks` Git hooks (`pre-commit`,
-  `pre-merge-commit`, `pre-push`) are active, static Conductor 0.4.1 parity is
-  verified (`autoUpdate: true` caveat), isolated Python 3.15.2 native
+  `pre-merge-commit`, `pre-push`) are active, the pinned Antigravity Conductor
+  plugin exposes six workspace commands, isolated Python 3.15.2 native
   Dapane `0.1.0` / Voiage `3.1.0` numerical oracles passed, and the 19-file
   PR #215 comparison is recorded. P0.5 completed the CPython 3.15.2 migration
   with 342 tests passing in hosted CI and locally with Dapane installed.
   [Migration receipt](../verification/python-315-migration-2026-11-19.json)
-  Independent wheel-provenance adjudication,
-  live Gemini runtime command qualification, CHHHS data, and independent
+  Independent Voiage artifact adjudication,
+  live interactive Conductor checks, CHHHS data, and independent
   sign-off to retire CareOps Sim PR #215 remain pending.
 - [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
@@ -57,19 +57,19 @@ until content is faithfully reconciled and a replacement is verified.
    [plan](tracks/P3-evidence-data-infrastructure/plan.md)).
   Implemented portable source-value/denominator crosswalk, versioned synthetic
   feed manifests, SHA-256 and Pydantic schema admission, hospitalisation/ICU
-  linkage, explicit missingness/censoring and aggregate report checks. Actual
-  2024/25 PDF document re-verification, Searchright run, CHHHS local data and
-  clinical/governance/Finance approval remain **blocked**. Source tests do not
-  certify deployed or native-provider operation.
+  linkage, explicit missingness/censoring and aggregate report checks. The
+  publisher PDF and benchmark pages are checked for 2024/25. Independent
+  source admission, Searchright, CHHHS data and clinical, governance and
+  Finance approval remain open.
 - [~] **Track: P4 — Reconciled probabilistic cost-consequence model**
   ([index](tracks/P4-economic-decision-model/index.md),
    [spec](tracks/P4-economic-decision-model/spec.md),
    [plan](tracks/P4-economic-decision-model/plan.md)).
   Multi-strategy, correlated-uncertainty model, threshold and one-way
   analyses, resource/budget/capacity separation and P2/P3 source admission
-  have source-level local tests. **Clinical validation, CHHHS data, exact
-  publisher document admission and native Dapane/Voiage qualification remain
-  blocked**. No experimental clinical or financial effect is admitted.
+  have source-level local tests. Clinical validation, CHHHS data, independent
+  publisher-source admission and Voiage qualification remain open. P1 records
+  the approved Dapane artifacts and their supported environments.
 - [~] **Track: P5 — Reproducible reporting and independent checks**
   ([index](tracks/P5-reporting-independent-review/index.md),
    [spec](tracks/P5-reporting-independent-review/spec.md),
@@ -96,8 +96,8 @@ until content is faithfully reconciled and a replacement is verified.
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
   2023/24 review. P7.5 records scoped approval of the Dapane artifacts and
   native execution receipts on three tested hosts. Broader Dapane
-  qualification and release review, Voiage admission, the 2024/25 PDF,
-  CHHHS empirical calibration and approvals remain open.
+  qualification and release review, Voiage admission, independent review of
+  the retrieved 2024/25 PDF, CHHHS calibration and approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
   [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 
@@ -123,7 +123,7 @@ Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 `[!]` is blocked on a stated dependency. Both P7 directories retain their
 historical phase identifiers; use the full track directory in handoffs.
 
-- [~] **Track: P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Two request tables, 14 synthetic figures and source-level catalogues implemented. Ten figures require site or provider evidence.
+- [~] **Track: P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Four tables and 14 figures are produced for each synthetic scenario. Three tables and ten figures require admitted site or provider evidence.
 
 - [~] **Track: P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). M01–M31 and D01–D14, source-linked figures, synthetic mark and visual checks. Site governance and professional review remain open.
 

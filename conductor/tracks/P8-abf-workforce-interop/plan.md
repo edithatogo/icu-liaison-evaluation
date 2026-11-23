@@ -65,6 +65,9 @@
 
 ## P8.5 — Native, independent and clinical gates (pending)
 
+- [x] P8.5.0 Integrate the source-side contracts and their synthetic tests in
+  the dedicated repository with hosted CI. See the
+  [hosted source receipt](../../../verification/hosted-ci-public-2026-11-19.json).
 - [ ] P8.5.1 Execute installed MCHS 2024–25/2025–26 parity fixtures, current-year
   qualification where supported, workforce full-roster cases, Dapane and Voiage
   native consumers; record SHA/lock/host and independent numeric results.
@@ -72,9 +75,9 @@
   approved nursing classification/roster/leave cover and funding mechanism.
   Verify direct resource costs, incremental budgets and activity shadows
   independently, including negative effect and double-counting oracles.
-- [ ] P8.5.3 Obtain clinical/Finance/data-governance and equity review and
-  integrate in the *user-supplied* dedicated repository with hosted CI. Only
-  then consider intervention effect and financial approval.
+- [ ] P8.5.3 Obtain clinical, Finance, data-governance and equity review for the
+  qualified provider and site analysis before considering intervention effect
+  and financial approval.
 
 P8.0–P8.1 and the narrow source-adapter subincrements P8.2.0/P8.3.0 are implemented. Annual official-calculator parity, real nursing source/roster qualification, native providers and CHHHS acceptance are **not accepted**.
 Existing provider owners retain their code and their historical track IDs.

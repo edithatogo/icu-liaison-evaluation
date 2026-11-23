@@ -18,7 +18,9 @@
 - [x] 4. Reconcile with P0–P6 Conductor and document how to substitute real inputs privately.
 
 ## P7.4 — External qualifications (blocked, not accepted)
-- [ ] 1. Qualify actual ANZICS publisher PDF and page-specific denominators.
+- [~] 1. Qualify the ANZICS PDF and page-specific denominators. The direct
+  publisher and page checks are recorded. Independent admission remains open.
+  [P7.6 evidence](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
 - [ ] 2. Obtain approved CHHHS cohort, workforce, cost, ward and clinical safety data with competent oversight.
 - [ ] 3. Execute and independently qualify pinned Dapane/Voiage/Kairos provider artifacts.
   Dapane's approved wheels, extensions and native pricing receipts are
@@ -27,8 +29,12 @@
   `provider_qualification_receipt_sha256`.
   [Provider lock](../../../providers.lock.json) ·
   [Technical P7.5](../P7-technical-empirical-qualification/plan.md)
+  The pinned Kairos consumer also passed local native replay. Independent
+  build attestation remains open.
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
-- [ ] 5. Migrate into user-selected dedicated repository, run its hosted checks, and preserve PR #215 until reconciled.
+- [~] 5. The portable source is in the selected repository with passing
+  hosted checks. Independent migration acceptance and PR #215 disposition
+  remain open.
 
 **P7.1–P7.3 passing means only synthetic implementation progress.** It cannot
 waive P7.4 or any other repository's validation and release gate.

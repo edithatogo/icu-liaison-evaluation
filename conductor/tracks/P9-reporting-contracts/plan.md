@@ -18,4 +18,7 @@
 - [x] P9.3h Enforce source-only P10 claim and provenance checks; retain separate per-artifact visual evidence.
 - [x] P9.6 Record four-profile visual review and source-mark evidence for F01 and all 13 baseline P9 figures. The ten evidence-dependent figures have their own review scope.
 
-See the [20 November synthetic figure verification](../../../verification/p9-synthetic-figures-2026-11-20.json).
+The [24 November contract review](../../../verification/p10-p11-contract-review-2026-11-24.json)
+records the latest six-scenario production check and four-profile baseline
+review. The [20 November verification](../../../verification/p9-synthetic-figures-2026-11-20.json)
+records the earlier figure bundle.

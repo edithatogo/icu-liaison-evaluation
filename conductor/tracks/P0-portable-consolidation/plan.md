@@ -40,11 +40,11 @@
   Secret Scanning + Push Protection enabled.
 - [x] Register and check out Conductor at the reviewed SHA as a Git submodule
   (`7a5c560a4fdf5297be58594cc37527eb12790272`).
-- [~] Qualify the installed Gemini extension commands and permissions: static
-  SHA-256 parity of all 22 runtime, command, and `ask_user`-only policy files
-  passed (`verification/p0-gemini-conductor-audit-2026-11-19.json`), while
-  `autoUpdate: true` on the user `github-release` install and live interactive
-  Gemini CLI slash-command execution remain open.
+- [x] Verify the current Conductor pin in Antigravity. A fresh workspace
+  session exposed all six commands and the registry links all 13 plans.
+  [P0 handoff](handoff.md)
+- [ ] Check the live interactive command and permission behaviour. The retired
+  Gemini extension check remains in the dated audit.
 - [x] Run exact installed Dapane 0.1/Python and Voiage 3.1/Python 3.15.2
   consumers with independent numerical oracles and dependency lockfiles in an
   isolated Python 3.15.2 scratch environment

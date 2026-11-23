@@ -184,9 +184,10 @@ def _index(sources: SourceFigures) -> str:
         items.append(f"""<section aria-labelledby="{key}">
 <h2 id="{key}">{title}</h2>
 <p>{escape(meta['decision_question'])}</p>
-<figure><img src="{record['svg']}" alt="{escape(meta['alt_text'], quote=True)}"></figure>
-<p class="links"><a href="{record['csv']}">Source values (CSV)</a>
-<a href="{record['svg']}">Vector figure (SVG)</a></p>
+<figure><a href="{record['svg']}">
+<img src="{record['svg']}" alt="{escape(meta['alt_text'], quote=True)}">
+<span>Open full-size figure (SVG)</span></a></figure>
+<p class="links"><a href="{record['csv']}">Source values (CSV)</a></p>
 </section>""")
     return f"""<!doctype html>
 <html lang="en"><meta charset="utf-8">
@@ -203,6 +204,7 @@ def _index(sources: SourceFigures) -> str:
   nav ol {{ padding-left: 1.4rem; }}
   section {{ background: white; padding: clamp(.65rem, 2.5vw, 1.25rem); margin: 1.1rem 0; }}
   figure {{ margin: .5rem auto; max-width: 35rem; }}
+  figure a {{ display: block; }}
   img {{ display: block; width: 100%; height: auto; }}
   .links {{ display: flex; flex-wrap: wrap; gap: .2rem 1.3rem; margin-bottom: 0; }}
   @page {{ size: A4; margin: 14mm; }}
@@ -211,6 +213,7 @@ def _index(sources: SourceFigures) -> str:
     main {{ width: 100%; }}
     section {{ break-before: page; break-inside: avoid; }}
     figure img {{ max-height: 205mm; object-fit: contain; filter: grayscale(1); }}
+    figure a span {{ display: none; }}
   }}
 </style>
 <main>
