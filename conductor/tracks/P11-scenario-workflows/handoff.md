@@ -58,3 +58,25 @@ The synthetic workflow was rerun on merged `main` at
 synthetic validation and Snakemake recovery passed in run 44675128191 on that
 same merge revision. P11's synthetic implementation is complete; provider,
 site-data, clinical safety and investment gates remain with their owners.
+
+## Dependency review on 23 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the source-only dependency
+batch on `codex/icu-dependency-batch` in
+`/Users/doughnut/.codex/worktrees/icu-dependency-batch.eumOqM/icu-liaison-evaluation`. The
+worktree starts from `08d7cac`. Scope is the three Python locks, local Renovate
+grouping, the hosted privacy runner and their checks. Native runtime promotion
+remains a separate lane.
+
+Review the routine Python lock bumps in one batch, with the Pydantic and core
+pins updated together. The privacy job can qualify Ubuntu 26.04 in parallel.
+The inherited Renovate window remains Monday before 06:00 Sydney time. The
+equivalent Brisbane window during NSW daylight saving is Sunday 23:00 to
+Monday 05:00. Maintainers still review every promotion.
+
+| Review group | Evidence required for the remaining candidates |
+| --- | --- |
+| Snakemake environment | A supported Snakemake release that resolves Packaging 26, PuLP 4, Smart Open 10, Docutils 0.23 and report plugins 2. Interface Common 1.24.1 also needs Packaging 26.1 or later. |
+| SQLModel and SQLAlchemy | Check the pair after the Snakemake release admits SQLModel 0.0.50. SQLModel 0.0.37 caps SQLAlchemy below 2.1. |
+| Kairos | Review both crate pins at the same source revision and run P6 native qualification with the reviewed Cargo lock. |
+| Conductor | Verify command and project behaviour after the upstream switch from the Gemini extension to the agent plugin. |
