@@ -33,6 +33,55 @@ def test_independent_report_reader_accepts_unmodified_generated_bundle(tmp_path)
     assert reviewed['provider_qualification'] is False
 
 
+def test_reader_rejects_rehashed_unregistered_attachment(tmp_path):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    attachment = target / 'unregistered.csv'
+    attachment.write_text('scenario,draws\nfictional,10\n', encoding='utf-8')
+    _rehash(target, attachment.name)
+    with pytest.raises(ValueError, match='file-set mismatch'):
+        review_report(target)
+
+
+def test_reader_requires_manifest_to_be_a_regular_bundle_file(tmp_path):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    manifest = target / 'manifest.json'
+    external_manifest = manifest.rename(tmp_path / 'manifest.json')
+    manifest.symlink_to(external_manifest)
+    with pytest.raises(ValueError, match='manifest'):
+        review_report(target)
+
+
+def test_reader_rejects_rehashed_contradictory_decision_brief(tmp_path):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    brief = target / 'report.md'
+    original = brief.read_text(encoding='utf-8')
+    brief.write_text(original.replace('Clinical safety: unmeasured.', 'Clinical safety: demonstrated.'),
+                     encoding='utf-8')
+    _rehash(target, brief.name)
+    with pytest.raises(ValueError, match='decision brief'):
+        review_report(target)
+
+
+def test_reader_rejects_rehashed_inconsistent_sensitivity_swing(tmp_path):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    table = target / 'one-way-sensitivity.csv'
+    with table.open(newline='', encoding='utf-8') as stream:
+        rows = list(csv.DictReader(stream))
+    row = next(row for row in rows if float(row['absolute_net_resource_swing_aud']) > 0)
+    row['absolute_net_resource_swing_aud'] = '0'
+    with table.open('w', newline='', encoding='utf-8') as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator='\n')
+        writer.writeheader()
+        writer.writerows(rows)
+    _rehash(target, table.name)
+    with pytest.raises(ValueError, match='sensitivity'):
+        review_report(target)
+
+
 def test_rehashing_tampered_mean_does_not_evade_semantic_review(tmp_path):
     target=tmp_path/'report';build_report(_scenario(),target)
     f=target/'model-summary.json'

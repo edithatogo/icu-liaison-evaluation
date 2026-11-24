@@ -55,6 +55,28 @@ def test_provider_mode_emits_qualified_narrow_nominal_reconciliation(tmp_path):
     assert model['investment_ready'] is False
 
 
+@pytest.mark.parametrize('injected', [False, True])
+def test_empty_nominal_ledgers_do_not_claim_provider_execution(tmp_path, injected):
+    def unexpected_call(request):
+        pytest.fail('empty nominal ledgers do not require a provider call')
+
+    data = scenario().model_dump()
+    data['dependence_groups'] = []
+    for arm in data['strategies'][1:]:
+        for key in ('coverage_fraction', 'annual_incremental_cost_aud'):
+            arm[key].update(family='fixed', params={'value': 0})
+    target = tmp_path / 'empty-ledgers'
+    build_report(EconomicScenario.model_validate(data), target, dapane_mode='provider',
+                 dapane_provider=unexpected_call if injected else None)
+    model = json.loads((target / 'model-summary.json').read_text(encoding='utf-8'))
+    assert model['dapane_valuation']['status'] == 'no_provider_call_no_resource_use'
+    valuations = json.loads((target / 'dapane-nominal-valuation.json').read_text(encoding='utf-8'))
+    assert set(valuations) == {arm['id'] for arm in data['strategies'][1:]}
+    for value in valuations.values():
+        assert value['incremental_resource_benefit_aud'] == '0.00'
+        assert value['provider_evidence'] == 'no_provider_call_no_resource_use'
+
+
 def test_p5_refuses_incorrect_provider_arithmetic_before_publication(tmp_path):
     target = tmp_path / 'should-not-exist'
     def faulty(request: dict) -> dict:

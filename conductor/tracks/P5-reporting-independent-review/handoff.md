@@ -28,3 +28,12 @@ optional SVG matched the previous bytes. The reader rejects conflicting
 published tables and unsupported admission claims. Fully fixed scenarios
 produce a complete bundle. The next operation is hosted validation.
 [Verification](test-matrix.md#standalone-report-verification-on-24-november-2026)
+
+## P5 review on 24 November 2026
+
+The same source worktree and chat carry the reporting consumer, regression
+tests, track records and manifest on `codex/icu-p5-review-fixes`. The reader
+verifies the registered file inventory, decision brief and sensitivity
+arithmetic. Empty nominal ledgers record that no Dapane call was needed.
+The synthetic bundles and baseline CLI reproduced. The next operation is
+exact-head hosted validation. [Verification](test-matrix.md#p5-review-fixes-on-24-november-2026)

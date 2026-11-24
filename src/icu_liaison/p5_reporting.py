@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import json
 from pathlib import Path
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -44,6 +45,12 @@ SENSITIVITY_COLUMNS = (
     'low_net_resource_aud', 'high_net_resource_aud', 'absolute_net_resource_swing_aud',
     'interpretation',
 )
+REQUIRED_REPORT_FILES = {
+    'model-summary.json', 'evidence-admission.json', 'dapane-nominal-requests.json',
+    'report.md', 'cost-consequence.csv', 'paired-comparisons.csv',
+    'one-way-sensitivity.csv', 'decision-surface.csv',
+}
+OPTIONAL_REPORT_FILES = {'dapane-nominal-valuation.json', 'scenario-comparison.svg'}
 
 
 def _stats(a: np.ndarray) -> dict[str, float]:
@@ -146,8 +153,14 @@ def _dapane_nominal(
         raise ValueError('unsupported Dapane mode')
     point = nominal_counterfactual(scenario)
     outputs: dict[str, dict] = {}
+    no_call = 'no_provider_call_no_resource_use'
+    status = no_call
     for arm, request in requests.items():
         evaluated = evaluate_p4_nominal_valuation(request, provider=provider)
+        if any(ledger is not None for ledger in request.values()):
+            status = 'injected_contract_test_only' if provider is not None else 'native_provider_called_unqualified'
+        else:
+            evaluated['provider_evidence'] = no_call
         observed = Decimal(evaluated['incremental_resource_benefit_aud'])
         expected = Decimal(str(point[arm]['net_resource_benefit_aud'])).quantize(
             Decimal('0.01'), rounding=ROUND_HALF_EVEN
@@ -162,8 +175,7 @@ def _dapane_nominal(
             'difference_from_float_reference_aud': format(observed - expected, '.2f'),
             'reconciliation_scope': 'nominal_accounting_not_full_provider_or_clinical_qualification',
         }
-    return ({'status': ('injected_contract_test_only' if provider is not None
-                        else 'native_provider_called_unqualified'),
+    return ({'status': status,
              'all_strategies_reconciled': True,
              'installed_provider_qualified': False,
              'method': 'dapane-exact-v0.1.0'}, outputs)
@@ -206,8 +218,7 @@ def _rows(run: P4Run) -> tuple[list[dict], list[dict], list[dict]]:
     return consequences, pairs, sensitivity
 
 
-def _markdown(model: dict, consequences: list[dict], pairs: list[dict],
-              sensitivity: list[dict], admission: dict) -> str:
+def _markdown(model: dict, pairs: list[dict], sensitivity: list[dict], admission: dict) -> str:
     lines = [
         '# Illustrative ICU liaison economic evaluation — decision brief',
         '',
@@ -240,7 +251,10 @@ def _markdown(model: dict, consequences: list[dict], pairs: list[dict],
     ]
     for p in pairs:
         if p['measure'] == 'net_resource_benefit_aud':
-            lines.append(f"| `{p['strategy_id']}` | {p['mean']:,.0f} | {p['probability_strictly_better']:.1%} |")
+            lines.append(
+                f"| `{p['strategy_id']}` | {float(p['mean']):,.0f} | "
+                f"{float(p['probability_strictly_better']):.1%} |"
+            )
     lines += [
         '',
         '### Break-even thresholds at nominal inputs',
@@ -270,9 +284,16 @@ def _markdown(model: dict, consequences: list[dict], pairs: list[dict],
             '|---|---|---:|',
         ]
         for name in model['strategies']:
-            leading = next((row for row in sensitivity if row['strategy_id'] == name), None)
+            leading = max(
+                (row for row in sensitivity if row['strategy_id'] == name),
+                key=lambda row: float(row['absolute_net_resource_swing_aud']),
+                default=None,
+            )
             if leading:
-                lines.append(f"| `{name}` | `{leading['parameter']}` | {leading['absolute_net_resource_swing_aud']:,.0f} |")
+                lines.append(
+                    f"| `{name}` | `{leading['parameter']}` | "
+                    f"{float(leading['absolute_net_resource_swing_aud']):,.0f} |"
+                )
         lines += [
             '',
             'This diagnostic varies one marginal prior while fixing the others at their nominal inputs; it is not a correlated posterior sensitivity analysis.',
@@ -360,33 +381,47 @@ def _plot(path: Path, model: dict) -> None:
     plt.close(fig)
 
 
-def verify_manifest(directory: Path) -> bool:
+def _read_verified_bundle(directory: Path) -> tuple[dict, dict[str, bytes]]:
     directory = Path(directory)
-    manifest = json.loads((directory / 'manifest.json').read_text(encoding='utf-8'))
-    if manifest['schema_version'] != 1 or manifest['data_class'] != 'synthetic':
+    manifest_file = directory / 'manifest.json'
+    if manifest_file.is_symlink() or not manifest_file.is_file():
+        raise ValueError('report manifest must be a regular bundle file')
+    manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
+    if (not isinstance(manifest, dict) or manifest.get('schema_version') != 1
+            or manifest.get('data_class') != 'synthetic'):
         raise ValueError('invalid report manifest profile')
-    files = manifest['files_sha256']
-    if not files or set(files) != {p.name for p in directory.iterdir() if p.name != 'manifest.json'}:
+    files = manifest.get('files_sha256')
+    if (not isinstance(files, dict)
+            or not REQUIRED_REPORT_FILES <= files.keys() <= REQUIRED_REPORT_FILES | OPTIONAL_REPORT_FILES
+            or files.keys() != {p.name for p in directory.iterdir() if p.name != 'manifest.json'}):
         raise ValueError('report manifest file-set mismatch')
-    if any(not isinstance(name, str) or Path(name).name != name for name in files):
-        raise ValueError('report manifest path escape')
+    verified = {}
     for name, expected in files.items():
-        file = directory/name
-        if not file.is_file() or file.is_symlink() or hashlib.sha256(file.read_bytes()).hexdigest() != expected:
+        file = directory / name
+        if file.is_symlink() or not file.is_file():
+            raise ValueError(f'report manifest entry must be a regular file: {name}')
+        data = file.read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected:
             raise ValueError(f'report manifest hash mismatch: {name}')
+        verified[name] = data
+    return manifest, verified
+
+
+def verify_manifest(directory: Path) -> bool:
+    _read_verified_bundle(directory)
     return True
 
 
-def _report_rows(path: Path, expected: set[tuple[str, str]]) -> dict[tuple[str, str], dict[str, str]]:
+def _report_rows(data: bytes, table: str, expected: set[tuple[str, str]]) -> dict[tuple[str, str], dict[str, str]]:
     rows = {}
-    with path.open(newline='', encoding='utf-8') as stream:
+    with io.StringIO(data.decode('utf-8'), newline='') as stream:
         for row in csv.DictReader(stream):
             key = (row['strategy_id'], row['measure'])
             if key not in expected or key in rows:
-                raise ValueError(f'unexpected or duplicate P5 {path.stem} row')
+                raise ValueError(f'unexpected or duplicate P5 {table} row')
             rows[key] = row
     if set(rows) != expected:
-        raise ValueError(f'missing P5 {path.stem} rows')
+        raise ValueError(f'missing P5 {table} rows')
     return rows
 
 
@@ -401,11 +436,11 @@ def _match_report_summary(actual: dict, expected: dict, label: str) -> None:
         _match_report_value(actual[stat], expected[stat], label)
 
 
-def _review_cost_consequences(folder: Path, model: dict) -> None:
+def _review_cost_consequences(data: bytes, model: dict) -> None:
     outcomes = model['strategies']
     measures = {name: (unit, boundary) for name, unit, boundary in (*MEASURES, SERVICE_COST)}
     expected = {(arm, measure) for arm in outcomes for measure in measures}
-    for (arm, measure), row in _report_rows(folder / 'cost-consequence.csv', expected).items():
+    for (arm, measure), row in _report_rows(data, 'cost-consequence', expected).items():
         unit, boundary = measures[measure]
         declared_unit = f"AUD_{model['price_year']}" if unit == 'AUD' else unit
         if row['unit'] != declared_unit or row['boundary'] != boundary:
@@ -422,14 +457,15 @@ def _review_cost_consequences(folder: Path, model: dict) -> None:
             raise ValueError('P5 cost-consequence service cost is inconsistent')
 
 
-def _review_paired_comparisons(folder: Path, model: dict, draws: dict[str, np.ndarray]) -> None:
+def _review_paired_comparisons(data: bytes, model: dict, draws: dict[str, np.ndarray]) -> list[dict[str, str]]:
     outcomes = model['strategies']
     reference = 'current_care'
     budget_measure = 'net_budget_impact_aud'
     if any(outcomes[reference][budget_measure][stat] != 0 for stat in SUMMARY_FIELDS):
         raise ValueError('P5 paired budget comparison requires a zero current-care baseline')
     expected = {(arm, measure) for arm in draws if arm != reference for measure in PAIRED_MEASURES}
-    for (arm, measure), row in _report_rows(folder / 'paired-comparisons.csv', expected).items():
+    pairs = _report_rows(data, 'paired-comparisons', expected)
+    for (arm, measure), row in pairs.items():
         if (row['reference_strategy'] != reference or row['unit'] != f"AUD_{model['price_year']}"
                 or row['definition'] != PAIRED_DEFINITION):
             raise ValueError('invalid P5 paired comparison metadata')
@@ -445,15 +481,35 @@ def _review_paired_comparisons(folder: Path, model: dict, draws: dict[str, np.nd
             _match_report_summary(row, _stats(difference), 'paired resource')
             _match_report_value(row['probability_strictly_better'], np.mean(difference > 0), 'paired resource')
             _match_report_value(row['probability_equal'], np.mean(difference == 0), 'paired resource')
+    return list(pairs.values())
+
+
+def _review_sensitivity(data: bytes, strategies: set[str]) -> list[dict[str, str]]:
+    seen = set()
+    with io.StringIO(data.decode('utf-8'), newline='') as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames != list(SENSITIVITY_COLUMNS):
+            raise ValueError('invalid P5 sensitivity header')
+        rows = list(reader)
+    for row in rows:
+        key = (row['strategy_id'], row['parameter'])
+        if (None in row or None in row.values() or key in seen or key[0] not in strategies
+                or not key[1].strip()
+                or row['interpretation'] != 'one_at_a_time_prior_quantile_not_joint_posterior'):
+            raise ValueError('unexpected or duplicate P5 sensitivity row')
+        seen.add(key)
+        lower, upper, low, high = (float(row[column]) for column in SENSITIVITY_COLUMNS[2:6])
+        if not np.isfinite([lower, upper, low, high]).all() or lower > upper or low > high:
+            raise ValueError('invalid P5 sensitivity bounds')
+        _match_report_value(row['absolute_net_resource_swing_aud'], high - low, 'sensitivity swing')
+    return rows
 
 
 def review_report(directory: Path) -> dict:
     """Review draw-based resource results and cross-check the other published tables."""
-    folder = Path(directory)
-    verify_manifest(folder)
-    model = json.loads((folder / 'model-summary.json').read_text(encoding='utf-8'))
-    admission = json.loads((folder / 'evidence-admission.json').read_text(encoding='utf-8'))
-    manifest = json.loads((folder / 'manifest.json').read_text(encoding='utf-8'))
+    manifest, bundle = _read_verified_bundle(directory)
+    model = json.loads(bundle['model-summary.json'])
+    admission = json.loads(bundle['evidence-admission.json'])
     if model.get('investment_ready') is not False or model.get('clinical_safety') != 'unmeasured':
         raise ValueError('investment readiness or clinical safety is unsupported')
     if model.get('schema_version') != 1 or model.get('decision_class') != (
@@ -476,7 +532,7 @@ def review_report(directory: Path) -> dict:
     strategies = set(model['strategies'])
     if 'current_care' not in strategies or len(strategies) < 2:
         raise ValueError('reference strategy missing from P5 summary')
-    with (folder / 'decision-surface.csv').open(newline='', encoding='utf-8') as stream:
+    with io.StringIO(bundle['decision-surface.csv'].decode('utf-8'), newline='') as stream:
         reader = csv.reader(stream)
         labels = next(reader, [])
         if len(labels) != len(strategies) or set(labels) != strategies or labels[0] != 'current_care':
@@ -499,8 +555,14 @@ def review_report(directory: Path) -> dict:
         reported = model['strategies'][strategy]
         _match_report_summary(reported['net_resource_benefit_aud'], _stats(values), 'strategy')
         _match_report_value(reported['p_net_resource_benefit_nonnegative'], np.mean(values >= 0), 'strategy')
-    _review_cost_consequences(folder, model)
-    _review_paired_comparisons(folder, model, draws)
+    _review_cost_consequences(bundle['cost-consequence.csv'], model)
+    pairs = _review_paired_comparisons(bundle['paired-comparisons.csv'], model, draws)
+    sensitivity = _review_sensitivity(bundle['one-way-sensitivity.csv'], strategies - {'current_care'})
+    # The JSON keys are sorted. The surface retains the publication order.
+    model['strategies'] = {name: model['strategies'][name] for name in labels}
+    brief = bundle['report.md'].decode('utf-8').replace('\r\n', '\n')
+    if brief != _markdown(model, pairs, sensitivity, admission):
+        raise ValueError('P5 decision brief differs from the published report evidence')
     return {
         'status': 'self_consistency_verified_not_empirically_accepted',
         'independent_accounting_check': 'P4_draws_recomputed_from_published_decision_surface',
@@ -552,7 +614,7 @@ def build_report(
         s, nominal, mode=dapane_mode, provider=dapane_provider
     )
     model['dapane_valuation'] = valuation_summary
-    report = _markdown(model, consequences, pairs, sensitivity, admission)
+    report = _markdown(model, pairs, sensitivity, admission)
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.icu-liaison-p5-',dir=target.parent) as scratch:
         staging = Path(scratch)/'report'
@@ -580,7 +642,6 @@ def build_report(
                             for p in sorted(staging.iterdir())},
         }
         (staging/'manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n',encoding='utf-8')
-        verify_manifest(staging)
         review_report(staging)
         if target.exists() or target.is_symlink():
             raise FileExistsError('report appeared during publication; no overwrite')

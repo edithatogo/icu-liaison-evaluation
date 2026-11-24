@@ -35,3 +35,15 @@ report byte for byte. The reader checked 5,000 decision draws across three
 strategies. The rendered SVG had readable labels and complete marks.
 The report manifest SHA-256 is
 `e6a0d373cc7a2c7bd2455db68a18e3b68bb0dada69e0d2ca027d7257034a3066`.
+
+## P5 review fixes on 24 November 2026
+
+Six cases failed before the fixes and passed in the 142 focused tests on
+CPython 3.15.2. The reader rejects a symlinked manifest. It also rejects
+an unregistered attachment, a contradictory decision brief and an incorrect
+sensitivity swing after their hashes are recomputed. The two Dapane cases
+cover empty nominal ledgers with and without an injected provider.
+
+The standard bundle with its SVG and the fully fixed bundle both reproduced
+byte for byte. The standalone reader checked 5,000 draws across three
+strategies. The P1 illustrative CLI output also matched the previous run.
