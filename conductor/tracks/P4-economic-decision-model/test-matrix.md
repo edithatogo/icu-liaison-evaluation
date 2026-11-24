@@ -24,3 +24,16 @@ report bundle matched the baseline bytes. The P5 report reviewer checked
 
 - P4 JSON SHA-256 `f9d1e305e0a1777db0faa47573120b52bc952f4840e5cfb955184a76dd4be2c0`
 - P4 decision CSV SHA-256 `4e4e4986549fdb825e1bc58f74d1bcc0c959c5db20916d6c3ebf514cf312b16d`
+
+## P4 review rerun on 24 November 2026
+
+On CPython 3.15.2, the nine regression cases failed before the fixes and
+passed as part of the 103 focused tests. The adverse-return stress case
+breaks even at 75% coverage in both the simulation and the threshold report.
+A cost-free neutral strategy permits break-even. The decision surface rejects
+unknown objectives, and both readiness flags refuse file export. An
+interrupted CSV write leaves the destination available for a retry.
+
+At seed `20261118`, the standard decision draws and report tables matched
+the previous bytes. The JSON summaries use the current provider status
+wording. The P5 reviewer again checked 5,000 draws across three strategies.

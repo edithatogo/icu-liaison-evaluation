@@ -68,6 +68,17 @@ def test_current_care_is_zero_incremental_and_shared_draws_preserve_comparison()
     assert np.array_equal(matrix[:,1],result.strategies['liaison_service'].net_resource_benefit_aud)
 
 
+def test_financial_decision_surface_rejects_an_unknown_objective():
+    run = evaluate_scenarios(EconomicScenario.model_validate(example()))
+    budget, labels = financial_decision_surface(run, objective='budget')
+    assert np.array_equal(
+        budget[:, labels.index('liaison_service')],
+        run.strategies['liaison_service'].net_budget_impact_aud,
+    )
+    with pytest.raises(ValueError, match='decision surface objective'):
+        financial_decision_surface(run, objective='net_resouce')
+
+
 def test_full_run_is_repeatable_and_safeguards_not_silent_success():
     scenario=EconomicScenario.model_validate(example())
     a=summarise_p4(evaluate_scenarios(scenario))
@@ -186,6 +197,44 @@ def test_summary_reports_strategy_specific_threshold_without_recommendation():
     assert i['threshold_annual_service_cost_aud'] == pytest.approx(81270)
     assert i['break_even_coverage_fraction']>1
     assert s['financially_best_mean_strategy_not_clinical_recommendation'] in {None,'current_care','liaison_service','extended_cover'}
+
+
+def test_break_even_threshold_respects_the_cap_on_adverse_readmissions():
+    data = deterministic(example())
+    data['baseline']['unplanned_72h_return_rate'] = fixed(0.75)
+    data['resource'].update(
+        addressable_delay_fraction=fixed(1),
+        hours_released_per_improved_case=fixed(24, 'hours_per_case'),
+        net_index_delay_cost_aud_per_day=fixed(1000, 'AUD_per_icu_day'),
+        incremental_return_cost_aud_per_return=fixed(100, 'AUD_per_readmission'),
+    )
+    data['strategies'][1].update(
+        coverage_fraction=fixed(0.75),
+        delay_success_fraction=fixed(1),
+        relative_return_effect=fixed(-1, 'signed_proportion'),
+        annual_incremental_cost_aud=fixed(134_250, 'AUD_per_year'),
+    )
+    run = evaluate_scenarios(EconomicScenario.model_validate(data))
+    result = summarise_p4(run)['strategies']['liaison_service']
+    assert result['readmissions_avoided']['mean'] == pytest.approx(-187.5)
+    assert result['net_resource_benefit_aud']['mean'] == pytest.approx(0, abs=1e-7)
+    assert result['threshold_annual_service_cost_aud'] == pytest.approx(134_250)
+    assert result['break_even_coverage_fraction'] == pytest.approx(0.75)
+    assert result['break_even_coverage_feasible_at_point_inputs'] is True
+
+
+def test_break_even_threshold_for_a_free_neutral_strategy():
+    data = deterministic(example())
+    data['strategies'][1].update(
+        delay_success_fraction=fixed(0),
+        relative_return_effect=fixed(0, 'signed_proportion'),
+        annual_incremental_cost_aud=fixed(0, 'AUD_per_year'),
+    )
+    run = evaluate_scenarios(EconomicScenario.model_validate(data))
+    outcome = summarise_p4(run)['strategies']
+    assert outcome['liaison_service']['break_even_coverage_fraction'] == 0
+    assert outcome['liaison_service']['break_even_coverage_feasible_at_point_inputs'] is True
+    assert outcome['current_care']['break_even_coverage_fraction'] is None
 
 
 def test_finite_inputs_cannot_overflow_into_invalid_financial_results():

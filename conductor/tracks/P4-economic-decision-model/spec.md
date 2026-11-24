@@ -15,7 +15,8 @@ Pydantic; inverse CDF and numerical operations owned by SciPy/NumPy.
 AUD price year, primary `current_care` and `liaison_service` comparators and
 all six mandatory balancing outcomes. Reconcile public proxy identity, value,
 source URL, reporting period, cohort and denominator against the P3 register.
-Fictional P4 runs and P5 reports reject priors labelled as local aggregates.
+Fictional P4 runs and P5 reports reject priors labelled as local aggregates
+and protocol strategies carrying local evidence or site source references.
 Additional synthetic variants retain their proposed-strategy status.
 
 **Outputs:** annual index ICU days released; physically usable days not
@@ -25,6 +26,12 @@ and threshold reports; structured Voiage surface. Index delay and subsequent
 readmission segments do not overlap. Dapane owns *actual* quotation arithmetic;
 P4 exports exact nominal nonnegative counterfactual requests for later
 installed-provider qualification. Value-of-information method is Voiage-owned.
+
+The nominal break-even calculation uses the same bound on additional returns
+as the simulation. A cost-free strategy with neutral resource impact breaks
+even at any coverage. The P4 CLI publishes a decision CSV only after the
+summary validates and the complete CSV has been staged. The destination
+filesystem must support hard links for publication without overwrite.
 
 **Stop conditions:** no observed CHHHS input, no validated causal treatment
 mechanism, safety margins unapproved, rights/clinical review and local costing

@@ -80,6 +80,19 @@ def test_rejects_missing_required_safety_and_unapproved_source_promotion():
         admit_p4(EconomicScenario.model_validate(s),p,c,r)
 
 
+@pytest.mark.parametrize('strategy_evidence', [
+    {'evidence_status': 'locally_verified', 'funded_fte': 1, 'site_source_reference': 'fictional-roster'},
+    {'site_source_reference': 'fictional-site-reference'},
+])
+def test_rejects_protocol_with_local_strategy_evidence(strategy_evidence):
+    from icu_liaison.p4_admission import admit_p4
+
+    scenario, protocol, catalogue, register = inputs()
+    protocol['strategies'][0].update(strategy_evidence)
+    with pytest.raises(ValueError, match='local strategy evidence'):
+        admit_p4(EconomicScenario.model_validate(scenario), protocol, catalogue, register)
+
+
 def test_p4_cli_reports_evidence_admission_and_rejects_tampered_protocol(tmp_path):
     import subprocess
     import sys

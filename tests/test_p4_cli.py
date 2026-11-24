@@ -3,6 +3,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+import pytest
+
 ROOT=Path(__file__).resolve().parents[1]
 SCENARIO=ROOT/'model-inputs/p4/illustrative.json'
 
@@ -22,11 +24,14 @@ def test_real_cli_runs_and_prints_only_labelled_synthetic_aggregates():
     assert 'hospitalisation_pseudonym' not in r.stdout
 
 
-def test_cli_fail_closed_on_require_local_ready():
-    r=run('--require-local-ready')
+@pytest.mark.parametrize('flag', ['--require-local-ready', '--require-investment-ready'])
+def test_cli_fail_closed_on_require_readiness(tmp_path, flag):
+    output = tmp_path / 'new' / 'decision.csv'
+    r = run(flag, '--decision-surface', str(output))
     assert r.returncode==2
     assert 'UNVERIFIED' in r.stderr
     assert json.loads(r.stdout)['investment_ready'] is False
+    assert not output.parent.exists()
 
 
 def test_cli_emits_no_synthetic_patient_rows_and_optional_decision_matrix(tmp_path):
@@ -44,6 +49,38 @@ def test_cli_rejects_overwriting_existing_decision_file(tmp_path):
     r=run('--decision-surface',str(out))
     assert r.returncode==2
     assert out.read_text()=='do-not-overwrite'
+
+
+def test_cli_failed_surface_write_can_retry_the_same_output(tmp_path, monkeypatch):
+    from icu_liaison import p4_cli
+
+    class InterruptedWriter:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def writerow(self, row):
+            self.stream.write(','.join(row) + '\n')
+
+        def writerows(self, rows):
+            raise OSError('fictional interrupted write')
+
+    output = tmp_path / 'decision.csv'
+    args = [str(SCENARIO), '--decision-surface', str(output)]
+    with monkeypatch.context() as patch:
+        patch.setattr(p4_cli.csv, 'writer', InterruptedWriter)
+        assert p4_cli.main(args) == 2
+        assert list(tmp_path.iterdir()) == []
+    assert p4_cli.main(args) == 0
+    assert len(output.read_text().splitlines()) == 5001
+
+
+def test_cli_invalid_summary_never_publishes_a_surface(tmp_path, monkeypatch):
+    from icu_liaison import p4_cli, p4_model
+
+    output = tmp_path / 'decision.csv'
+    monkeypatch.setattr(p4_model, 'summarise_p4', lambda run: {'mean': float('inf')})
+    assert p4_cli.main([str(SCENARIO), '--decision-surface', str(output)]) == 2
+    assert not output.exists()
 
 
 def test_cli_one_way_sensitivity_has_explicit_illustrative_status():
