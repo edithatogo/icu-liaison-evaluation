@@ -103,11 +103,12 @@ approval. Existing content-addressed objects are never silently overwritten.
 Run `icu_liaison.p11_verify` after a workflow run to check current pointers,
 file hashes, model and figure links, the F01 bars and percentile intervals, the
 registered P9 outputs per scenario and the combined rows. Edition 1 retains its
-six-figure inventory. Edition 2 requires all 13 P9 figures. For matching source, inputs and runtime it also replays the P4/P5
-and P9 numerical and mark reviews; historical runs with a different runtime are
-checked for recorded file integrity without claiming a new replay. Snakemake's
-no-op check alone checks workflow freshness,
-not corruption inside published object directories.
+six-figure inventory. Edition 2 requires all 13 P9 figures. Both editions
+check recorded file integrity, the scenario and runtime metadata, and the
+figure metrics, denominators, source links and accessibility text against
+the frozen inputs. Matching source, inputs and runtime also allow the P4/P5
+and P9 numerical and mark reviews to be replayed. Use the verifier to check
+the contents of published objects after a Snakemake no-op.
 
 Add `--provenance` to include the source, metric and denominator IDs, table
 and SVG hashes, and mark-review evidence for each figure. The command checks

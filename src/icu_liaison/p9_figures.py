@@ -52,6 +52,53 @@ def _load(file: Path):
     return json.loads(file.read_text(encoding='utf-8'))
 
 
+def figure_contract_records(
+    catalogue: dict, metrics: dict, *, price_year: int, supplementary_feeds: tuple[str, ...] | None,
+) -> tuple[dict[str, dict], list[dict]]:
+    """Build the figure manifest records from versioned reporting inputs."""
+    include_supplement = supplementary_feeds is not None
+    bundles = {'p9', 'p9_supplement'} if include_supplement else {'p9'}
+    selected = [figure for figure in catalogue['figures'] if figure.get('bundle') in bundles]
+    expected_ids = sorted((*FIGURE_IDS, *SUPPLEMENT_IDS)) if include_supplement else list(FIGURE_IDS)
+    if [figure['id'] for figure in selected] != expected_ids:
+        raise ValueError('P9 catalogue differs from the selected figure set')
+    descriptions = {figure['id']: figure for figure in selected}
+    denominators = {metric['id']: metric['denominator_id'] for metric in metrics['metrics']}
+    shared = ['scenario', 'p9_catalogue', 'p10_metrics', 'p9_data_code', 'p9_renderer_code']
+    additional = {
+        'F02': ['p4_model_code', 'p5_model_summary'],
+        'F10': ['p4_model_code'],
+        'F11': ['p4_model_code', 'p5_manifest', 'p5_draws'],
+        'F15': ['p3_manifest', 'p3_episodes', 'p9_fixture'],
+        'F20': ['p9_fixture'],
+        'F24': ['p4_model_code', 'p5_draws'],
+        'F05': ['p4_model_code', 'p5_consequences'],
+        'F06': ['p4_model_code', 'p5_draws', 'p5_comparisons'],
+        'F07': ['p4_model_code', 'p5_sensitivity'],
+        'F08': ['p4_model_code', 'p5_draws'],
+        'F09': ['p6_trace', 'p6_capacity'],
+        'F13': ['p3_manifest', 'p3_dictionary', 'local_data', 'protocol', 'endpoints',
+                *(f'p3_{name}' for name in supplementary_feeds or ())],
+        'F18': ['event_study'],
+    }
+    records = []
+    for key, figure in descriptions.items():
+        if (figure['artifact'] != f'{key.lower()}.svg' or figure['privacy'] != 'synthetic_only'
+                or figure['evidence_tier'] != 'synthetic_implemented'):
+            raise ValueError('unqualified P9 figure catalogue entry')
+        if figure['y_unit'].startswith('AUD_') and figure['y_unit'] != f'AUD_{price_year}':
+            raise ValueError('scenario price year differs from the reporting contract')
+        records.append({
+            'id': key, 'svg': figure['artifact'], 'csv': f'{key.lower()}.csv',
+            'metric_ids': figure['metric_ids'],
+            'denominator_ids': sorted({denominators[metric] for metric in figure['metric_ids']}),
+            'sources': shared + additional[key] + (
+                ['p9_supplement_data', 'p9_supplement_render', 'p9_supplement_review']
+                if key in SUPPLEMENT_IDS else []),
+        })
+    return descriptions, records
+
+
 def _source_figures(scenario_file: Path, p5: Path, include_supplement: bool) -> SourceFigures:
     if p5.is_symlink() or not p5.is_dir():
         raise ValueError('P5 report directory is missing or symlinked')
@@ -99,44 +146,10 @@ def _source_figures(scenario_file: Path, p5: Path, include_supplement: bool) -> 
         raise ValueError('P5 report and scenario do not match')
     audit = audit_p4_draws(run)
     fixture = Fixtures.model_validate_json(DEFAULT_FIXTURE.read_bytes())
-    bundles = {'p9', 'p9_supplement'} if include_supplement else {'p9'}
-    descriptions = {f['id']: f for f in _load(catalogue_file)['figures'] if f.get('bundle') in bundles}
-    expected_ids = sorted((*FIGURE_IDS, *SUPPLEMENT_IDS)) if include_supplement else list(FIGURE_IDS)
-    if list(descriptions) != expected_ids:
-        raise ValueError('P9 catalogue differs from the selected figure set')
-    denominators = {metric['id']: metric['denominator_id'] for metric in _load(metrics_file)['metrics']}
-    shared = ['scenario', 'p9_catalogue', 'p10_metrics', 'p9_data_code', 'p9_renderer_code']
-    additional = {
-        'F02': ['p4_model_code', 'p5_model_summary'],
-        'F10': ['p4_model_code'],
-        'F11': ['p4_model_code', 'p5_manifest', 'p5_draws'],
-        'F15': ['p3_manifest', 'p3_episodes', 'p9_fixture'],
-        'F20': ['p9_fixture'],
-        'F24': ['p4_model_code', 'p5_draws'],
-        'F05': ['p4_model_code', 'p5_consequences'],
-        'F06': ['p4_model_code', 'p5_draws', 'p5_comparisons'],
-        'F07': ['p4_model_code', 'p5_sensitivity'],
-        'F08': ['p4_model_code', 'p5_draws'],
-        'F09': ['p6_trace', 'p6_capacity'],
-        'F13': ['p3_manifest', 'p3_dictionary', 'local_data', 'protocol', 'endpoints',
-                *(f'p3_{name}' for name in feeds)],
-        'F18': ['event_study'],
-    }
-    records = []
-    for key, figure in descriptions.items():
-        if (figure['artifact'] != f'{key.lower()}.svg' or figure['privacy'] != 'synthetic_only'
-                or figure['evidence_tier'] != 'synthetic_implemented'):
-            raise ValueError('unqualified P9 figure catalogue entry')
-        if figure['y_unit'].startswith('AUD_') and figure['y_unit'] != f'AUD_{scenario.price_year}':
-            raise ValueError('scenario price year differs from the reporting contract')
-        records.append({
-            'id': key, 'svg': figure['artifact'], 'csv': f'{key.lower()}.csv',
-            'metric_ids': figure['metric_ids'],
-            'denominator_ids': sorted({denominators[metric] for metric in figure['metric_ids']}),
-            'sources': shared + additional[key] + (
-                ['p9_supplement_data', 'p9_supplement_render', 'p9_supplement_review']
-                if key in SUPPLEMENT_IDS else []),
-        })
+    descriptions, records = figure_contract_records(
+        _load(catalogue_file), _load(metrics_file), price_year=scenario.price_year,
+        supplementary_feeds=tuple(feeds) if include_supplement else None,
+    )
     rows = {
         'F02': resource_waterfall(scenario),
         'F10': break_even_grid(scenario),
