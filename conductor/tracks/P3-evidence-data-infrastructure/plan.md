@@ -38,3 +38,17 @@
   and qualify other provider environments as needed through P1 and P7.
 
 This source handoff does not authorise reading real CHHHS data or label any clinical or financial result empirically validated.
+
+## Phase — Review fixes
+
+- [x] Pin the retained receipt, validate each benchmark's report edition
+  and period, reject observations after extraction, count identifiers
+  at the dictionary grain and reject an existing output before restricted
+  intake (`abf3c91`).
+
+On CPython 3.15.2, 95 focused tests passed. The pinned receipt and retained
+PDF matched the six registered outcomes. The fictional audit counted four
+hospitalisations and seven ICU episodes for identifier completeness. The
+illustrative model reproduced byte for byte. Independent source admission
+and approved linked CHHHS inputs and validation remain open.
+[P3 test matrix](test-matrix.md)
