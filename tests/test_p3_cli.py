@@ -9,6 +9,7 @@ import shutil
 
 import pytest
 
+from icu_liaison import local_data
 from icu_liaison.p3_cli import _restricted_output_allowed, main
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +50,7 @@ def test_sources_reconciles_the_publisher_receipt_without_granting_admission():
     assert report['eligible_local_72h_readmission_rate_available'] is False
 
 
-@pytest.mark.parametrize('change', ['locator', 'coverage', 'claimed_admission', 'different_document'])
+@pytest.mark.parametrize('change', ['locator', 'coverage', 'claimed_admission', 'different_document', 'receipt_edition'])
 def test_sources_rejects_inconsistent_publisher_evidence(tmp_path, change):
     receipt = json.loads(PUBLISHER_RECEIPT.read_text(encoding='utf-8'))
     receipt_path = tmp_path / 'receipt.json'
@@ -60,12 +61,17 @@ def test_sources_rejects_inconsistent_publisher_evidence(tmp_path, change):
         receipt['checked_locators'].pop()
     elif change == 'claimed_admission':
         receipt['independent_source_admission'] = 'approved'
+    elif change == 'receipt_edition':
+        receipt['checked_on'] = '2026-11-25'
     else:
         document = tmp_path / 'different.pdf'
-        document.write_bytes(b'fictional bytes with a different digest')
-        receipt['document']['size_bytes'] = document.stat().st_size
+        with document.open('wb') as stream:
+            stream.truncate(receipt['document']['size_bytes'])
         args.extend(['--publisher-document', document])
-    receipt_path.write_text(json.dumps(receipt), encoding='utf-8')
+    if change == 'different_document':
+        shutil.copyfile(PUBLISHER_RECEIPT, receipt_path)
+    else:
+        receipt_path.write_text(json.dumps(receipt), encoding='utf-8')
     result = cli(*args)
     assert result.returncode == 2
     assert 'INVALID_SOURCE' in result.stderr
@@ -163,6 +169,33 @@ def test_output_check_finds_the_destination_checkout_for_an_installed_cli(tmp_pa
 
     (checkout / '.gitignore').write_text('private/\n', encoding='utf-8')
     assert _restricted_output_allowed(checkout / 'private/report.json', package_home)
+
+
+def test_existing_private_output_is_rejected_before_opening_feeds(tmp_path, monkeypatch, capsys):
+    source = tmp_path / 'source'
+    shutil.copytree(ROOT / 'tests/fixtures/p3_episodes', source)
+    manifest = source / 'manifest.json'
+    content = json.loads(manifest.read_text())
+    content['data_class'] = 'restricted'
+    content['governance'] = {
+        'status': 'approved_local_processing', 'approval_reference': 'fictional-reference',
+        'custodian_role': 'fictional_role',
+    }
+    manifest.write_text(json.dumps(content))
+    output = tmp_path / 'existing-report.json'
+    output.write_text('existing fictional report')
+
+    def unexpected_read(*args, **kwargs):
+        pytest.fail('a feed was opened before rejecting the destination')
+
+    monkeypatch.setattr(local_data, '_read_feed', unexpected_read)
+    assert main([
+        'audit', '--manifest', str(manifest), '--dictionary',
+        str(ROOT / 'model-inputs/clinical-data-dictionary.json'),
+        '--acknowledge-approved-processing', '--private-output', str(output),
+    ]) == 2
+    assert not capsys.readouterr().out
+    assert output.read_text() == 'existing fictional report'
 
 
 def test_machine_schema_is_public_and_dependency_generated():

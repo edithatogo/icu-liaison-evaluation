@@ -22,8 +22,9 @@
 
 `conductor/evidence/source-register.json` is the source register.
 `model-inputs/anzics-benchmarks.json` is the offline benchmark crosswalk.
-The P3 validator checks matching reference IDs, amounts, units, page
-locations and contributor counts. The catalogue status tracks independent
+The P3 validator checks the report edition and reporting period as well as
+amounts, units, page locations and contributor counts. Source IDs must be
+unique. The catalogue status tracks independent
 document admission. The publisher check reports the receipt and saved
 document separately.
 
@@ -39,8 +40,9 @@ PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli sources \
 
 For an already retained local copy, add
 `--publisher-document /secure/evidence/ANZICS-CCR-2024-25.pdf` to check
-its size and SHA-256. The command runs offline and checks the recorded
-locators against the register. The original page checks are documented
+its size and SHA-256. The command runs offline, checks the receipt's own
+SHA-256 against the source register and reconciles the recorded locators.
+The original page checks are documented
 in the receipt. Independent source admission still requires reviewer and
 licensing evidence for the intended use. Keep publisher files in their
 approved private location.
@@ -66,11 +68,11 @@ The P3 intake is a *source gate*: it accepts a manifest referring to four CSV fe
 | `liaison_contacts.csv` (optional) | Contact event | Hospitalisation plus ICU episode | Contact time and typed intervention; only identity/timing validation in P3 |
 | `cost_lines.csv` (optional) | Distinct resource component/usage | Hospitalisation, ICU episode, ledger entry, use and component ID | Nonnegative quantities; mutually exclusive index vs return segments; AUD, price year and economic or financial basis |
 
-The manifest is JSON with `schema_version=1`, `data_class=synthetic|restricted`, an offset-aware `extracted_at` timestamp, source reference, governance attestation, and a SHA-256 plus optional original-to-canonical `column_map` for every feed. A manifest cannot be dated before its latest observed ICU departure. The audit reports elapsed days since that episode without applying an invented freshness threshold. The column map permits adaptation to approved local extract headers **without hard-coding the source system into the model**. A feed must match exactly the expected canonical columns after mapping; unexpected patient-name fields fail rather than being silently retained.
+The manifest is JSON with `schema_version=1`, `data_class=synthetic|restricted`, an offset-aware `extracted_at` timestamp, source reference, governance attestation, and a SHA-256 plus optional original-to-canonical `column_map` for every feed. The extraction time must cover the latest observed ICU departure, follow-up and recorded hospital separation. The audit reports elapsed days since the latest ICU departure. The column map permits adaptation to approved local extract headers. Feeds must match the expected canonical columns after mapping.
 
 The audit reads the manifest once and uses those bytes for validation,
-privacy checks and the reported manifest SHA-256. The CLI checks the private
-destination before opening restricted feeds.
+privacy checks and the reported manifest SHA-256. The CLI requires a new
+private output path before opening restricted feeds.
 
 The JSON Schema for the manifest and feed rows is generated directly from the Pydantic contracts (`p3_cli schema`), avoiding a separately maintained schema fork. This is a candidate interchange contract, not a promise that CHHHS' current systems export all necessary values.
 
@@ -137,7 +139,13 @@ A continuous hospitalisation may contain multiple ICU stays. P3 sorts every epis
 
 ## Quality and research readiness
 
-The 32-field P2 dictionary is carried into the output. It includes candidate operational, incident, staffing, costing and experience fields, some of which are not supported by the current four-feed pilot and remain explicitly not supplied. If a field is not in the P3 feed profile, it is explicitly `not_supplied_or_not_mapped`—never zero. The local 72-hour outcome is reported with true, observed-no-return and unknown categories; monthly completeness/case-mix/admission-severity/ward outcome completeness and prospective causal attribution require the controlled P4 design and source agreement.
+The output includes all 32 P2 dictionary fields. Hospitalisation identifier
+completeness comes from the hospital follow-up feed. ICU episode identifier
+completeness comes from the episode feed. Unsupported fields are labelled
+`not_supplied_or_not_mapped`. The local 72-hour outcome reports confirmed
+unplanned returns, observed no return and unknown separately. Local
+completeness, case mix, admission severity, ward outcomes and causal
+attribution require source agreement and the controlled P4 design.
 
 The explicit remaining gates are:
 

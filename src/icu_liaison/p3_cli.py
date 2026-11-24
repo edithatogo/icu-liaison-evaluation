@@ -54,8 +54,11 @@ def _restricted_output_allowed(output: Path, project_root: Path) -> bool:
 
 
 def _require_private_output(output: Path | None) -> None:
-    if output is None or not _restricted_output_allowed(output, Path(__file__).resolve().parents[2]):
-        raise LocalDatasetError('restricted aggregate report requires a private output destination')
+    if (
+        output is None or output.is_symlink() or output.exists()
+        or not _restricted_output_allowed(output, Path(__file__).resolve().parents[2])
+    ):
+        raise LocalDatasetError('restricted aggregate report requires a new private output destination')
 
 
 def main(argv: list[str] | None = None) -> int:

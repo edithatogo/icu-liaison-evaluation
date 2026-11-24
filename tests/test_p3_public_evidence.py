@@ -50,6 +50,26 @@ def test_wrong_source_or_denominator_is_rejected(tmp_path):
         load_benchmark_catalogue(p, ROOT / 'conductor/evidence/source-register.json')
 
 
+@pytest.mark.parametrize('change', ['different_edition', 'wrong_period', 'duplicate_source'])
+def test_benchmark_is_bound_to_one_report_and_reporting_period(tmp_path, change):
+    catalogue = json.loads((ROOT / 'model-inputs/anzics-benchmarks.json').read_text())
+    registry = json.loads((ROOT / 'conductor/evidence/source-register.json').read_text())
+    if change == 'different_edition':
+        previous = next(m for m in catalogue['metrics'] if m['id'] == 'CCR_2023_24_EXIT_BLOCK')
+        catalogue['metrics'][0] = dict(previous, id='CCR_2024_25_EXIT_BLOCK')
+    elif change == 'wrong_period':
+        catalogue['metrics'][0]['period'] = '2023-07-01/2024-06-30'
+    else:
+        registry['sources'].append(registry['sources'][0].copy())
+    catalogue_file = tmp_path / 'catalogue.json'
+    catalogue_file.write_text(json.dumps(catalogue))
+    register_file = tmp_path / 'register.json'
+    register_file.write_text(json.dumps(registry))
+
+    with pytest.raises(ValueError, match='edition|period|duplicate source'):
+        load_benchmark_catalogue(catalogue_file, register_file)
+
+
 def test_clinical_72h_risk_cannot_be_inferred_from_ccr_or_apd():
     data = load_benchmark_catalogue(ROOT / 'model-inputs/anzics-benchmarks.json',
                                      ROOT / 'conductor/evidence/source-register.json')
