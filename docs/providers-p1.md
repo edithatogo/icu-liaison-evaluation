@@ -86,13 +86,20 @@ Then run from the portable evaluation project:
 
 ```sh
 "$PROVIDER_PYTHON" -m pytest -q -o cache_dir=private/venv-p1/pytest-cache
-"$PROVIDER_PYTHON" tools/qualify_providers.py --provider all
+PYTHONPATH=src "$PROVIDER_PYTHON" tools/qualify_providers.py --provider all --require-reviewed-extension
 ```
 
-A native smoke that passes returns `NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING`
-with observed interpreter/distribution and extension digest evidence. This is
-**not final release admission**; a separate signed/immutable artifact build,
-source trace, license/dependency scan and independent review remain mandatory.
+Select `--provider dapane` on the reviewed Linux or Windows hosts. For a new
+candidate, omit `--require-reviewed-extension` to run the same oracles and
+capture the loaded extension's digest for review. The flag requires a match
+to the recorded filename and SHA-256 for the OS, architecture and exact
+Python patch. The runtime records both the lock's digest and the loaded
+extension's module name and digest.
+
+A passing run returns `NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING`.
+Complete artifact admission also needs the original wheel, installed file
+checks, source provenance, dependency and licence review, and the recorded
+platform scope.
 
 ## Exactly what the two adapters do
 
@@ -135,10 +142,11 @@ Voiage two equally likely states, net benefit alternative `+A$10` or `−A$10`,
 with current care zero in both, must yield EVPI `A$5`.
 
 These are *synthetic independent numerical references*, not effect estimates.
-The script exits with code **2 / `UNVERIFIED`** for missing, incompatible,
-failed oracles or missing runtime. The executing host must record its actual
-result as a separate immutable verification receipt; never re-label an
-injected-provider test as installed acceptance.
+The script exits with code **2 / `UNVERIFIED`** for missing or incompatible
+installations, substituted imports, reviewed extension mismatches, or failed
+oracles. It checks where the package and expected extension resolve before
+running the provider and confirms that the oracle loaded that extension.
+Record the actual result from the executing host as an immutable receipt.
 
 ## Initial macOS arm64 / Python 3.15.2 qualification checkpoint (19 November 2026)
 

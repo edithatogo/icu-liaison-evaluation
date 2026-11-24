@@ -82,3 +82,14 @@ passed the installed P1 and P5 checks. The approved Dapane pins retain their
 original artifact scopes. Detailed candidate evidence is held privately.
 [Voiage admission](plan.md#voiage-macos-artifact-admission) ·
 [Dapane successor](plan.md#dapane-release-assurance-successor)
+
+## P1 runtime review on 24 November 2026
+
+The worktree and chat above carried the P1 source fixes on
+`codex/icu-p1-review-fixes`. The qualifier checks the provider import and
+loaded extension, and can require the reviewed filename and digest for the
+current OS, architecture and Python patch. The two admitted macOS extensions
+passed that check on CPython 3.15.2. The repaired Dapane candidate passed its
+numerical oracles and the review check rejected its different digest.
+Independent acceptance of the repaired artifact is the next P1 decision.
+[Review checks](test-matrix.md)

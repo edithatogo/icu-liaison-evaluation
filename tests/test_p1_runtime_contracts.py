@@ -4,8 +4,16 @@ Injected providers are boundary fakes, NOT evidence of installed Dapane/Voiage.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from decimal import Decimal, ROUND_HALF_EVEN
+from importlib.machinery import EXTENSION_SUFFIXES
+from importlib.util import module_from_spec, spec_from_file_location
+import json
+import os
 from pathlib import Path
+import subprocess
+import sys
+from types import ModuleType, SimpleNamespace
 
 import numpy as np
 import pytest
@@ -20,6 +28,15 @@ from icu_liaison.model import simulate
 from icu_liaison.schemas import Scenario
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture
+def native_qualifier() -> ModuleType:
+    spec = spec_from_file_location('icu_p1_qualifier', ROOT / 'tools/qualify_providers.py')
+    assert spec is not None and spec.loader is not None
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def fixture() -> Scenario:
@@ -156,6 +173,18 @@ def test_voiage_adapter_rejects_invalid_provider_evpi() -> None:
         evaluate_financial_information(draws, value_array_factory=lambda *args: "placeholder", analysis_factory=Bad)
 
 
+def test_voiage_rejects_empty_draws_before_calling_provider() -> None:
+    draws = replace(simulate(fixed_scenario()), net_resource_benefit_aud=np.array([]))
+
+    def must_not_call_provider(*args):
+        pytest.fail("Voiage should not receive an empty decision surface")
+
+    with pytest.raises(ValueError, match="nonempty"):
+        evaluate_financial_information(
+            draws, value_array_factory=must_not_call_provider, analysis_factory=must_not_call_provider,
+        )
+
+
 def test_lock_contains_exact_known_provider_sources() -> None:
     lock = load_provider_lock(ROOT / "providers.lock.json")
     assert lock["providers"]["dapane"]["source_commit"] == "0658d94ad772023a0185a000b5254f9c2f4a63a9"
@@ -175,28 +204,89 @@ def test_provider_version_gates_are_strict() -> None:
         qualify_runtime_versions(lock, {"dapane": None, "voiage": "3.1.0"}.get, (3, 15, 2))
 
 
-def test_native_qualifier_rejects_version_only_without_compiled_extension(monkeypatch) -> None:
-    """A lookalike pure-Python distribution is not installed-native evidence."""
-    import importlib.util
-    file = ROOT / 'tools/qualify_providers.py'
-    spec = importlib.util.spec_from_file_location('icu_p1_qualifier', file)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+@pytest.mark.parametrize(("case", "reason"), [
+    ("version_only", "expected native extension dapane._native is unavailable"),
+    ("other_extension", "expected native extension dapane._native is unavailable"),
+    ("shadowed_package", "import does not resolve to the installed distribution package"),
+])
+def test_native_qualifier_checks_import_identity_before_executing_provider(
+    tmp_path: Path, case: str, reason: str,
+) -> None:
+    install = tmp_path / "installed"
+    package = install / "dapane"
+    package.mkdir(parents=True)
+    dist_info = install / "dapane-0.1.0.dist-info"
+    dist_info.mkdir()
+    (dist_info / "METADATA").write_text("Name: dapane\nVersion: 0.1.0\n")
+    (package / "__init__.py").write_text("raise AssertionError('installed package was executed')\n")
+    record = ["dapane/__init__.py,,"]
+    if case != "version_only":
+        stem = "_native" if case == "shadowed_package" else "_other"
+        extension = stem + EXTENSION_SUFFIXES[0]
+        (package / extension).write_bytes(b"synthetic extension fixture")
+        record.append(f"dapane/{extension},,")
+    (dist_info / "RECORD").write_text("\n".join(record) + "\n")
 
-    class FakeDistribution:
-        files = []
-    monkeypatch.setattr(module, 'version', lambda name: '0.1.0')
-    monkeypatch.setattr(module, 'distribution', lambda name: FakeDistribution())
-    with pytest.raises(RuntimeError, match='native extension'):
-        module._installed_version('dapane', '0.1.0')
+    shadow = tmp_path / "shadow"
+    shadow.mkdir()
+    if case == "shadowed_package":
+        (shadow / "dapane.py").write_text("raise AssertionError('shadowed package was executed')\n")
+    process = subprocess.run(
+        [sys.executable, str(ROOT / 'tools/qualify_providers.py'), '--provider', 'dapane'],
+        cwd=ROOT, capture_output=True, text=True,
+        env={**os.environ, 'PYTHONPATH': os.pathsep.join(map(str, (shadow, install, ROOT / 'src')))},
+        check=False,
+    )
+    assert process.returncode == 2
+    result = json.loads(process.stderr)
+    assert result['status'] == 'UNVERIFIED'
+    assert reason in result['reason']
+
+
+def test_native_qualifier_requires_the_oracle_to_load_the_expected_extension(
+    native_qualifier: ModuleType, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture, tmp_path: Path,
+) -> None:
+    installed = {'distribution': 'dapane', 'native_module': 'dapane._native'}
+    monkeypatch.delitem(sys.modules, 'dapane._native', raising=False)
+    monkeypatch.setattr(native_qualifier, '_inspect_installation', lambda *_: (installed, tmp_path / '_native.so'))
+    monkeypatch.setattr(native_qualifier, 'dapane_oracle', lambda: {'oracle': 'synthetic match'})
+
+    assert native_qualifier.main(['--provider', 'dapane']) == 2
+    captured = capsys.readouterr()
+    assert not captured.out
+    assert json.loads(captured.err)['reason'] == 'dapane: oracle did not load the recorded native extension'
+
+
+@pytest.mark.parametrize(("system", "machine", "key"), [
+    ("linux", "x86_64", "linux-x86_64"),
+    ("win32", "AMD64", "windows-x86_64"),
+])
+def test_reviewed_extension_uses_the_selected_platform_pin(
+    native_qualifier: ModuleType, monkeypatch: pytest.MonkeyPatch,
+    system: str, machine: str, key: str,
+) -> None:
+    entry = load_provider_lock(ROOT / 'providers.lock.json')['providers']['dapane']
+    reviewed = entry['reviewed_platforms'][key]
+    monkeypatch.setattr(native_qualifier, 'sys', SimpleNamespace(platform=system))
+    monkeypatch.setattr(
+        native_qualifier, 'platform',
+        SimpleNamespace(machine=lambda: machine, python_version=lambda: '3.15.2'),
+    )
+    installed = {
+        'distribution': 'dapane',
+        'native_extension_digests': {reviewed['native_extension']: reviewed['binary_sha256']},
+    }
+    native_qualifier._require_reviewed_extension(entry, installed)
+    assert installed['reviewed_extension_matched']
+
+    installed['native_extension_digests'] = {reviewed['native_extension']: entry['binary_sha256']}
+    with pytest.raises(RuntimeError, match='does not match the reviewed digest'):
+        native_qualifier._require_reviewed_extension(entry, installed)
 
 
 def test_missing_provider_lock_returns_machine_readable_unverified(tmp_path) -> None:
     """No uncaught traceback or false PASS for a missing contract lock."""
-    import os
-    import subprocess
-    import sys
     process = subprocess.run(
         [sys.executable, str(ROOT / 'tools/qualify_providers.py'), '--provider', 'dapane',
          '--lock', str(tmp_path / 'no-provider-lock.json')],
@@ -204,4 +294,4 @@ def test_missing_provider_lock_returns_machine_readable_unverified(tmp_path) -> 
         env={**os.environ, 'PYTHONPATH': str(ROOT / 'src')}, check=False,
     )
     assert process.returncode == 2
-    assert __import__('json').loads(process.stderr)['status'] == 'UNVERIFIED'
+    assert json.loads(process.stderr)['status'] == 'UNVERIFIED'
