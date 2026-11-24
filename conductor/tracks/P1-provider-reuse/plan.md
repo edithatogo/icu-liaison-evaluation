@@ -279,3 +279,22 @@ and build evidence are retained privately.
 - [x] Record the repository owner's release acceptance of the verified
   migration from CareOps Sim PR #215 to standalone PR #5.
   [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
+
+## Phase — Review fixes
+
+- [x] Bind P1 qualification to the installed package and loaded extension,
+  check the reviewed extension when requested, and reject empty Voiage
+  decision surfaces (`9a908af`).
+
+Both reviewed native extensions matched on macOS arm64 and CPython 3.15.2.
+Dapane returned AUD 100.00 and −AUD 168,730.00 in the two reference checks.
+Voiage returned AUD 5.00 for the two-state example. The repaired Dapane
+candidate passed the numerical checks and exited 2 when the reviewed
+digest was required. Existing artifact approvals retain their scope.
+
+The installed-provider suite passed 490 tests. Two Snakemake cases
+require the separate workflow environment. The fictional P5 report used
+both providers and reconciled all 5,000 draws. The P7 audit retained all
+33 unresolved evidence obligations. Independent acceptance of the
+repaired Dapane artifact remains open.
+[Runtime guide](../../../docs/providers-p1.md) · [Test matrix](test-matrix.md)
