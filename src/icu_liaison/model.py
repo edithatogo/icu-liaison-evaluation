@@ -41,13 +41,16 @@ def simulate(scenario: Scenario) -> PSADraws:
     i = s.inputs
     vars = {name: _sample(p, rng, s.iterations) for name, p in i.__dict__.items()}
     n = s.annual_eligible_discharges
-    days = (n * vars['delayed_discharge_ge12h_rate'] * vars['delayed_cases_addressable_fraction']
-            * vars['addressable_cases_improved_fraction'] * vars['hours_released_per_improved_case'] / 24)
-    risk = vars['unplanned_72h_readmission_risk']
-    new_risk = np.clip(risk * (1.0 - vars['relative_readmission_reduction']), 0, 1)
-    returns = n * (risk - new_risk)
-    gross = days * vars['net_avoidable_cost_per_icu_day_aud'] + returns * vars['additional_cost_per_readmission_aud']
-    net = gross - vars['annual_incremental_service_cost_aud']
+    with np.errstate(over='ignore', invalid='ignore'):
+        days = (n * vars['delayed_discharge_ge12h_rate'] * vars['delayed_cases_addressable_fraction']
+                * vars['addressable_cases_improved_fraction'] * vars['hours_released_per_improved_case'] / 24)
+        risk = vars['unplanned_72h_readmission_risk']
+        new_risk = np.clip(risk * (1.0 - vars['relative_readmission_reduction']), 0, 1)
+        returns = n * (risk - new_risk)
+        gross = days * vars['net_avoidable_cost_per_icu_day_aud'] + returns * vars['additional_cost_per_readmission_aud']
+        net = gross - vars['annual_incremental_service_cost_aud']
+    if not all(np.isfinite(outcome).all() for outcome in (days, returns, gross, net)):
+        raise ValueError('scenario produced non-finite outcome draws')
     canonical_json = json.dumps(s.model_dump(), sort_keys=True, separators=(',', ':'), ensure_ascii=True)
     return PSADraws(
         scenario_id=s.scenario_id, seed=s.seed,
@@ -57,9 +60,13 @@ def simulate(scenario: Scenario) -> PSADraws:
     )
 
 
-def _stats(values: np.ndarray) -> dict[str,float]:
-    p05, p50, p95 = np.quantile(values, [0.05, 0.5, 0.95])
-    return dict(mean=float(np.mean(values)), p05=float(p05), p50=float(p50), p95=float(p95))
+def _stats(values: np.ndarray) -> dict[str, float]:
+    with np.errstate(over='ignore', invalid='ignore'):
+        mean = np.mean(values)
+        p05, p50, p95 = np.quantile(values, [0.05, 0.5, 0.95])
+    if not np.isfinite((mean, p05, p50, p95)).all():
+        raise ValueError('scenario produced non-finite summary statistics')
+    return dict(mean=float(mean), p05=float(p05), p50=float(p50), p95=float(p95))
 
 
 def summarise(draws: PSADraws) -> dict:

@@ -100,3 +100,42 @@ def test_sensitivity_interval_is_ordered_and_probability_bounded():
     assert out['net_resource_benefit_aud']['p05'] <= out['net_resource_benefit_aud']['p50'] <= out['net_resource_benefit_aud']['p95']
     assert 0 <= out['probability_net_resource_benefit_nonnegative'] <= 1
     assert out['result_class'] == 'illustrative_not_chhhs_observed'
+
+
+@pytest.mark.parametrize(
+    "parameter", ["net_avoidable_cost_per_icu_day_aud", "annual_incremental_service_cost_aud"]
+)
+def test_portable_cli_rejects_nonfinite_results(tmp_path, capsys, parameter):
+    from icu_liaison.cli import main
+
+    s = scenario()
+    lock(getattr(s.inputs, parameter), 1e308)
+    path = tmp_path / "scenario.json"
+    path.write_text(s.model_dump_json(), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="finite"):
+        summarise(simulate(s))
+    with pytest.raises(SystemExit) as error:
+        main([str(path)])
+    assert error.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "finite" in captured.err
+
+
+def test_portable_cli_does_not_echo_rejected_input(tmp_path, capsys):
+    from icu_liaison.cli import main
+
+    data = json.loads(FIXTURE.read_text())
+    marker = "FICTIONAL-REJECTED-RECORD"
+    data[marker] = {"id": marker}
+    path = tmp_path / "scenario.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(SystemExit) as error:
+        main([str(path)])
+    assert error.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "invalid synthetic scenario" in captured.err
+    assert marker not in captured.err
