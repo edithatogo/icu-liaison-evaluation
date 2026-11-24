@@ -11,7 +11,15 @@ cost; negative readmission effect represents more returns; invalid source,
 unit/probability and raw patient fields rejected; Dapane request exact decimal
 strings/unique use; financial Voiage draws 2 strategy columns.
 
-Native installed-provider tests (PENDING): Dapane 0.1 schema validation and
-exact output against a selected qualified wheel/CLI; Voiage installed 3.1.0
-EVPI expected-value identity in Python 3.15.2; upstream release/ABI and license
-qualification; full integration CI in provided destination repository.
+## Installed provider and hosted checks
+
+The [installed-consumer receipt](../../../verification/p0-native-providers-py315-2026-11-19.json)
+records passing Dapane 0.1.0 exact-quotation and Voiage 3.1.0 expected-value
+oracles on CPython 3.15.2. The [P1 plan](../P1-provider-reuse/plan.md) records
+independent acceptance of the corrected Dapane artifacts for the three tested
+environments. Voiage artifact admission and broader Dapane release review
+remain in P1/P7.
+
+The [migration comparison](../../../docs/pr215-migration-comparison.md)
+links the preserved exploratory revision to the standalone merge and its
+passing synthetic CI. The independent release decision remains open.

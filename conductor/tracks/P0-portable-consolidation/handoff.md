@@ -146,3 +146,21 @@ audit mode. PR #43 restored the pre-commit configuration to the existing
 hook definitions and refreshed the source manifest. Both synthetic CI runs
 and the privacy scan passed before the merge at `1206a5a`.
 [PR #43](https://github.com/edithatogo/icu-liaison-evaluation/pull/43)
+
+## P0 migration review on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the P0 plan, metadata, test
+matrix, this handoff and the source manifest on
+`codex/icu-p0-portable-closeout` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The scope is source and fictional checks. The next acceptance step is an
+independent migration release decision.
+
+The 19 source files match the Git blob IDs from CareOps Sim PR #215. The
+mapping resolves on standalone `main`. CPython 3.15.2 reproduced the fixed-input
+accounting from the original parameter values at seed `20261117`.
+PR #215 is closed with its source revision preserved. Standalone PR #5 merged
+at `1ff7ca4` and its synthetic CI passed. P0.4, P1.5 and the two P7 plans
+still track the independent release decision.
+[Migration comparison](../../../docs/pr215-migration-comparison.md) ·
+[Standalone CI](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44455595345)

@@ -14,7 +14,7 @@
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Independent wheel-provenance adjudication (providers.lock.json binary_sha256), independent review/retirement of CareOps Sim PR #215, and CHHHS calibration remain outstanding.",
+  "blocker": "Independent migration release acceptance and the remaining provider artifact and release decisions in P1 and P7 are pending. CHHHS calibration is tracked separately.",
   "dependencies": [],
   "external_dependencies": [
     {
@@ -31,9 +31,9 @@
       "required": "exact gitlink and Antigravity plugin and workspace registry checks"
     }
   ],
-  "updated_at": "2026-11-23",
+  "updated_at": "2026-11-24",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "current_task": "P0.4 public hosted CI passed, local gitleaks hooks active, Python 3.15.2 native Dapane/Voiage oracles executed, and PR #215 comparison recorded; independent review and PR #215 retirement remain open",
+  "current_task": "P0.4 awaits independent acceptance of the 19-file migration comparison and standalone PR #5. CareOps Sim PR #215 is closed with its exploratory source revision preserved.",
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
   "initial_import_pr_merged_sha": "4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558",
   "hosted_ci_public_run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989",
