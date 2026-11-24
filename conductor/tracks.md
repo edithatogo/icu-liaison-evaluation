@@ -99,11 +99,12 @@ outstanding evidence and approvals.
    [plan](tracks/P6-kairos-capacity-validation/plan.md)).
   P6.1/2 synthetic neutral event-trace, time-varying staffed-capacity
   conservation, paired-demand and CLI gates are implemented with NumPy/Pydantic.
-  P6.3 passed the pinned local Rust build and two one-bed replays, including
-  FIFO contention and horizon censoring, on Kairos `b60c422`. P6.4 includes
-  synthetic holdout diagnostics. Independent build attestation, CHHHS
-  calibration and clinical and Finance governance remain open.
-  [Current pin qualification](tracks/P6-kairos-capacity-validation/handoff.md#scheduled-kairos-update-b60c422)
+  P6.3 has an independent build attestation for the exact retained macOS
+  arm64 consumer and runner on Kairos `b60c422`. The two fictional one-bed
+  replays cover FIFO contention and horizon censoring. P6.4 includes
+  synthetic holdout diagnostics. CHHHS calibration and clinical and
+  Finance governance remain open.
+  [Scoped build decision](tracks/P6-kairos-capacity-validation/handoff.md#independent-build-attestation-on-25-november-2026)
 
 - [~] **Track: P7 — Technical, primary-source and empirical qualification closeout**
   ([index](tracks/P7-technical-empirical-qualification/index.md),
@@ -112,8 +113,9 @@ outstanding evidence and approvals.
   2023/24 review. The portable receipt verifies the 2024/25 document record,
   request pack and synthetic audit inputs. P7.5 records scoped approval of the
   Dapane artifacts and native execution receipts on three tested hosts and the
-  exact Voiage macOS arm64 admission. Kairos build attestation, broader Dapane
-  release review, independent admission of the retrieved 2024/25 PDF, CHHHS
+  exact Voiage macOS arm64 admission. P7.4 records the scoped Kairos macOS
+  arm64 attestation. Broader Dapane release review, independent admission
+  of the retrieved 2024/25 PDF, CHHHS
   calibration and approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
   [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)

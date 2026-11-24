@@ -11,10 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_track_metadata_records_local_replay_and_outstanding_qualification() -> None:
     metadata = json.loads((ROOT / 'conductor/tracks/P6-kairos-capacity-validation/metadata.json').read_text())
     assert metadata['status'] == 'in_progress'
-    assert metadata['native_execution'] == 'local_synthetic_replay_passed_unattested'
+    assert metadata['native_execution'] == 'independently_attested_fictional_macos_arm64'
     assert metadata['clinical_validation'] is False
     assert 'P6.3-local-native-Kairos-producer-and-replay' in metadata['accepted_phases']
-    assert 'P6.3-independent-native-build-attestation' in metadata['blocked_phases']
+    assert 'P6.3-independent-native-build-attestation' in metadata['accepted_phases']
+    attestation = metadata['independent_build_attestation']
+    assert attestation['consumer_revision'] == '4b6e704c4d1561d6b19b94456031f0b9951a6d3d'
+    assert attestation['provider_revision'] == metadata['source_provider_revision']
+    assert attestation['platform'] == 'macos_arm64'
+    assert 'P6.3-ward-costing-and-safety-integration' in metadata['blocked_phases']
     assert 'P6.4-CHHHS-calibration' in metadata['blocked_phases']
 
 

@@ -29,7 +29,9 @@
 - [x] Check FIFO order, vacant-bed waits and horizon censoring. Verify the
   pinned provider source before compilation and repeat both reference cases.
   [Verification](test-matrix.md#fifo-contention-and-paired-access)
-- [ ] Independently attest the built artifact and runner.
+- [x] Independently attest the retained Kairos `b60c422` macOS arm64
+  fictional artifact and runner.
+  [Scoped build decision](handoff.md#independent-build-attestation-on-25-november-2026)
 - [x] Preserve synthetic-only provider/seed/input/source identity and refuse
   conversion of capacity to cash or clinical benefit; require source-byte proof
   and reject false direct native claims.

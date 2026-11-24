@@ -19,9 +19,10 @@
 Stop if any capacity, provenance, pairing or governance gate fails; do not
 replace a refused case with assumed clinical effectiveness or cash value.
 
-8. **Unattested build:** the pinned local executable passed the one-bed
-   fixture and deterministic replay. Independent build attestation is still
-   required before treating it as a portable provider artifact.
+8. **Artifact scope:** independent attestation covers the reviewed
+   `b60c422` macOS arm64 executable and runner. Other artifacts or runners
+   need evidence for their own scope.
+   [Build decision](handoff.md#independent-build-attestation-on-25-november-2026)
 9. **Static single-bed model:** variable staffing, ward friction, clinical
    readmission and multi-bed competition are unsupported by the native source
    candidate and must never be inferred from neutral trace-validator features.

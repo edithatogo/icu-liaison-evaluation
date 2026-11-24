@@ -10,8 +10,8 @@ bindings to the designated private directories. [Verification](test-matrix.md)
 The 2024/25 ANZICS publisher and locator checks, scoped provider decisions and
 the receiving migration's hosted CI and release decision are recorded in P7.4.
 The 33 placeholders remain unresolved for their intended use. P7.4 still
-requires independent source admission, broader provider qualification and
-Kairos attestation, authorised CHHHS data and governance reviews, and
+requires independent source admission, broader provider qualification,
+qualified Kairos ward transitions, authorised CHHHS data and governance reviews, and
 independent review of the receiving migration. [P7.4 plan](plan.md#p74--external-qualifications-blocked-not-accepted)
 
 P8 tracks the additional workforce, activity-based funding and valuation

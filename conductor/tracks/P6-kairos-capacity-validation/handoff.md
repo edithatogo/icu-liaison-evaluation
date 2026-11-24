@@ -104,3 +104,18 @@ their outputs byte-for-byte. The reviewed Cargo lock SHA-256 is
 Independent build attestation and site acceptance remain open.
 [Upstream revision](https://github.com/edithatogo/kairos/commit/b60c422b9fa90751b6a5349b9aefab2bf272e25e) ·
 [Renovate dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
+
+## Independent build attestation on 25 November 2026
+
+A separate technical reviewer attested the exact retained macOS arm64
+consumer and runner built from ICU liaison commit `4b6e704c4d1561d6b19b94456031f0b9951a6d3d`
+with Kairos `b60c422`. The reviewer performed a clean locked build in an
+isolated target on the same Mac and reproduced the retained executable
+byte-for-byte through a controlled relink. Both fictional one-bed cases
+matched their references, including FIFO admission, paired waits and
+horizon censoring. The verification receipt is held in private Conductor.
+
+The decision resolves the scoped P6.3 and P7.4 technical build items.
+CHHHS calibration, ward and costing integration, and site approvals
+remain open.
+[Site inputs and governance](../../../docs/p6-native-qualification.md#chhhs-inputs-and-governance-outstanding)
