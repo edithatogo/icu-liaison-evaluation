@@ -11,6 +11,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .data_request import DataRequestCatalogue
+from .protocol import EvaluationProtocol, load_data_dictionary
+
 REQUIRED_GOVERNANCE_GATES = frozenset(
     {
         "icu_medical_clinical_director",
@@ -113,7 +116,7 @@ class GovernanceGate(_StrictModel):
 
 
 class GovernanceSignoffPack(_StrictModel):
-    """Fail-closed P2.5 CHHHS stakeholder governance sign-off manifest."""
+    """Reviewer declarations for the P2.5 stakeholder sign-off form."""
 
     schema_version: Literal[1]
     status: Literal["template_unapproved_no_site_signoff", "in_review", "site_approved"]
@@ -155,8 +158,8 @@ class GovernanceSignoffPack(_StrictModel):
         return self
 
 
-def _sha256_bytes(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _sha256(contents: bytes) -> str:
+    return hashlib.sha256(contents).hexdigest()
 
 
 def validate_p2_chhhs_crosswalk(
@@ -165,13 +168,13 @@ def validate_p2_chhhs_crosswalk(
     request_path: Path,
 ) -> dict:
     """Validate 1:1 coverage of all P2 dictionary fields against CHHHS request datasets."""
-    cw_path = Path(crosswalk_path)
-    dict_path = Path(dictionary_path)
-    req_path = Path(request_path)
+    crosswalk_bytes = Path(crosswalk_path).read_bytes()
+    dictionary_bytes = Path(dictionary_path).read_bytes()
+    request_bytes = Path(request_path).read_bytes()
 
-    cw = FieldCrosswalk.model_validate_json(cw_path.read_text(encoding="utf-8"))
-    dictionary = json.loads(dict_path.read_text(encoding="utf-8"))
-    request = json.loads(req_path.read_text(encoding="utf-8"))
+    cw = FieldCrosswalk.model_validate_json(crosswalk_bytes)
+    dictionary = load_data_dictionary(json.loads(dictionary_bytes))
+    request = DataRequestCatalogue.model_validate_json(request_bytes)
 
     dict_fields = {field["name"] for field in dictionary["fields"]}
     mapped_fields = {entry.p2_field for entry in cw.mappings}
@@ -181,8 +184,8 @@ def validate_p2_chhhs_crosswalk(
         raise ValueError(f"P2 dictionary coverage mismatch (missing={missing}, extra={extra})")
 
     dataset_fields = {
-        ds["id"]: {field["name"] for field in ds["fields"]}
-        for ds in request["datasets"]
+        ds.id: {field.name for field in ds.fields}
+        for ds in request.datasets
     }
     for entry in cw.mappings:
         if entry.dataset_id not in dataset_fields:
@@ -202,9 +205,9 @@ def validate_p2_chhhs_crosswalk(
         "non_exact_count": len(cw.mappings) - exact_count,
         "counts_by_kind": counts,
         "datasets_referenced": sorted({entry.dataset_id for entry in cw.mappings}),
-        "dictionary_sha256": _sha256_bytes(dict_path),
-        "request_sha256": _sha256_bytes(req_path),
-        "crosswalk_sha256": _sha256_bytes(cw_path),
+        "dictionary_sha256": _sha256(dictionary_bytes),
+        "request_sha256": _sha256(request_bytes),
+        "crosswalk_sha256": _sha256(crosswalk_bytes),
     }
 
 
@@ -213,39 +216,41 @@ def audit_governance_signoff(
     protocol_path: Path,
     dictionary_path: Path,
 ) -> dict:
-    """Audit P2.5 governance sign-off manifest against bound protocol and dictionary hashes."""
-    so_path = Path(signoff_path)
-    proto_path = Path(protocol_path)
-    dict_path = Path(dictionary_path)
+    """Check the sign-off document and its source bindings without authenticating decisions."""
+    signoff_bytes = Path(signoff_path).read_bytes()
+    protocol_bytes = Path(protocol_path).read_bytes()
+    dictionary_bytes = Path(dictionary_path).read_bytes()
 
-    pack = GovernanceSignoffPack.model_validate_json(so_path.read_text(encoding="utf-8"))
-    protocol = json.loads(proto_path.read_text(encoding="utf-8"))
-
-    if pack.protocol_id != protocol.get("protocol_id"):
-        raise ValueError(
-            f"protocol_id mismatch: signoff={pack.protocol_id!r}, protocol={protocol.get('protocol_id')!r}"
-        )
-    actual_proto_sha = _sha256_bytes(proto_path)
+    pack = GovernanceSignoffPack.model_validate_json(signoff_bytes)
+    actual_proto_sha = _sha256(protocol_bytes)
     if pack.protocol_sha256 != actual_proto_sha:
         raise ValueError(
             f"protocol_sha256 mismatch: signoff={pack.protocol_sha256}, actual={actual_proto_sha}"
         )
-    actual_dict_sha = _sha256_bytes(dict_path)
+    actual_dict_sha = _sha256(dictionary_bytes)
     if pack.data_dictionary_sha256 != actual_dict_sha:
         raise ValueError(
             f"data_dictionary_sha256 mismatch: signoff={pack.data_dictionary_sha256}, actual={actual_dict_sha}"
         )
+    protocol = EvaluationProtocol.model_validate_json(protocol_bytes)
+    if pack.protocol_id != protocol.protocol_id:
+        raise ValueError("protocol_id mismatch between the sign-off form and the draft protocol")
+    load_data_dictionary(json.loads(dictionary_bytes))
 
     approved_count = sum(1 for gate in pack.gates if gate.decision == "approved")
     pending_count = sum(1 for gate in pack.gates if gate.decision == "pending")
     return {
-        "status": pack.status,
+        "status": "site_approval_declared_unverified" if pack.status == "site_approved" else pack.status,
+        "declared_status": pack.status,
         "protocol_id": pack.protocol_id,
+        "protocol_sha256": actual_proto_sha,
         "protocol_sha256_verified": True,
+        "dictionary_sha256": actual_dict_sha,
         "data_dictionary_sha256_verified": True,
         "gate_count": len(pack.gates),
         "approved_gate_count": approved_count,
         "pending_gate_count": pending_count,
-        "ready_for_local_claims": pack.status == "site_approved",
-        "signoff_sha256": _sha256_bytes(so_path),
+        "site_authority_verified": False,
+        "ready_for_local_claims": False,
+        "signoff_sha256": _sha256(signoff_bytes),
     }

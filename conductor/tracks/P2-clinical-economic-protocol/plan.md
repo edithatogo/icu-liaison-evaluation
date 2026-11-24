@@ -32,26 +32,36 @@
 - [x] Reconcile Conductor track register/ADR and record provider and
   clinical-data blockers without changing P1 acceptance status.
 
-## P2.5 — Required external gates (not complete)
-*Preparation artifacts ready for stakeholder review (`docs/p2-stakeholder-review-pack.md`,
-`model-inputs/p2-chhhs-field-crosswalk.json`, `model-inputs/p2-governance-signoff-TEMPLATE.json`,
-`verification/p2-governance-crosswalk-2026-11-19.json`); external CHHHS sign-offs remain open.*
+## P2.5 — Stakeholder pack and site approval
+
+- [x] Prepare the review pack, field crosswalk and seven-role sign-off
+  template. [Initial source receipt](../../../verification/p2-governance-crosswalk-2026-11-19.json)
+- [x] Run the P2 protocol, field crosswalk and sign-off audit through one
+  source CLI. Confirm a populated form with matching hashes leaves site
+  authority unverified, and strict local readiness exits 2.
+  [Verification command](../../../docs/p2-stakeholder-review-pack.md#5-verify-the-review-pack)
 - [ ] Obtain Clinical/ICU/Nursing/Finance and appropriate consumer/stakeholder
   review of eligibility, comparator, realistic staffing, outcomes and costing.
 - [ ] Approve analytic design, safety margins and minimum acceptable data
   quality; determine governance/ethics authority and secure CHHHS data route.
-- [ ] Qualify local timestamps, returns, costs and actual intervention effect;
-  complete P1.4 provider runtime and future P3/P4 validation before investment
-  claims, report deployment or definitive decision.
+- [ ] Qualify local timestamps, return ascertainment, actual costs and
+  intervention effects through the P3/P4 evidence and validation process.
+  Use the P1 provider qualifications at their recorded scopes. Broader
+  Dapane artifact acceptance is tracked in P1.
+  [Provider scope](../P1-provider-reuse/index.md)
 
-These source milestones are local acceptance only. No site/hospital assertion,
-clinical deployment, GitHub merge or HREC approval is implied.
+The source audit verified 32 mappings, seven pending governance decisions
+and exact file hashes for the draft protocol and dictionary. It returned
+`ADMITTED_ILLUSTRATIVE_ONLY`. The fictional run reproduced its existing
+result with seed 20261117 on CPython 3.15.2.
 
-## P2.6: P10 source-only safety decision integration
+## P2.6 — P10 source-only safety decision integration
+
 - [x] The [P10 decision contract](../../../contracts/clinical/safety-decision.json) lists all six P2 safety outcomes and leaves unavailable measurements, noninferiority margins and site authority explicitly null.
 - [x] An illustrative positive net resource benefit cannot grant clinical safety or rollout acceptance.
 - [ ] Site clinical review of acceptable harm margins, endpoint ascertainment, early appropriate return interpretation and formal decision authority remains required.
 
-## P2.7: pre-registration and service fidelity
+## P2.7 — Preregistration and service fidelity
+
 - [x] Source-only [pre-registration draft](../../../contracts/clinical/preregistration.json) defines intention-to-cover, exploratory contact association, phased/controlled ITS, covariates and negative controls without observed data.
 - [ ] Before site implementation, clinically approve index validity definitions, current-care activity and exposure/roster recordings, proposed controls, minimum age, analysis locking and linked endpoints. The public draft is not registration.

@@ -33,3 +33,14 @@ installed Dapane and Voiage source/binary numerical conformance.
   [fail-closed governance sign-off template](../../../model-inputs/p2-governance-signoff-TEMPLATE.json),
   [P2 governance validators](../../../src/icu_liaison/p2_governance.py), and
   [governance/crosswalk receipt](../../../verification/p2-governance-crosswalk-2026-11-19.json).
+
+## P2 protocol implementation on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carried the P2 protocol CLI, governance audit, tests and documentation on
+`codex/icu-p2-protocol`. The audit checked the form and field mappings
+against the exact source files and refused local readiness. The existing
+P10 safety and preregistration checks confirmed their draft status. The
+site decision remains with the clinical, consumer and First Nations,
+Finance, ethics and data governance owners.
+[Run the review-pack audit](../../../docs/p2-stakeholder-review-pack.md#5-verify-the-review-pack)

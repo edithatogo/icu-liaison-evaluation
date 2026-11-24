@@ -13,7 +13,9 @@ are supported by the [clinical/economic methods brief](../../../docs/protocol-p2
 [P2.5 stakeholder review pack](../../../docs/p2-stakeholder-review-pack.md),
 and the [P2 admissions CLI](../../../src/icu_liaison/protocol_cli.py).
 
-P2.1–P2.4 source contracts and the P2.5 stakeholder review pack / crosswalk
-validators are verified (`verification/p2-governance-crosswalk-2026-11-19.json`);
-site-specific clinical/Finance/HREC/First Nations approval and local CHHHS data
-remain blocked in P2.5.
+P2.1–P2.4 source contracts, the P2.5 review-pack audit, the P2.6 safety
+contract and the P2.7 draft preregistration have source verification.
+The [review-pack command](../../../docs/p2-stakeholder-review-pack.md#5-verify-the-review-pack)
+checks all 32 field mappings and the seven-role form against the draft.
+P2.5–P2.7 remain open for the site approvals, linked data, safety adjudication
+and an approved analysis plan.

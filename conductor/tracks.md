@@ -48,13 +48,12 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   ([index](tracks/P2-clinical-economic-protocol/index.md),
    [spec](tracks/P2-clinical-economic-protocol/spec.md),
    [plan](tracks/P2-clinical-economic-protocol/plan.md)).
-  P2.1–P2.4 clinical/cohort/economic contracts, synthetic outcome tests, and
-  P2.5 preparation deliverables (`docs/p2-stakeholder-review-pack.md`, 32↔115
-  CHHHS field crosswalk, fail-closed 7-gate sign-off template, and
-  `verification/p2-governance-crosswalk-2026-11-19.json`) are implemented;
-  **P2.5 site clinical/Nursing/Finance/HREC/First Nations approvals, real
-  CHHHS data, safety thresholds, and P1/P7 provider provenance adjudication
-  remain open**.
+  P2.1–P2.4 clinical, cohort and economic source contracts are implemented.
+  The P2.5 CLI audits the 32-field crosswalk and seven-role sign-off form
+  against the draft. P2.6 safety and P2.7 preregistration contracts are
+  implemented as drafts. **Site approvals, linked CHHHS data, safety
+  adjudication and an approved analysis plan remain open.**
+  [P2 stakeholder review pack](../docs/p2-stakeholder-review-pack.md)
 - [~] **Track: P3 — Public evidence provenance and controlled data admission**
   ([index](tracks/P3-evidence-data-infrastructure/index.md),
    [spec](tracks/P3-evidence-data-infrastructure/spec.md),
