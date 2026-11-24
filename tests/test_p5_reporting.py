@@ -1,5 +1,6 @@
 """RED: P5 reporting is a consumer of the accepted P4 draw table."""
 from __future__ import annotations
+import csv
 from dataclasses import replace
 import hashlib
 import json
@@ -56,6 +57,39 @@ def test_p5_reproducible_content_and_refuses_existing_output(tmp_path):
         assert file.read_bytes()==(b/file.name).read_bytes(),file.name
     with pytest.raises(FileExistsError):
         build_report(case(),a,voiage_mode='skip')
+
+
+def test_p5_fully_fixed_scenario_publishes_a_header_only_sensitivity_table(tmp_path):
+    from icu_liaison.p4_model import Prior
+    from icu_liaison.p5_reporting import build_report, review_report
+
+    data = case().model_dump()
+    data['dependence_groups'] = []
+    for group in (data['baseline'], data['resource'], *data['strategies']):
+        for name, value in group.items():
+            if isinstance(value, dict):
+                point = Prior.model_validate(value).nominal()
+                group[name] = {**value, 'family': 'fixed', 'params': {'value': point}}
+    target = tmp_path / 'report'
+    build_report(EconomicScenario.model_validate(data), target)
+    with (target / 'one-way-sensitivity.csv').open(newline='') as stream:
+        reader = csv.DictReader(stream)
+        assert 'strategy_id' in reader.fieldnames and 'parameter' in reader.fieldnames
+        assert list(reader) == []
+    assert 'All model priors are fixed' in (target / 'report.md').read_text()
+    assert review_report(target)['strategies_checked'] == 3
+
+
+def test_p5_uses_surface_order_for_an_alphabetically_earlier_variant(tmp_path):
+    from icu_liaison.p5_reporting import build_report, review_report
+
+    data = case().model_dump()
+    data['strategies'].append({**data['strategies'][-1], 'id': 'another_cover'})
+    target = tmp_path / 'report'
+    build_report(EconomicScenario.model_validate(data), target)
+    with (target / 'decision-surface.csv').open(newline='') as stream:
+        assert next(csv.reader(stream)) == ['current_care', 'liaison_service', 'extended_cover', 'another_cover']
+    assert review_report(target)['strategies_checked'] == 4
 
 
 def test_p5_voiage_only_uses_provider_not_homegrown_evpi(tmp_path):

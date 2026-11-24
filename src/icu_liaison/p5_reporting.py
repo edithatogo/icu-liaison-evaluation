@@ -35,6 +35,15 @@ MEASURES = (
     ('net_resource_benefit_aud', 'AUD', 'net_resource_cost_consequence'),
     ('net_budget_impact_aud', 'AUD', 'hypothetical_cash_realisability_only'),
 )
+SERVICE_COST = ('incremental_service_cost_aud', 'AUD', 'incremental_programme_cost_only')
+PAIRED_MEASURES = ('net_resource_benefit_aud', 'net_budget_impact_aud')
+PAIRED_DEFINITION = 'paired_draw_incremental_comparison_not_clinical_superiority'
+SUMMARY_FIELDS = ('mean', 'p05', 'p50', 'p95')
+SENSITIVITY_COLUMNS = (
+    'strategy_id', 'parameter', 'lower_prior_quantile', 'upper_prior_quantile',
+    'low_net_resource_aud', 'high_net_resource_aud', 'absolute_net_resource_swing_aud',
+    'interpretation',
+)
 
 
 def _stats(a: np.ndarray) -> dict[str, float]:
@@ -169,17 +178,18 @@ def _rows(run: P4Run) -> tuple[list[dict], list[dict], list[dict]]:
                 'strategy_id': arm.id, 'measure': measure, 'unit': f'{unit}_{run.scenario.price_year}' if unit == 'AUD' else unit,
                 'boundary': boundary, **_stats(getattr(result, measure)),
             })
+        service_measure, _, service_boundary = SERVICE_COST
         consequences.append({
-            'strategy_id': arm.id, 'measure': 'incremental_service_cost_aud',
+            'strategy_id': arm.id, 'measure': service_measure,
             'unit': f'AUD_{run.scenario.price_year}',
-            'boundary': 'incremental_programme_cost_only',
+            'boundary': service_boundary,
             **_stats(run.sampled_inputs[f'strategy.{arm.id}.annual_incremental_cost_aud']),
         })
     base = run.strategies['current_care']
     pairs = []
     for arm in run.scenario.strategies[1:]:
         alt = run.strategies[arm.id]
-        for measure in ('net_resource_benefit_aud','net_budget_impact_aud'):
+        for measure in PAIRED_MEASURES:
             difference = getattr(alt, measure) - getattr(base, measure)
             pairs.append({
                 'strategy_id': arm.id, 'reference_strategy': 'current_care',
@@ -187,7 +197,7 @@ def _rows(run: P4Run) -> tuple[list[dict], list[dict], list[dict]]:
                 **_stats(difference),
                 'probability_strictly_better': float(np.mean(difference > 0)),
                 'probability_equal': float(np.mean(difference == 0)),
-                'definition': 'paired_draw_incremental_comparison_not_clinical_superiority',
+                'definition': PAIRED_DEFINITION,
             })
     sensitivity = []
     for arm in run.scenario.strategies[1:]:
@@ -253,18 +263,23 @@ def _markdown(model: dict, consequences: list[dict], pairs: list[dict],
         '',
         '### One-way sensitivity — illustrative prior 5th/95th quantiles',
         '',
-        '| Proposed strategy | Largest illustrative driver | Change in net resource benefit between marginal quantiles (AUD) |',
-        '|---|---|---:|',
     ]
-    for name in model['strategies']:
-        if name == 'current_care':
-            continue
-        leading = next((row for row in sensitivity if row['strategy_id'] == name), None)
-        if leading:
-            lines.append(f"| `{name}` | `{leading['parameter']}` | {leading['absolute_net_resource_swing_aud']:,.0f} |")
+    if sensitivity:
+        lines += [
+            '| Proposed strategy | Largest illustrative driver | Change in net resource benefit between marginal quantiles (AUD) |',
+            '|---|---|---:|',
+        ]
+        for name in model['strategies']:
+            leading = next((row for row in sensitivity if row['strategy_id'] == name), None)
+            if leading:
+                lines.append(f"| `{name}` | `{leading['parameter']}` | {leading['absolute_net_resource_swing_aud']:,.0f} |")
+        lines += [
+            '',
+            'This diagnostic varies one marginal prior while fixing the others at their nominal inputs; it is not a correlated posterior sensitivity analysis.',
+        ]
+    else:
+        lines.append('All model priors are fixed in this scenario.')
     lines += [
-        '',
-        'This diagnostic varies one marginal prior while fixing the others at their nominal inputs; it is not a correlated posterior sensitivity analysis.',
         '',
         'Probability is a descriptive property of the illustrative input draws; it is **not** the probability that CHHHS will realise a saving.',
         '',
@@ -296,11 +311,12 @@ def _markdown(model: dict, consequences: list[dict], pairs: list[dict],
     return '\n'.join(lines)
 
 
-def _csv(path: Path, rows: list[dict]) -> None:
-    if not rows:
+def _csv(path: Path, rows: list[dict], *, columns: tuple[str, ...] | None = None) -> None:
+    if columns is None and not rows:
         raise ValueError('empty decision report table')
+    fields = columns if columns is not None else tuple(rows[0])
     with path.open('w', newline='', encoding='utf-8') as fp:
-        writer = csv.DictWriter(fp, fieldnames=list(rows[0]), extrasaction='raise', lineterminator='\n')
+        writer = csv.DictWriter(fp, fieldnames=fields, extrasaction='raise', lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 
@@ -361,17 +377,78 @@ def verify_manifest(directory: Path) -> bool:
     return True
 
 
+def _report_rows(path: Path, expected: set[tuple[str, str]]) -> dict[tuple[str, str], dict[str, str]]:
+    rows = {}
+    with path.open(newline='', encoding='utf-8') as stream:
+        for row in csv.DictReader(stream):
+            key = (row['strategy_id'], row['measure'])
+            if key not in expected or key in rows:
+                raise ValueError(f'unexpected or duplicate P5 {path.stem} row')
+            rows[key] = row
+    if set(rows) != expected:
+        raise ValueError(f'missing P5 {path.stem} rows')
+    return rows
+
+
+def _match_report_value(actual: str | float, expected: float, label: str) -> None:
+    value = float(actual)
+    if not np.isfinite(value) or not np.isclose(value, float(expected), rtol=1e-11, atol=1e-7):
+        raise ValueError(f'P5 {label} summary differs from report evidence')
+
+
+def _match_report_summary(actual: dict, expected: dict, label: str) -> None:
+    for stat in SUMMARY_FIELDS:
+        _match_report_value(actual[stat], expected[stat], label)
+
+
+def _review_cost_consequences(folder: Path, model: dict) -> None:
+    outcomes = model['strategies']
+    measures = {name: (unit, boundary) for name, unit, boundary in (*MEASURES, SERVICE_COST)}
+    expected = {(arm, measure) for arm in outcomes for measure in measures}
+    for (arm, measure), row in _report_rows(folder / 'cost-consequence.csv', expected).items():
+        unit, boundary = measures[measure]
+        declared_unit = f"AUD_{model['price_year']}" if unit == 'AUD' else unit
+        if row['unit'] != declared_unit or row['boundary'] != boundary:
+            raise ValueError('wrong unit or boundary for P5 cost-consequence row')
+        if measure != SERVICE_COST[0]:
+            _match_report_summary(row, outcomes[arm][measure], 'cost-consequence')
+            continue
+        mean, p05, p50, p95 = (float(row[stat]) for stat in SUMMARY_FIELDS)
+        gross = outcomes[arm]['gross_resource_benefit_aud']['mean']
+        net = outcomes[arm]['net_resource_benefit_aud']['mean']
+        tolerance = 1e-7 + 1e-11 * max(abs(gross), abs(net), mean)
+        if (not np.isfinite([mean, p05, p50, p95]).all() or mean < 0
+                or not 0 <= p05 <= p50 <= p95 or abs(gross - net - mean) > tolerance):
+            raise ValueError('P5 cost-consequence service cost is inconsistent')
+
+
+def _review_paired_comparisons(folder: Path, model: dict, draws: dict[str, np.ndarray]) -> None:
+    outcomes = model['strategies']
+    reference = 'current_care'
+    budget_measure = 'net_budget_impact_aud'
+    if any(outcomes[reference][budget_measure][stat] != 0 for stat in SUMMARY_FIELDS):
+        raise ValueError('P5 paired budget comparison requires a zero current-care baseline')
+    expected = {(arm, measure) for arm in draws if arm != reference for measure in PAIRED_MEASURES}
+    for (arm, measure), row in _report_rows(folder / 'paired-comparisons.csv', expected).items():
+        if (row['reference_strategy'] != reference or row['unit'] != f"AUD_{model['price_year']}"
+                or row['definition'] != PAIRED_DEFINITION):
+            raise ValueError('invalid P5 paired comparison metadata')
+        if measure == budget_measure:
+            # For a zero incremental comparator, paired cash summaries equal the strategy's.
+            _match_report_summary(row, outcomes[arm][measure], 'paired budget')
+            better, equal = (float(row[name]) for name in ('probability_strictly_better', 'probability_equal'))
+            if not (0 <= better <= 1 and 0 <= equal <= 1 and better + equal <= 1 + 1e-12):
+                raise ValueError('invalid P5 paired budget probabilities')
+            _match_report_value(better + equal, outcomes[arm]['p_net_budget_impact_nonnegative'], 'paired budget')
+        else:
+            difference = draws[arm] - draws[reference]
+            _match_report_summary(row, _stats(difference), 'paired resource')
+            _match_report_value(row['probability_strictly_better'], np.mean(difference > 0), 'paired resource')
+            _match_report_value(row['probability_equal'], np.mean(difference == 0), 'paired resource')
+
+
 def review_report(directory: Path) -> dict:
-    """Independently consume a P5 output and compare its published draw surface.
-
-    File hashes alone are not a scientific check: a modified file and modified
-    manifest would still agree. This routine recomputes strategy summaries and
-    paired resource comparisons from the exported annual decision draws, with
-    no P4 model execution or reliance on a live provider. It does *not* verify
-    clinical effectiveness, a value-of-information solver or source authenticity.
-    """
-    import csv
-
+    """Review draw-based resource results and cross-check the other published tables."""
     folder = Path(directory)
     verify_manifest(folder)
     model = json.loads((folder / 'model-summary.json').read_text(encoding='utf-8'))
@@ -388,15 +465,22 @@ def review_report(directory: Path) -> dict:
             manifest.get('evidence_digest_sha256') != admission.get('evidence_digest_sha256') or
             model.get('P4_source_admission') != admission):
         raise ValueError('evidence/manifest/model identity mismatch')
-    labels = list(model['strategies'])
-    if not labels or labels[0] != 'current_care':
+    if (manifest.get('publication_status') != 'illustrative_only'
+            or manifest.get('installed_provider_qualification') is not False
+            or admission.get('admission') != 'illustrative_only'
+            or any(admission.get(field) is not False for field in (
+                'document_verified', 'local_CHHHS_inputs_verified',
+                'clinical_safety_approved', 'economic_investment_ready',
+            ))):
+        raise ValueError('unsupported P5 evidence admission')
+    strategies = set(model['strategies'])
+    if 'current_care' not in strategies or len(strategies) < 2:
         raise ValueError('reference strategy missing from P5 summary')
     with (folder / 'decision-surface.csv').open(newline='', encoding='utf-8') as stream:
         reader = csv.reader(stream)
-        names = next(reader)
-        if len(names) != len(labels) or set(names) != set(labels) or names[0] != 'current_care':
+        labels = next(reader, [])
+        if len(labels) != len(strategies) or set(labels) != strategies or labels[0] != 'current_care':
             raise ValueError('decision surface strategy columns mismatch summary')
-        labels = names  # JSON serialisation sorts summary keys; CSV retains decision order.
         rows = list(reader)
     if len(rows) != model['draws'] or not 2 <= len(rows) <= 100_000:
         raise ValueError('P5 decision surface draw-count mismatch')
@@ -408,51 +492,15 @@ def review_report(directory: Path) -> dict:
         raise ValueError('non-numeric P5 decision surface') from exc
     if not np.isfinite(data).all():
         raise ValueError('nonfinite P5 decision surface')
-
-    def match(actual, expected, label):
-        if not np.isfinite(float(actual)) or not np.isclose(
-            float(actual), float(expected), rtol=1e-11, atol=1e-7
-        ):
-            raise ValueError(f'P5 {label} summary differs from independently read draws')
-
-    for col, strategy in enumerate(labels):
-        expected = _stats(data[:, col])
-        reported = model['strategies'][strategy]['net_resource_benefit_aud']
-        for stat in ('mean', 'p05', 'p50', 'p95'):
-            match(reported[stat], expected[stat], 'strategy')
-    with (folder / 'cost-consequence.csv').open(newline='', encoding='utf-8') as stream:
-        costs = list(csv.DictReader(stream))
-    expected_costs = {(name, 'net_resource_benefit_aud') for name in labels}
-    matched_costs = set()
-    for row in costs:
-        key = (row['strategy_id'], row['measure'])
-        if key in expected_costs:
-            if key in matched_costs or row['unit'] != f"AUD_{model['price_year']}":
-                raise ValueError('duplicate/wrong-unit P5 cost summary')
-            matched_costs.add(key)
-            for stat in ('mean','p05','p50','p95'):
-                match(row[stat], model['strategies'][key[0]]['net_resource_benefit_aud'][stat], 'cost')
-    if matched_costs != expected_costs:
-        raise ValueError('missing P5 cost-consequence resource summary')
-
-    with (folder / 'paired-comparisons.csv').open(newline='', encoding='utf-8') as stream:
-        comparisons = list(csv.DictReader(stream))
-    checked = set()
-    for row in comparisons:
-        if row['measure'] != 'net_resource_benefit_aud':
-            continue
-        name = row['strategy_id']
-        if (name not in labels[1:] or name in checked or
-                row['reference_strategy'] != 'current_care'):
-            raise ValueError('invalid P5 paired comparison strategy')
-        checked.add(name)
-        difference = data[:, labels.index(name)] - data[:, 0]
-        for stat, expected in _stats(difference).items():
-            match(row[stat], expected, 'paired')
-        match(row['probability_strictly_better'], np.mean(difference > 0), 'paired')
-        match(row['probability_equal'], np.mean(difference == 0), 'paired')
-    if checked != set(labels[1:]):
-        raise ValueError('missing P5 paired comparison')
+    draws = dict(zip(labels, data.T, strict=True))
+    if np.any(draws['current_care'] != 0):
+        raise ValueError('P5 current-care resource comparator must be zero')
+    for strategy, values in draws.items():
+        reported = model['strategies'][strategy]
+        _match_report_summary(reported['net_resource_benefit_aud'], _stats(values), 'strategy')
+        _match_report_value(reported['p_net_resource_benefit_nonnegative'], np.mean(values >= 0), 'strategy')
+    _review_cost_consequences(folder, model)
+    _review_paired_comparisons(folder, model, draws)
     return {
         'status': 'self_consistency_verified_not_empirically_accepted',
         'independent_accounting_check': 'P4_draws_recomputed_from_published_decision_surface',
@@ -460,7 +508,7 @@ def review_report(directory: Path) -> dict:
         'draws_checked': int(data.shape[0]),
         'provider_qualification': False,
         'clinical_safety_approved': False,
-        'document_authenticity_verified': bool(admission.get('document_verified', False)),
+        'document_authenticity_verified': False,
         'scope': 'independent_report_consumer_not_independent_study_or_source_validation',
     }
 
@@ -519,7 +567,7 @@ def build_report(
         (staging/'report.md').write_text(report,encoding='utf-8')
         _csv(staging/'cost-consequence.csv', consequences)
         _csv(staging/'paired-comparisons.csv', pairs)
-        _csv(staging/'one-way-sensitivity.csv', sensitivity)
+        _csv(staging/'one-way-sensitivity.csv', sensitivity, columns=SENSITIVITY_COLUMNS)
         _draw_surface(staging/'decision-surface.csv',run)
         if plots:
             _plot(staging/'scenario-comparison.svg',model)

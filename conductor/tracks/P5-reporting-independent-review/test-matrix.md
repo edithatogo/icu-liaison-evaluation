@@ -8,8 +8,9 @@
   unmeasured; provider-failure no partial publication; no overwrite; altered
   digest failure; identical seeded outputs under the same exact environment.
 
-These are *local source* checks. Independent clinical review, Dapane/Voiage
-installed artifacts, real data/causal validation and hosted CI are open.
+These commands verify local source behaviour. P1 records the admitted
+provider artifacts and environments. P5.4 records the outstanding
+independent review and site evidence.
 
 ## Additional acceptance gates
 
@@ -20,3 +21,17 @@ installed artifacts, real data/causal validation and hosted CI are open.
   SHA-rehashed mean/probability tampering and false clinical readiness rejected.
 - End-to-end command: `.venv/bin/python -m icu_liaison.p5_review_cli OUTPUT_DIR` must
   pass after the P5 report has been built. No provider or authenticity claim.
+
+## Standalone report verification on 24 November 2026
+
+Seven regression cases failed before implementation and passed within the
+136 focused tests on CPython 3.15.2. The cases cover fully fixed priors,
+strategy order, conflicting cash and capacity rows and false source
+admission. The standalone CLI rejected a rehashed conflicting cash table
+with exit status 2. The fixed scenario's sensitivity CSV retained its header.
+
+At seed `20261118`, two reports with `--plots` reproduced the previous
+report byte for byte. The reader checked 5,000 decision draws across three
+strategies. The rendered SVG had readable labels and complete marks.
+The report manifest SHA-256 is
+`e6a0d373cc7a2c7bd2455db68a18e3b68bb0dada69e0d2ca027d7257034a3066`.
