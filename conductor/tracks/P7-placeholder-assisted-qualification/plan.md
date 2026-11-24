@@ -28,9 +28,9 @@
 - [ ] 2. Obtain approved CHHHS cohort, workforce, cost, ward and clinical safety data with competent oversight.
 - [ ] 3. Execute and independently qualify pinned Dapane/Voiage/Kairos provider artifacts.
   Dapane's approved wheels, extensions and native pricing receipts are
-  scoped to the environments recorded in the lock. The companion Dapane
-  placeholder continues to track broader qualification of both providers
-  through their separate `provider_qualification_receipt_sha256` fields.
+  scoped to the environments recorded in the lock. The Dapane and Voiage
+  placeholders track broader qualification through their respective
+  `provider_qualification_receipt_sha256` fields.
   Voiage's admitted macOS arm64 artifact is recorded in the P1 lock.
   [Provider lock](../../../providers.lock.json) ·
   [Technical P7.5](../P7-technical-empirical-qualification/plan.md)
@@ -52,3 +52,10 @@
 
 **P7.1–P7.3 passing means only synthetic implementation progress.** It cannot
 waive P7.4 or any other repository's validation and release gate.
+
+## Phase — Review fixes
+
+- [x] Applied in `16b5ba2`. Check candidate files against the containing Git
+  checkout, keep private paths out of the public audit and verify the dry-run
+  receipt and checklist retain their synthetic scope and 33 open obligations.
+  [Review verification](test-matrix.md#review-checkpoint)
