@@ -8,6 +8,6 @@
 - Atomic publishing and file checksums do not authenticate authorship or
   protect the local computer; external rights/privacy and secure storage gates
   remain with the future host.
-- Native Dapane and Voiage integration remains unexecuted; injected tests
-  qualify only consumer contracts.
+- P1 records scoped Dapane and Voiage admission. Default reports skip
+  providers, and injected tests exercise the consumer contract.
 - A bar chart cannot demonstrate a causal benefit or a staffed usable ICU bed.

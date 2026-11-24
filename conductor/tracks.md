@@ -83,6 +83,8 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   Deterministic cost-consequence, paired comparisons, sensitivity tables,
   Dapane nominal requests, Voiage-compatible draw surface, opt-in Voiage EVPI,
   report and SHA-256 file manifest have local source verification. The
+  standalone reader checks cost, paired and evidence records. Fully fixed
+  scenarios produce a complete report with an empty sensitivity table. The
   synthetic P5 report smoke test passed in hosted CPython 3.15.2 CI.
   **Independent clinical/economic review, provider artifact qualification
   and observed CHHHS validation remain open.**

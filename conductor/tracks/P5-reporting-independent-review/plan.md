@@ -20,6 +20,9 @@
 - [x] Preserve P2/P3 source admission, protocol and input digests; prevent readiness claims.
 - [x] Add independently checked accounting equations, SHA-256 file-set manifest, atomic publication and overwrite rejection.
 - [x] Run independent report-reader checks against exported decision draws, rejecting rehashed semantic tampering.
+- [x] Reconcile all cost-consequence rows and both paired comparisons in the
+  standalone reader. Preserve evidence status and support fully fixed scenarios.
+  [Verification](test-matrix.md#standalone-report-verification-on-24-november-2026)
 - [x] Add opt-in native Dapane valuation and strict nominal reconciliation.
 - [x] Run negative tests for invalid provider output, mutated manifest, invalid P2/P3 evidence and no-effect/negative-effect cases.
   Both corrected Dapane-unavailable tests passed with Dapane 0.1.0 installed

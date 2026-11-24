@@ -17,3 +17,14 @@ draws. The native library and binary provenance are not verified; injected
 provider tests are **contract-only**. External clinical, Finance, ANZICS report
 source and exact-hosted acceptance gates are unchanged. P6 event-trace admission
 is a separate synthetic-only capability.
+
+## P5 implementation on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carry the P5 reporting consumer, its tests, track records and the source
+manifest on `codex/icu-p5-reproducible-reporting`. The scope is the fictional
+report and its reader. All 136 focused tests passed. The standard report and
+optional SVG matched the previous bytes. The reader rejects conflicting
+published tables and unsupported admission claims. Fully fixed scenarios
+produce a complete bundle. The next operation is hosted validation.
+[Verification](test-matrix.md#standalone-report-verification-on-24-november-2026)

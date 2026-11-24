@@ -56,6 +56,46 @@ def test_rehashing_paired_probability_does_not_evade_semantic_review(tmp_path):
         review_report(target)
 
 
+@pytest.mark.parametrize(('filename', 'measure', 'field', 'value'), [
+    ('cost-consequence.csv', 'net_budget_impact_aud', 'mean', '10000'),
+    ('cost-consequence.csv', 'usable_bed_days', 'boundary', 'hypothetical_cash_realisability_only'),
+    ('paired-comparisons.csv', 'net_budget_impact_aud', 'p50', '10000'),
+    ('paired-comparisons.csv', 'net_budget_impact_aud', 'probability_strictly_better', '0.9'),
+])
+def test_reader_rejects_rehashed_cash_and_capacity_disagreements(tmp_path, filename, measure, field, value):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    file = target / filename
+    with file.open(newline='') as stream:
+        rows = list(csv.DictReader(stream))
+    row = next(row for row in rows if row['strategy_id'] == 'liaison_service' and row['measure'] == measure)
+    row[field] = value
+    with file.open('w', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator='\n')
+        writer.writeheader()
+        writer.writerows(rows)
+    _rehash(target, filename)
+    with pytest.raises(ValueError, match='cost|paired'):
+        review_report(target)
+
+
+def test_reader_rejects_an_admission_claim_changed_in_both_files(tmp_path):
+    target = tmp_path / 'report'
+    build_report(_scenario(), target)
+    admission_file = target / 'evidence-admission.json'
+    model_file = target / 'model-summary.json'
+    admission = json.loads(admission_file.read_text())
+    admission['document_verified'] = True
+    model = json.loads(model_file.read_text())
+    model['P4_source_admission'] = admission
+    admission_file.write_text(json.dumps(admission))
+    model_file.write_text(json.dumps(model))
+    _rehash(target, admission_file.name)
+    _rehash(target, model_file.name)
+    with pytest.raises(ValueError, match='evidence|admission'):
+        review_report(target)
+
+
 def test_mislabelled_readiness_cannot_be_accepted_with_new_manifest(tmp_path):
     target=tmp_path/'report';build_report(_scenario(),target)
     file=target/'model-summary.json'

@@ -41,3 +41,12 @@ surface.csv`, recalculates all strategy means/quantiles and paired financial
 resource comparisons, verifies the manifest and rejects false investment-ready
 claims even after the manifest is rehashed. It checks computational consistency
 of a self-contained synthetic artefact, not external clinical/causal validity.
+
+## Standalone table checks
+
+The reader recomputes resource statistics and paired differences from the
+annual decision draws. It matches the cost-consequence rows and their units
+and boundaries to the report summary. The paired cash rows must agree with
+the summary for the zero incremental current-care comparator. The cash
+cross-check uses the published summaries. Fully fixed scenarios publish the
+registered sensitivity header and explain the absence of sensitivity rows.
