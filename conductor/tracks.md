@@ -103,10 +103,12 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   ([index](tracks/P7-technical-empirical-qualification/index.md),
   [plan](tracks/P7-technical-empirical-qualification/plan.md)).
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
-  2023/24 review. P7.5 records scoped approval of the Dapane artifacts and
-  native execution receipts on three tested hosts and the exact Voiage
-  macOS arm64 admission. Broader Dapane release review, independent admission
-  of the retrieved 2024/25 PDF, CHHHS calibration and approvals remain open.
+  2023/24 review. The portable receipt verifies the 2024/25 document record,
+  request pack and synthetic audit inputs. P7.5 records scoped approval of the
+  Dapane artifacts and native execution receipts on three tested hosts and the
+  exact Voiage macOS arm64 admission. Kairos build attestation, broader Dapane
+  release review, independent admission of the retrieved 2024/25 PDF, CHHHS
+  calibration and approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
   [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 

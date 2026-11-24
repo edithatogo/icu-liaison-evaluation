@@ -24,6 +24,7 @@ def audit_local_aggregate(audit: Mapping) -> dict:
 
     Exact intervals are *conditional on documented observations*. They cannot
     address missing-not-at-random timestamps or competing-risk censoring.
+    The eligible-cohort bounds assign unresolved outcomes to each extreme.
     """
     if audit.get('investment_ready') is not False:
         raise ValueError('self-declared investment approval cannot be accepted')
@@ -76,6 +77,9 @@ def audit_local_aggregate(audit: Mapping) -> dict:
             'missing_readiness_count': n,
             'uncertainty_limitation': 'No recorded clinical readiness; cannot estimate exit-block rate',
         }
+    delay_measure['eligible_cohort_fraction_bounds'] = [
+        blocked / n, (blocked + n - readiness) / n,
+    ]
     return {
         'data_class': audit['data_class'],
         'provenance_class': audit['data_class'],
@@ -90,6 +94,9 @@ def audit_local_aggregate(audit: Mapping) -> dict:
             'competing_death_within_unknown': death,
             'observed_positive_fraction_of_eligible': yes / n,
             'unknown_fraction_of_eligible': unknown / n,
+            # This conservative range includes the competing-death records in
+            # the unresolved partition. It makes no competing-risk inference.
+            'eligible_cohort_fraction_bounds': [yes / n, (yes + unknown) / n],
             'complete_cohort_risk_estimable': unknown == 0 and death == 0,
             'interpretation': 'Not a 72h cumulative-incidence estimate when followup is incomplete or death competes',
         },

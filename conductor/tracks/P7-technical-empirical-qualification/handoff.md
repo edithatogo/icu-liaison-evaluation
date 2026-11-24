@@ -60,3 +60,15 @@ All 215 vendor Python tests passed using that checkout, including the
 original 196 cases. The Windows lock entry records the approved source,
 wheel, extension and native replay receipt. The verdict and sealed
 evidence are retained privately. [P7.5 decision](plan.md#windows-upstream-rebuild-decision)
+
+## Portable qualification follow-through on 24 November 2026
+
+The [chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+owns the P7 portable runner, independent aggregate audit and request-pack
+verification on `codex/icu-p7-technical-qualification` in the attached
+`icu-p6-review-recovery/icu-liaison-evaluation` worktree. This lane ran the
+portable Python checks and matched the retained public PDF. The native
+evidence is the previously recorded P1 and P6 decisions and replay receipts.
+The next operation is hosted source validation. Independent publisher
+admission, release attestation and site review remain open.
+[Verification](test-matrix.md#repeat-the-current-qualification)

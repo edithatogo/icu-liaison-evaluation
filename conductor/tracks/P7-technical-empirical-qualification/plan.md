@@ -2,9 +2,14 @@
 
 - [x] P7.1 Review the ANZICS 2023/24 publisher text and page images. P7.6 covers the 2024/25 edition.
 - [x] P7.2 Independent P4 draw accounting and P3 aggregate QA/unknowns; focused tests.
+- [x] P7.2 Record eligible-cohort ranges for unresolved P3 outcomes and verify
+  input identities, the publisher receipt and the CHHHS request pack in the
+  same portable qualification run.
+  [Verification](test-matrix.md#repeat-the-current-qualification)
 - [x] P7.3 Typed CHHHS 11-dataset request pack and clinical/causal validation protocol; no observed data imported.
 - [x] P7.4 Run the pinned Kairos consumer with a reviewed Cargo.lock and check
-  byte-identical replay against the one-bed oracle. [P6 evidence](../../../docs/p6-native-qualification.md)
+  byte-identical replay against the two one-bed references.
+  [P6 evidence](../P6-kairos-capacity-validation/test-matrix.md#p6-review-on-24-november-2026)
 - [ ] Independently attest the P7.4 build artifact and runner.
 - [~] P7.5 Execute and independently qualify the installed provider artifacts.
   Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64
