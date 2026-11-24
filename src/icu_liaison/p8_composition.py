@@ -9,12 +9,15 @@ REPLACE the appropriate P4 prior component after reconciliation, not be added.
 """
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal, InvalidOperation, localcontext
 import re
 from typing import Any, Literal, Mapping
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .adapters.p8_mchs import exact_nwau_change
+from .adapters.p8_workforce import RosterExposure, validate_workforce_quote_dates
 from .adapters.voiage import financial_evpi_aud, make_voiage_decision
 from .p4_model import P4Run, financial_decision_surface, summarise_p4
 
@@ -134,7 +137,7 @@ def _admit_mchs(result: Mapping[str, Any] | None) -> MchsShadow:
     current = _exact_decimal(result['current_nwau'],'current NWAU',nonnegative=True)
     proposed = _exact_decimal(result['proposed_nwau'],'proposed NWAU',nonnegative=True)
     change = _exact_decimal(result['change_nwau'],'change NWAU')
-    if proposed - current != change:
+    if exact_nwau_change(current, proposed) != change:
         raise ValueError('MCHS NWAU change is inconsistent with annual outputs')
     return MchsShadow(
         scope='one_synthetic_episode_not_programme_total',
@@ -184,19 +187,34 @@ def _admit_workforce(
         raise ValueError('workforce quote identity missing')
     if any(not isinstance(u,dict) or not isinstance(u.get('id'),str) for u in usage):
         raise ValueError('workforce usage identity missing')
-    quote_ids={q['id'] for q in quotes}
+    quote_by_id = {q['id']: q for q in quotes}
     use_ids={u['id'] for u in usage}
-    if len(quote_ids)!=len(quotes) or len(use_ids)!=len(usage):
+    if len(quote_by_id) != len(quotes) or len(use_ids) != len(usage):
         raise ValueError('duplicate workforce quote or use identity')
     for quote in quotes:
         if (quote.get('basis')!='financial_cost' or quote.get('currency')!='AUD'
             or quote.get('price_year') != p4_price_year
             or not isinstance(quote.get('components'),list) or not quote['components']):
             raise ValueError('workforce quote has incompatible financial-cost basis')
+    installed = result['provider_evidence'] == 'unqualified_installed_workforce_source'
     for use in usage:
-        quote=next((q for q in quotes if q['id']==use.get('quote_id')), None)
+        quote_id = use.get('quote_id')
+        quote = quote_by_id.get(quote_id) if isinstance(quote_id, str) else None
         if quote is None or use.get('unit') != quote.get('unit'):
             raise ValueError('workforce use is missing source-bound same-unit quotation')
+        if installed or 'quantity' in use:
+            RosterExposure.exact_quantity(use.get('quantity'))
+        if installed or 'source' in use:
+            source = use.get('source')
+            if not isinstance(source, dict) or source.get('evidence') != 'synthetic':
+                raise ValueError('workforce trace must preserve synthetic exposure evidence')
+        if installed or any(key in quote for key in ('valid_from', 'valid_to', 'known_from')):
+            try:
+                service_date = date.fromisoformat(use.get('service_date'))
+                cutoff = date.fromisoformat(request.get('knowledge_cutoff'))
+            except (TypeError, ValueError) as exc:
+                raise ValueError('workforce trace requires a service date and knowledge cutoff') from exc
+            validate_workforce_quote_dates(quote, service_date, cutoff)
     return WorkforceShadow(
         financial_cost_status='not_valued',
         roster_scenario_id=expected_scenario,

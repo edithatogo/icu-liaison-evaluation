@@ -124,3 +124,11 @@ The fictional workflow covers installed annual reference replay, dated
 workforce quotation and Dapane valuation, and selected Voiage comparisons.
 Full official-calculator parity, approved nursing cost inputs, reconciliation
 to the annual P4 service-cost prior and CHHHS acceptance remain open.
+
+## Review fixes
+
+- [x] Applied in `97e0064`. Isolate the MCHS cache and require the annual
+  price weights and ICU adjustment tables. Reconcile the exact NWAU change
+  and validate quote effective and known dates and the synthetic workforce
+  quantities in saved traces.
+  [Review validation](test-matrix.md#review-validation)

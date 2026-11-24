@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from importlib import import_module
 import json
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Mapping
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -99,6 +99,22 @@ class RosterScenario(_Strict):
         return self
 
 
+def validate_workforce_quote_dates(
+    quote: Mapping[str, Any], service_date: date, knowledge_cutoff: date,
+) -> None:
+    """Require a dated quote to apply on the service date and at the cutoff."""
+    try:
+        starts_on = date.fromisoformat(quote.get("valid_from"))
+        ends_on = date.fromisoformat(quote.get("valid_to"))
+        known_from = date.fromisoformat(quote.get("known_from"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError("workforce quote requires explicit effective and knowledge dates") from exc
+    if not starts_on <= service_date < ends_on:
+        raise ValueError("workforce quote is outside its effective window on the service date")
+    if known_from > knowledge_cutoff or service_date > knowledge_cutoff:
+        raise ValueError("workforce quote or service date is after the knowledge cutoff")
+
+
 def prepare_workforce_dapane_request(
     scenario: RosterScenario,
     *,
@@ -166,17 +182,19 @@ def prepare_workforce_dapane_request(
         quote = quote_by_id.get(exposure.quote_id)
         if not isinstance(use, dict) or not isinstance(quote, dict):
             raise ValueError("workforce bridge omitted an expected source-bound use or quotation")
-        if use.get("quote_id") != exposure.quote_id or use.get("unit") != exposure.unit:
+        if (use.get("quote_id") != exposure.quote_id or use.get("unit") != exposure.unit
+                or quote.get("unit") != exposure.unit):
             raise ValueError("workforce bridge changed a roster quotation or unit")
         if use.get("service_date") != exposure.valued_on.isoformat():
             raise ValueError("workforce bridge changed a roster valuation date")
-        if quote.get("basis") != "financial_cost" or exposure.component not in quote.get("components", []):
+        if quote.get("basis") != "financial_cost" or quote.get("components") != [exposure.component]:
             raise ValueError("workforce bridge changed cost component or financial valuation basis")
         if RosterExposure.exact_quantity(use.get("quantity")) != exposure.quantity:
             raise ValueError("workforce bridge changed the exact roster quantity")
         source = use.get("source")
         if not isinstance(source, dict) or source.get("evidence") != "synthetic":
             raise ValueError("workforce bridge must preserve synthetic exposure evidence")
+        validate_workforce_quote_dates(quote, exposure.valued_on, scenario.knowledge_cutoff)
     return {
         "provider_evidence": "injected_contract_test_only" if injected
         else "unqualified_installed_workforce_source",

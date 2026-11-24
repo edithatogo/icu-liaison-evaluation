@@ -16,6 +16,12 @@ def use_record(**changes):
             **changes}
 
 
+def quote_record(**changes):
+    return {'id': 'nursing-base-hour', 'unit': 'hour', 'basis': 'financial_cost',
+            'components': ['base_salary'], 'valid_from': '2026-01-01', 'valid_to': '2027-01-01',
+            'known_from': '2026-01-01', **changes}
+
+
 
 def shift(**changes):
     a = {'quantity_id':'synthetic-1-base', 'shift_id':'shift1',
@@ -56,7 +62,7 @@ def test_uses_provider_existing_quantities_and_dapane_builder_without_price_math
         def __init__(self, **kw): self.kw=kw
     def builder(artifact_json,quantities,*,expected_sha256,run_id,knowledge_cutoff):
         args.append((artifact_json, quantities,expected_sha256,run_id,knowledge_cutoff))
-        return {'schema_version':'0.1','policy':{'basis':'financial_cost','currency':'AUD','price_year':2026}, 'quotes':[{'id':'nursing-base-hour','unit':'hour','basis':'financial_cost','components':['base_salary']}],'usage':[use_record()], 'run_id':run_id}
+        return {'schema_version':'0.1','policy':{'basis':'financial_cost','currency':'AUD','price_year':2026}, 'quotes':[quote_record()],'usage':[use_record()], 'run_id':run_id}
     res=prepare_workforce_dapane_request(example(),builder=builder,quantity_type=FakeQuantity)
     assert res['provider_evidence']=='injected_contract_test_only'
     assert res['financial_cost_status']=='not_valued'
@@ -126,7 +132,7 @@ def test_injected_builder_must_not_drop_use_or_change_component():
         'quotes':[quote],
         'usage':[use_record()],
     }
-    fake_quote={'id':'nursing-base-hour','basis':'financial_cost','components':['base_salary']}
+    fake_quote=quote_record()
     with pytest.raises(ValueError,match='component'):
         prepare_workforce_dapane_request(example(),builder=lambda *a,**k:ok({**fake_quote,'components':['loaded_salary']}),quantity_type=lambda **k:k)
     with pytest.raises(ValueError,match='omitted'):
@@ -147,7 +153,7 @@ def test_bridge_preserves_exact_quantity_and_synthetic_evidence(changes, error):
         return {
             'schema_version': '0.1', 'run_id': kwargs['run_id'],
             'policy': {'basis': 'financial_cost', 'currency': 'AUD', 'price_year': 2026},
-            'quotes': [{'id': 'nursing-base-hour', 'basis': 'financial_cost', 'components': ['base_salary']}],
+            'quotes': [quote_record()],
             'usage': [use_record(**changes)],
         }
 
@@ -161,6 +167,21 @@ def test_bridge_cannot_use_health_practitioner_quotes_for_a_nursing_roster():
     }}))
     with pytest.raises(ValueError, match='classification'):
         prepare_workforce_dapane_request(roster, builder=lambda *a, **k: {}, quantity_type=lambda **kw: kw)
+
+
+@pytest.mark.parametrize('changes', [
+    {'valid_to': '2026-09-12'}, {'valid_from': '2026-09-13'}, {'known_from': '2026-11-19'},
+])
+def test_bridge_rejects_quotes_outside_effective_or_knowledge_window(changes):
+    def returned_request(*_args, **kwargs):
+        return {
+            'schema_version': '0.1', 'run_id': kwargs['run_id'],
+            'policy': {'basis': 'financial_cost', 'currency': 'AUD', 'price_year': 2026},
+            'quotes': [quote_record(**changes)], 'usage': [use_record()],
+        }
+
+    with pytest.raises(ValueError, match='workforce quote'):
+        prepare_workforce_dapane_request(example(), builder=returned_request, quantity_type=lambda **kw: kw)
 
 
 def test_requires_explicit_segmentation_at_fiscal_year_boundary():

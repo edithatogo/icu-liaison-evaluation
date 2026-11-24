@@ -16,9 +16,12 @@ the two annual-calculator calls. Each call invokes the existing
 reference directory. The facade requires the year-specific `NWAU24`/`NWAU25`
 column, one returned episode and successful `Error_Code`. It never executes the
 Excel economic/monetary calculator, copies a funding formula or multiplies NWAU
-by NEP. The installed route checks the fixture's SHA-256 against the selected
-directory's named, regular SAS tables before and after both calls. The output
-retains the `source_bundle_sha256_declared` field for existing callers.
+by NEP. The installed route requires the price-weight and ICU adjustment
+tables for the selected year and checks the directory's SAS fingerprint
+before and after both calls. Each pair runs in a private temporary working
+directory with a fresh MCHS cache. The emitted NWAU change uses the exact
+decimal difference. The output retains `source_bundle_sha256_declared` for
+existing callers.
 
 Output remains **unqualified**, even after installed execution, until the annual
 MCHS price-weight and SAS/Excel parity evidence, precise bundle identity and
@@ -45,9 +48,11 @@ It selects the pinned `workforce-dapane-quotes/1` artifact. The workforce librar
 checks source and quote applicability and builds the Dapane financial-cost
 request. P8 matches the release jurisdiction and classification to the roster
 and verifies the basis, currency, year, dates, units, exact quantities, cost
-components and synthetic evidence labels. Dapane supplies any separate
-valuation. The consumer transports analyst-specified quantities and leaves
-annual costs open. The bundled roster contains an incomplete fictional example.
+components and synthetic evidence labels. The selected quote must be effective
+on the service date, with its end date excluded, and known by the cutoff.
+Dapane supplies any separate valuation. The consumer transports
+analyst-specified quantities and leaves annual costs open. The bundled
+roster contains an incomplete fictional example.
 
 ## Runnable checks
 

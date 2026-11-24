@@ -26,3 +26,18 @@ fixture and exported quotation identities, the reviewed native extensions,
 and P4's input digest and seed. Both composed CLI outputs validate against
 the schema and differ only in the selected Voiage comparison.
 [Provider workflow receipt](../../../verification/p8-provider-workflow-2026-11-24.json)
+
+## Review validation
+
+Twelve regression cases failed on the previous implementation and passed
+with the review fixes. All 106 focused tests passed. The pinned MCHS provider
+previously accepted a stale cached weight with an unchanged SAS fingerprint.
+The isolated run reproduced the saved 2024–25 and 2025–26 results and
+preserved the caller's cache bytes. A fingerprinted bundle missing the ICU
+adjustment table previously returned a zero activity change. The repaired
+adapter rejects incomplete price-weight and ICU adjustment inputs.
+
+The pinned workforce bridge rejected an expired quotation before valuation.
+Its valid Dapane replay and both composed Voiage CLI outputs reproduced byte
+for byte. The source tests also reject rounded NWAU differences, invalid
+saved workforce quantities, observed exposure labels and missing quote dates.

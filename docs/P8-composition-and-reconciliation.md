@@ -28,9 +28,11 @@ rate would not by itself constitute a fully loaded incremental roster cost.
 
 Supply both `--funding-pricing-year` and `--assumed-aud-per-nwau` to calculate an
 exact signed AUD sensitivity for one synthetic MCHS episode. The price year
-must match the MCHS result. Actual hospital revenue and annual workforce cost
-remain null. The other financial outputs retain their original price year and
-scale.
+must match the MCHS result, and the change must equal the exact difference
+between the paired weights. Saved installed workforce traces require exact
+synthetic quantities and quotations effective at each service date and known
+by the declared cutoff. Actual hospital revenue and annual workforce cost
+remain null. The other financial outputs retain their original price year and scale.
 
 Pass `--voiage-objective net_resource` or `--voiage-objective budget` to select
 the P4 draws for current care and the named strategy only. Voiage returns EVPI
