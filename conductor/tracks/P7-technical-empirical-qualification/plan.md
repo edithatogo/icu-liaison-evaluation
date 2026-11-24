@@ -133,3 +133,10 @@ approved digests. Broader release qualification, other environments,
 the `chrono` advisory, the macOS CLI APFS case and Voiage admission
 remain open. [Provider lock](../../../providers.lock.json) ·
 [Companion plan](../P7-placeholder-assisted-qualification/plan.md#p74--external-qualifications-blocked-not-accepted)
+
+## Phase — Review fixes
+
+- [x] Apply review fixes in `3811f54`. Separate complete follow-up
+  from known outcome status, validate source fingerprints, audit shorter
+  simulations and recover cleanly from failed request exports.
+  [Verification](test-matrix.md#p7-review-on-24-november-2026)
