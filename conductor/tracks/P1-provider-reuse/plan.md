@@ -228,5 +228,6 @@ digests. [Provider lock](../../../providers.lock.json) ·
 - [x] Verify the closure of CareOps Sim PR #215 against the exact exploratory
   head, the 19-file comparison and the tested standalone replacement.
   [Migration disposition](../../../docs/pr215-migration-comparison.md#source-pr-disposition)
-- [ ] Obtain the independent release decision on the migration evidence
-  recorded in P0 and P7.
+- [x] Record the repository owner's release acceptance of the verified
+  migration from CareOps Sim PR #215 to standalone PR #5.
+  [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)

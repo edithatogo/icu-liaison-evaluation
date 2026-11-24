@@ -19,8 +19,10 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   PR #215 comparison is recorded. P0.5 completed the CPython 3.15.2 migration
   with 342 tests passing in hosted CI and locally with Dapane installed.
   [Migration receipt](../verification/python-315-migration-2026-11-19.json)
-  Independent Voiage artifact adjudication, CHHHS data and independent
-  migration acceptance remain pending.
+  The repository owner approved the verified portable migration release on
+  24 November 2026. Voiage admission, broader Dapane release review and CHHHS
+  calibration remain open.
+  [Portable source release](../docs/pr215-migration-comparison.md#portable-source-release)
 - [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
    [spec](tracks/P1-provider-reuse/spec.md),

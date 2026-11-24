@@ -46,7 +46,14 @@ Comparing `model-inputs/icu-liaison/illustrative.json` (PR #215) with [`model-in
 GitHub shows CareOps Sim PR #215 closed on 19 November 2026 at 14:04 AEST,
 with its exploratory head preserved as an unmerged source revision. The
 closure cites standalone PR #5, merge commit `1ff7ca460ac135a3cd545701d22ddf82d2d97d90`
-and its passing hosted checks. Independent release review remains tracked in P7.
+and its passing hosted checks.
 [CareOps Sim PR #215](https://github.com/edithatogo/careops-sim/pull/215) ·
 [Standalone PR #5](https://github.com/edithatogo/icu-liaison-evaluation/pull/5) ·
 [Hosted run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44455595345)
+
+## Portable source release
+
+The repository owner approved release of the tested standalone PR #5 migration
+on 24 November 2026. The preserved PR #215 source revision remains the basis
+for the comparison. P0.4, P1.5 and both P7 plans record the decision.
+Provider acceptance remains tracked separately in P1.4 and P7.5.

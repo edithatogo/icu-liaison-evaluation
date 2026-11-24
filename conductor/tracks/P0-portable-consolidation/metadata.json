@@ -9,12 +9,13 @@
     "P0.1",
     "P0.2",
     "P0.3",
+    "P0.4-portable-migration-release",
     "P0.5"
   ],
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Independent migration release acceptance and the remaining provider artifact and release decisions in P1 and P7 are pending. CHHHS calibration is tracked separately.",
+  "blocker": "Voiage artifact admission and broader Dapane release review remain open in P1.4 and P7.5.",
   "dependencies": [],
   "external_dependencies": [
     {
@@ -33,7 +34,7 @@
   ],
   "updated_at": "2026-11-24",
   "repository_url": "https://github.com/edithatogo/icu-liaison-evaluation",
-  "current_task": "P0.4 awaits independent acceptance of the 19-file migration comparison and standalone PR #5. CareOps Sim PR #215 is closed with its exploratory source revision preserved.",
+  "current_task": "The repository owner approved the verified portable migration release. P0.4 awaits the remaining provider acceptance in P1.4 and P7.5.",
   "initial_import_pr": "https://github.com/edithatogo/icu-liaison-evaluation/pull/1",
   "initial_import_pr_merged_sha": "4644bb4f5c2597cfc5e07cabe4de0b33e9dfb558",
   "hosted_ci_public_run_url": "https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44444785989",
