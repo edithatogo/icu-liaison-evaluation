@@ -85,6 +85,8 @@ class FieldCrosswalk(_StrictModel):
 class PendingProtocolDecisions(_StrictModel):
     """Site parameters in protocol.json that remain null until governance approval."""
 
+    model_config = ConfigDict(allow_inf_nan=False)
+
     current_care_funded_fte: float | int | None = Field(default=None, ge=0)
     liaison_service_funded_fte: float | int | None = Field(default=None, ge=0)
     hours_of_coverage_per_week: float | int | None = Field(default=None, ge=0, le=168)

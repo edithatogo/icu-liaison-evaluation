@@ -26,7 +26,7 @@ class Strategy(StrictContract):
     role: Literal['observed_comparator', 'proposed_incremental']
     evidence_status: Literal['not_verified', 'locally_verified']
     activities: list[str] = Field(min_length=1)
-    funded_fte: float | None = Field(default=None, ge=0)
+    funded_fte: float | None = Field(default=None, ge=0, allow_inf_nan=False)
     hours_of_coverage_per_week: float | None = Field(default=None, ge=0, le=168)
     current_work_absorbed_or_displaced: str
     site_source_reference: str | None = None
@@ -79,53 +79,63 @@ class Endpoint(StrictContract):
 # Keep P1 cost and denominator claims pinned to this local measurement design.
 REQUIRED_ENDPOINTS = {
     'ready_to_physical_departure_hours': {
+        'role': 'primary_operational',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'clinical_discharge_readiness',
         'end_event': 'physical_icu_departure', 'unit': 'hours',
     },
     'exit_block_ge12h': {
+        'role': 'secondary_operational',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'clinical_discharge_readiness',
         'end_event': 'physical_icu_departure', 'unit': 'proportion',
         'threshold_hours': 12,
     },
     'unplanned_72h_return': {
+        'role': 'primary_operational',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'any_unplanned_icu_return_same_hospital_stay',
         'unit': 'proportion', 'window_hours': 72,
     },
     'after_hours_icu_discharge': {
+        'role': 'secondary_operational',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'local_time_1800_through_0559', 'unit': 'proportion',
     },
     'post_icu_death': {
+        'role': 'safety',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'death_before_final_hospital_discharge', 'unit': 'proportion',
     },
     'ward_cardiac_arrest': {
+        'role': 'safety',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'ward_cardiac_arrest_before_final_hospital_discharge', 'unit': 'proportion',
     },
     'delayed_escalation': {
+        'role': 'safety',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'ward_deterioration_recognised',
         'end_event': 'appropriate_escalation', 'unit': 'hours',
     },
     'return_severity_and_appropriateness': {
+        'role': 'safety',
         'denominator': 'observed_icu_returns_after_index',
         'start_event': 'icu_return',
         'end_event': 'documented_rescue_and_severity_review', 'unit': 'clinical_review',
     },
     'ward_workload': {
+        'role': 'safety',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'ward_care_until_hospital_discharge', 'unit': 'staff_time',
     },
     'treatment_limitations': {
+        'role': 'safety',
         'denominator': 'eligible_index_live_ward_discharges',
         'start_event': 'physical_icu_departure',
         'end_event': 'treatment_goals_reconciled', 'unit': 'clinical_review',
@@ -133,8 +143,7 @@ REQUIRED_ENDPOINTS = {
 }
 
 REQUIRED_SAFETY = {
-    'post_icu_death', 'ward_cardiac_arrest', 'delayed_escalation',
-    'return_severity_and_appropriateness', 'ward_workload', 'treatment_limitations',
+    identifier for identifier, fields in REQUIRED_ENDPOINTS.items() if fields['role'] == 'safety'
 }
 
 
@@ -241,12 +250,18 @@ class EvaluationProtocol(StrictContract):
         missing = set(REQUIRED_ENDPOINTS) - set(self.endpoints)
         if missing:
             raise ValueError(f'missing required endpoints: {sorted(missing)}')
+        if any(identifier != endpoint.id for identifier, endpoint in self.endpoints.items()):
+            raise ValueError('endpoint identity must match its protocol key')
         for identifier, fields in REQUIRED_ENDPOINTS.items():
             endpoint = self.endpoints[identifier]
-            if (endpoint.id != identifier or any(getattr(endpoint, k) != v for k, v in fields.items())
-                or (identifier in REQUIRED_SAFETY and endpoint.role != 'safety')):
-                raise ValueError(f'{identifier}: denominator, event window, anchor or unit mismatch')
-        if set(self.safety.required_endpoints) != REQUIRED_SAFETY or self.safety.approved_noninferiority_margins:
+            expected = {'window_hours': None, 'threshold_hours': None, **fields}
+            if any(getattr(endpoint, field) != value for field, value in expected.items()):
+                raise ValueError(f'{identifier}: endpoint role, denominator, clock or unit mismatch')
+        safety_endpoints = self.safety.required_endpoints
+        if (
+            set(safety_endpoints) != REQUIRED_SAFETY or len(safety_endpoints) != len(REQUIRED_SAFETY)
+            or self.safety.approved_noninferiority_margins
+        ):
             raise ValueError('clinical safety endpoints must be complete; no margins may be invented')
         if self.safety.measurements_status != 'unmeasured':
             raise ValueError('clinical safety measurements have not been supplied')
