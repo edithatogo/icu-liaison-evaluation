@@ -48,7 +48,7 @@
       "unit": "proportion",
       "denominator": "available staffed bed days, 38 consistent rural/regional ICUs",
       "page": 23,
-      "contributors": null,
+      "contributors": 38,
       "population": "binational_all_age_mixed",
       "local_use": "external_context_only"
     },
@@ -59,7 +59,7 @@
       "unit": "proportion",
       "denominator": "available staffed bed days, 31 consistent Queensland ICUs",
       "page": 23,
-      "contributors": null,
+      "contributors": 31,
       "population": "binational_all_age_mixed",
       "local_use": "external_context_only"
     },
@@ -70,7 +70,7 @@
       "unit": "reported_dollars_per_bed_year",
       "denominator": "104 contributing ICUs (94 Australian, 10 New Zealand)",
       "page": 36,
-      "contributors": null,
+      "contributors": 104,
       "population": "binational_all_age_mixed",
       "local_use": "external_context_only"
     },

@@ -1,10 +1,12 @@
 """P3 offline verification of public ICU benchmark provenance and denominators.
 
-This does *not* scrape or authenticate publisher PDFs: documentary verification
-needs an independently retained document/hash and substantive review receipt.
+Publisher receipts and saved documents can be matched offline. Independent
+admission requires separate reviewer and licensing evidence.
 """
 from __future__ import annotations
 
+from datetime import date
+import hashlib
 import json
 from pathlib import Path
 
@@ -89,6 +91,82 @@ class Catalogue(_Strict):
         return self
 
 
+class PublisherDocument(_Strict):
+    http_status: Literal[200]
+    content_type: Literal['application/pdf']
+    pages: int = Field(gt=0)
+    size_bytes: int = Field(gt=0)
+    sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
+
+
+class PublisherLocator(_Strict):
+    outcome: str = Field(min_length=1)
+    page: int = Field(gt=0)
+    table: int | None = Field(default=None, gt=0)
+    value: float = Field(ge=0, allow_inf_nan=False)
+    contributors: int = Field(gt=0)
+
+
+class PublisherReceipt(_Strict):
+    schema_version: Literal[1]
+    source_id: Literal['ANZICS-CCR-2024-25']
+    publisher: str = Field(min_length=1)
+    publisher_url: str = Field(pattern=r'^https://')
+    checked_on: date
+    document: PublisherDocument
+    checked_locators: list[PublisherLocator] = Field(min_length=1)
+    scope: Literal['direct_publisher_retrieval_and_page_checks']
+    independent_source_admission: Literal['pending']
+    local_calibration: Literal[False]
+
+
+def audit_publisher_receipt(
+    receipt_path: Path, registry: dict, *, document_path: Path | None = None,
+) -> dict:
+    """Reconcile the retained 2024/25 publisher check with the source register."""
+    raw = receipt_path.read_bytes()
+    receipt = PublisherReceipt.model_validate_json(raw)
+    sources = [s for s in registry['sources'] if s['id'] == receipt.source_id]
+    if len(sources) != 1:
+        raise ValueError('publisher receipt needs one registered source')
+    source = sources[0]
+    if (receipt.publisher, receipt.publisher_url) != (source.get('publisher'), source.get('url')):
+        raise ValueError('publisher receipt source identity mismatch')
+    outcomes = source['outcomes']
+    expected = {row['name']: row for row in outcomes}
+    observed = {row.outcome: row for row in receipt.checked_locators}
+    if (
+        len(expected) != len(outcomes) or len(observed) != len(receipt.checked_locators)
+        or set(observed) != set(expected)
+    ):
+        raise ValueError('publisher locator coverage mismatch')
+    for outcome, locator in observed.items():
+        row = expected[outcome]
+        if locator.page > receipt.document.pages or (
+            locator.value, locator.page, locator.table, locator.contributors
+        ) != (row['value'], row['page'], row.get('table'), row['contributors']):
+            raise ValueError(f'{outcome}: publisher locator disagrees with the source register')
+
+    if document_path is not None:
+        if document_path.stat().st_size != receipt.document.size_bytes:
+            raise ValueError('saved publisher document size mismatch')
+        with document_path.open('rb') as document:
+            digest = hashlib.file_digest(document, 'sha256').hexdigest()
+        if digest != receipt.document.sha256:
+            raise ValueError('saved publisher document SHA-256 mismatch')
+    return {
+        'status': 'PUBLISHER_RECEIPT_RECONCILED',
+        'source_id': receipt.source_id,
+        'checked_on': receipt.checked_on.isoformat(),
+        'checked_outcome_count': len(observed),
+        'receipt_sha256': hashlib.sha256(raw).hexdigest(),
+        'receipt_document_sha256': receipt.document.sha256,
+        'document_sha256_matched': document_path is not None,
+        'independent_source_admission': receipt.independent_source_admission,
+        'local_calibration': False,
+    }
+
+
 def reconcile_catalogue(catalogue: Catalogue, registry: dict) -> dict:
     """Pure P3 source and denominator reconciliation, also reused by P4/P5.
 
@@ -133,7 +211,7 @@ def select_external_benchmark(catalogue: dict, benchmark_id: str, *, require_doc
     """Return an external comparator; never supply an unplanned 72h risk."""
     for metric in catalogue['metrics']:
         if metric['id'] == benchmark_id:
-            if require_document_verified and metric['verification_status'] != 'document_hash_attested_and_substantively_reviewed':
-                raise ValueError(f'{benchmark_id}: unverified document source')
+            if require_document_verified:
+                raise ValueError(f'{benchmark_id}: unverified document source needs independent admission')
             return metric
     raise ValueError(f'{benchmark_id}: unavailable public benchmark / unsupported outcome')

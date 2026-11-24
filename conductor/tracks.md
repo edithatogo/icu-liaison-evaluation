@@ -61,7 +61,8 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   Implemented portable source-value/denominator crosswalk, versioned synthetic
   feed manifests, SHA-256 and Pydantic schema admission, hospitalisation/ICU
   linkage, explicit missingness/censoring and aggregate report checks. The
-  publisher PDF and benchmark pages are checked for 2024/25. Independent
+  saved 2024/25 PDF and six page locators match the publisher receipt.
+  The intake audit uses one manifest for privacy and provenance. Independent
   source admission, Searchright, CHHHS data and clinical, governance and
   Finance approval remain open.
 - [~] **Track: P4 — Reconciled probabilistic cost-consequence model**

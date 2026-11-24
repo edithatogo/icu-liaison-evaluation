@@ -40,6 +40,8 @@
           "value": 0.742,
           "unit": "proportion",
           "denominator": "available staffed bed days, 38 consistent rural/regional ICUs",
+          "contributors": 38,
+          "table": 9,
           "page": 23
         },
         {
@@ -47,6 +49,8 @@
           "value": 0.724,
           "unit": "proportion",
           "denominator": "available staffed bed days, 31 consistent Queensland ICUs",
+          "contributors": 31,
+          "table": 10,
           "page": 23
         },
         {
@@ -54,6 +58,7 @@
           "value": 1524354,
           "unit": "reported_dollars_per_bed_year",
           "denominator": "104 contributing ICUs (94 Australian, 10 New Zealand)",
+          "contributors": 104,
           "page": 36,
           "restriction": "Do not treat as AUD marginal avoidable ICU-day cost or combine with unrelated occupancy denominators"
         }

@@ -5,12 +5,18 @@
 - [x] Implement metadata/source-register integrity checks, incompatible denominators and no public 72-hour unplanned-return assumption.
 - [x] Check the 2024/25 benchmark against the PDF served by ANZICS and record
   its document digest and page. [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
+- [x] Reconcile all six saved publisher locators against the source register
+  and check the retained PDF with the offline P3 CLI. Keep the independent
+  admission gate open. [P3 source guide](../../../docs/p3-source-and-data-infrastructure.md#public-reference-data-and-source-status)
 - [ ] Independently admit the report for the intended use with licensing and
   reviewer evidence.
 
 ## P3.2 — Local source profiles and safe loading
 - [x] Create canonical CSV and Pydantic-JSON-Schema contracts with editable source column mapping, extraction freshness and SHA-256-pinned feed manifests.
 - [x] Implement fail-closed restricted processing gate with private aggregate output; synthetic fixtures are the only committed data.
+- [x] Use one captured manifest for the privacy decision, feed selection
+  and provenance hash. Check the required private destination before
+  opening restricted feeds, including when the CLI is installed.
 - [ ] Verify actual CHHHS/ANZICS feed structure and privacy/ethics/cultural governance with custodians in an approved environment.
 
 ## P3.3 — Episode linkage and data quality
@@ -26,7 +32,9 @@
   repository. [Hosted record](../../../docs/repository-import.md)
 - [x] Record the native Dapane approval for the exact P1 artifacts and their
   tested environments. [P1 platform evidence](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
-- [ ] Obtain independent Voiage admission and broader Dapane release review
-  through P1 and P7.
+- [x] Reconcile the admitted Voiage 3.1.0 macOS arm64 wheel and its
+  CPython 3.15.2 scope. [P1 Voiage evidence](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
+- [ ] Complete independent acceptance of the repaired Dapane artifact
+  and qualify other provider environments as needed through P1 and P7.
 
 This source handoff does not authorise reading real CHHHS data or label any clinical or financial result empirically validated.
