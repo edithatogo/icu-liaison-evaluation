@@ -1,5 +1,6 @@
 """Native Kairos adapter tests: contract/independent oracle, not binary execution."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -9,8 +10,9 @@ import pytest
 
 from icu_liaison.p6_native import (
     KairosScenario, KairosProducerOutput, inspect_native_output,
-    compare_native_with_reference, check_native_binary_capability,
+    compare_native_with_reference, check_native_binary_capability, invoke_native_binary,
 )
+from icu_liaison.p6_native_cli import main as native_cli
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / 'model-inputs/p6/kairos-synthetic-input.json'
@@ -34,6 +36,104 @@ def test_native_scenario_is_fully_externalised_and_synthetic():
     assert model.strategies[0].initial_departure_minute == 120
     assert model.strategies[1].initial_departure_minute == 90
     assert model.arrivals[0].request_minute == 60
+
+
+@pytest.mark.parametrize(('field', 'value'), [
+    ('seed', '20261118'),
+    ('horizon_minutes', 240.0),
+    ('staffed_beds', True),
+    ('schema_version', 1.0),
+])
+def test_native_input_rejects_noninteger_json_fields(field, value):
+    source = scenario()
+    source[field] = value
+    with pytest.raises(ValueError, match=field):
+        KairosScenario.model_validate_json(json.dumps(source))
+
+
+def test_native_input_rejects_duration_outside_rust_unsigned_range():
+    source = scenario()
+    source['arrivals'][0]['occupied_duration_minutes'] = 2**64
+    with pytest.raises(ValueError, match='occupied_duration_minutes'):
+        KairosScenario.model_validate_json(json.dumps(source))
+
+
+@pytest.fixture
+def native_files(tmp_path):
+    binary = tmp_path / 'fictional-consumer'
+    binary.write_bytes(b'\x7fELFfictional consumer bytes')
+    binary.chmod(0o700)
+    source = tmp_path / 'scenario.json'
+    source.write_bytes(INPUT.read_bytes())
+    return binary, source
+
+
+def test_native_run_uses_checked_file_bytes(native_files, monkeypatch):
+    binary, source = native_files
+    original_binary = binary.read_bytes()
+    original_input = source.read_bytes()
+    invoked_paths = []
+
+    def observe_invocation(argv, **kwargs):
+        binary.write_bytes(b'updated fictional consumer')
+        source.write_bytes(b'{}')
+        invoked_paths.extend(Path(arg) for arg in argv)
+        assert [path.read_bytes() for path in invoked_paths] == [original_binary, original_input]
+        return subprocess.CompletedProcess(argv, 0, stdout=REFERENCE.read_bytes())
+
+    monkeypatch.setattr(subprocess, 'run', observe_invocation)
+    digest = hashlib.sha256(original_binary).hexdigest()
+    report = invoke_native_binary(binary, source, expected_sha256=digest,
+                                  provider_lock=json.loads(LOCK.read_bytes()))
+    assert report['input_sha256'] == hashlib.sha256(original_input).hexdigest()
+    assert report['binary_sha256'] == digest
+    assert all(not path.exists() for path in invoked_paths)
+
+
+def test_native_run_rejects_noninteger_output_times(native_files, monkeypatch):
+    binary, source = native_files
+    output = expected()
+    output['strategies'][0]['requests'][0]['admitted_minute'] = '120'
+
+    def fictional_result(argv, **kwargs):
+        return subprocess.CompletedProcess(argv, 0, stdout=json.dumps(output).encode())
+
+    monkeypatch.setattr(subprocess, 'run', fictional_result)
+    with pytest.raises(ValueError, match='admitted_minute'):
+        invoke_native_binary(binary, source, expected_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+                             provider_lock=json.loads(LOCK.read_bytes()))
+
+
+def test_native_cli_rejects_malformed_lock_before_execution(native_files, monkeypatch, tmp_path, capsys):
+    binary, source = native_files
+    lock = tmp_path / 'invalid-lock.json'
+    lock.write_text('[]', encoding='utf-8')
+
+    def unexpected_run(*args, **kwargs):
+        pytest.fail('a malformed provider lock must be rejected before process startup')
+
+    monkeypatch.setattr(subprocess, 'run', unexpected_run)
+    digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+    assert native_cli([str(source), '--binary', str(binary), '--expected-binary-sha256', digest,
+                       '--provider-lock', str(lock)]) == 2
+    captured = capsys.readouterr()
+    assert not captured.out
+    assert 'UNVERIFIED' in captured.err
+
+
+def test_native_cli_reports_a_timeout_without_traceback(native_files, monkeypatch, capsys):
+    binary, source = native_files
+
+    def timeout(argv, **kwargs):
+        raise subprocess.TimeoutExpired(argv, timeout=45)
+
+    monkeypatch.setattr(subprocess, 'run', timeout)
+    digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+    assert native_cli([str(source), '--binary', str(binary), '--expected-binary-sha256', digest]) == 2
+    captured = capsys.readouterr()
+    assert not captured.out
+    assert 'UNVERIFIED' in captured.err
+    assert 'Traceback' not in captured.err
 
 
 def test_reference_bridge_audits_one_bed_conservation_without_native_claim():

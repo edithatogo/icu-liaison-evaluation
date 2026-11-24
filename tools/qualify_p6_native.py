@@ -84,7 +84,7 @@ def main() -> int:
         replays = []
         for scenario_path, reference_path in REPLAYS:
             reference_bytes = reference_path.read_bytes()
-            reference = KairosProducerOutput.model_validate_json(reference_bytes)
+            reference = KairosProducerOutput.model_validate_json(reference_bytes, strict=True)
             observed = invoke_native_binary(binary, scenario_path, expected_sha256=digest,
                                             provider_lock=lock, reference=reference)
             repeated = invoke_native_binary(binary, scenario_path, expected_sha256=digest,

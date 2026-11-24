@@ -26,9 +26,12 @@ tests and build. It runs two fictional inputs twice each and compares their
 actual output with the corresponding hand-authored reference. The receipt
 binds the compiler, binary and lock hashes to the input, reference and output
 digests. Set Cargo's `CARGO_TARGET_DIR` to an isolated absolute directory to
-keep the build in a private workspace. The `icu-liaison-p6-native` CLI checks
-the supplied binary's SHA-256 before invoking it. Independent build attestation,
-CHHHS calibration and clinical and Finance review remain open.
+keep the build in a private workspace. The `icu-liaison-p6-native` CLI runs a
+temporary copy of the binary it checks against the supplied SHA-256, using the
+same input bytes it validated. It requires the integer fields used by the Rust
+consumer and reports invalid locks or timed-out replay as unverified.
+Independent build attestation, CHHHS calibration and clinical and Finance
+review remain open.
 
 In the contention case, the earlier discharge frees the bed in time to admit
 one more of the same three requests. Both alternatives still use 240 staffed
@@ -52,9 +55,14 @@ and paired demand time. All comparisons remain `synthetic` and unpriced.
 ## P6.4 synthetic holdout diagnostics
 
 `icu_liaison.p6_holdout` uses existing SciPy `wasserstein_distance` and
-`ks_2samp` to quantify error on an independently identified synthetic holdout
-cohort, with paired mean absolute and signed error. The toy fixture evaluates
-**admitted** request waits only. Censoring, declined admissions, shift capacity,
+`ks_2samp` to describe distances between the observed and predicted wait
+distributions, alongside paired mean absolute and signed error. The KS
+p-value field is `null` because the waits are paired by request and the
+two-sample test assumes independent samples.
+[SciPy KS documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
+
+The toy fixture evaluates **admitted** request waits only. Censoring, declined
+admissions, shift capacity,
 acuity and sequential dependence need explicit alternative methods before any
 clinical prediction claim. `gate_readiness` enumerates outstanding evidence;
 self-declared Boolean values never grant independent approval.

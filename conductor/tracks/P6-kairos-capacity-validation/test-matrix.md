@@ -43,3 +43,13 @@ unsupported decline or censoring. The build runner checks the Git source of
 every resolved Kairos crate and the bytes of the three inspected files.
 It then checks both fixture outputs against their references and repeats each
 replay. The receipt retains the input, reference and output SHA-256 digests.
+
+## P6 review on 24 November 2026
+
+The regression checks cover replacement of an original file after validation,
+integer types at the Python and Rust boundary, invalid locks, timeouts and the
+holdout's descriptive KS statistic. Ten Python checks and one Rust case failed
+before the fixes. All 140 focused Python tests passed with the fixes. The
+qualified local Rust 1.100.0 build ran both reference
+cases twice. The raw output digests matched the earlier P6 run, including the
+paired admission and wait outcomes in the contention case.

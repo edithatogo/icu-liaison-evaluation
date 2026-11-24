@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
                         default=ROOT / 'model-inputs/p6/kairos-provider-lock.json')
     args = parser.parse_args(argv)
     if not args.binary or not args.expected_binary_sha256:
-        print('P6 UNVERIFIED: native executable and approved byte digest are required',
+        print('P6 UNVERIFIED: native executable and expected byte digest are required',
               file=sys.stderr)
         return 2
     try:

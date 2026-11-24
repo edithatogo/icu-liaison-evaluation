@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+from tempfile import TemporaryDirectory
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -21,7 +22,7 @@ from .p6_capacity import AdmissionRequest, ArmTrace, CapacityWindow, Occupancy, 
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', frozen=True)
+    model_config = ConfigDict(extra='forbid', frozen=True, strict=True)
 
 
 class StrategyConfig(_Strict):
@@ -32,16 +33,16 @@ class StrategyConfig(_Strict):
 class ArrivalConfig(_Strict):
     request_id: str = Field(pattern=r'^syn-[a-z0-9_-]{1,80}$')
     request_minute: int = Field(ge=0)
-    occupied_duration_minutes: int = Field(gt=0)
+    occupied_duration_minutes: int = Field(gt=0, le=2**64 - 1)
 
 
 class KairosScenario(_Strict):
-    schema_version: Literal[1]
+    schema_version: int = Field(ge=1, le=1)
     data_class: Literal['synthetic']
     scenario_id: str = Field(min_length=1, max_length=128, pattern=r'^syn-[a-z0-9_-]+$')
     seed: int = Field(ge=0, le=2**64 - 1)
     horizon_minutes: int = Field(ge=2, le=525_600)
-    staffed_beds: Literal[1]  # initial native slice; arbitrary calendars remain pending
+    staffed_beds: int = Field(ge=1, le=1)
     strategies: list[StrategyConfig] = Field(min_length=2, max_length=8)
     arrivals: list[ArrivalConfig] = Field(min_length=1, max_length=1000)
 
@@ -69,7 +70,7 @@ class KairosProvider(_Strict):
 
 
 class KairosProducerOutput(_Strict):
-    schema_version: Literal[1]
+    schema_version: int = Field(ge=1, le=1)
     source_engine: Literal['kairos']
     data_class: Literal['synthetic']
     producer: Literal['icu-liaison-kairos-consumer']
@@ -80,6 +81,13 @@ class KairosProducerOutput(_Strict):
     horizon_minutes: int = Field(gt=0, le=525_600)
     capacity: list[CapacityWindow] = Field(min_length=1, max_length=10000)
     strategies: list[ArmTrace] = Field(min_length=2, max_length=8)
+
+
+def _provider_from_lock(lock: Mapping) -> KairosProvider:
+    if (not isinstance(lock, Mapping) or type(lock.get('schema_version')) is not int
+            or lock['schema_version'] != 1 or lock.get('provider') != 'kairo-ecs-des'):
+        raise ValueError('unknown Kairos provider lock')
+    return KairosProvider.model_validate({field: lock.get(field) for field in ('repository', 'source_commit', 'api')})
 
 
 def _audit_single_bed_queue(arm: ArmTrace, ordered_demand: list[ArrivalConfig], horizon: int) -> None:
@@ -103,11 +111,7 @@ def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScena
 
     No supplied JSON, revision string or hash proves a compiled Kairos execution.
     """
-    if provider_lock.get('schema_version') != 1 or provider_lock.get('provider') != 'kairo-ecs-des':
-        raise ValueError('unknown Kairos provider lock')
-    if (output.provider.source_commit != provider_lock.get('source_commit') or
-        output.provider.repository != provider_lock.get('repository') or
-        output.provider.api != provider_lock.get('api')):
+    if output.provider != _provider_from_lock(provider_lock):
         raise ValueError('provider revision or API differs from source lock')
     if (output.scenario_id != scenario.scenario_id or output.seed != scenario.seed or
         output.horizon_minutes != scenario.horizon_minutes):
@@ -207,19 +211,30 @@ def invoke_native_binary(binary: Path, scenario_path: Path, *, expected_sha256: 
         raise ValueError('expected executable digest must be 64 hex characters')
     if not binary.is_file() or not scenario_path.is_file():
         raise ValueError('native executable or input missing')
-    data = binary.read_bytes()
-    if hashlib.sha256(data).hexdigest() != expected_sha256:
-        raise ValueError('native executable hash mismatch')
-    if len(data) < 8 or not (data[:4] == b'\x7fELF' or data[:4] in (b'\xfe\xed\xfa\xcf', b'\xcf\xfa\xed\xfe') or
-                              data[:2] == b'MZ'):
-        raise ValueError('not a platform native executable')
+    _provider_from_lock(provider_lock)
     content = scenario_path.read_bytes()
     scenario = KairosScenario.model_validate_json(content)
-    completed = subprocess.run([str(binary.resolve()), str(scenario_path.resolve())],
-                               capture_output=True, timeout=45, check=False)
+    # Kairos opens paths itself. Give it the same bytes the receipt identifies
+    # even if the original files are replaced while the run is being prepared.
+    with TemporaryDirectory(prefix='icu-p6-replay-') as directory:
+        staged = Path(directory)
+        executable = staged / f'consumer{binary.suffix}'
+        shutil.copy2(binary, executable)
+        data = executable.read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected_sha256:
+            raise ValueError('native executable hash mismatch')
+        if len(data) < 8 or not data.startswith((b'\x7fELF', b'\xfe\xed\xfa\xcf', b'\xcf\xfa\xed\xfe', b'MZ')):
+            raise ValueError('not a platform native executable')
+        source = staged / 'scenario.json'
+        source.write_bytes(content)
+        try:
+            completed = subprocess.run([str(executable), str(source)],
+                                       capture_output=True, timeout=45, check=False)
+        except subprocess.TimeoutExpired as exc:
+            raise ValueError('native consumer exceeded its replay time limit') from exc
     if completed.returncode != 0 or len(completed.stdout) > 2_000_000:
         raise ValueError('native consumer failed or exceeded bounded output')
-    output = KairosProducerOutput.model_validate_json(completed.stdout)
+    output = KairosProducerOutput.model_validate_json(completed.stdout, strict=True)
     review = inspect_native_output(output, scenario=scenario, provider_lock=provider_lock)
     if reference is not None and output != reference:
         raise ValueError('actual native output differs from independent reference fixture')

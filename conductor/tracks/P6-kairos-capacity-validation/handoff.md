@@ -67,3 +67,12 @@ staffed bed with common fixed demand. Both cases passed against their
 references on the locked Rust 1.100.0 build. The next operations are hosted
 source validation and independent review of the build and replay evidence.
 [Verification](test-matrix.md#fifo-contention-and-paired-access)
+
+## P6 review follow-through on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carry the replay boundary, holdout diagnostics and regression checks on
+`codex/icu-p6-review-fixes`. The locked local one-bed replays match their
+previous output bytes. The next operations are hosted source validation and
+independent review of the build and replay evidence.
+[Verification](test-matrix.md#p6-review-on-24-november-2026)
