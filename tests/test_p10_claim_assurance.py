@@ -3,6 +3,7 @@
 from hashlib import sha256
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
 
@@ -16,9 +17,7 @@ from tools.p10_falsification import run_suite
 from tools.validate_measurement_contracts import CONTRACTS, ROOT, assess_claim
 
 
-@pytest.fixture(scope="module")
-def synthetic_run(tmp_path_factory):
-    directory = tmp_path_factory.mktemp("p10-run")
+def _build_synthetic_run(directory: Path) -> Path:
     output = directory / "outputs"
     inputs = ROOT / "model-inputs"
     case = json.loads((inputs / "p11/cases/base.json").read_bytes())
@@ -36,6 +35,11 @@ def synthetic_run(tmp_path_factory):
     audit.write_text(json.dumps(run_suite(32)), encoding="utf-8")
     build_summary(suite, output, [model_pointer], audit, output / "state/summary.json")
     return output
+
+
+@pytest.fixture(scope="module")
+def synthetic_run(tmp_path_factory):
+    return _build_synthetic_run(tmp_path_factory.mktemp("p10-run"))
 
 
 @pytest.mark.parametrize(("artifact", "metric", "denominator"), [
@@ -100,6 +104,53 @@ def test_claim_does_not_use_a_different_reporting_catalogue(synthetic_run, tmp_p
     monkeypatch.setattr(reporting, "CATALOGUE", replacement)
     result = assess_claim("synthetic_illustration", run=synthetic_run, case_id="base", artifact_id="T04")
     assert result == {"permitted": False, "reason": "reporting_contract_differs_from_verified_run"}
+
+
+@pytest.mark.parametrize("artifact_id", ["T01", "T03"])
+def test_claim_requires_report_values_to_match_seeded_replay(tmp_path, monkeypatch, artifact_id):
+    from icu_liaison import p5_reporting
+
+    build_rows = p5_reporting._rows
+
+    def inconsistent_report(run):
+        consequences, pairs, sensitivity = build_rows(run)
+        if artifact_id == "T01":
+            cost = next(row for row in consequences if row["measure"] == "incremental_service_cost_aud")
+            cost["p95"] += 1000
+        else:
+            row = next(row for row in sensitivity if row["strategy_id"] != "liaison_service")
+            row["low_net_resource_aud"] += 100
+            row["high_net_resource_aud"] += 100
+        return consequences, pairs, sensitivity
+
+    with monkeypatch.context() as patch:
+        patch.setattr(p5_reporting, "_rows", inconsistent_report)
+        run = _build_synthetic_run(tmp_path)
+    decision = assess_claim("synthetic_illustration", run=run, case_id="base", artifact_id=artifact_id)
+    assert decision == {"permitted": False, "reason": "p5_report_replay_mismatch"}
+
+
+@pytest.mark.parametrize("exception", [ValueError, AttributeError])
+def test_claim_cli_omits_untrusted_failure_details(tmp_path, monkeypatch, capsys, exception):
+    from tools import validate_measurement_contracts as measurement
+    from tools import validate_reporting_contracts as reporting
+
+    def invalid_run(*_args):
+        raise exception("example input value that must stay out of the decision")
+
+    monkeypatch.setattr(reporting, "verify_run_coverage", invalid_run)
+    monkeypatch.setattr(sys, "argv", [
+        "validate_measurement_contracts", "--claim", "synthetic_illustration",
+        "--run", str(tmp_path), "--case", "base", "--artifact", "T04",
+    ])
+    assert measurement.main() == 2
+    captured = capsys.readouterr()
+    assert not captured.err
+    assert json.loads(captured.out) == {
+        "permitted": False,
+        "reason": "run_verification_failed",
+        "error_type": exception.__name__,
+    }
 
 
 def test_claim_cli_rejects_a_changed_svg(synthetic_run):

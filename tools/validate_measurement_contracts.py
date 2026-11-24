@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
 from typing import Any
 from jsonschema import Draft202012Validator
 
@@ -115,6 +116,30 @@ def validate_assurance(*, catalogue: dict | None = None,
             "tables":len(c["tables"]),"figures":len(c["figures"]),
             "authorities_verified":0,"visual_checks_executed":0}
 
+def _p5_report_reproduces(inputs: Path, model_record: dict) -> bool:
+    """Replay the P5 bundle from its verified inputs without writing to the run."""
+    from icu_liaison.p4_model import EconomicScenario
+    from icu_liaison.p5_reporting import build_report
+    from icu_liaison.p11_records import digest_file
+
+    hashes = model_record["files_sha256"]
+    with TemporaryDirectory(prefix="icu-liaison-p10-replay-") as temporary:
+        frozen = Path(temporary)
+        for name in ("effective-scenario.json", "protocol.json", "benchmarks.json", "source-register.json"):
+            source = inputs / name
+            if source.is_symlink() or not source.is_file():
+                raise ValueError("recorded P5 replay input is missing or unsafe")
+            payload = source.read_bytes()
+            if sha256(payload).hexdigest() != hashes[f"inputs/{name}"]:
+                raise ValueError("recorded P5 replay input changed after verification")
+            (frozen / name).write_bytes(payload)
+        scenario = EconomicScenario.model_validate_json((frozen / "effective-scenario.json").read_bytes())
+        replay = frozen / "p5-report"
+        build_report(scenario, replay, protocol=frozen / "protocol.json",
+                     catalogue=frozen / "benchmarks.json", source_register=frozen / "source-register.json")
+        return digest_file(replay / "manifest.json") == hashes["p5-report/manifest.json"]
+
+
 def _assess_synthetic_artifact(
     run: Path, case_id: str, artifact_id: str, disclosure: str, policy_sha256: str,
 ) -> dict:
@@ -138,14 +163,19 @@ def _assess_synthetic_artifact(
     if artifact is None:
         return {"permitted": False, "reason": "artifact_not_produced_in_run"}
 
-    record = run / "models" / case["model_run_id"] / "run.json"
-    identity = read_json(record)["identity"]
+    model = run / "models" / case["model_run_id"]
+    record = model / "run.json"
+    if record.is_symlink() or not record.is_file():
+        raise ValueError("model record is missing or unsafe after verification")
+    record_bytes = record.read_bytes()
+    model_record = json.loads(record_bytes)
+    identity = model_record["identity"]
     if identity["model_source_sha256"] != _source_hashes() or identity["runtime"] != _runtime():
         return {"permitted": False, "reason": "model_replay_unavailable"}
     companion = next(row for row in case["figures"] if row["id"] != "F01")
     p9_record = run / "priority-figures" / companion["figure_revision"] / "figure-set.json"
     p9_identity = read_json(p9_record)["identity"]
-    record_sha256 = digest_file(record)
+    record_sha256 = sha256(record_bytes).hexdigest()
     if (digest_json(identity) != case["model_run_id"]
             or digest_json(p9_identity) != companion["figure_revision"]
             or p9_identity["run_record_sha256"] != record_sha256
@@ -162,6 +192,10 @@ def _assess_synthetic_artifact(
     if (case["run_catalogue_sha256"] != catalogue_sha256
             or p9_identity["inputs_sha256"]["metrics.json"] != metrics_sha256):
         return {"permitted": False, "reason": "reporting_contract_differs_from_verified_run"}
+    if not _p5_report_reproduces(model / "inputs", model_record):
+        return {"permitted": False, "reason": "p5_report_replay_mismatch"}
+    if digest_file(run / artifact["path"]) != artifact["sha256"]:
+        raise ValueError("artifact changed during the P5 report replay")
     denominators = {metric["id"]: metric["denominator_id"] for metric in json.loads(raw_metrics)["metrics"]}
     return {
         "permitted": True, "reason": "verified_synthetic_artifact", "scope": "synthetic_illustration_only",
@@ -192,8 +226,8 @@ def assess_claim(
     try:
         return _assess_synthetic_artifact(run, case_id, artifact_id, rule["disclosure"],
                                           sha256(raw_policy).hexdigest())
-    except (OSError, RuntimeError, ValueError, TypeError, KeyError) as exc:
-        return {"permitted": False, "reason": "run_verification_failed", "error": str(exc)}
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+        return {"permitted": False, "reason": "run_verification_failed", "error_type": type(exc).__name__}
 
 def validate_provenance(record: dict) -> dict:
     _validate_schema(record, "provenance-record.schema.json")

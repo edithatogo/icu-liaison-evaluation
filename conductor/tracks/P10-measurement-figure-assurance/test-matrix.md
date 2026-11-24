@@ -8,6 +8,7 @@
 | 24 figure and 7 table metric links | Cross-table overlap and unknown IDs | Source-only |
 | Fake approvals and provider qualification | Fail-closed claim tests | Source-only |
 | Claims on verified fictional artifacts | `tests/test_p10_claim_assurance.py` checks the exact run, CSV or SVG hash, metrics, denominators, replay and policy identity | Fictional illustration |
+| Report values and claim errors | Seeded P5 report replay rejects inconsistent staffing-cost percentiles and sensitivity results. Invalid run diagnostics report the error type. | Fictional illustration |
 | Fake hashes and published SVGs | Provenance template and forged-output tests | Source-only |
 | Responsive, print and contrast checks | Four profiles with 56 reviewed baseline captures | Synthetic baseline |
 | Source-to-mark review | Figure reader replays numeric and mark checks against the recorded inputs | Synthetic computation |

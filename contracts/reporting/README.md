@@ -27,9 +27,12 @@ PYTHONPATH=src private/venv-p11/bin/python -m tools.validate_measurement_contrac
 A permitted decision applies to the specific artifact hash, scenario, model,
 metric and denominator IDs, and reporting and claim policy hashes in the
 response. It allows use of that artifact as a fictional illustration with the
-stated disclosure. The command checks the P5 model replay and the applicable
-figure mark review. It prints a reason and exits with code 2 when the claim
-is denied. Archived runs remain inspectable through the coverage check.
+stated disclosure. The command replays the frozen model and regenerates its
+P5 report in a temporary directory. It compares the regenerated report's
+manifest with the recorded manifest and checks the applicable figure marks.
+A denial prints a reason and exits with code 2. Run verification failures
+identify the error type without echoing input values. Archived runs remain
+inspectable through the coverage check.
 
 Visual acceptance uses its own evidence. Clinical effects, realised savings,
 NWAU activity, provider qualification and investment readiness require
