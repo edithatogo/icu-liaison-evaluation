@@ -22,7 +22,7 @@
     "P4-economic-decision-model",
     "P3-evidence-data-infrastructure"
   ],
-  "source_provider_revision": "161c0bfdb496dba77ff4741bfdfe9e93b81f94cd",
+  "source_provider_revision": "b60c422b9fa90751b6a5349b9aefab2bf272e25e",
   "native_execution": "local_synthetic_replay_passed_unattested",
   "clinical_validation": false
 }

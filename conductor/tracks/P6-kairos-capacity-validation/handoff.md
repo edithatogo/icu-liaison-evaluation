@@ -88,3 +88,19 @@ matched their reference values, with identical output bytes on repeat runs.
 The Cargo lock SHA-256 is
 `72b8dd7dc94eef35cb0d21348244640382cde7609568e0b1c723b0fe3e35e8c4`.
 Independent build attestation and site validation remain open.
+
+## Scheduled Kairos update b60c422
+
+On 25 November 2026, both Kairos pins advanced to
+`b60c422b9fa90751b6a5349b9aefab2bf272e25e` from the Renovate dashboard.
+The upstream change covers its workflow audit and documentation. The five
+crate source trees, three inspected blobs and 24 registry checksums match
+the previous qualification. The Cargo lock changes only the Git revision.
+
+Rust 1.100.0 passed formatting, Clippy, locked tests and the build. Both
+fictional one-bed cases matched their reference values and reproduced
+their outputs byte-for-byte. The reviewed Cargo lock SHA-256 is
+`4733f0f2ed1a0d28357556a11b518404313f36cfe059b2375eb2e77b4e059df0`.
+Independent build attestation and site acceptance remain open.
+[Upstream revision](https://github.com/edithatogo/kairos/commit/b60c422b9fa90751b6a5349b9aefab2bf272e25e) ·
+[Renovate dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
