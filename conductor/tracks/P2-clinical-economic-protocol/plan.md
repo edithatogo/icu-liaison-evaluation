@@ -65,3 +65,17 @@ result with seed 20261117 on CPython 3.15.2.
 
 - [x] Source-only [pre-registration draft](../../../contracts/clinical/preregistration.json) defines intention-to-cover, exploratory contact association, phased/controlled ITS, covariates and negative controls without observed data.
 - [ ] Before site implementation, clinically approve index validity definitions, current-care activity and exposure/roster recordings, proposed controls, minimum age, analysis locking and linked endpoints. The public draft is not registration.
+
+## Phase — Review fixes
+
+- [x] Use elapsed UTC time for ICU delay and 72-hour follow-up, validate
+  censor labels, enforce required endpoint roles and clocks, and reject
+  nonfinite protocol and sign-off values (`8663249`).
+
+The focused P2, downstream intake and preregistration tests passed on
+CPython 3.15.2 (103 tests). The fictional model output and P2 review-pack
+audit reproduced byte for byte. The audit verified 32 field mappings and
+seven pending decisions. Requiring site readiness returned exit 2.
+Site governance, approved linked inputs and approval of the safety and
+analysis decisions remain open.
+[P2 test matrix](test-matrix.md)
