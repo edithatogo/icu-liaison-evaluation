@@ -12,6 +12,9 @@
   horizons, fabricated Kairos provenance, or unpaired demand timestamps.
 - [x] Provide CLI and synthetic fixture demonstrating discharge/access timing
   without monetisation or generalisation to CHHHS.
+- [x] Report paired request dispositions and wait changes among requests
+  admitted in both arms. Retain the original wait comparison for identical
+  admitted cohorts.
 
 ## P6.3 — Kairos native source and local replay
 
@@ -23,6 +26,9 @@
   test and build checks. Match the one-bed reference and repeat the replay.
 - [x] Implement strict native-output normalisation into the existing NumPy
   trace audit with paired-demand and physical conservation checks.
+- [x] Check FIFO order, vacant-bed waits and horizon censoring. Verify the
+  pinned provider source before compilation and repeat both reference cases.
+  [Verification](test-matrix.md#fifo-contention-and-paired-access)
 - [ ] Independently attest the built artifact and runner.
 - [x] Preserve synthetic-only provider/seed/input/source identity and refuse
   conversion of capacity to cash or clinical benefit; require source-byte proof

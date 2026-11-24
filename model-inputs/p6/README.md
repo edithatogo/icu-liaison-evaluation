@@ -6,12 +6,12 @@ Its schema is `trace-schema.json` and it retains `source_engine=not_kairos`.
 
 `kairos-synthetic-input.json` is a distinct native-consumer fixture: one staffed
 bed, one initial occupant, common admission requests and strategy-specific
-initial departures. The source-only Rust consumer at `native/kairos-icu-liaison`
-uses Kairos `StagedResourceRuntime` for FIFO queueing and lease promotion.
-It has **not been compiled** here. `kairos-provider-lock.json` pins the exact
-Git source and inspected API blob identities. The manually authored
-`tests/fixtures/p6_native/independent-reference.json` is a test oracle,
-not an observed native output.
+initial departures. The Rust consumer at `native/kairos-icu-liaison` uses
+Kairos `StagedResourceRuntime` for FIFO queueing and lease promotion. The local
+qualification compares the actual output with the hand-authored reference
+in `tests/fixtures/p6_native/independent-reference.json` and repeats the
+contention case in the same fixture directory. `kairos-provider-lock.json`
+pins the Git source and inspected API blob identities.
 
 `synthetic-holdout.json` exercises SciPy admitted-wait holdout diagnostics.
 The split does not include censored/declined patients and is not a CHHHS

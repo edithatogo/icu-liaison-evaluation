@@ -28,3 +28,18 @@ then the repository's full test suite and deterministic CLI smoke.
   1.100.0 against the updated Kairos pin.
 - Site gate: validated CHHHS input sources, holdout, clinical safety/governance
   and Finance review cannot be substituted by synthetic fixtures.
+
+## FIFO contention and paired access
+
+The second hand-authored reference includes three requests, two arriving at
+the same minute and one arriving at the baseline index departure. Both arms
+occupy all 240 staffed bed-minutes. An earlier index departure admits two
+requests versus one in current care. The request admitted in both arms waits
+30 minutes less. One request is censored in both arms.
+
+The standalone auditor checks the shared wait and disposition counts. Negative
+cases change FIFO order, add a wait on a vacant bed or change an admission to an
+unsupported decline or censoring. The build runner checks the Git source of
+every resolved Kairos crate and the bytes of the three inspected files.
+It then checks both fixture outputs against their references and repeats each
+replay. The receipt retains the input, reference and output SHA-256 digests.

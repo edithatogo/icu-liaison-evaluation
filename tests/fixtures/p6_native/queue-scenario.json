@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "data_class": "synthetic",
+  "scenario_id": "syn-icu-liaison-kairos-queued-demand",
+  "seed": 20261118,
+  "horizon_minutes": 240,
+  "staffed_beds": 1,
+  "strategies": [
+    {"strategy_id": "current_care", "initial_departure_minute": 120},
+    {"strategy_id": "liaison_service", "initial_departure_minute": 90}
+  ],
+  "arrivals": [
+    {"request_id": "syn-demand-z", "request_minute": 60, "occupied_duration_minutes": 120},
+    {"request_id": "syn-demand-a", "request_minute": 60, "occupied_duration_minutes": 60},
+    {"request_id": "syn-demand-boundary", "request_minute": 120, "occupied_duration_minutes": 30}
+  ]
+}

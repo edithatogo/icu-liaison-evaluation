@@ -57,3 +57,13 @@ revision. Formatting, Clippy, Rust tests and the locked build passed on Rust
 1.100.0. Two replays matched byte-for-byte and agreed with the one-bed
 reference. Independent build attestation and site validation remain open.
 [Native qualification](../../../docs/p6-native-qualification.md)
+
+## P6 implementation on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carry the P6 admission checks, two fictional replay cases and their track
+records on `codex/icu-p6-capacity-replay`. The local native scope is one
+staffed bed with common fixed demand. Both cases passed against their
+references on the locked Rust 1.100.0 build. The next operations are hosted
+source validation and independent review of the build and replay evidence.
+[Verification](test-matrix.md#fifo-contention-and-paired-access)
