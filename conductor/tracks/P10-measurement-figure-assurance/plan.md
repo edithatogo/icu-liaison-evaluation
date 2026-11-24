@@ -50,3 +50,11 @@
 - [x] **P10.16b:** prespecified comparison/design, mandatory clinical safety outcomes, negative controls and draft-case mix requirements; reject fake registration, site approval and missing outcomes.
 - [x] **P10.16c:** define the D03 index-specific valid-ready discharge-delay metric separately from M05/D04 all-live descriptive reporting, before a site primary outcome or statistical analysis can be frozen.
 - [ ] **P10.16d:** clinically approve pre-registration, current-care comparator, roster/contact definitions, intervention start, safety margins, data governance and independent analysis lock.
+
+## Review fixes
+
+- [x] Applied in `8182a97`. Regenerate the complete P5 report from verified
+  snapshots before permitting a fictional artifact claim. Reject report
+  values that differ from the replay and omit raw input details from
+  invalid-run decisions.
+  [Review receipt](../../../verification/p10-report-replay-review-2026-11-25.json)
