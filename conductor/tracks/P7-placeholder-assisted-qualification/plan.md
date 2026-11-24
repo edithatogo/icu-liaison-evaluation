@@ -10,12 +10,16 @@
 - [x] 2. Run P3 aggregate QA, P4/P5 probabilistic report and P6 trace/holdout without new computation engines.
 - [x] 3. Publish atomically, refuse overwrites and verify all hashes.
 - [x] 4. Prove synthetic P3 fixture does not recalibrate P4 annual cohort or validate native Kairos.
+- [x] 5. Require the progress receipt, replacement checklist and complete P5
+  report when verifying the dry-run bundle. Reuse the P5 manifest verifier.
 
 ## P7.3 — Safe future-source handoff
 - [x] 1. Define strict, private-only candidate receipt contract with file SHA-256 and source role.
 - [x] 2. Implement a candidate-byte check that **never** returns independent source or site approval.
 - [x] 3. Export a per-placeholder evidence replacement checklist and registration JSON Schema.
 - [x] 4. Reconcile with P0–P6 Conductor and document how to substitute real inputs privately.
+- [x] 5. Check the candidate submission's location before reading it. Apply the
+  same private-file rules to the submission and each referenced artifact.
 
 ## P7.4 — External qualifications (blocked, not accepted)
 - [~] 1. Qualify the ANZICS PDF and page-specific denominators. The direct
@@ -36,10 +40,15 @@
 - [x] 5. Integrate the portable source into the selected repository and verify
   hosted checks. CareOps Sim PR #215 is closed and the repository owner
   approved release of the verified migration.
-  [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
+  [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release) ·
+  [Receiving commit CI](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44455595345)
 - [ ] 5a. Record the independent PR review receipt for the receiving commit
-  required by the `dedicated_repo_ci` placeholder.
-  [Evidence register](../../../model-inputs/placeholders/registry.json)
+  `1ff7ca460ac135a3cd545701d22ddf82d2d97d90` required by the `dedicated_repo_ci`
+  placeholder. The only submitted review on PR #5 was an automated comment on
+  the earlier `6757546` head. The hosted pass and owner release approval are
+  recorded separately.
+  [Evidence register](../../../model-inputs/placeholders/registry.json) ·
+  [PR #5 review](https://github.com/edithatogo/icu-liaison-evaluation/pull/5#pullrequestreview-5969092662)
 
 **P7.1–P7.3 passing means only synthetic implementation progress.** It cannot
 waive P7.4 or any other repository's validation and release gate.

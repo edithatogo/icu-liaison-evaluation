@@ -1,14 +1,17 @@
 # P7 handoff
 
-**Source-layer accepted only:** machine-verifiable placeholders, synthetic P3–P6
-dry run, candidate byte checks, evidence checklist and public Conductor track.
-**Outstanding:** documentary ANZICS authentication, site data, native toolchain
-and provider execution, independent clinical and Finance and cultural governance
-reviews, and dedicated repository CI. These are not accomplished by placeholder
-implementation. Continue in P7.4 with independent evidence, not amended flags.
+P7.1 through P7.3 deliver the machine-verifiable register, synthetic P3–P6
+dry run, candidate byte checks and evidence checklist. The bundle verifier
+requires the progress receipt, checklist and the complete P5 report. The
+candidate CLI checks the submission and referenced files against the checkout's
+private-storage rules. [Verification](test-matrix.md)
 
-Repository reconciliation, 19 November 2026: the user provided
-`https://github.com/edithatogo/icu-liaison-evaluation`. This known address is
-separate from the still-null hosted-CI receipt. The inherited 33 evidence gates
-remain open, and P8 retains its additional provider and funding qualification
-requirements in its own track.
+The 2024/25 ANZICS publisher and locator checks, scoped provider decisions and
+the receiving migration's hosted CI and release decision are recorded in P7.4.
+The 33 placeholders remain unresolved for their intended use. P7.4 still
+requires independent source admission, broader provider qualification and
+Kairos attestation, authorised CHHHS data and governance reviews, and
+independent review of the receiving migration. [P7.4 plan](plan.md#p74--external-qualifications-blocked-not-accepted)
+
+P8 tracks the additional workforce, activity-based funding and valuation
+requirements. [P8](../P8-abf-workforce-interop/index.md)
