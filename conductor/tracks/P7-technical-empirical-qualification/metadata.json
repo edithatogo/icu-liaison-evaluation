@@ -9,6 +9,7 @@
   "accepted_phases": [
     "P7.1-2023_24-publisher-PDF-page-review",
     "P7.2-independent-source-and-numerical-validation",
+    "P7.2-portable-qualification-receipt",
     "P7.3-CHHHS-data-request-and-causal-plan",
     "P7.4-local-Kairos-native-replay",
     "P7.5-voiage-macos-arm64-admission",

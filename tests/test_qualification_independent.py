@@ -20,11 +20,33 @@ def test_p3_aggregate_denominators_do_not_treat_missing_as_zero():
     assert check['readiness_completeness']['numerator'] == 2
     assert check['exit_block_ge12h']['observed_denominator'] == 2
     assert check['exit_block_ge12h']['observed_rate'] == 0.5
+    assert check['exit_block_ge12h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 2 / 3])
     assert check['return_72h']['positive'] == 1
     assert check['return_72h']['unknown'] == 1
     assert check['return_72h']['no_event'] == 1
     assert check['return_72h']['complete_cohort_risk_estimable'] is False
+    assert check['return_72h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 2 / 3])
     assert check['investment_ready'] is False
+
+
+def test_missing_readiness_leaves_the_eligible_cohort_range_unidentified():
+    data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
+    data['cohort'].update(index_with_readiness=0, index_exit_block_ge12h=0)
+    result = audit_local_aggregate(data)['exit_block_ge12h']
+    assert result['observed_rate'] is None
+    assert result['exact_binomial_95_interval_observed_only'] is None
+    assert result['eligible_cohort_fraction_bounds'] == [0, 1]
+
+
+def test_complete_observation_collapses_the_missing_outcome_bounds():
+    data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
+    data['cohort'].update(index_with_readiness=3, early_return_unknown=0,
+                          early_return_observed_no_event=2, competing_death_before_return=0,
+                          followup_complete_72h=3)
+    result = audit_local_aggregate(data)
+    assert result['exit_block_ge12h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 1 / 3])
+    assert result['return_72h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 1 / 3])
+    assert result['return_72h']['complete_cohort_risk_estimable'] is True
 
 
 def test_aggregate_refuses_inconsistent_return_counts_and_readiness_overrun():

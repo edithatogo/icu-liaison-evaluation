@@ -1,6 +1,7 @@
 # Risks and controls
 
-- **2024/25 source not authenticated:** retain inherited figures as unverified; do not relabel with 2023/24 findings.
+- **2024/25 intended-use admission pending:** the retained bytes and recorded
+  locators reconcile. Independent substantive and licensing review remains due.
 - **Wrong denominators:** CCR all-episode rates and first eligible adult ward-discharge rates are distinct; pre-specify both.
 - **Missing follow-up / competing death:** must not be treated as no readmission; descriptive conditional binomial intervals are not competing-risk risk intervals.
 - **Unrealised savings:** separate resource opportunity, avoidable cash, and extra ward utilisation.

@@ -13,6 +13,32 @@
 | Dapane Windows upstream rebuild | Independently matched all 215 passing vendor cases and verified the exact rebuilt wheel, installed extension and native receipt | Windows Server 2025 Datacenter x86-64 build 26100 and CPython 3.15.2. [Upstream rebuild decision](plan.md#windows-upstream-rebuild-decision) |
 | Voiage independent admission | Publisher signature, signed tag, wheel and installed bytes, licence, dependency checks and native EVPI verified | Exact macOS arm64 wheel on CPython 3.15.2. [P1 admission](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission) |
 | Kairos | `tools/qualify_p6_native.py` | Requires Rust, reviewed Cargo.lock and exact source pin |
-| ANZICS 2024/25 | Retain and independently inspect publisher PDF and SHA | Unverified until actual document admission |
+| ANZICS 2024/25 | Reconcile the recorded six locators and check the retained PDF's SHA-256 offline | Intended-use reviewer and licensing decision pending |
 | CHHHS readiness | Approved local extraction, calibration, independent safety, Finance, clinical and equity review | No check-box alone constitutes approval |
-| Dedicated Git | Target repo, pinned dependencies, hosted tests/reviews and explicit privacy boundaries | Not yet supplied |
+| Dedicated Git | Pinned source, hosted synthetic and privacy checks, and recorded migration disposition | Portable source gate verified. [Import record](../../../docs/repository-import.md) |
+
+## Repeat the current qualification
+
+```sh
+PYTHONPATH=src .venv/bin/python tools/qualify_current_portable.py
+```
+
+Add `--publisher-document /secure/evidence/ANZICS-CCR-2024-25.pdf` to verify
+an already retained copy against the recorded size and SHA-256. The command
+runs offline. It records the UTC run date and input identities and verifies
+the CHHHS request specification and the hashes of its UTF-8 Markdown and CSV
+renderings.
+
+On 24 November 2026 the receipt reconciled six ANZICS locators and matched the
+saved publisher PDF. Both exported request files matched their recorded digests
+and contained specifications for 11 datasets and 115 fields. On CPython 3.15.2,
+the independent oracle checked 18 strategy draws at seed `20261118`.
+All 127 focused Python tests passed. Repeated portable receipts and the
+illustrative model result matched byte for byte in the local run.
+
+Both fictional eligible-cohort ranges are one-third to two-thirds. The delay
+proportion among records with valid readiness is one-half. The cohort ranges
+assign all unresolved records to each extreme, keeping competing deaths
+separately counted within unresolved returns. The ranges describe the
+uncertainty from missing outcomes in this fixture. Clinical or competing-risk
+estimation requires the approved observations and analysis method.

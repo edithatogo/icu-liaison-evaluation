@@ -19,8 +19,12 @@ def main() -> int:
     if args.output_dir.exists() and any(args.output_dir.iterdir()):
         p.error('destination must be new or empty')
     args.output_dir.mkdir(parents=True,exist_ok=True)
-    (args.output_dir/'CHHHS_ICU_Liaison_Data_Extraction_Request.md').write_text(render_request_markdown(data),encoding='utf-8')
-    (args.output_dir/'CHHHS_ICU_Liaison_Fields.csv').write_text(render_request_csv(data),encoding='utf-8')
+    (args.output_dir / 'CHHHS_ICU_Liaison_Data_Extraction_Request.md').write_text(
+        render_request_markdown(data), encoding='utf-8', newline='\n',
+    )
+    (args.output_dir / 'CHHHS_ICU_Liaison_Fields.csv').write_text(
+        render_request_csv(data), encoding='utf-8', newline='\n',
+    )
     print(f'Data request exported: {len(data.datasets)} datasets; no observed hospital records')
     return 0
 
