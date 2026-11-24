@@ -178,6 +178,49 @@ def test_replacement_cannot_be_satisfied_with_a_synthetic_test_fixture(tmp_path)
         inspect_replacement_candidates(body,record,project_root=ROOT)
 
 
+def test_cli_requires_a_private_candidate_submission(tmp_path, monkeypatch, capsys):
+    from icu_liaison import placeholders_cli
+
+    checkout = tmp_path / 'checkout'
+    checkout.mkdir()
+    private = checkout / 'private'
+    private.mkdir()
+    artifact = private / 'candidate.txt'
+    artifact.write_text('FICTIONAL CANDIDATE', encoding='utf-8')
+    body = {
+        'schema_version': 1,
+        'status': 'candidates_for_independent_review',
+        'entries': [{
+            'id': 'local_icu_episodes',
+            'evidence_type': 'approved_site_extract',
+            'artifact_path': str(artifact),
+            'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
+            'source_custodian_role': 'Example custodian',
+            'approval_reference': 'FICTIONAL-REFERENCE',
+        }],
+    }
+    public_submission = checkout / 'submission.json'
+    public_submission.write_text(json.dumps(body), encoding='utf-8')
+    monkeypatch.setattr(placeholders_cli, 'ROOT', checkout)
+    command = ['review-candidates', '--registry', str(REGISTRY), '--submission']
+
+    assert placeholders_cli.main([*command, str(public_submission)]) == 2
+    rejected = capsys.readouterr()
+    assert not rejected.out
+    assert 'UNVERIFIED_PLACEHOLDER' in rejected.err
+    assert str(public_submission) not in rejected.err
+
+    private_submission = public_submission.rename(private / public_submission.name)
+    assert placeholders_cli.main([*command, str(private_submission)]) == 0
+    accepted = capsys.readouterr()
+    report = json.loads(accepted.out)
+    assert report['candidate_hashes_matched'] == 1
+    assert report['independently_approved'] is False
+    assert report['unresolved_count'] == 33
+    assert 'FICTIONAL-REFERENCE' not in accepted.out
+    assert str(artifact) not in accepted.out
+
+
 def test_synthetic_progress_builds_reproducible_existing_p3_p4_p5_p6_assets(tmp_path):
     from icu_liaison.placeholders import build_synthetic_progress_bundle
     from icu_liaison.p5_reporting import review_report,verify_manifest
@@ -266,6 +309,36 @@ def test_progress_manifest_rejects_modified_source_without_rehash(tmp_path):
     body=dest/'replacement-checklist.csv'
     body.write_bytes(body.read_bytes()+b'\\n')
     with pytest.raises(ValueError,match='hash'):
+        verify_progress_manifest(dest)
+
+
+def test_progress_manifest_requires_bundle_files(tmp_path):
+    from icu_liaison.placeholders import verify_progress_manifest
+
+    (tmp_path / 'manifest.json').write_text(json.dumps({
+        'schema_version': 1,
+        'data_class': 'synthetic',
+        'status': 'portable_dry_run_only',
+        'investment_ready': False,
+        'files_sha256': {},
+    }), encoding='utf-8')
+    with pytest.raises(ValueError, match='file inventory'):
+        verify_progress_manifest(tmp_path)
+
+
+def test_progress_manifest_requires_complete_nested_p5_report(tmp_path):
+    from icu_liaison.placeholders import build_synthetic_progress_bundle, verify_progress_manifest
+
+    dest = tmp_path / 'receipt'
+    build_synthetic_progress_bundle(root=ROOT, registry_path=REGISTRY, output_dir=dest)
+    missing = 'p5-report/model-summary.json'
+    (dest / missing).unlink()
+    manifest_path = dest / 'manifest.json'
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    del manifest['files_sha256'][missing]
+    manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+
+    with pytest.raises(ValueError, match='file-set mismatch'):
         verify_progress_manifest(dest)
 
 

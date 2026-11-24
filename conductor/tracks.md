@@ -129,9 +129,10 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   ([index](tracks/P7-placeholder-assisted-qualification/index.md),
    [plan](tracks/P7-placeholder-assisted-qualification/plan.md)).
   The independent placeholder branch is preserved alongside the technical P7
-  track. The 33-entry register, candidate checks and synthetic P3–P6 dry run
-  are implemented. Knowing the repository address does not satisfy the
-  separate release-review, native-provider or site-acceptance gates.
+  track. The 33-entry register, private candidate checks and synthetic P3–P6
+  dry run with complete bundle verification are implemented. The P7.4 plan
+  records the publisher check, scoped provider decisions and hosted migration
+  evidence. Independent admission, receiving review and site acceptance remain open.
 
 Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 `[!]` is blocked on a stated dependency. Both P7 directories retain their

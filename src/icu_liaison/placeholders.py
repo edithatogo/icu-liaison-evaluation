@@ -248,6 +248,29 @@ def audit_placeholders(registry: PlaceholderRegistry, *, root: Path) -> dict:
     }
 
 
+def _private_evidence_file(path: Path, project_root: Path) -> Path:
+    if path.is_symlink() or not path.is_file():
+        raise ValueError('candidate evidence requires a private regular file')
+    root = Path(project_root).resolve()
+    resolved = path.resolve()
+    for location in (path.absolute(), resolved):
+        if location.is_relative_to(root):
+            parts = location.relative_to(root).parts
+            if not parts or parts[0] not in {'.local', 'private'}:
+                raise ValueError('evidence candidates must remain in private storage')
+    return resolved
+
+
+def review_candidate_submission(
+    path: Path, registry: PlaceholderRegistry, *, project_root: Path
+) -> dict:
+    """Check a submission's location before reading its private contents."""
+    source = _private_evidence_file(path, project_root)
+    return inspect_replacement_candidates(
+        json.loads(source.read_text(encoding='utf-8')), registry, project_root=project_root,
+    )
+
+
 def inspect_replacement_candidates(
     envelope: Mapping, registry: PlaceholderRegistry, *, project_root: Path
 ) -> dict:
@@ -266,16 +289,11 @@ def inspect_replacement_candidates(
         if entry is None or item.evidence_type != entry.replacement.evidence_type:
             raise ValueError('unknown or mismatched evidence candidate')
         artifact = Path(item.artifact_path)
-        if not artifact.is_absolute() or not artifact.is_file() or artifact.is_symlink():
+        if not artifact.is_absolute():
             raise ValueError('evidence candidate must be an existing private regular file')
+        artifact = _private_evidence_file(artifact, project_root)
         if artifact.stat().st_size > 100 * 1024 * 1024:
             raise ValueError('candidate evidence file is too large')
-        root = Path(project_root).resolve()
-        resolved = artifact.resolve()
-        if resolved.is_relative_to(root):
-            sub = resolved.relative_to(root)
-            if not (sub.parts and sub.parts[0] in {'.local', 'private'}):
-                raise ValueError('evidence candidates must remain in private storage')
         if hashlib.sha256(artifact.read_bytes()).hexdigest() != item.sha256:
             raise ValueError('candidate digest did not match verified bytes')
 
@@ -297,30 +315,35 @@ def _json_write(path: Path, value: object) -> None:
 
 
 def verify_progress_manifest(directory: Path) -> bool:
-    """Verify every published file except the manifest itself, without trusting paths."""
+    """Verify that the required dry-run deliverables are present and match their manifests."""
+    from .p5_reporting import verify_manifest as verify_p5_manifest
+
     root = Path(directory)
     manifest_file = root / 'manifest.json'
-    if manifest_file.is_symlink() or not manifest_file.is_file():
+    if root.is_symlink() or manifest_file.is_symlink() or not manifest_file.is_file():
         raise ValueError('missing or unsafe progress manifest')
     manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
-    if (manifest.get('schema_version') != 1 or manifest.get('data_class') != 'synthetic'
+    if (not isinstance(manifest, dict) or manifest.get('schema_version') != 1
+            or manifest.get('data_class') != 'synthetic'
+            or manifest.get('status') != 'portable_dry_run_only'
             or manifest.get('investment_ready') is not False):
         raise ValueError('invalid progress publication status')
     expected = manifest.get('files_sha256')
-    if not isinstance(expected, dict):
+    required = {'progress.json', 'replacement-checklist.csv', 'p5-report/manifest.json'}
+    if not isinstance(expected, dict) or not required <= expected.keys():
         raise ValueError('invalid progress file inventory')
-    found = {
-        p.relative_to(root).as_posix(): p
-        for p in root.rglob('*') if p.is_file() and p != manifest_file
-    }
+    found = {}
+    for path in root.rglob('*'):
+        if path.is_symlink():
+            raise ValueError('symlink in progress report')
+        if path.is_file() and path != manifest_file:
+            found[path.relative_to(root).as_posix()] = path
     if set(expected) != set(found):
         raise ValueError('missing/extra file in progress report')
     for name, path in found.items():
-        if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
-            raise ValueError('symlink or escaped progress report')
         if hashlib.sha256(path.read_bytes()).hexdigest() != expected[name]:
             raise ValueError('progress report file hash drift')
-    return True
+    return verify_p5_manifest(root / 'p5-report')
 
 
 def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_dir: Path) -> dict:

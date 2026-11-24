@@ -8,7 +8,7 @@ import sys
 
 from .placeholders import (
     audit_placeholders, build_synthetic_progress_bundle,
-    inspect_replacement_candidates, load_registry,
+    load_registry, review_candidate_submission,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,9 +36,8 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             return 0
         if args.command=='review-candidates':
-            report=inspect_replacement_candidates(
-                json.loads(args.submission.read_text(encoding='utf-8')),
-                load_registry(args.registry), project_root=ROOT)
+            report=review_candidate_submission(
+                args.submission, load_registry(args.registry), project_root=ROOT)
             print(json.dumps(report,indent=2,sort_keys=True))
             return 0
         output=build_synthetic_progress_bundle(root=ROOT,registry_path=args.registry,
