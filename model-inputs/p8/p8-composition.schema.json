@@ -1,5 +1,44 @@
 {
   "$defs": {
+    "EpisodeFundingSensitivity": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_revenue_aud": {
+          "default": null,
+          "title": "Actual Revenue Aud",
+          "type": "null"
+        },
+        "assumed_aud_per_nwau": {
+          "title": "Assumed Aud Per Nwau",
+          "type": "string"
+        },
+        "case_change_aud": {
+          "title": "Case Change Aud",
+          "type": "string"
+        },
+        "pricing_year": {
+          "enum": [
+            2024,
+            2025
+          ],
+          "title": "Pricing Year",
+          "type": "integer"
+        },
+        "scope": {
+          "const": "one_synthetic_episode_at_assumed_price",
+          "default": "one_synthetic_episode_at_assumed_price",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pricing_year",
+        "assumed_aud_per_nwau",
+        "case_change_aud"
+      ],
+      "title": "EpisodeFundingSensitivity",
+      "type": "object"
+    },
     "MchsShadow": {
       "additionalProperties": false,
       "properties": {
@@ -93,6 +132,55 @@
         "status"
       ],
       "title": "MchsShadow",
+      "type": "object"
+    },
+    "VoiageComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "draws": {
+          "exclusiveMinimum": 0,
+          "title": "Draws",
+          "type": "integer"
+        },
+        "evpi_aud_per_annual_programme_decision": {
+          "minimum": 0,
+          "title": "Evpi Aud Per Annual Programme Decision",
+          "type": "number"
+        },
+        "objective": {
+          "enum": [
+            "net_resource",
+            "budget"
+          ],
+          "title": "Objective",
+          "type": "string"
+        },
+        "provider_evidence": {
+          "enum": [
+            "injected_contract_test_only",
+            "native_provider_called_unqualified"
+          ],
+          "title": "Provider Evidence",
+          "type": "string"
+        },
+        "strategy_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Strategy Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "objective",
+        "strategy_ids",
+        "draws",
+        "evpi_aud_per_annual_programme_decision",
+        "provider_evidence"
+      ],
+      "title": "VoiageComparison",
       "type": "object"
     },
     "WorkforceShadow": {
@@ -198,6 +286,17 @@
       "title": "Data Class",
       "type": "string"
     },
+    "episode_funding_sensitivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EpisodeFundingSensitivity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "extra_workforce_cost_applied_to_p4": {
       "const": false,
       "default": false,
@@ -258,6 +357,17 @@
     "strategy_id": {
       "title": "Strategy Id",
       "type": "string"
+    },
+    "voiage_comparison": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VoiageComparison"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "workforce": {
       "$ref": "#/$defs/WorkforceShadow"

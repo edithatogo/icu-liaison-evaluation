@@ -4,6 +4,7 @@ Clinical effects and QALYs are not in this input. Do not describe the resulting
 cost-only information value as healthcare cost-effectiveness or utility.
 """
 from __future__ import annotations
+from typing import Any
 import numpy as np
 from ..model import PSADraws
 
@@ -20,14 +21,15 @@ def financial_decision_array(draws: PSADraws) -> tuple[np.ndarray, list[str]]:
     return np.column_stack((np.zeros(len(net)), net)), ['current_care', 'liaison_service']
 
 
-def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_factory=None):
-    """Use supported Voiage API; injected factories are for boundary tests.
+def make_voiage_decision(
+    values: np.ndarray, strategies: list[str], *, value_array_factory=None, analysis_factory=None,
+) -> Any:
+    """Pass a selected financial decision surface to the supported Voiage API.
 
     Voiage v3.1 currently requires a separate Python >=3.15.2 environment.
     This environment may not have the runtime installed. There is no fallback
     or homemade EVPI / EVPPI implementation.
     """
-    array, labels = financial_decision_array(draws)
     if value_array_factory is None or analysis_factory is None:
         try:
             from voiage.schema import ValueArray
@@ -38,7 +40,24 @@ def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_
             value_array_factory = ValueArray.from_numpy
         if analysis_factory is None:
             analysis_factory = DecisionAnalysis
-    return analysis_factory(value_array_factory(array, labels))
+    return analysis_factory(value_array_factory(values, strategies))
+
+
+def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_factory=None):
+    array, labels = financial_decision_array(draws)
+    return make_voiage_decision(
+        array, labels, value_array_factory=value_array_factory, analysis_factory=analysis_factory,
+    )
+
+
+def financial_evpi_aud(analysis: Any) -> float:
+    """Validate Voiage's returned EVPI in the input surface's monetary units."""
+    if not callable(getattr(analysis, 'evpi', None)):
+        raise ValueError('invalid Voiage EVPI interface: evpi method unavailable')
+    evpi = float(analysis.evpi())
+    if not np.isfinite(evpi) or evpi < -1e-9:
+        raise ValueError('Voiage returned an invalid financial EVPI')
+    return max(evpi, 0.0)
 
 
 def evaluate_financial_information(
@@ -55,11 +74,8 @@ def evaluate_financial_information(
         value_array_factory=value_array_factory,
         analysis_factory=analysis_factory,
     )
-    evpi = float(analysis.evpi())
-    if not np.isfinite(evpi) or evpi < -1e-9:
-        raise ValueError('Voiage returned an invalid financial EVPI')
     return {
-        'evpi_per_decision_aud': max(evpi, 0.0),
+        'evpi_per_decision_aud': financial_evpi_aud(analysis),
         'decision_strategies': ['current_care', 'liaison_service'],
         'value_type': 'financial_resource_only_not_qaly',
         'population_scale': 'one_annual_programme_decision_not_population_scaled',

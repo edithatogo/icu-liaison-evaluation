@@ -10,9 +10,12 @@
     "P8.0-source-reconciliation",
     "P8.1-contract-and-negative-controls",
     "P8.2-synthetic-annual-consumer-source-only",
+    "P8.2.1a-reference-fingerprint-and-fictional-replay",
     "P8.3-synthetic-workforce-Dapane-transport-source-only",
+    "P8.3.2a-exact-fictional-quote-replay",
     "P8.4-synthetic-cross-ledger-composition-source-only",
     "P8.4.1a-scoped-native-fictional-valuation",
+    "P8.4.2a-fictional-funding-and-selected-voiage-comparisons",
     "P8.5.0-hosted-source-checks"
   ],
   "blocked_phases": [
@@ -56,6 +59,7 @@
       "tests/test_p8_composition_cli.py"
     ],
     "p8_composition_schema": "model-inputs/p8/p8-composition.schema.json",
-    "native_synthetic_valuation": "verification/p8-native-synthetic-valuation-2026-11-24.json"
+    "native_synthetic_valuation": "verification/p8-native-synthetic-valuation-2026-11-24.json",
+    "fictional_provider_workflow": "verification/p8-provider-workflow-2026-11-24.json"
   }
 }

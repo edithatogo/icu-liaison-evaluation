@@ -7,7 +7,9 @@ Calling an installed provider does not on its own prove annual calculator parity
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
+from hashlib import file_digest, sha256
 from importlib import import_module
+import json
 from pathlib import Path
 from typing import Any, Callable, Literal
 
@@ -82,18 +84,38 @@ class MchsPair(_Strict):
         }
 
 
-def _installed_acute(rows: list[dict], *, year: str, ref_dir: str):
-    """Invoke MCHS, not a locally copied NWAU equation."""
+def mchs_reference_sha256(ref_dir: Path) -> str:
+    """Fingerprint the named SAS tables the annual consumer can read."""
+    directory = Path(ref_dir)
+    if not directory.is_dir():
+        raise ValueError("MCHS reference directory must be explicitly supplied and exist")
+    digests = {}
+    for table in sorted(directory.glob('*.sas7bdat')):
+        if table.is_symlink() or not table.is_file():
+            raise ValueError("MCHS reference tables must be regular files")
+        with table.open('rb') as handle:
+            digests[table.name] = file_digest(handle, 'sha256').hexdigest()
+    if not digests:
+        raise ValueError("MCHS reference directory contains no SAS tables")
+    return sha256(json.dumps(digests, sort_keys=True).encode('utf-8')).hexdigest()
+
+
+def _installed_acute(ref_dir: Path, expected_digest: str) -> Callable[..., Any]:
+    """Bind the existing MCHS calculator to a selected reference snapshot."""
     try:
         module = import_module("nwau_py.calculators.acute")
         pl = import_module("polars")
     except ImportError as exc:
         raise RuntimeError("MCHS annual acute provider not installed; run in its qualified environment") from exc
-    if not ref_dir or not Path(ref_dir).is_dir():
-        raise ValueError("MCHS reference directory must be explicitly supplied and exist")
-    return module.calculate_acute(
-        pl.DataFrame(rows), module.AcuteParams(), year=year, ref_dir=Path(ref_dir),
-    )
+    if mchs_reference_sha256(ref_dir) != expected_digest:
+        raise ValueError("MCHS reference bundle SHA-256 differs from the selected fixture")
+
+    def calculate(rows: list[dict], *, year: str, ref_dir: str):
+        return module.calculate_acute(
+            pl.DataFrame(rows), module.AcuteParams(), year=year, ref_dir=Path(ref_dir),
+        )
+
+    return calculate
 
 
 def _first_row(result: Any, *, output_column: str) -> Decimal:
@@ -135,13 +157,20 @@ def run_mchs_pair(
     never as installed or officially validated.
     """
     case = MchsPair.model_validate_json(case.model_dump_json())
-    if provider is None and not ref_dir:
-        raise ValueError("MCHS installed path needs a selected annual reference bundle directory")
-    runner = provider or _installed_acute
+    if provider is None:
+        if not ref_dir:
+            raise ValueError("MCHS installed path needs a selected annual reference bundle directory")
+        directory = Path(ref_dir).resolve()
+        runner = _installed_acute(directory, case.source_bundle_sha256)
+        ref_dir = str(directory)
+    else:
+        runner = provider
     now = _first_row(runner([case.row(intervention=False)], year=str(case.pricing_year), ref_dir=ref_dir or ""),
                      output_column=f"NWAU{case.pricing_year % 100:02d}")
     proposed = _first_row(runner([case.row(intervention=True)], year=str(case.pricing_year), ref_dir=ref_dir or ""),
                           output_column=f"NWAU{case.pricing_year % 100:02d}")
+    if provider is None and mchs_reference_sha256(Path(ref_dir)) != case.source_bundle_sha256:
+        raise ValueError("MCHS reference bundle changed during the paired calculation")
     return {
         "schema_version": 1,
         "episode_id": case.episode_id,

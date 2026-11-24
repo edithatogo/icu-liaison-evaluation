@@ -7,10 +7,11 @@ import json
 from pathlib import Path
 
 import pytest
+import numpy as np
 from jsonschema import Draft202012Validator
 
 from icu_liaison.p4_model import EconomicScenario, evaluate_scenarios, summarise_p4
-from icu_liaison.p8_composition import compose_p8_shadow, P8Composition
+from icu_liaison.p8_composition import FictionalFundingPrice, P8Composition, compose_p8_shadow
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -99,6 +100,59 @@ def test_inconsistent_nwau_difference_is_rejected(run):
     a=mchs_record();a['change_nwau']='-0.09'
     with pytest.raises(ValueError, match='NWAU'):
         compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=a)
+
+
+def test_fictional_episode_money_keeps_the_annual_cost_ledgers_unchanged(run):
+    base = compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=mchs_record())
+    priced = compose_p8_shadow(
+        run, strategy_id='liaison_service', mchs_result=mchs_record(),
+        fictional_funding_price=FictionalFundingPrice(pricing_year=2025, aud_per_nwau='1000.25'),
+    )
+    funding = priced.pop('episode_funding_sensitivity')
+    assert Decimal(funding['case_change_aud']) == Decimal('-100.025')
+    assert funding['actual_revenue_aud'] is None and funding['pricing_year'] == 2025
+    assert priced == base
+    assert base['net_modelled_nwau_aud'] is None
+
+
+@pytest.mark.parametrize('result, year, rate', [
+    (None, 2025, '1000'), (mchs_record(), 2024, '1000'),
+    (mchs_record(), 2025, '-1'), (mchs_record(), 2025, 'NaN'),
+])
+def test_episode_price_requires_compatible_mchs_year_and_exact_assumption(run, result, year, rate):
+    with pytest.raises(ValueError, match='fictional'):
+        compose_p8_shadow(
+            run, strategy_id='liaison_service', mchs_result=result,
+            fictional_funding_price=FictionalFundingPrice(pricing_year=year, aud_per_nwau=rate),
+        )
+
+
+@pytest.mark.parametrize('objective, field', [
+    ('net_resource', 'net_resource_benefit_aud'), ('budget', 'net_budget_impact_aud'),
+])
+def test_voiage_only_sees_the_selected_pair_and_perspective(run, objective, field):
+    class ExampleAnalysis:
+        def evpi(self):
+            return 4.25
+
+    def inspect_surface(values, labels):
+        assert labels == ['current_care', 'extended_cover']
+        expected = np.column_stack([getattr(run.strategies[arm], field) for arm in labels])
+        np.testing.assert_array_equal(values, expected)
+        return ExampleAnalysis()
+
+    out = compose_p8_shadow(
+        run, strategy_id='extended_cover', mchs_result=mchs_record(),
+        fictional_funding_price=FictionalFundingPrice(pricing_year=2025, aud_per_nwau='1000'),
+        voiage_objective=objective, value_array_factory=inspect_surface, analysis_factory=lambda value: value,
+    )
+    assert out['voiage_comparison'] == {
+        'objective': objective, 'strategy_ids': ['current_care', 'extended_cover'],
+        'draws': len(run.strategies['current_care'].net_budget_impact_aud),
+        'evpi_aud_per_annual_programme_decision': 4.25, 'provider_evidence': 'injected_contract_test_only',
+    }
+    assert out['actual_hospital_revenue_change_aud'] is None
+    assert out['extra_workforce_cost_applied_to_p4'] is False
 
 
 def test_non_strategic_comparison_rejected(run):

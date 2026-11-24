@@ -1,0 +1,163 @@
+{
+  "actual_hospital_revenue_change_aud": null,
+  "annual_workforce_cost_applied_to_p4": false,
+  "checked_on": "2026-11-24",
+  "composed_cli_sha256": {
+    "budget": "d70c6c018acb5bc0f8969764b93fd9fa61b3a3e86b3192dd89ec7a7765f7f1fc",
+    "net_resource": "813a68aa2803d77fb6c46030f4e91ea97f75f58607b001b234a9252f1578ba4f"
+  },
+  "composed_episode_funding": {
+    "actual_revenue_aud": null,
+    "assumed_aud_per_nwau": "1000",
+    "case_change_aud": "-176.80000",
+    "pricing_year": 2025,
+    "scope": "one_synthetic_episode_at_assumed_price"
+  },
+  "full_annual_calculator_parity_accepted": false,
+  "full_nursing_roster_accepted": false,
+  "mchs_reference_replay": {
+    "actual_revenue_aud": null,
+    "annual_calculator_parity_accepted": false,
+    "cases": [
+      {
+        "change_nwau": "-0.1764000000000001",
+        "current_nwau": "3.4235249999999997",
+        "full_reference_sha256": "e7bb0fb6b0f01211760e8c342d9dd74fabb293ca90ce5585775b08ece0f5ac08",
+        "full_reference_table_count": 89,
+        "matches_saved_independent_inlier_oracle": true,
+        "pricing_year": 2024,
+        "proposed_nwau": "3.2471249999999996",
+        "unchanged_case_delta_nwau": "0.0000000000000000"
+      },
+      {
+        "change_nwau": "-0.17680",
+        "current_nwau": "3.36925",
+        "full_reference_sha256": "e3fa229523be91c1778952c7e8d50e82eb1201203b707aac13e98ebad510699b",
+        "full_reference_table_count": 92,
+        "matches_saved_independent_inlier_oracle": true,
+        "pricing_year": 2025,
+        "proposed_nwau": "3.19245",
+        "unchanged_case_delta_nwau": "0.00000"
+      }
+    ],
+    "provider_source_revision": "125933c7770e9a6bed9b62e354a6380d3dac3d47",
+    "python": "3.15.2",
+    "uv_lock_sha256": "a77276d8144eb0092377c880fc1cae0f59ee27f15218112c8fe638d5ae908fa6"
+  },
+  "runtime": {
+    "dapane": "0.1.0",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "python": "3.15.2",
+    "voiage": "3.1.0"
+  },
+  "schema_version": 1,
+  "scope": "fictional_p8_reference_roster_valuation_and_decision_replay",
+  "site_investment_approved": false,
+  "source_sha256": {
+    "model-inputs/p4/illustrative.json": "9dad28695fe920cff9118e8cbd83147c983121077702f2eed63e71ab0cac734b",
+    "model-inputs/p8/provider-capabilities.json": "a50f8555eee0756dff574c41de017031ac533db29688c5045cf33afcfec5a732",
+    "model-inputs/p8/synthetic-mchs-pair.json": "de6ed46bf2fc9fa52cea8c601c6abb604c17fcdf9ffbc0e18bea87f0232ccecb",
+    "providers.lock.json": "0c8c1e675fb4b51b67a08f8b4e800e37981aba9526ad3a7c5e1e24f1fd736cf8",
+    "src/icu_liaison/adapters/dapane.py": "2879a166eb972eca02f37dfde6efdea12a104c81fd9739b805342a45dae4f80e",
+    "src/icu_liaison/adapters/p8_mchs.py": "caedf0cc5095100ef5324e9236fd86ca149d4b67974a3ff7e80dd3a1eb4ddb16",
+    "src/icu_liaison/adapters/p8_workforce.py": "68c9c410fb99dc1329541e476475c432673dc83cc73b66f255423b2220398d37",
+    "src/icu_liaison/adapters/voiage.py": "53826ade27e7db1c826995d4243a8637aea4f6925f01c3eff481f30580735db6",
+    "src/icu_liaison/p4_model.py": "ff4e84e83f1da4bc5b4450f9d2f8b67ca15ae5d8a6c373994509271696fd1dcc",
+    "src/icu_liaison/p8_cli.py": "ac8481c10c445d0273c79c234d94dda815e51b9ccf6aaace7c67766fbe9eaacd",
+    "src/icu_liaison/p8_composition.py": "257df5c3a43dd788e45a9d0b4a0194b3fc319ed1bf880786130600bc7338ce1f",
+    "src/icu_liaison/p8_composition_cli.py": "d6fb6dbabb33e48f7961b62a4db398234e9eb0981266f42695088ca1933a8906",
+    "verification/p8-mchs-paired-acute-2026-11-24.json": "2b1ce4ff2c2dafbb0fae899624411a569a9b23fbf8bb1bba2638e0bc96e429a0",
+    "verification/p8-native-synthetic-valuation-2026-11-24.json": "e424295052ee150ed4e4e484d9d4addad9331a567d11108f1ed052a5519c6a60"
+  },
+  "voiage_comparisons": {
+    "actual_hospital_revenue_change_aud": null,
+    "broad_runtime_qualified": false,
+    "cases": [
+      {
+        "draws": 5000,
+        "evpi_aud_per_annual_programme_decision": 2660.0667852742363,
+        "independent_oracle_aud": 2660.0667852742363,
+        "objective": "net_resource",
+        "provider_evidence": "native_provider_called_unqualified",
+        "strategy_ids": [
+          "current_care",
+          "liaison_service"
+        ]
+      },
+      {
+        "draws": 5000,
+        "evpi_aud_per_annual_programme_decision": 168.3283641767382,
+        "independent_oracle_aud": 168.3283641767382,
+        "objective": "budget",
+        "provider_evidence": "native_provider_called_unqualified",
+        "strategy_ids": [
+          "current_care",
+          "liaison_service"
+        ]
+      },
+      {
+        "draws": 5000,
+        "evpi_aud_per_annual_programme_decision": 1736.5544169008795,
+        "independent_oracle_aud": 1736.5544169008795,
+        "objective": "net_resource",
+        "provider_evidence": "native_provider_called_unqualified",
+        "strategy_ids": [
+          "current_care",
+          "extended_cover"
+        ]
+      },
+      {
+        "draws": 5000,
+        "evpi_aud_per_annual_programme_decision": 94.5381392363523,
+        "independent_oracle_aud": 94.53813923635231,
+        "objective": "budget",
+        "provider_evidence": "native_provider_called_unqualified",
+        "strategy_ids": [
+          "current_care",
+          "extended_cover"
+        ]
+      }
+    ],
+    "native_extension_sha256": "281903924effb5d54ff3dda03f285aa2e287d16bbb25daec9ee82326ae6ba31a",
+    "p4_input_sha256": "d7582cb1d6403dbd03fd9b18379aa35424bc5074aec17438db2bef5d9cc0b014",
+    "provider": "voiage",
+    "python": "3.15.2",
+    "seed": 20261118,
+    "version": "3.1.0",
+    "wheel_sha256": "ca1a625ea2e0f6c63ffd306f19cb62c1c69242643164553d5ca633e94146eb5b"
+  },
+  "workforce_dapane_replay": {
+    "annual_workforce_cost_aud": null,
+    "basis": "financial_cost",
+    "classification": "Synthetic grade",
+    "currency": "AUD",
+    "exported_source_class": "synthetic_unvalidated",
+    "fictional_agreement_export_rejected": true,
+    "fixture_sha256": "86f7fbc9d59a162954ffc6845408172540108b1fa57ffd3d6a0705ceb35d2227",
+    "hp3_scope_mismatch_rejected": true,
+    "independent_total_aud": "995.03",
+    "line_costs_aud": {
+      "annual-1": "675.00",
+      "period-1": "100.01",
+      "period-2": "220.02"
+    },
+    "native_dapane_sha256": "473c9f9adf0f4cbcb46a2f2ea5987e42349d6ce1a44e62a1a0e283cf322ead5d",
+    "native_provider_total_aud": "995.03",
+    "nursing_award_or_roster_qualified": false,
+    "price_year": 2026,
+    "quantities": {
+      "annual-1": "0.25",
+      "period-1": "1",
+      "period-2": "2"
+    },
+    "quote_artifact_sha256": "89fcdd8b382e932e92264d0cae3c7978c5fe2f06d8e32560a64c521cc1678791",
+    "quote_valuation_dates": {
+      "annual-1": "2026-08-01",
+      "period-1": "2026-06-30",
+      "period-2": "2026-07-01"
+    },
+    "scope": "fictional_provider_quote_slice",
+    "source_fixture": "examples/unit_quotes/release.json",
+    "workforce_source_revision": "8fa5882e2fda6cdba9ae93c46542c5b0b874c260"
+  }
+}

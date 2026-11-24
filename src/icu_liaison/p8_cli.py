@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 from pydantic import ValidationError
-from .adapters.p8_mchs import MchsPair, run_mchs_pair
+from .adapters.p8_mchs import MchsPair, mchs_reference_sha256, run_mchs_pair
 from .adapters.p8_workforce import RosterScenario, prepare_workforce_dapane_request
 
 
@@ -35,12 +35,15 @@ def _emit(message: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Bounded, synthetic-only MCHS and workforce consumer")
-    parser.add_argument("action", choices=("inspect-mchs", "inspect-roster", "run-mchs", "build-roster"))
+    parser.add_argument("action", choices=("inspect-mchs", "inspect-roster", "reference-mchs", "run-mchs", "build-roster"))
     parser.add_argument("input", type=Path)
     parser.add_argument("--ref-dir", default=None,
                         help="Explicit installed MCHS annual calculator reference directory")
     args = parser.parse_args(argv)
     try:
+        if args.action == "reference-mchs":
+            _emit({"status": "SAS_TABLES_FINGERPRINTED", "source_bundle_sha256": mchs_reference_sha256(args.input)})
+            return 0
         data = _load(args.input)
         if args.action.endswith("mchs"):
             case = MchsPair.model_validate(data)

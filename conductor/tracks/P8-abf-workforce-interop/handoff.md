@@ -66,3 +66,18 @@ verified repository interpreter.
 PYTHONPATH="src:$icu_dapane_overlay" .venv/bin/python \
   tools/qualify_p8_synthetic_valuation.py --wheel "$icu_dapane_wheel"
 ```
+
+## Reference, quote and decision replay on 24 November 2026
+
+The consumer now checks reference directory hashes and exact dated workforce
+quantities. The pinned workforce provider's fictional test rates passed
+Dapane valuation. The fixture was exported with the provider's synthetic
+source type and unvalidated evidence labels. The HP3 artifact was rejected
+for the fictional roster's different classification.
+
+The composed report can show a price-year-matched case funding sensitivity
+beside an explicitly selected Voiage comparison. The annual P4 cost prior
+still needs component-level reconciliation before a site staffing estimate
+can replace it. Actual CHHHS funding remains unknown.
+[Native workflow receipt](../../../verification/p8-provider-workflow-2026-11-24.json) ·
+[Rerun instructions](../../../docs/P8-composition-and-reconciliation.md#optional-fictional-comparison)

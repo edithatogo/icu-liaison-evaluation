@@ -1,8 +1,9 @@
 # P8.2/P8.3 consumer increments — source acceptance and executable boundaries
 
-Date: 2026-11-18. **Portable source candidate only**, not a native-provider or
-clinical-financial acceptance receipt. Neither the shared P4/P5 numerical engine
-nor any upstream domain library was modified.
+The portable source was first implemented on 18 November 2026. The P8 plan
+records the scoped provider replays and the evidence required for annual,
+clinical and Finance acceptance.
+[P8 plan](../conductor/tracks/P8-abf-workforce-interop/plan.md)
 
 ## MCHS annual paired-episode consumer
 
@@ -15,8 +16,9 @@ the two annual-calculator calls. Each call invokes the existing
 reference directory. The facade requires the year-specific `NWAU24`/`NWAU25`
 column, one returned episode and successful `Error_Code`. It never executes the
 Excel economic/monetary calculator, copies a funding formula or multiplies NWAU
-by NEP. Its reference SHA is a **caller-declared identity**, not proof that the
-actual installed reference directory matches the SHA.
+by NEP. The installed route checks the fixture's SHA-256 against the selected
+directory's named, regular SAS tables before and after both calls. The output
+retains the `source_bundle_sha256_declared` field for existing callers.
 
 Output remains **unqualified**, even after installed execution, until the annual
 MCHS price-weight and SAS/Excel parity evidence, precise bundle identity and
@@ -39,28 +41,30 @@ The optional installed route uses:
 - `microcosting_healthworkforce.unit_quotes.QuoteQuantity`, and
 - `microcosting_healthworkforce.dapane_adapter.build_dapane_request`.
 
-It selects an externally pinned **workforce-dapane-quotes/1 artifact SHA**,
-not the unverified original wage source digest. The owning workforce library
-handles source/quote applicability and builds the exact Dapane financial-cost
-request. P8 checks the request's basis, currency, year, IDs, dates and cost
-component preservation. **Dapane execution and monetary totals remain separate**;
-no local payroll formula or substitute valuation calculation is implemented.
-The bundled roster is an intentionally incomplete, synthetic test fixture with
-no actual nursing award rates.
+It selects the pinned `workforce-dapane-quotes/1` artifact. The workforce library
+checks source and quote applicability and builds the Dapane financial-cost
+request. P8 matches the release jurisdiction and classification to the roster
+and verifies the basis, currency, year, dates, units, exact quantities, cost
+components and synthetic evidence labels. Dapane supplies any separate
+valuation. The consumer transports analyst-specified quantities and leaves
+annual costs open. The bundled roster contains an incomplete fictional example.
 
 ## Runnable checks
 
 ```sh
 PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-mchs model-inputs/p8/synthetic-mchs-pair.json
 PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli inspect-roster model-inputs/p8/synthetic-nursing-roster.json
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli reference-mchs /approved/MCHS/year-2025-reference
 PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p8_*.py
 ```
 
-Installed-provider calls, **only** in isolated compatible environments:
+Record the reference command's digest in `source_bundle_sha256` in a copy of
+the synthetic input bound to the reviewed tables. Use a qualified isolated
+runtime for the installed-provider commands.
 
 ```sh
 PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli run-mchs \
-  model-inputs/p8/synthetic-mchs-pair.json --ref-dir /approved/MCHS/year-2025-reference
+  /approved/synthetic-episode-with-reference-sha.json --ref-dir /approved/MCHS/year-2025-reference
 PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_cli build-roster \
   /approved/synthetic-quote-bound-roster.json
 ```
@@ -85,7 +89,6 @@ CHHHS evidence should be committed to any public source repository.
    conservation, separate economic, financial and funding policy runs.
 4. **CHHHS**: approved case-mix/DRG edition, admission/ICU hours/LOS, shift roster,
    staff classification, productive time, funding mechanism and external review.
-5. **Repository**: the intended `edithatogo/icu-liaison-evaluation` repository is
-   a **suggested name, not an existing or created remote**. The owner has not
-   provided an established destination. Neither source nor tests have been
-   pushed and no hosted CI/PR has been run.
+5. **Repository**. The portable source and synthetic tests are hosted in this
+   repository. Dated provider run receipts accompany the source checks.
+   [P8 verification](../conductor/tracks/P8-abf-workforce-interop/test-matrix.md)

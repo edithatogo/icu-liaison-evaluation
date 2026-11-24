@@ -1,4 +1,4 @@
-# P8.4 source-only crosswalk and outstanding native reconciliation
+# P8.4 separate funding, workforce and decision views
 
 ## Purpose
 
@@ -23,6 +23,32 @@ an inspectable synthetic scenario to an explicit, unqualified provider trace.
 Workforce/Dapane produces an **unvalued request** until installed Dapane and
 source-qualified nursing quotations are available. The source-bound salary
 rate would not by itself constitute a fully loaded incremental roster cost.
+
+## Optional fictional comparison
+
+Supply both `--funding-pricing-year` and `--assumed-aud-per-nwau` to calculate an
+exact signed AUD sensitivity for one synthetic MCHS episode. The price year
+must match the MCHS result. Actual hospital revenue and annual workforce cost
+remain null. The other financial outputs retain their original price year and
+scale.
+
+Pass `--voiage-objective net_resource` or `--voiage-objective budget` to select
+the P4 draws for current care and the named strategy only. Voiage returns EVPI
+in the P4 price year's AUD per annual programme decision. The episode funding
+sensitivity and workforce quotation amounts stay outside both sets of draws.
+The default command needs no installed providers and preserves its prior output.
+
+```sh
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p8_composition_cli \
+  model-inputs/p4/illustrative.json --strategy liaison_service \
+  --mchs-result /approved/fictional-mchs-result.json \
+  --funding-pricing-year 2025 --assumed-aud-per-nwau 1000 \
+  --voiage-objective net_resource
+```
+
+The provider receipt records both objectives for both proposed strategies, a
+matched-year MCHS funding sensitivity and a separate dated workforce valuation.
+[Fictional provider workflow](../verification/p8-provider-workflow-2026-11-24.json)
 
 ## Reconciliation before cash/funding integration
 
@@ -55,4 +81,6 @@ Run installed integration tests at qualified provider revisions with approved
 source bundles and independent official reference oracles. The standalone
 source-only package contains no wage, personal or patient data.
 
-No GitHub repository or upstream provider track is modified in this increment.
+Upstream provider owners retain their contracts. The portfolio gates and scope
+of the installed replays are tracked in the P8 plan.
+[P8 plan](../conductor/tracks/P8-abf-workforce-interop/plan.md)

@@ -10,10 +10,7 @@
           "type": "string"
         },
         "kind": {
-          "enum": [
-            "analyst_assumption",
-            "observed_use"
-          ],
+          "const": "analyst_assumption",
           "title": "Kind",
           "type": "string"
         },

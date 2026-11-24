@@ -115,15 +115,12 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
 - [~] **Track: P8 — MCHS ABF, nursing workforce and valuation interoperability**
   ([index](tracks/P8-abf-workforce-interop/index.md),
   [plan](tracks/P8-abf-workforce-interop/plan.md)).
-  Source-pinned provider capability register, funding/workforce/resource
-  separation contract, ADR, negative tests, bounded synthetic MCHS paired-episode
-  and workforce-to-Dapane quotation consumers are **source-level complete**.
-  The reviewed macOS Dapane build passed the fictional economic and cash
-  valuation and rejected a duplicated staffing component.
-  [P8 valuation receipt](../verification/p8-native-synthetic-valuation-2026-11-24.json)
-  Official MCHS annual parity, nursing pay/roster qualification, admitted
-  Dapane/Voiage valuation and decision analysis, actual hospital revenue and
-  CHHHS clinical/Finance approval are pending.
+  The fictional workflow verifies annual MCHS reference fingerprints, exact
+  workforce quantities and Dapane valuation, and selected Voiage comparisons.
+  Episode funding sensitivities stay separate from annual resource and budget
+  draws. Full annual parity, nursing pay and roster admission, cost-prior
+  reconciliation, actual hospital funding and CHHHS approval remain open.
+  [P8 workflow receipt](../verification/p8-provider-workflow-2026-11-24.json)
 
 - [~] **Track: P7 companion: placeholder-assisted progress and evidence closure**
   ([index](tracks/P7-placeholder-assisted-qualification/index.md),
