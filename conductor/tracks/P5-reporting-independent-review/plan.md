@@ -10,8 +10,11 @@
 - [x] Implement opt-in provider-backed EVPI; absent provider is `not_executed` by default or fail-closed when required.
 - [x] Record the independent Dapane wheel, extension and pricing decisions
   for the three tested P1 environments. [Provider lock](../../../providers.lock.json)
-- [ ] Admit the exact Voiage artifact and complete broader Dapane release
-  review through P1 and P7.
+- [x] Record admission of the exact Voiage 3.1.0 macOS arm64 wheel on
+  CPython 3.15.2 and the reconciled P5 report.
+  [P1 artifact admission](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
+- [ ] Complete broader Dapane release review and qualify any further provider
+  environments required for the intended P5 analysis through P1 and P7.
 
 ## P5.3 — Evidence, privacy and reproducibility
 - [x] Preserve P2/P3 source admission, protocol and input digests; prevent readiness claims.

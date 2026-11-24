@@ -127,6 +127,10 @@ AUD 5.00. The P5 synthetic report used both providers and reconciled
 tests, including the Dapane-unavailable regressions. The full installed
 suite passed 342 tests.
 
+The later P9 integration branch `a7e5ca7` passed 346 hosted synthetic tests
+on CPython 3.15.2. This run used the portable source workflow.
+[Hosted integration run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44499083663)
+
 On 19 November 2026 AEST, separate Codex reviewer `dapane_reviewer` signed off
 on the exact candidate for macOS arm64 and CPython 3.15.2. An independent
 Rust 1.99.1 build matched all native code and data. Accounting for the

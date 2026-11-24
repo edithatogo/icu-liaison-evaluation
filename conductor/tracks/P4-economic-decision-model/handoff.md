@@ -31,5 +31,7 @@ and the source manifest on `codex/icu-p4-review-fixes`. The review uses
 fictional inputs. The break-even threshold matches the bounded return risk
 in the simulation. Public admission rejects local strategy evidence, and
 the CLI publishes a complete decision CSV after validation. The focused
-tests and P4 and P5 reruns passed. The next step is hosted validation.
-[Review verification](test-matrix.md#p4-review-rerun-on-24-november-2026)
+tests and P4 and P5 reruns passed. PR #58 merged at `a5fa2fa`, with passing
+synthetic and privacy checks on the merge commit.
+[Review verification](test-matrix.md#p4-review-rerun-on-24-november-2026) ·
+[PR #58](https://github.com/edithatogo/icu-liaison-evaluation/pull/58)

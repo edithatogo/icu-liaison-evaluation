@@ -33,8 +33,9 @@ CHHHS calibration, outstanding provider qualification and clinical and Finance r
 
 - [P6 optional Kairos replay and synthetic holdout](../docs/p6-native-qualification.md) records the pinned build, independent fixture and outstanding CHHHS calibration.
 
-- [P8 MCHS, workforce and valuation boundary](tracks/P8-abf-workforce-interop/index.md):
-  source contracts and proposed provider changes; **not native/local qualification**.
+- [P8 MCHS, workforce and valuation boundary](tracks/P8-abf-workforce-interop/index.md)
+  covers source contracts, scoped fictional provider checks and outstanding
+  funding and workforce verification.
 
 - [P1 provider reuse](tracks/P1-provider-reuse/index.md).
 - [P7 technical and empirical qualification](tracks/P7-technical-empirical-qualification/index.md).
