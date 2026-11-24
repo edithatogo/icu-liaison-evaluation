@@ -16,7 +16,9 @@
 - [x] Verify the disposition of CareOps Sim PR #215. GitHub records it as
   closed, with the exploratory head preserved.
   [Migration comparison](../../../docs/pr215-migration-comparison.md)
-- [ ] Independently accept the migration evidence for release.
+- [x] P7.8 Record the repository owner's release acceptance of the verified
+  portable migration from CareOps Sim PR #215 to standalone PR #5.
+  [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
 
 No missing item may be checked merely because synthetic source tests pass.
 

@@ -22,4 +22,5 @@ remain in P1/P7.
 
 The [migration comparison](../../../docs/pr215-migration-comparison.md)
 links the preserved exploratory revision to the standalone merge and its
-passing synthetic CI. The independent release decision remains open.
+passing synthetic CI. The repository owner approved release of that migration.
+[Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)

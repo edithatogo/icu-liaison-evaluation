@@ -12,14 +12,14 @@
     "P7.3-CHHHS-data-request-and-causal-plan",
     "P7.4-local-Kairos-native-replay",
     "P7.6-direct-publisher-byte-and-page-check",
-    "P7.8-dedicated-repo-hosted-integration"
+    "P7.8-dedicated-repo-hosted-integration",
+    "P7.8-portable-migration-release"
   ],
   "blocked_phases": [
     "P7.4-independent-Kairos-build-attestation",
     "P7.5-installed-Dapane-Voiage",
     "P7.6-2024_25-independent-source-admission",
-    "P7.7-approved-local-data-and-independent-reviews",
-    "P7.8-independent-migration-acceptance"
+    "P7.7-approved-local-data-and-independent-reviews"
   ],
   "dependency_tracks": ["P0-portable-consolidation", "P1-provider-reuse", "P2-clinical-economic-protocol", "P3-evidence-data-infrastructure", "P4-economic-decision-model", "P5-reporting-independent-review", "P6-kairos-capacity-validation"],
   "clinical_validation": false,

@@ -14,8 +14,9 @@ its six skills and project rule, and the track registry uses its current format.
 Antigravity 1.5.15 passed the interactive read-only status check.
 The [import record](../../../docs/repository-import.md) and
 [PR #215 comparison](../../../docs/pr215-migration-comparison.md) track
-reconciliation and closure. Independent provider and migration acceptance
-and CHHHS calibration remain pending.
+reconciliation and closure. The portable migration release has owner approval.
+Provider qualification and CHHHS calibration remain open in their linked tracks.
+[Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
 
 P0.5 completed the CPython 3.15.2 migration for local development, isolated
 builds, Git hooks and hosted synthetic CI. The

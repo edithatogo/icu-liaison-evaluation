@@ -164,3 +164,15 @@ at `1ff7ca4` and its synthetic CI passed. P0.4, P1.5 and the two P7 plans
 still track the independent release decision.
 [Migration comparison](../../../docs/pr215-migration-comparison.md) ·
 [Standalone CI](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44455595345)
+
+## Portable migration release decision on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the release-status update on
+`codex/icu-p0-release-approval` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The scope covers the source migration comparison, the P0/P1/P7 plans and
+metadata, and the source manifest. The next source operation is hosted CI.
+
+The repository owner approved the verified portable source migration.
+P0.4's remaining dependency is provider acceptance in P1.4 and P7.5.
+[Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
