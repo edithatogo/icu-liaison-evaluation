@@ -50,3 +50,15 @@
 
 A future native simulation must reuse Kairos rather than creating another
 DES/scheduler in the study. Completion of P6.1/2 does not accept P6.3/4.
+
+## Phase — Review fixes
+
+- [x] Apply review fixes in `0b3bfd6`. Run the checked executable and input
+  bytes, enforce the native integer contract, handle replay failures and report
+  paired holdout diagnostics descriptively.
+  [Verification](test-matrix.md#p6-review-on-24-november-2026)
+
+The review continued from that commit in the attached
+`icu-p6-review-recovery/icu-liaison-evaluation` worktree on
+`codex/icu-p6-review-integration`. The [P6 handoff](handoff.md#p6-review-follow-through-on-24-november-2026)
+records the source and native scope.

@@ -24,6 +24,8 @@ def test_scoring_uses_scipy_independent_wasserstein_and_ks():
     assert result['holdout_mean_observed_wait_minutes'] == pytest.approx(30)
     assert result['holdout_mean_predicted_wait_minutes'] == pytest.approx(25)
     assert result['wasserstein_distance_minutes'] == pytest.approx(5)
+    assert result['ks_statistic'] == pytest.approx(1 / 3)
+    assert result['ks_p_value'] is None
     assert result['investment_ready'] is False
 
 

@@ -120,7 +120,7 @@ fn check(input: &Input) -> Result<(), String> {
         || input.staffed_beds != 1
         || !(2..=525_600).contains(&input.horizon_minutes)
         || !input.scenario_id.starts_with("syn-")
-        || input.scenario_id.len() > 128
+        || !(5..=128).contains(&input.scenario_id.len())
         || !input
             .scenario_id
             .bytes()
@@ -375,6 +375,13 @@ mod tests {
     fn malformed_input_cannot_emit_a_valid_scenario() {
         let mut scenario = fixture();
         scenario.data_class = "observed".into();
+        assert!(run(scenario).is_err());
+    }
+
+    #[test]
+    fn scenario_id_requires_a_synthetic_suffix() {
+        let mut scenario = fixture();
+        scenario.scenario_id = "syn-".into();
         assert!(run(scenario).is_err());
     }
 

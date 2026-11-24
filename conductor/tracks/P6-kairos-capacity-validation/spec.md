@@ -30,10 +30,14 @@ Kairos owns the scheduler and resource allocation. The optional native
 consumer uses the pinned `StagedResourceRuntime` for one staffed bed, fixed
 durations and FIFO demand. The typed adapter checks occupancy and paired
 requests, including simultaneous arrivals, admission at the next available
-bed and censoring at the horizon. The locked local build and both synthetic
-replays passed. Independent build attestation, approved site data and case-mix
+bed and censoring at the horizon. Replay uses the checked executable and
+scenario bytes, and the Python boundary enforces the Rust integer input types.
+The locked local build and both synthetic replays passed.
+Independent build attestation, approved site data and case-mix
 calibration are required for site evaluation. A site producer must also cover
 staff calendars, ward acceptance, cancellation and preemption.
 
 The separate SciPy synthetic holdout describes waits among admitted requests.
+It reports the KS distance and paired errors. The p-value field is `null`
+because the paired waits do not meet the test's independence assumption.
 See [ADR-0005](../../decisions/ADR-0005-p6-kairos-staged-resource-consumer.md).

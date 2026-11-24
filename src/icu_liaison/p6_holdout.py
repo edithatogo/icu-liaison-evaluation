@@ -44,7 +44,7 @@ class HoldoutBundle(_Strict):
 
 
 def compare_holdout(bundle: HoldoutBundle) -> dict:
-    """Compare a held-out synthetic admitted cohort, preserving separate samples."""
+    """Compare observed and predicted waits for a held-out synthetic admitted cohort."""
     b = HoldoutBundle.model_validate(bundle.model_dump())
     obs = np.array([r.observed_wait_minutes for r in b.holdout], dtype=np.float64)
     predicted = np.array([r.predicted_wait_minutes for r in b.holdout], dtype=np.float64)
@@ -62,7 +62,8 @@ def compare_holdout(bundle: HoldoutBundle) -> dict:
         'holdout_mean_predicted_wait_minutes': float(np.mean(predicted)),
         'wasserstein_distance_minutes': float(wasserstein_distance(obs, predicted)),
         'ks_statistic': float(ks.statistic),
-        'ks_p_value': float(ks.pvalue),
+        # The waits are paired by request. The two-sample p-value assumes independence.
+        'ks_p_value': None,
         'clinical_case_mix_validated': False,
         'censoring_analysed': False,
         'local_CHHHS_data_used': False,
