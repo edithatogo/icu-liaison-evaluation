@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from decimal import Decimal
 import copy
-from types import SimpleNamespace
 import pytest
 
 from icu_liaison.adapters.p8_mchs import MchsPair, run_mchs_pair
@@ -81,9 +80,18 @@ def test_provider_error_and_wrong_output_column_fail_closed():
         run_mchs_pair(example(), provider=lambda rows, **kw:[{'NWAU25':-1,'Error_Code':0}])
 
 
-def test_missing_mchs_installation_is_explicit_not_a_fake_success(monkeypatch):
-    import icu_liaison.adapters.p8_mchs as module
-    monkeypatch.setattr(module, 'import_module', lambda name: (_ for _ in ()).throw(ImportError('not installed')))
+def _install_fictional_mchs(tmp_path, monkeypatch, body):
+    package = tmp_path / 'runtime/nwau_py/calculators'
+    package.mkdir(parents=True)
+    for directory in (package, package.parent):
+        (directory / '__init__.py').touch()
+    (package / 'acute.py').write_text(body, encoding='utf-8')
+    (package.parents[1] / 'polars.py').write_text('DataFrame = list\n', encoding='utf-8')
+    monkeypatch.syspath_prepend(str(package.parents[1]))
+
+
+def test_missing_mchs_installation_is_explicit_not_a_fake_success(tmp_path, monkeypatch):
+    _install_fictional_mchs(tmp_path, monkeypatch, 'raise ImportError("not installed")\n')
     with pytest.raises(RuntimeError,match='MCHS.*not installed'):
         run_mchs_pair(example(),provider=None,ref_dir='/synthetic/reference')
 
@@ -99,25 +107,24 @@ def test_installed_route_binds_the_sas_table_bytes(tmp_path, monkeypatch, change
 
     table = tmp_path / 'nep25_aa_price_weights.sas7bdat'
     table.write_bytes(b'fictional reference bytes')
+    (tmp_path / 'nep25_aa_adj_icu.sas7bdat').write_bytes(b'fictional ICU adjustment bytes')
     case = example(source_bundle_sha256=module.mchs_reference_sha256(tmp_path))
-    seen = []
+    calls = tmp_path / 'calls.txt'
+    _install_fictional_mchs(tmp_path, monkeypatch, f'''
+AcuteParams = object
 
-    def calculate_acute(rows, _params, *, year, ref_dir):
-        seen.append((year, ref_dir))
-        if change == 'during' and len(seen) == 1:
-            table.write_bytes(b'changed reference bytes')
-        return [{'NWAU25': '1.0', 'Error_Code': 0}]
-
-    imports = {
-        'nwau_py.calculators.acute': SimpleNamespace(calculate_acute=calculate_acute, AcuteParams=object),
-        'polars': SimpleNamespace(DataFrame=list),
-    }
-    monkeypatch.setattr(module, 'import_module', imports.__getitem__)
+def calculate_acute(rows, _params, *, year, ref_dir):
+    with (ref_dir / 'calls.txt').open('a', encoding='utf-8') as file:
+        file.write(year + '\\n')
+    if {change == 'during'!r}:
+        (ref_dir / 'nep25_aa_price_weights.sas7bdat').write_bytes(b'changed reference bytes')
+    return [{{'NWAU25': '1.0', 'Error_Code': 0}}]
+''')
     if change == 'before':
         table.write_bytes(b'changed reference bytes')
         with pytest.raises(ValueError, match='SHA-256 differs'):
             run_mchs_pair(case, ref_dir=str(tmp_path))
-        assert not seen
+        assert not calls.exists()
     elif change == 'during':
         with pytest.raises(ValueError, match='changed during'):
             run_mchs_pair(case, ref_dir=str(tmp_path))
@@ -125,7 +132,62 @@ def test_installed_route_binds_the_sas_table_bytes(tmp_path, monkeypatch, change
         result = run_mchs_pair(case, ref_dir=str(tmp_path))
         assert result['source_bundle_sha256_declared'] == case.source_bundle_sha256
         assert result['annual_calculator_parity'] == 'unverified'
-        assert seen == [('2025', tmp_path.resolve())] * 2
+        assert calls.read_text(encoding='utf-8').splitlines() == ['2025', '2025']
+
+
+def test_installed_route_leaves_caller_cache_untouched(tmp_path, monkeypatch):
+    from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
+
+    refs = tmp_path / 'references'
+    refs.mkdir()
+    (refs / 'nep25_aa_price_weights.sas7bdat').write_text('1.0', encoding='utf-8')
+    (refs / 'nep25_aa_adj_icu.sas7bdat').write_bytes(b'fictional ICU adjustment bytes')
+    caller = tmp_path / 'caller'
+    cache = caller / '.cache' / 'nep25_aa_price_weights.txt'
+    cache.parent.mkdir(parents=True)
+    cache.write_text('999.0', encoding='utf-8')
+    _install_fictional_mchs(tmp_path, monkeypatch, '''
+from pathlib import Path
+
+AcuteParams = object
+
+def calculate_acute(rows, _params, *, year, ref_dir):
+    cached_table = Path('.cache/nep25_aa_price_weights.txt')
+    cached_table.parent.mkdir(exist_ok=True)
+    if not cached_table.exists():
+        cached_table.write_bytes((ref_dir / 'nep25_aa_price_weights.sas7bdat').read_bytes())
+    return [{'NWAU25': cached_table.read_text(encoding='utf-8'), 'Error_Code': 0}]
+''')
+    monkeypatch.chdir(caller)
+
+    result = run_mchs_pair(example(source_bundle_sha256=mchs_reference_sha256(refs)), ref_dir=str(refs))
+
+    assert result['current_nwau'] == result['proposed_nwau'] == '1.0'
+    assert cache.read_text(encoding='utf-8') == '999.0'
+
+
+@pytest.mark.parametrize('present_table', ['price_weights', 'adj_icu'])
+def test_installed_route_requires_price_weights_and_icu_adjustment(tmp_path, monkeypatch, present_table):
+    from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
+
+    (tmp_path / f'nep25_aa_{present_table}.sas7bdat').write_bytes(b'fictional reference bytes')
+    _install_fictional_mchs(tmp_path, monkeypatch, '''
+AcuteParams = object
+
+def calculate_acute(rows, _params, **kwargs):
+    return [{'NWAU25': '1.0', 'Error_Code': 0}]
+''')
+    case = example(source_bundle_sha256=mchs_reference_sha256(tmp_path))
+
+    with pytest.raises(ValueError, match='price weights and ICU adjustment'):
+        run_mchs_pair(case, ref_dir=str(tmp_path))
+
+
+def test_reader_preserves_exact_delta_at_the_supported_precision():
+    expected = '1.123456789012345678901234567891'
+    outputs = iter(([{'NWAU25': '0', 'Error_Code': 0}], [{'NWAU25': expected, 'Error_Code': 0}]))
+    result = run_mchs_pair(example(), provider=lambda *_a, **_k: next(outputs))
+    assert result['change_nwau'] == expected
 
 
 def test_reference_fingerprint_rejects_linked_tables(tmp_path):

@@ -102,6 +102,15 @@ def test_inconsistent_nwau_difference_is_rejected(run):
         compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=a)
 
 
+def test_case_sensitivity_rejects_rounded_difference_even_at_high_precision(run):
+    provider = mchs_record()
+    provider.update(current_nwau='0', proposed_nwau='1.123456789012345678901234567891',
+                    change_nwau='1.123456789012345678901234568')
+    with pytest.raises(ValueError, match='NWAU change'):
+        compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=provider,
+                          fictional_funding_price=FictionalFundingPrice(pricing_year=2025, aud_per_nwau='1000'))
+
+
 def test_fictional_episode_money_keeps_the_annual_cost_ledgers_unchanged(run):
     base = compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=mchs_record())
     priced = compose_p8_shadow(
@@ -191,6 +200,33 @@ def test_unqualified_roster_or_corrupt_dapane_request_fails_closed(run,mutate):
     with pytest.raises(ValueError):
         compose_p8_shadow(run,strategy_id='liaison_service',workforce_result=v,
                           expected_roster_scenario_id='synthetic-nurse-roster')
+
+
+@pytest.mark.parametrize('change', ['none', 'quantity', 'observed', 'expired', 'missing_date'])
+def test_installed_roster_trace_preserves_dated_synthetic_quantities(run, change):
+    workforce = roster_record()
+    workforce['provider_evidence'] = 'unqualified_installed_workforce_source'
+    request = workforce['request']
+    request['knowledge_cutoff'] = '2026-11-18'
+    quote = request['quotes'][0]
+    quote.update(valid_from='2026-01-01', valid_to='2027-01-01', known_from='2026-01-01')
+    usage = request['usage'][0]
+    usage.update(quantity='8', source={'evidence': 'synthetic'})
+    if change == 'quantity':
+        usage['quantity'] = '-8'
+    elif change == 'observed':
+        usage['source'] = {'evidence': 'observed'}
+    elif change == 'expired':
+        quote['valid_to'] = usage['service_date']
+    elif change == 'missing_date':
+        del quote['valid_from']
+    kwargs = dict(strategy_id='liaison_service', workforce_result=workforce,
+                  expected_roster_scenario_id='synthetic-nurse-roster')
+    if change == 'none':
+        assert compose_p8_shadow(run, **kwargs)['workforce']['request_line_count'] == 1
+    else:
+        with pytest.raises(ValueError, match='workforce'):
+            compose_p8_shadow(run, **kwargs)
 
 
 def test_generated_schema_matches_pydantic_and_fixture(run):

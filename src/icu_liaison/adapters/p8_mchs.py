@@ -6,11 +6,15 @@ Calling an installed provider does not on its own prove annual calculator parity
 """
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 from hashlib import file_digest, sha256
 from importlib import import_module
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
+from tempfile import TemporaryDirectory
 from typing import Any, Callable, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -100,15 +104,9 @@ def mchs_reference_sha256(ref_dir: Path) -> str:
     return sha256(json.dumps(digests, sort_keys=True).encode('utf-8')).hexdigest()
 
 
-def _installed_acute(ref_dir: Path, expected_digest: str) -> Callable[..., Any]:
-    """Bind the existing MCHS calculator to a selected reference snapshot."""
-    try:
-        module = import_module("nwau_py.calculators.acute")
-        pl = import_module("polars")
-    except ImportError as exc:
-        raise RuntimeError("MCHS annual acute provider not installed; run in its qualified environment") from exc
-    if mchs_reference_sha256(ref_dir) != expected_digest:
-        raise ValueError("MCHS reference bundle SHA-256 differs from the selected fixture")
+def _installed_acute() -> Callable[..., Any]:
+    module = import_module("nwau_py.calculators.acute")
+    pl = import_module("polars")
 
     def calculate(rows: list[dict], *, year: str, ref_dir: str):
         return module.calculate_acute(
@@ -145,32 +143,20 @@ def _first_row(result: Any, *, output_column: str) -> Decimal:
     return value
 
 
-def run_mchs_pair(
-    case: MchsPair,
-    *,
-    provider: Callable[..., Any] | None = None,
-    ref_dir: str | None = None,
-) -> dict[str, Any]:
-    """Call the existing MCHS calculator *twice*; return an unqualified shadow.
+def exact_nwau_change(current: Decimal, proposed: Decimal) -> Decimal:
+    """Subtract finite episode weights without rounding to the caller's context."""
+    highest = max(current.adjusted(), proposed.adjusted())
+    lowest = min(current.as_tuple().exponent, proposed.as_tuple().exponent)
+    with localcontext(prec=max(1, highest - lowest + 1)):
+        return proposed - current
 
-    `provider` is only a test seam. Passing it marks the result as injected and
-    never as installed or officially validated.
-    """
-    case = MchsPair.model_validate_json(case.model_dump_json())
-    if provider is None:
-        if not ref_dir:
-            raise ValueError("MCHS installed path needs a selected annual reference bundle directory")
-        directory = Path(ref_dir).resolve()
-        runner = _installed_acute(directory, case.source_bundle_sha256)
-        ref_dir = str(directory)
-    else:
-        runner = provider
-    now = _first_row(runner([case.row(intervention=False)], year=str(case.pricing_year), ref_dir=ref_dir or ""),
-                     output_column=f"NWAU{case.pricing_year % 100:02d}")
-    proposed = _first_row(runner([case.row(intervention=True)], year=str(case.pricing_year), ref_dir=ref_dir or ""),
-                          output_column=f"NWAU{case.pricing_year % 100:02d}")
-    if provider is None and mchs_reference_sha256(Path(ref_dir)) != case.source_bundle_sha256:
-        raise ValueError("MCHS reference bundle changed during the paired calculation")
+
+def _paired_result(
+    case: MchsPair, runner: Callable[..., Any], ref_dir: str, *, injected: bool,
+) -> dict[str, Any]:
+    year, column = str(case.pricing_year), f"NWAU{case.pricing_year % 100:02d}"
+    now = _first_row(runner([case.row(intervention=False)], year=year, ref_dir=ref_dir), output_column=column)
+    proposed = _first_row(runner([case.row(intervention=True)], year=year, ref_dir=ref_dir), output_column=column)
     return {
         "schema_version": 1,
         "episode_id": case.episode_id,
@@ -183,10 +169,63 @@ def run_mchs_pair(
         "unit": "NWAU",
         "current_nwau": format(now, "f"),
         "proposed_nwau": format(proposed, "f"),
-        "change_nwau": format(proposed - now, "f"),
+        "change_nwau": format(exact_nwau_change(now, proposed), "f"),
         "actual_revenue_aud": None,
         "technical_modelled_aud": None,
-        "execution_evidence": "injected_contract_test_only" if provider is not None else "installed_source_unqualified",
+        "execution_evidence": "injected_contract_test_only" if injected else "installed_source_unqualified",
         "annual_calculator_parity": "unverified",
         "clinical_case_mix_qualification": "not_established",
     }
+
+
+def _isolated_mchs_worker() -> int:
+    case = MchsPair.model_validate_json(sys.stdin.read())
+    reference = Path(sys.argv[1])
+    try:
+        runner = _installed_acute()
+        prefix = f"nep{case.pricing_year % 100:02d}_aa_"
+        if not all((reference / f"{prefix}{name}.sas7bdat").is_file() for name in ("price_weights", "adj_icu")):
+            return 5
+        if mchs_reference_sha256(reference) != case.source_bundle_sha256:
+            return 3
+        result = _paired_result(case, runner, str(reference), injected=False)
+    except ImportError:
+        return 2
+    if mchs_reference_sha256(reference) != case.source_bundle_sha256:
+        return 4
+    print(json.dumps(result, allow_nan=False))
+    return 0
+
+
+def run_mchs_pair(
+    case: MchsPair, *, provider: Callable[..., Any] | None = None, ref_dir: str | None = None,
+) -> dict[str, Any]:
+    """Run both synthetic episodes with a fresh provider cache for each pair."""
+    case = MchsPair.model_validate_json(case.model_dump_json())
+    if provider is not None:
+        return _paired_result(case, provider, ref_dir or "", injected=True)
+    if not ref_dir:
+        raise ValueError("MCHS installed path needs a selected annual reference bundle directory")
+
+    reference = Path(ref_dir).resolve()
+    # MCHS keys its .cache by table basename. Use a private working directory
+    # without changing the parent process's cwd or touching its cache.
+    python_path = os.pathsep.join(str(Path(entry).resolve()) for entry in sys.path if isinstance(entry, str))
+    worker = "from icu_liaison.adapters.p8_mchs import _isolated_mchs_worker; raise SystemExit(_isolated_mchs_worker())"
+    with TemporaryDirectory(prefix="icu-mchs-") as scratch:
+        completed = subprocess.run(
+            [sys.executable, "-c", worker, str(reference)], cwd=scratch,
+            env={**os.environ, "PYTHONPATH": python_path}, input=case.model_dump_json(),
+            text=True, capture_output=True, check=False,
+        )
+    if completed.returncode == 2:
+        raise RuntimeError("MCHS annual acute provider not installed; run in its qualified environment")
+    if completed.returncode != 0:
+        reference_errors = {
+            3: "MCHS reference bundle SHA-256 differs from the selected fixture",
+            4: "MCHS reference bundle changed during the paired calculation",
+            5: "MCHS reference bundle requires price weights and ICU adjustment tables for the selected year",
+        }
+        raise ValueError(reference_errors.get(completed.returncode,
+                                               "MCHS installed calculation failed in its isolated workspace"))
+    return json.loads(completed.stdout)
