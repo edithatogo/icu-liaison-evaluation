@@ -9,10 +9,14 @@
 - [x] Add executable P2/P3 crosswalk to P4 CLI and P5 report; source consistency and source verification remain separately represented.
 - [x] Keep one-way prior-quantile, threshold, structural strategy comparison, cash and capacity consequences separate.
 - [x] Reuse P4 Dapane nonnegative nominal quotation requests and Voiage matrix; no provider substitution.
+- [x] Reconcile the protocol's benchmark period with P3 and reject inputs
+  labelled as local aggregates at fictional P4 and P5 admission.
 
 ## P4.3 — Source-level qualification
 - [x] Write independent normal/invalid test cases and verify no-effect, adverse-effect, stochastic, conservation, source/currency/safety rejection, overflow and CLI outcomes.
 - [x] Run full inherited P0–P4 suite and a P4 CLI smoke; record exact commands, versions, counts and file digests in verification receipt.
+- [x] Requalify the P4/P5 admission and fictional outputs against the reviewed
+  P3 contract. [Verification](test-matrix.md#p4p5-admission-rerun-on-24-november-2026)
 
 ## P4.4 — Empirical/provider acceptance (blocked)
 - [ ] Independently admit the 2024/25 source and denominator for model use.
