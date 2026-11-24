@@ -10,7 +10,7 @@ import configparser
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 
@@ -22,6 +22,14 @@ SUBMODULE_URLS = {
 }
 
 
+def _excluded_dir(name: str) -> bool:
+    return name in EXCLUDED_DIRS or name.endswith('.egg-info')
+
+
+def _excluded_file(path: Path | PurePosixPath) -> bool:
+    return path.name in EXCLUDED_FILES or path.suffix in EXCLUDED_SUFFIXES
+
+
 def source_files(root: Path, *, submodule_paths: frozenset[str] = frozenset()) -> dict[str, str]:
     """Hash project files, excluding build metadata and explicit dependency trees."""
     result = {}
@@ -29,13 +37,12 @@ def source_files(root: Path, *, submodule_paths: frozenset[str] = frozenset()) -
         current = Path(directory)
         dirs[:] = sorted(
             name for name in dirs
-            if name not in EXCLUDED_DIRS
-            and not name.endswith('.egg-info')
+            if not _excluded_dir(name)
             and (current / name).relative_to(root).as_posix() not in submodule_paths
         )
         for name in sorted(filenames):
             path = current / name
-            if path.is_symlink() or name in EXCLUDED_FILES or path.suffix in EXCLUDED_SUFFIXES:
+            if path.is_symlink() or _excluded_file(path):
                 continue
             result[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
     return result
@@ -49,7 +56,29 @@ def _submodule_paths(manifest: dict) -> frozenset[str]:
     return frozenset(path for path in pins if path in SUBMODULE_URLS)
 
 
-def verify_git_submodules(root: Path, manifest: dict) -> list[str]:
+def _git(root: Path, *args: str) -> bytes:
+    return subprocess.run(
+        ['git', '-C', str(root), *args], capture_output=True, check=True, timeout=10,
+    ).stdout
+
+
+def _index_entries(root: Path) -> dict[str, tuple[str, str]]:
+    top = Path(os.fsdecode(_git(root, 'rev-parse', '--show-toplevel').rstrip(b'\n')))
+    if top.resolve() != root.resolve():
+        raise ValueError('source verification requires this project Git index')
+    entries = {}
+    for raw in _git(root, 'ls-files', '--stage', '-z').split(b'\0')[:-1]:
+        metadata, name = raw.split(b'\t', 1)
+        mode, oid, stage = metadata.decode('ascii').split()
+        if stage != '0':
+            raise ValueError('resolve the unmerged Git index before verifying source')
+        entries[os.fsdecode(name)] = (mode, oid)
+    return entries
+
+
+def verify_git_submodules(
+    root: Path, manifest: dict, *, staged: dict[str, tuple[str, str]] | None = None,
+) -> list[str]:
     """Check declared path/URL and the Git index's exact mode and commit.
 
     A normal clone need not initialise the dependency to verify its gitlink.
@@ -65,14 +94,18 @@ def verify_git_submodules(root: Path, manifest: dict) -> list[str]:
         if not isinstance(sha, str) or re.fullmatch(r'[0-9a-f]{40}', sha) is None:
             problems.append(f'invalid submodule commit: {path}')
     modules_file = root / '.gitmodules'
-    if not modules_file.exists():
+    entry = staged.get('.gitmodules') if staged is not None else None
+    exists = entry is not None if staged is not None else modules_file.exists()
+    if not exists:
         return problems + (['missing .gitmodules for pinned dependencies'] if pins else [])
-    if modules_file.is_symlink():
+    regular = entry[0] in {'100644', '100755'} if entry else not modules_file.is_symlink()
+    if not regular:
         return problems + ['.gitmodules must be a regular project file']
     config = configparser.ConfigParser(interpolation=None)
     try:
-        config.read_string(modules_file.read_text(encoding='utf-8'))
-    except (OSError, UnicodeError, configparser.Error):
+        data = _git(root, 'cat-file', 'blob', entry[1]) if entry else modules_file.read_bytes()
+        config.read_string(data.decode('utf-8'))
+    except (OSError, UnicodeError, configparser.Error, subprocess.SubprocessError):
         return problems + ['invalid .gitmodules']
     declared = {}
     if config.defaults():
@@ -94,51 +127,80 @@ def verify_git_submodules(root: Path, manifest: dict) -> list[str]:
     if not pins or problems:
         return problems
     try:
-        top = subprocess.run(
-            ['git', '-C', str(root), 'rev-parse', '--show-toplevel'],
-            capture_output=True, text=True, check=False, timeout=10,
-        )
-        if top.returncode != 0 or Path(top.stdout.strip()).resolve() != root.resolve():
-            return ['pinned dependencies require this project Git index']
-        for path, sha in pins.items():
-            entry = subprocess.run(
-                ['git', '-C', str(root), 'ls-files', '--stage', '--', path],
-                capture_output=True, text=True, check=False, timeout=10,
-            )
-            expected = f'160000 {sha} 0\t{path}'
-            if entry.returncode != 0 or entry.stdout.strip() != expected:
-                problems.append(f'submodule gitlink mode or commit mismatch: {path}')
-    except (OSError, subprocess.SubprocessError):
-        problems.append('could not verify pinned submodule Git index')
+        entries = staged if staged is not None else _index_entries(root)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return ['could not verify pinned submodule Git index']
+    for path, sha in pins.items():
+        if entries.get(path) != ('160000', sha):
+            problems.append(f'submodule gitlink mode or commit mismatch: {path}')
     return problems
 
 
-def verify_manifest(root: Path, manifest: dict) -> list[str]:
+def _inventory_errors(manifest: dict, observed: dict[str, str]) -> list[str]:
     declared = manifest.get('file_sha256')
     if not isinstance(declared, dict):
         return ['manifest has no file_sha256 object']
-    observed = source_files(root, submodule_paths=_submodule_paths(manifest))
     problems = [f'unexpected file: {p}' for p in sorted(observed.keys() - declared.keys())]
     problems += [f'missing file: {p}' for p in sorted(declared.keys() - observed.keys())]
     problems += [f'hash mismatch: {p}' for p in sorted(declared.keys() & observed.keys())
                  if declared[p] != observed[p]]
-    return problems + verify_git_submodules(root, manifest)
+    return problems
+
+
+def verify_manifest(root: Path, manifest: dict) -> list[str]:
+    observed = source_files(root, submodule_paths=_submodule_paths(manifest))
+    return _inventory_errors(manifest, observed) + verify_git_submodules(root, manifest)
+
+
+def verify_staged_manifest(root: Path) -> tuple[int, list[str]]:
+    """Bind the staged manifest to the exact index blobs and gitlinks."""
+    entries = _index_entries(root)
+    manifest = entries.get('SOURCE_MANIFEST.json')
+    if manifest is None or manifest[0] not in {'100644', '100755'}:
+        return 0, ['stage SOURCE_MANIFEST.json as a regular file']
+    doc = json.loads(_git(root, 'cat-file', 'blob', manifest[1]))
+    if not isinstance(doc, dict):
+        return 0, ['staged source manifest must be an object']
+    observed = {}
+    for name, (mode, oid) in entries.items():
+        path = PurePosixPath(name)
+        if mode == '160000' or _excluded_file(path) or any(_excluded_dir(part) for part in path.parts[:-1]):
+            continue
+        if mode not in {'100644', '100755'}:
+            return 0, ['staged source inventory requires regular files']
+        observed[name] = hashlib.sha256(_git(root, 'cat-file', 'blob', oid)).hexdigest()
+    errors = _inventory_errors(doc, observed) + verify_git_submodules(root, doc, staged=entries)
+    gitlinks = {name for name, (mode, _) in entries.items() if mode == '160000'}
+    if gitlinks != _submodule_paths(doc):
+        errors.append('staged Git links do not match the manifest paths')
+    return len(observed), errors
 
 
 def main() -> int:
-    parser=argparse.ArgumentParser(description='Exact project source and dependency inventory')
-    parser.add_argument('--write',action='store_true',help='Regenerate after reviewing the diff')
-    args=parser.parse_args()
-    root=Path(__file__).resolve().parents[1]
-    manifest_path=root/'SOURCE_MANIFEST.json'
-    doc=json.loads(manifest_path.read_text())
-    if args.write:
-        doc['file_sha256']=source_files(root, submodule_paths=_submodule_paths(doc))
-        manifest_path.write_text(json.dumps(doc,indent=2,sort_keys=True)+'\n')
-    errors=verify_manifest(root,doc)
-    print(json.dumps({'status':'VERIFIED' if not errors else 'FAILED',
-                      'file_count':len(doc['file_sha256']), 'errors':errors},sort_keys=True))
-    return 0 if not errors else 1
+    parser = argparse.ArgumentParser(description='Exact project source and dependency inventory')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--write', action='store_true', help='Regenerate after reviewing the diff')
+    mode.add_argument('--staged', action='store_true', help='Verify the exact staged source')
+    args = parser.parse_args()
+    root = Path(__file__).resolve().parents[1]
+    if args.staged:
+        try:
+            count, errors = verify_staged_manifest(root)
+        except (OSError, ValueError, subprocess.SubprocessError):
+            count, errors = 0, ['could not verify the source manifest from the Git index']
+    else:
+        manifest_path = root / 'SOURCE_MANIFEST.json'
+        doc = json.loads(manifest_path.read_text())
+        if args.write:
+            doc['file_sha256'] = source_files(root, submodule_paths=_submodule_paths(doc))
+        errors = verify_manifest(root, doc)
+        if args.write and not errors:
+            manifest_path.write_text(json.dumps(doc, indent=2, sort_keys=True) + '\n')
+        inventory = doc.get('file_sha256')
+        count = len(inventory) if isinstance(inventory, dict) else 0
+    print(json.dumps({'status': 'FAILED' if errors else 'VERIFIED',
+                      'file_count': count, 'errors': errors}, sort_keys=True))
+    return 1 if errors else 0
 
 
 if __name__=='__main__':

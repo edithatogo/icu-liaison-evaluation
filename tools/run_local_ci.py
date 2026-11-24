@@ -266,8 +266,11 @@ def run_local_ci(
         if not quiet:
             print(f"[local-ci] Running {step['name']}...", file=sys.stderr)
         started = time.monotonic()
+        command = step["command"]
+        if check_staged and step["validator"] == "manifest":
+            command = [*command, "--staged"]
         proc = subprocess.run(
-            step["command"],
+            command,
             cwd=repo_root,
             env=env,
             capture_output=True,
@@ -293,7 +296,7 @@ def run_local_ci(
                     print(proc.stderr.strip(), file=sys.stderr)
                 if step["name"] == "verify_source_manifest" and mode == "pre-commit":
                     print(
-                        "Hint: Run: .venv/bin/python tools/verify_source_manifest.py --write && git add SOURCE_MANIFEST.json",
+                        "Hint: Refresh the reviewed source manifest with --write and stage it with the intended source.",
                         file=sys.stderr,
                     )
             return 1, summary

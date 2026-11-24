@@ -105,6 +105,17 @@ def test_publication_guard_reads_staged_blob_instead_of_working_file(tmp_path: P
     assert index_violations(tmp_path) == ["metadata.json"]
 
 
+@pytest.mark.parametrize("suffix", ["", "?example=1", "#example", "."])
+def test_publication_guard_rejects_tenant_root_links(tmp_path: Path, suffix: str) -> None:
+    from tools.publication_guard import index_violations
+
+    _start_publication_fixture(tmp_path)
+    tenant_url = "https://example." + "sharepoint.com" + suffix
+    (tmp_path / "notes.md").write_text(f"<{tenant_url}>\n", encoding="utf-8")
+    _temporary_git(tmp_path, "add", "notes.md")
+    assert index_violations(tmp_path) == ["notes.md"]
+
+
 def test_private_local_files_are_excluded_from_source_inventory(tmp_path: Path) -> None:
     from tools.verify_source_manifest import source_files
 
@@ -202,13 +213,15 @@ def test_run_local_ci_manifest_only_and_forbidden_staged_guard(tmp_path: Path) -
     )
     version_pin = (ROOT / ".python-version").read_text(encoding="utf-8")
     (repo / ".python-version").write_text(version_pin, encoding="utf-8")
+    notes = repo / "README.md"
+    notes.write_text("Reviewed source\n", encoding="utf-8")
     (repo / "SOURCE_MANIFEST.json").write_text(
         json.dumps({"file_sha256": {}, "git_submodules": {}}, sort_keys=True),
         encoding="utf-8",
     )
     subprocess.run([sys.executable, str(repo / "tools/verify_source_manifest.py"), "--write"], check=True)
     subprocess.run(
-        ["git", "-C", str(repo), "add", ".python-version", "tools/verify_source_manifest.py", "SOURCE_MANIFEST.json"],
+        ["git", "-C", str(repo), "add", ".python-version", "README.md", "tools/verify_source_manifest.py", "SOURCE_MANIFEST.json"],
         check=True,
     )
 
@@ -218,6 +231,25 @@ def test_run_local_ci_manifest_only_and_forbidden_staged_guard(tmp_path: Path) -
     assert summary["hosted_ci_executed"] is False
     assert summary["native_providers_executed"] is False
     assert summary["investment_ready"] is False
+
+    notes.write_text("Different staged source\n", encoding="utf-8")
+    _temporary_git(repo, "add", "README.md")
+    notes.write_text("Reviewed source\n", encoding="utf-8")
+    code_mismatch, summary_mismatch = run_local_ci(
+        repo, mode="manifest-only", check_staged=True, python_exe=sys.executable, quiet=True
+    )
+    assert code_mismatch == 1
+    assert summary_mismatch["steps"][0]["name"] == "verify_source_manifest"
+    _temporary_git(repo, "add", "README.md")
+
+    (repo / "local-note.md").write_text("Fictional untracked file\n", encoding="utf-8")
+    subprocess.run([sys.executable, str(repo / "tools/verify_source_manifest.py"), "--write"], check=True)
+    _temporary_git(repo, "add", "SOURCE_MANIFEST.json")
+    code_untracked, summary_untracked = run_local_ci(
+        repo, mode="manifest-only", check_staged=True, python_exe=sys.executable, quiet=True
+    )
+    assert code_untracked == 1
+    assert summary_untracked["steps"][0]["name"] == "verify_source_manifest"
 
     (repo / ".env").write_text("SECRET=1\n", encoding="utf-8")
     subprocess.run(["git", "-C", str(repo), "add", "-f", ".env"], check=True)

@@ -123,6 +123,31 @@ def test_missing_gitlink_or_replaced_upstream_is_rejected(tmp_path):
     assert any('unexpected submodule URL' in p for p in verify_git_submodules(tmp_path, manifest))
 
 
+def test_staged_manifest_validates_gitmodules_and_the_gitlink(tmp_path):
+    from tools.verify_source_manifest import verify_staged_manifest
+
+    manifest = pinned_repository(tmp_path)
+    modules = tmp_path / '.gitmodules'
+    approved = modules.read_bytes()
+    manifest_file = tmp_path / 'SOURCE_MANIFEST.json'
+
+    def stage():
+        manifest['file_sha256'] = source_files(tmp_path, submodule_paths=frozenset({CONDUCTOR_PATH}))
+        manifest_file.write_text(json.dumps(manifest))
+        git(tmp_path, 'add', '.gitmodules', 'SOURCE_MANIFEST.json')
+
+    stage()
+    assert verify_staged_manifest(tmp_path)[1] == []
+    modules.write_bytes(approved.replace(b'gemini-cli-extensions', b'fictional-owner'))
+    stage()
+    modules.write_bytes(approved)
+    assert any('unexpected submodule URL' in error for error in verify_staged_manifest(tmp_path)[1])
+
+    stage()
+    git(tmp_path, 'update-index', '--force-remove', CONDUCTOR_PATH)
+    assert any('gitlink mode or commit mismatch' in error for error in verify_staged_manifest(tmp_path)[1])
+
+
 def test_manifest_cannot_hide_an_arbitrary_directory_as_a_dependency(tmp_path):
     unexpected = tmp_path/'src'
     unexpected.mkdir()

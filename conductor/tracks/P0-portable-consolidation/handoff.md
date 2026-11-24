@@ -176,3 +176,18 @@ metadata, and the source manifest. The next source operation is hosted CI.
 The repository owner approved the verified portable source migration.
 P0.4's remaining dependency is provider acceptance in P1.4 and P7.5.
 [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
+
+## Portable consolidation review on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the P0 review on
+`codex/icu-p0-review-fixes` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+The scope covers the portable CLI, source manifest and public-data
+checks, their tests, and these Conductor records. The next operation is
+the hosted synthetic and privacy validation.
+
+Commit `873ea0d` binds the staged manifest to the Git index, expands the
+public-data check to tenant root links, and rejects invalid and non-finite
+scenarios without echoing their data. The 48 focused tests passed and the
+standard fictional output kept its SHA-256 at seed `20261117`. P0.4 tracks
+the outstanding provider acceptance from P1.4 and P7.5 in its checklist.

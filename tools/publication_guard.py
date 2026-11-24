@@ -41,7 +41,7 @@ PUBLIC_DATA_CLASSES = frozenset({
     "synthetic_and_public_source_metadata", "synthetic_and_public_source_metadata_only",
     "synthetic_design", "synthetic_example", "synthetic_placeholder_contract",
 })
-TENANT_LINK = re.compile(rb"https?://[a-z0-9.-]+\.sharepoint\.(?:com|us|cn|de)(?:[/:]|$)", re.I)
+TENANT_LINK = re.compile(rb"https?://[a-z0-9.-]+\.sharepoint\.(?:com|us|cn|de)\.?(?![a-z0-9.-])", re.I)
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
 
 
