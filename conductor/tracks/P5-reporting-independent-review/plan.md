@@ -36,3 +36,10 @@
   dedicated repository. [P0.5 verification](../P0-portable-consolidation/plan.md#p05--python-and-hosted-ci-runtime-migration)
 - [ ] Obtain independent code and supply-chain release acceptance for the
   intended deployment.
+
+## Phase — Review fixes
+
+- [x] Apply review fixes in `fb4e087`. Review the registered bundle contents,
+  check the decision brief and sensitivity arithmetic, and record when empty
+  nominal ledgers require no Dapane call.
+  [Verification](test-matrix.md#p5-review-fixes-on-24-november-2026)
