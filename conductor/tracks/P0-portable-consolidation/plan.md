@@ -58,10 +58,12 @@
   The exact 19-file comparison, central accounting parity and closure are recorded in
   [PR #215 migration comparison](../../../docs/pr215-migration-comparison.md)
   and the [comparison receipt](../../../verification/p0-pr215-migration-comparison-2026-11-19.json).
-- [ ] Independently accept the migration evidence for release.
+- [ ] Obtain independent release acceptance for the migration evidence linking
+  CareOps Sim PR #215 to standalone PR #5. Record the same decision in P1.5,
+  technical P7.8 and the P7 companion release review.
 
-P0.4 pending does not block portable source tests. Completion of P0 cannot
-be claimed until target-repo and provider acceptance are obtained.
+P0.4 remains open pending that decision and the remaining provider acceptance
+tracked in P1.4 and P7.5. Portable source tests remain available.
 
 ## P0.5 — Python and hosted CI runtime migration
 
