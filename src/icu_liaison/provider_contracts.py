@@ -11,17 +11,29 @@ from typing import Callable
 
 
 def load_provider_lock(path: str | Path) -> dict:
-    data = json.loads(Path(path).read_text(encoding='utf-8'))
-    if data.get('schema_version') != 1 or set(data.get('providers', {})) != {'dapane', 'voiage'}:
+    return parse_provider_lock(Path(path).read_bytes())
+
+
+def parse_provider_lock(contents: bytes) -> dict:
+    """Validate the same lock bytes that will be identified in the receipt."""
+    data = json.loads(contents)
+    if not isinstance(data, dict) or data.get('schema_version') != 1:
         raise ValueError('unsupported or incomplete provider source lock')
-    for name in ('dapane', 'voiage'):
-        item = data['providers'][name]
-        if item.get('distribution') != name or not isinstance(item.get('version'), str):
+    providers = data.get('providers')
+    if not isinstance(providers, dict) or set(providers) != {'dapane', 'voiage'}:
+        raise ValueError('unsupported or incomplete provider source lock')
+    for name, item in providers.items():
+        if not isinstance(item, dict) or item.get('distribution') != name or not isinstance(item.get('version'), str):
             raise ValueError(f'{name}: invalid distribution/version')
         commit = item.get('source_commit' if name == 'dapane' else 'tag_commit')
         if not isinstance(commit, str) or len(commit) != 40 or any(c not in '0123456789abcdef' for c in commit):
             raise ValueError(f'{name}: invalid immutable commit')
     return data
+
+
+def require_provider_python(python_version: tuple[int, int, int]) -> None:
+    if not (3, 15, 2) <= python_version < (3, 16, 0):
+        raise RuntimeError('Provider qualification requires Python 3.15.2 through 3.15.x')
 
 
 def qualify_runtime_versions(
@@ -33,8 +45,7 @@ def qualify_runtime_versions(
     This does not claim native numerical validation. Pass the separately executed
     provider oracles after this compatibility check.
     """
-    if python_version < (3, 15, 2) or python_version >= (3, 16, 0):
-        raise RuntimeError('Both-provider qualification requires Python 3.15.2 through 3.15.x')
+    require_provider_python(python_version)
     checked = {}
     for name, entry in lock['providers'].items():
         actual = installed_version(entry['distribution'])

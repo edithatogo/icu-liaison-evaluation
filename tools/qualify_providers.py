@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-from importlib.metadata import PackageNotFoundError, distribution, version
+from importlib.machinery import ExtensionFileLoader, ModuleSpec, PathFinder
+from importlib.metadata import PackageNotFoundError, distribution
+from importlib.util import find_spec
 import json
 from pathlib import Path
 import platform
@@ -26,40 +28,85 @@ from icu_liaison.adapters.dapane import (
 )
 from icu_liaison.adapters.voiage import evaluate_financial_information
 from icu_liaison.model import simulate
-from icu_liaison.provider_contracts import load_provider_lock
+from icu_liaison.provider_contracts import parse_provider_lock, require_provider_python
 from icu_liaison.schemas import Scenario
 
 ROOT = Path(__file__).resolve().parents[1]
+EXTENSION_MODULES = {'dapane': 'dapane._native', 'voiage': 'voiage._core'}
 
 
-def _installed_version(provider: str, expected: str) -> dict:
+def _extension_origin(spec: ModuleSpec | None) -> Path | None:
+    if spec and spec.origin and isinstance(spec.loader, ExtensionFileLoader):
+        return Path(spec.origin)
+    return None
+
+
+def _inspect_installation(provider: str, expected: str) -> tuple[dict, Path]:
     try:
-        actual = version(provider)
+        dist = distribution(provider)
     except PackageNotFoundError as exc:
         raise RuntimeError(f'{provider}: installed distribution unavailable') from exc
+    actual = dist.version
     if actual != expected:
         raise RuntimeError(f'{provider}: expected exact distribution {expected}, observed {actual}')
-    dist = distribution(provider)
-    extension_hashes = {}
-    # RECORD-installed native-extension digests are observed facts, not a hash
-    # of the complete wheel, an upstream provenance signature or a source SHA.
-    for item in dist.files or []:
-        text = str(item)
-        if text.endswith(('.so', '.pyd', '.dylib')):
-            path = Path(dist.locate_file(item))
-            if path.is_file():
-                extension_hashes[text] = hashlib.sha256(path.read_bytes()).hexdigest()
-    if not extension_hashes:
-        raise RuntimeError(
-            f'{provider}: installed distribution has no visible compiled native extension; '
-            'cannot qualify the expected Rust-backed provider'
-        )
+    files = {item.as_posix(): item for item in dist.files or ()}
+    package_file = files.get(f'{provider}/__init__.py')
+    package = find_spec(provider)
+    if (
+        package_file is None or package is None or not package.origin
+        or package.submodule_search_locations is None
+        or Path(package.origin).resolve() != Path(dist.locate_file(package_file)).resolve()
+    ):
+        raise RuntimeError(f'{provider}: import does not resolve to the installed distribution package')
+
+    # PathFinder can resolve the extension within the package without running
+    # its initializer. A different binary anywhere in RECORD is insufficient.
+    module = EXTENSION_MODULES[provider]
+    path = _extension_origin(PathFinder.find_spec(module, package.submodule_search_locations))
+    if path is None:
+        raise RuntimeError(f'{provider}: expected native extension {module} is unavailable')
+    extension = f'{provider}/{path.name}'
+    record = files.get(extension)
+    if record is None or path.resolve() != Path(dist.locate_file(record)).resolve():
+        raise RuntimeError(f'{provider}: native extension {module} does not match the installed distribution')
     return {
         'distribution': provider,
         'version': actual,
-        'native_extension_digests': extension_hashes,
+        'native_module': module,
+        'native_extension_digests': {extension: hashlib.sha256(path.read_bytes()).hexdigest()},
         'origin_claim': 'installed_distribution_only_no_wheel_source_attestation',
-    }
+    }, path.resolve()
+
+
+def _require_reviewed_extension(entry: dict, installed: dict) -> None:
+    machine = platform.machine().lower()
+    if sys.platform == 'darwin' and machine == 'arm64':
+        reviewed = entry.get('reviewed_wheel', {})
+        digest = entry.get('binary_sha256')
+    else:
+        key = {
+            ('linux', 'x86_64'): 'linux-x86_64',
+            ('win32', 'amd64'): 'windows-x86_64',
+            ('win32', 'x86_64'): 'windows-x86_64',
+        }.get((sys.platform, machine))
+        reviewed = entry.get('reviewed_platforms', {}).get(key, {}) if key else {}
+        digest = reviewed.get('binary_sha256')
+    provider = installed['distribution']
+    if reviewed.get('python') != platform.python_version() or not digest:
+        raise RuntimeError(f'{provider}: no reviewed extension for this platform and Python version')
+    if installed['native_extension_digests'] != {reviewed.get('native_extension'): digest}:
+        raise RuntimeError(f'{provider}: installed native extension does not match the reviewed digest')
+    installed['reviewed_extension_matched'] = True
+
+
+def _verify_loaded_extension(installed: dict, expected: Path) -> None:
+    module = sys.modules.get(installed['native_module'])
+    path = _extension_origin(getattr(module, '__spec__', None))
+    if path is None or path.resolve() != expected:
+        raise RuntimeError(f'{installed["distribution"]}: oracle did not load the recorded native extension')
+    digest = hashlib.sha256(expected.read_bytes()).hexdigest()
+    if digest not in installed['native_extension_digests'].values():
+        raise RuntimeError(f'{installed["distribution"]}: native extension changed during qualification')
 
 
 def dapane_oracle() -> dict:
@@ -119,6 +166,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--provider', choices=('dapane', 'voiage', 'all'), required=True)
     parser.add_argument('--lock', type=Path, default=ROOT / 'providers.lock.json')
+    parser.add_argument(
+        '--require-reviewed-extension', action='store_true',
+        help='Require the native extension filename and digest reviewed for this platform and Python patch.',
+    )
     args = parser.parse_args(argv)
     selected = ['dapane', 'voiage'] if args.provider == 'all' else [args.provider]
     environment = {
@@ -127,18 +178,25 @@ def main(argv: list[str] | None = None) -> int:
         'python_implementation': platform.python_implementation(),
     }
     try:
-        lock = load_provider_lock(args.lock)
-        metadata = []
+        if environment['python_implementation'] != 'CPython':
+            raise RuntimeError('Provider qualification requires CPython')
+        require_provider_python(sys.version_info[:3])
+        lock_bytes = args.lock.read_bytes()
+        lock = parse_provider_lock(lock_bytes)
+        installations = []
         for name in selected:
-            if name == 'voiage' and not ((3, 15, 2) <= sys.version_info[:3] < (3, 16, 0)):
-                raise RuntimeError('Voiage 3.1.0 requires Python 3.15.2 through 3.15.x')
-            metadata.append(_installed_version(name, lock['providers'][name]['version']))
+            entry = lock['providers'][name]
+            installed, native_path = _inspect_installation(name, entry['version'])
+            if args.require_reviewed_extension:
+                _require_reviewed_extension(entry, installed)
+            installations.append((installed, native_path))
         observations = []
-        if 'dapane' in selected:
-            observations.append(dapane_oracle())
-        if 'voiage' in selected:
-            observations.append(voiage_oracle())
-    except (OSError, RuntimeError, ImportError, AssertionError, ValueError, TypeError, KeyError) as exc:
+        oracles = {'dapane': dapane_oracle, 'voiage': voiage_oracle}
+        for installed, native_path in installations:
+            name = installed['distribution']
+            observations.append(oracles[name]())
+            _verify_loaded_extension(installed, native_path)
+    except Exception as exc:
         print(json.dumps({
             'status': 'UNVERIFIED', 'providers_requested': selected,
             'environment': environment, 'reason': str(exc),
@@ -146,12 +204,12 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     print(json.dumps({
         'status': 'NATIVE_ORACLES_PASSED_ARTIFACT_PROVENANCE_PENDING',
-        'source_lock_sha256': hashlib.sha256(args.lock.read_bytes()).hexdigest(),
+        'source_lock_sha256': hashlib.sha256(lock_bytes).hexdigest(),
         'providers_requested': selected,
         'environment': environment,
-        'installed_distributions': metadata,
+        'installed_distributions': [installed for installed, _ in installations],
         'observations': observations,
-        'note': 'Compare installed wheel/native-extension digests with reviewed artifacts before integration acceptance.',
+        'note': 'Verify the original wheel and its provenance separately before integration acceptance.',
     }, sort_keys=True, indent=2))
     return 0
 

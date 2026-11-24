@@ -15,8 +15,8 @@ def financial_decision_array(draws: PSADraws) -> tuple[np.ndarray, list[str]]:
     liaison strategy is the resource benefit relative to standard care.
     """
     net = np.asarray(draws.net_resource_benefit_aud, dtype=np.float64)
-    if net.ndim != 1 or not np.isfinite(net).all():
-        raise ValueError('invalid net benefit draws')
+    if net.ndim != 1 or not net.size or not np.isfinite(net).all():
+        raise ValueError('net benefit draws must be a nonempty, finite vector')
     return np.column_stack((np.zeros(len(net)), net)), ['current_care', 'liaison_service']
 
 
@@ -27,6 +27,7 @@ def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_
     This environment may not have the runtime installed. There is no fallback
     or homemade EVPI / EVPPI implementation.
     """
+    array, labels = financial_decision_array(draws)
     if value_array_factory is None or analysis_factory is None:
         try:
             from voiage.schema import ValueArray
@@ -37,7 +38,6 @@ def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_
             value_array_factory = ValueArray.from_numpy
         if analysis_factory is None:
             analysis_factory = DecisionAnalysis
-    array, labels = financial_decision_array(draws)
     return analysis_factory(value_array_factory(array, labels))
 
 

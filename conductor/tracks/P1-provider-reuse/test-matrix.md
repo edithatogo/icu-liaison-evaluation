@@ -8,8 +8,10 @@
 | Provider method/policy/output rejection | Yes | Injected boundary test; no native acceptance |
 | Independent fixed-input cost identity | Yes | Decimal synthetic oracle; expected -168730.00 AUD |
 | Voiage financial-only 2-strategy layout and EVPI call | Yes | Injected boundary test; no native acceptance |
+| Voiage decision surface must contain draws | Passed | An empty surface is rejected before calling the provider |
 | Voiage native 2-state EVPI equals AUD 5 | Yes (macOS arm64) | Passed the native oracles in Python 3.15.2. The signed macOS arm64 wheel and installed extension are admitted. [Artifact review](plan.md#voiage-macos-artifact-admission) |
 | Dapane native 2×50 and paired cost oracle | Yes (macOS arm64) | Passed `qualify_providers.py` (`100.00` & `-168730.00` AUD) and P5 `--dapane --voiage` |
+| Imported provider and loaded extension identity | Passed (macOS arm64) | Both reviewed extensions matched on CPython 3.15.2. The repaired Dapane candidate passed its numerical oracles and was rejected by the reviewed-extension check. Portable regressions cover shadowed packages, missing or unrelated extensions, and per-platform pin selection |
 | Historical wheel/native extension hashes | Observed | `verification/p1-native-qualification-2026-11-19.json` records the earlier artifacts and their qualifications |
 | Rebuilt Dapane wheel, pinned inputs and installed files | Verified locally (macOS arm64) | Source archive, locked SBOM, ZIP and `RECORD` checks passed. Installed files and retained Cargo output matched. The earlier wheel receipt records a different wheel digest and the same native extension digest. [P1.4 review](plan.md#rebuilt-dapane-wheel-evidence-review) |
 | Earlier Dapane wheel admission | Sign-off withheld | The retained artifact used Homebrew Rust 1.100.0. Controlled Rust 1.99.1 builds differed. [Historical P1.4 decision](plan.md#independent-dapane-technical-review) |

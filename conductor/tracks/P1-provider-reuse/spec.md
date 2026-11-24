@@ -26,9 +26,12 @@ claiming a provider integration complete.
    alternative solver. Label output as economic resource-only (not QALY/ICER).
 4. Installed qualification CLI: require exact provider versions, execute
    numerical reference oracles against the actual providers and report observed
-   interpreter/distribution/native-extension metadata. Unavailable environments
-   must fail closed with UNVERIFIED and nonzero exit. Source/runtime artifact
-   attestation and true CHHHS validity are separate gates.
+   interpreter/distribution/native-extension metadata. Require the imported
+   package and loaded extension to match the installed distribution. The
+   reviewed-extension check requires the locked file and digest for the
+   selected platform and Python patch. Unavailable or incompatible
+   environments must fail closed with UNVERIFIED and nonzero exit.
+   Source/runtime artifact attestation and true CHHHS validity are separate gates.
 
 ## Out of scope
 
