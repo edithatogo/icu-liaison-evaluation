@@ -64,3 +64,21 @@ and native pricing receipt. The Windows evidence includes the original
 vendor fixture failures and the full rerun with corrected path keys in
 a disposable test copy. Broader release qualification and Voiage
 admission remain open. [P1.4 platform findings](plan.md#linux-and-windows-x86-64-qualification)
+
+## P1 artifact review on 24 November 2026
+
+Chat 01a1f64b-ef56-75f3-a2dc-bafc0180b28e owns the provider lock and related P0,
+P1 and P7 records on `codex/icu-p1-provider-qualification` in
+`/Users/doughnut/.codex/worktrees/icu-remaining-schedule.ZuYzD4/conductor`.
+Native testing uses separate macOS CPython 3.15.2 environments and fictional
+inputs. The next acceptance step is independent admission of the repaired
+Dapane artifact.
+
+P1 admits the exact Voiage macOS arm64 wheel after verifying the publisher
+signature, tagged source, installed bytes and native results. The Dapane
+successor resolves the APFS and dependency findings in the tested source.
+The GitHub prerelease has a signed Linux wheel, and the local macOS candidate
+passed the installed P1 and P5 checks. The approved Dapane pins retain their
+original artifact scopes. Detailed candidate evidence is held privately.
+[Voiage admission](plan.md#voiage-macos-artifact-admission) ·
+[Dapane successor](plan.md#dapane-release-assurance-successor)

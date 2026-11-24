@@ -15,7 +15,7 @@
   "blocked_phases": [
     "P0.4"
   ],
-  "blocker": "Voiage artifact admission and broader Dapane release review remain open in P1.4 and P7.5.",
+  "blocker": "Broader Dapane release acceptance remains open in P1.4 and P7.5.",
   "dependencies": [],
   "external_dependencies": [
     {

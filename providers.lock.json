@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot_date": "2026-11-18",
+  "snapshot_date": "2026-11-24",
   "purpose": "Source and interface lock with scoped independently reviewed native artifacts and execution evidence",
   "providers": {
     "dapane": {
@@ -62,8 +62,19 @@
       "version": "3.1.0",
       "requires_python": ">=3.15.2,<3.16",
       "type": "pypi_released_distribution",
-      "binary_sha256": null,
-      "status": "release_contract_inspected_installed_provider_unverified"
+      "binary_sha256": "281903924effb5d54ff3dda03f285aa2e287d16bbb25daec9ee82326ae6ba31a",
+      "status": "macos_arm64_pypi_artifact_admitted",
+      "provider_qualification_receipt_sha256": null,
+      "reviewed_wheel": {
+        "filename": "voiage-3.1.0-cp315-abi3-macosx_11_0_arm64.whl",
+        "sha256": "ca1a625ea2e0f6c63ffd306f19cb62c1c69242643164553d5ca633e94146eb5b",
+        "native_extension": "voiage/_core.abi3.so",
+        "python": "3.15.2",
+        "platform": "macOS 27.2.1 arm64",
+        "publisher_workflow": "edithatogo/voiage/.github/workflows/release.yml",
+        "publisher_environment": "pypi",
+        "reviewed_on": "2026-11-24"
+      }
     }
   }
 }

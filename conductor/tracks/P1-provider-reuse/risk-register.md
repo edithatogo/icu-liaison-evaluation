@@ -2,8 +2,9 @@
 
 - Dapane `0.1` is an unpublished native wheel; a Git source SHA and Python
   distribution version do not prove installed binary provenance.
-- Voiage `3.1.0` needs CPython >=3.15.2; this runtime was not available in the
-  portable container. Do not substitute an imported fake or an older release.
+- P1 qualifies Voiage `3.1.0` on the pinned CPython 3.15.2 runtime. Artifact
+  admission applies to the reviewed macOS arm64 wheel. Use the locked
+  identities and requalify a different artifact or host.
 - Dapane values reported resource quantities, not epidemiological causality,
   genuinely avoidable costs, or hospital bed release.
 - The bridge constructs marginal counterfactual *difference* ledgers, not full

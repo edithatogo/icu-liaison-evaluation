@@ -6,7 +6,13 @@
 - [x] P7.4 Run the pinned Kairos consumer with a reviewed Cargo.lock and check
   byte-identical replay against the one-bed oracle. [P6 evidence](../../../docs/p6-native-qualification.md)
 - [ ] Independently attest the P7.4 build artifact and runner.
-- [~] P7.5 Execute and independently qualify Dapane and Voiage installed binaries and wheels. Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64 artifacts and native pricing receipts have scoped independent approval. Broader Dapane provider qualification and Voiage admission remain open.
+- [~] P7.5 Execute and independently qualify the installed provider artifacts.
+  Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64
+  artifacts have scoped independent approval. The verified Voiage 3.1.0
+  macOS arm64 wheel is admitted. Broader Dapane release acceptance
+  remains open for the repaired candidate.
+  [Voiage admission](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission) ·
+  [Dapane successor](../P1-provider-reuse/plan.md#dapane-release-assurance-successor)
 - [x] P7.6 Retrieve the 2024/25 PDF directly from ANZICS and check the six
   benchmark values and their page locators. [Publisher receipt](../../../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
 - [ ] Independently review the 2024/25 source for admission and intended use.
