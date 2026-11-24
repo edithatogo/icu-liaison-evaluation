@@ -72,3 +72,11 @@ evidence is the previously recorded P1 and P6 decisions and replay receipts.
 The next operation is hosted source validation. Independent publisher
 admission, release attestation and site review remain open.
 [Verification](test-matrix.md#repeat-the-current-qualification)
+
+## Review follow-through on 24 November 2026
+
+The same attached worktree and chat carry `codex/icu-p7-review-fixes`. This
+lane owns the aggregate audit, the portable qualification runner and the
+request exporter. The local checks reproduced the verified publisher match
+and the authored request exports. The next operation is exact-head hosted
+validation. [Review verification](test-matrix.md#p7-review-on-24-november-2026)

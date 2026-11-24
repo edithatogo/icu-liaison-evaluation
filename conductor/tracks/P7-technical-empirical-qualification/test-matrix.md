@@ -42,3 +42,19 @@ assign all unresolved records to each extreme, keeping competing deaths
 separately counted within unresolved returns. The ranges describe the
 uncertainty from missing outcomes in this fixture. Clinical or competing-risk
 estimation requires the approved observations and analysis method.
+
+## P7 review on 24 November 2026
+
+Ten checks failed before the fixes and passed in the 137 focused tests.
+The synthetic P3 feed now exercises a
+return with unresolved planned status despite complete observation time.
+The audit keeps the outcome unresolved, reports complete follow-up
+separately and rejects contradictory counts or invalid source fingerprints.
+The P4 oracle checks valid short simulations with each selected draw counted once.
+
+The request exporter uses exclusive file creation. The tests exercise a
+failed second write and a file appearing during export. The exporter removes
+the files it created on failure and preserves the other writer’s file.
+The successful Markdown and CSV exports reproduced their previous bytes.
+The qualification still matched six ANZICS locators and the retained PDF
+digest, and the standard fixture still passed all 18 draw checks.

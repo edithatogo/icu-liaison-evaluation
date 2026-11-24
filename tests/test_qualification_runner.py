@@ -46,3 +46,20 @@ def test_qualification_rejects_a_nonmatching_saved_publisher_document(tmp_path):
     candidate.write_bytes(b'Fictional document bytes')
     with pytest.raises(ValueError, match='document size mismatch'):
         qualify(publisher_document=candidate)
+
+
+def test_qualification_can_audit_the_shortest_supported_scenario(monkeypatch):
+    path = ROOT / 'model-inputs/p4/illustrative.json'
+    scenario = json.loads(path.read_bytes())
+    scenario['iterations'] = 2
+    original_read = Path.read_bytes
+
+    def read_scenario(candidate):
+        if candidate == path:
+            return json.dumps(scenario).encode('utf-8')
+        return original_read(candidate)
+
+    monkeypatch.setattr(Path, 'read_bytes', read_scenario)
+    result = qualify()['p4_independent_accounting']
+    assert result['selected_draw_indices'] == [0, 1]
+    assert result['draws_checked'] == 2 * len(scenario['strategies'])
