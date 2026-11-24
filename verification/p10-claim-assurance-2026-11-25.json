@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-25",
+  "scope": "synthetic_illustration_only",
+  "python": "3.15.2",
+  "policy_revision": "2026-11-25-P10-source-claims-v2",
+  "policy_sha256": "3f3166d84c51c698fb773fbbb04547e01f9153d956ce2e383fc7bf793ef54a98",
+  "run_reference": "verification/p9-frozen-figure-review-2026-11-25.json",
+  "summary_id": "f45e6bb594e06013922cc949812783dec54da21a7035920eb2467ef5677b4338",
+  "model_run_id": "cec559bb7395e9c8669eb4f3a4605615134d80c939c9d180af8238e5275503ea",
+  "case_id": "base",
+  "permitted_artifacts": [
+    {
+      "id": "T04",
+      "artifact_sha256": "3a656881b69e7aa95b0a5ab568983b12be7dc9adb1955a0452f08c696d106bcc",
+      "assessment_sha256": "d855b6e93f13ba5c8495982881ed73b1392f5743ab607e03ea13b4c3c27ce8ff"
+    },
+    {
+      "id": "F01",
+      "artifact_sha256": "32681f0d62d76a651b5ed50d097347fefd6c195f47900b0856d19ce4b7aad0c2",
+      "assessment_sha256": "4e5f05b84bce04a4f742c729066976c0c407b8b8fed46c6efc2f013ac8a37ea4"
+    },
+    {
+      "id": "F20",
+      "artifact_sha256": "b721809cdb3565f5c213c3a8b98947bf3ac624e42bbc7dfe8cdebcb405dcc54c",
+      "assessment_sha256": "a810ebe23147f2e842eed8aee548e3672f22bda18647d760362fa75ecab5a6af"
+    }
+  ],
+  "denied_historical_figure": "model_replay_unavailable",
+  "denied_clinical_claim": "trusted_external_verifier_not_connected",
+  "focused_tests_passed": 113,
+  "external_authority_verified": false,
+  "clinical_safety_approved": false,
+  "investment_ready": false
+}

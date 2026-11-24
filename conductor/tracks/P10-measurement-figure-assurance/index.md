@@ -6,5 +6,7 @@ Defines source-only metric/denominator identities, P9 table/figure links, uncert
 
 The source registry contains 31 metrics and 14 denominators. Synthetic
 mark checks and responsive and print evidence are available for the 14
-implemented figures. CHHHS data admission, trusted authority verification and
+implemented figures. The [claim assessment](../../../contracts/reporting/README.md#assess-a-claim)
+checks the artifact and binds a fictional illustration to its case, metrics
+and denominators. CHHHS data admission, trusted authority verification and
 clinical review remain open. [Synthetic verification](../../../verification/portable-synthetic-2026-11-20.json)

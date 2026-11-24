@@ -141,6 +141,10 @@ historical phase identifiers; use the full track directory in handoffs.
   synthetic scenario. Three tables and ten figures require admitted site or
   provider evidence.
 
-- [~] **Track: P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). M01–M31 and D01–D14, source-linked figures, synthetic mark and visual checks. Site governance and professional review remain open.
+- [~] **Track: P10 — Measurement, provenance, claim and visual assurance**
+  ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)).
+  M01–M31 and D01–D14, verified fictional claim decisions by artifact, and
+  source-linked figures with synthetic mark and visual checks. Trusted
+  external evidence and independent acceptance remain open.
 
 - [x] **Track: P11 — Scenario workflows and versioned runs** ([index](tracks/P11-scenario-workflows/index.md), [spec](tracks/P11-scenario-workflows/spec.md), [plan](tracks/P11-scenario-workflows/plan.md)). Synthetic A/B and stress scenarios, input/model/output identities and P9 figures passed local and integrated hosted checks; clinical and provider gates remain separate.

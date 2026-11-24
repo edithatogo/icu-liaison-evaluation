@@ -1,17 +1,25 @@
-"""P10 source-only metric, provenance, uncertainty, visual and claim contract checks.
-
-No public JSON flag or unverified digest constitutes clinical, financial or
-provider approval. Actual file/authority verification is a separate task.
-"""
+"""Validate the P10 contracts and assess claims on verified fictional artifacts."""
 from __future__ import annotations
+import argparse
+from hashlib import sha256
 import json
 from pathlib import Path
+import sys
 from typing import Any
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts" / "reporting"
 DATA_REQUEST = ROOT / "model-inputs" / "chhhs-data-request.json"
+SYNTHETIC_CLAIM = "synthetic_illustration"
+CLAIM_IDS = {
+    SYNTHETIC_CLAIM, "local_descriptive", "clinical_effectiveness", "cash_savings",
+    "nwau_activity", "provider_qualified", "investment_ready",
+}
+CLAIM_POLICY_STATUS = {
+    "2026-11-19-P10-source-claims-v1": "template_only",
+    "2026-11-25-P10-source-claims-v2": "verified_run_assessment",
+}
 
 def _read(name: str) -> dict:
     return json.loads((CONTRACTS / name).read_text(encoding="utf-8"))
@@ -25,6 +33,22 @@ def _validate_schema(value: dict, name: str) -> None:
         i = issues[0]
         raise ValueError(f"{name} schema violation at {list(i.path)}: {i.message}")
 
+def _claim_rules(policy: dict) -> dict[str, dict]:
+    _validate_schema(policy, "claim-policy.schema.json")
+    rules = {rule["id"]: rule for rule in policy["claim_classes"]}
+    if set(rules) != CLAIM_IDS or len(rules) != len(policy["claim_classes"]):
+        raise ValueError("claim policy incomplete or contains duplicate classes")
+    synthetic = rules[SYNTHETIC_CLAIM]
+    if (synthetic["requires_trusted_external_verifier"] or not synthetic["public_source_can_validate"]
+            or set(synthetic["required_evidence"]) != {"p5_input_digest", "p5_numeric_review", "manifest_verified"}
+            or policy["synthetic_evidence_receipt_status"] != CLAIM_POLICY_STATUS[policy["policy_revision"]]):
+        raise ValueError("synthetic claim requirements differ from the assessment contract")
+    for claim, rule in rules.items():
+        if claim != SYNTHETIC_CLAIM and (
+                rule["public_source_can_validate"] or not rule["requires_trusted_external_verifier"]):
+            raise ValueError("external claim cannot be granted by JSON")
+    return rules
+
 def validate_assurance(*, catalogue: dict | None = None,
                        registry: dict | None = None,
                        policy: dict | None = None,
@@ -36,7 +60,7 @@ def validate_assurance(*, catalogue: dict | None = None,
     v = visual if visual is not None else _read("visual-review.json")
     u = taxonomy if taxonomy is not None else _read("uncertainty-taxonomy.json")
     _validate_schema(m, "metrics.schema.json")
-    _validate_schema(p, "claim-policy.schema.json")
+    _claim_rules(p)
     datasets = json.loads(DATA_REQUEST.read_text(encoding="utf-8"))["datasets"]
     valid_datasets = {item["id"] for item in datasets}
     if len(valid_datasets) != len(datasets):
@@ -85,30 +109,91 @@ def validate_assurance(*, catalogue: dict | None = None,
                != {"mobile","tablet","desktop","print_a4"}
             or len(v["checks"]) < 8):
         raise ValueError("visual review incomplete or falsely passed")
-    if p["source_mode"] != "fail_closed_without_trusted_external_verifier":
-        raise ValueError("claim gate weakened")
-    claim_ids = {x["id"] for x in p["claim_classes"]}
-    if len(claim_ids) != len(p["claim_classes"]) or "synthetic_illustration" not in claim_ids:
-        raise ValueError("claim policy incomplete")
-    for rule in p["claim_classes"]:
-        if rule["id"] != "synthetic_illustration" and (
-                rule["public_source_can_validate"] or not rule["requires_trusted_external_verifier"]):
-            raise ValueError("external claim cannot be granted by JSON")
     _validate_schema(_read("provenance-template.json"), "provenance-record.schema.json")
     return {"status":"source_definition_valid_not_site_qualified",
             "metrics":len(ids),"denominators":len(ds),
             "tables":len(c["tables"]),"figures":len(c["figures"]),
             "authorities_verified":0,"visual_checks_executed":0}
 
-def assess_claim(claim_id: str, evidence: Any = None) -> dict:
-    """Always deny untrusted public-source claims; genuine evidence requires an adapter."""
-    rule = next((x for x in _read("claim-policy.json")["claim_classes"]
-                 if x["id"] == claim_id), None)
+def _assess_synthetic_artifact(
+    run: Path, case_id: str, artifact_id: str, disclosure: str, policy_sha256: str,
+) -> dict:
+    from icu_liaison.p11_model import _runtime, _source_hashes
+    from icu_liaison.p11_p9 import fingerprint
+    from icu_liaison.p11_records import digest_file, digest_json, read_json
+    from tools.validate_reporting_contracts import CATALOGUE, verify_run_coverage
+
+    raw_catalogue = CATALOGUE.read_bytes()
+    catalogue = json.loads(raw_catalogue)
+    spec = next((row for row in catalogue["tables"] + catalogue["figures"] if row["id"] == artifact_id), None)
+    if spec is None:
+        return {"permitted": False, "reason": "unknown_reporting_artifact"}
+    if spec["status"] == "placeholder":
+        return {"permitted": False, "reason": "reporting_artifact_requires_external_evidence"}
+    coverage = verify_run_coverage(run, catalogue)
+    case = next((row for row in coverage["scenarios"] if row["case_id"] == case_id), None)
+    if case is None:
+        return {"permitted": False, "reason": "unknown_scenario"}
+    artifact = next((row for row in case["tables"] + case["figures"] if row["id"] == artifact_id), None)
+    if artifact is None:
+        return {"permitted": False, "reason": "artifact_not_produced_in_run"}
+
+    record = run / "models" / case["model_run_id"] / "run.json"
+    identity = read_json(record)["identity"]
+    if identity["model_source_sha256"] != _source_hashes() or identity["runtime"] != _runtime():
+        return {"permitted": False, "reason": "model_replay_unavailable"}
+    companion = next(row for row in case["figures"] if row["id"] != "F01")
+    p9_record = run / "priority-figures" / companion["figure_revision"] / "figure-set.json"
+    p9_identity = read_json(p9_record)["identity"]
+    record_sha256 = digest_file(record)
+    if (digest_json(identity) != case["model_run_id"]
+            or digest_json(p9_identity) != companion["figure_revision"]
+            or p9_identity["run_record_sha256"] != record_sha256
+            or digest_file(run / artifact["path"]) != artifact["sha256"]):
+        raise ValueError("the model record or artifact changed after verification")
+    if "figure_revision" in artifact and artifact_id != "F01":
+        recorded = {key: p9_identity[key] for key in ("sources_sha256", "inputs_sha256", "runtime")}
+        if recorded != fingerprint():
+            return {"permitted": False, "reason": "figure_replay_unavailable"}
+
+    raw_metrics = (CONTRACTS / "metrics.json").read_bytes()
+    metrics_sha256 = sha256(raw_metrics).hexdigest()
+    catalogue_sha256 = sha256(raw_catalogue).hexdigest()
+    if (case["run_catalogue_sha256"] != catalogue_sha256
+            or p9_identity["inputs_sha256"]["metrics.json"] != metrics_sha256):
+        return {"permitted": False, "reason": "reporting_contract_differs_from_verified_run"}
+    denominators = {metric["id"]: metric["denominator_id"] for metric in json.loads(raw_metrics)["metrics"]}
+    return {
+        "permitted": True, "reason": "verified_synthetic_artifact", "scope": "synthetic_illustration_only",
+        "claim_id": SYNTHETIC_CLAIM, "disclosure": disclosure, "policy_sha256": policy_sha256,
+        "summary_id": coverage["summary_id"], "case_id": case_id, "model_run_id": case["model_run_id"],
+        "model_record_sha256": record_sha256, "artifact": artifact,
+        "catalogue_sha256": catalogue_sha256, "metrics_sha256": metrics_sha256,
+        "metric_ids": spec["metric_ids"], "denominator_ids": sorted({denominators[key] for key in spec["metric_ids"]}),
+        "external_authority_verified": False, "clinical_safety_approved": False, "investment_ready": False,
+    }
+
+
+def assess_claim(
+    claim_id: str, evidence: Any = None, *, run: Path | None = None,
+    case_id: str | None = None, artifact_id: str | None = None,
+) -> dict:
+    """Assess an artifact from source files. Caller-supplied evidence carries no approval."""
+    raw_policy = (CONTRACTS / "claim-policy.json").read_bytes()
+    policy = json.loads(raw_policy)
+    rule = _claim_rules(policy).get(claim_id)
     if rule is None:
         return {"permitted":False,"reason":"unknown_claim"}
     if rule["requires_trusted_external_verifier"]:
         return {"permitted":False,"reason":"trusted_external_verifier_not_connected"}
-    return {"permitted":False,"reason":"requires_verified_p5_bundle_not_untrusted_receipts"}
+    if (run is None or case_id is None or artifact_id is None
+            or policy["synthetic_evidence_receipt_status"] != "verified_run_assessment"):
+        return {"permitted":False,"reason":"requires_verified_p5_bundle_not_untrusted_receipts"}
+    try:
+        return _assess_synthetic_artifact(run, case_id, artifact_id, rule["disclosure"],
+                                          sha256(raw_policy).hexdigest())
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError) as exc:
+        return {"permitted": False, "reason": "run_verification_failed", "error": str(exc)}
 
 def validate_provenance(record: dict) -> dict:
     _validate_schema(record, "provenance-record.schema.json")
@@ -117,8 +202,21 @@ def validate_provenance(record: dict) -> dict:
         else "independent_artifact_review_pending")}
 
 def main() -> int:
-    print(json.dumps(validate_assurance(), sort_keys=True))
-    return 0
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--claim", help="Claim class from the P10 policy")
+    parser.add_argument("--run", type=Path, help="Synthetic P11 output directory")
+    parser.add_argument("--case", help="Scenario ID in the run")
+    parser.add_argument("--artifact", help="Table or figure ID in the reporting catalogue")
+    args = parser.parse_args()
+    if args.claim is None:
+        if any(value is not None for value in (args.run, args.case, args.artifact)):
+            parser.error("--run, --case and --artifact require --claim")
+        print(json.dumps(validate_assurance(), sort_keys=True))
+        return 0
+    result = assess_claim(args.claim, run=args.run, case_id=args.case, artifact_id=args.artifact)
+    print(json.dumps(result, sort_keys=True))
+    return 0 if result["permitted"] else 2
 
 if __name__ == "__main__":
+    sys.path.insert(0, str(ROOT))
     raise SystemExit(main())
