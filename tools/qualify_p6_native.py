@@ -6,6 +6,7 @@ attestation or CHHHS clinical/operational acceptance.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 import os
@@ -17,10 +18,18 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CONSUMER = ROOT / 'native/kairos-icu-liaison'
-TARGET = CONSUMER / 'build'
-SCENARIO = ROOT / 'model-inputs/p6/kairos-synthetic-input.json'
+TARGET = Path(os.environ.get('CARGO_TARGET_DIR', CONSUMER / 'build')).resolve()
 SOURCE_LOCK = ROOT / 'model-inputs/p6/kairos-provider-lock.json'
-REFERENCE = ROOT / 'tests/fixtures/p6_native/independent-reference.json'
+FIXTURES = ROOT / 'tests/fixtures/p6_native'
+REPLAYS = (
+    (ROOT / 'model-inputs/p6/kairos-synthetic-input.json', FIXTURES / 'independent-reference.json'),
+    (FIXTURES / 'queue-scenario.json', FIXTURES / 'queue-reference.json'),
+)
+INSPECTED_PATHS = {
+    'crates/kairo-ecs-des/src/staged_runtime.rs',
+    'crates/kairo-ecs-types/src/lib.rs',
+    'crates/kairo-ecs-des/Cargo.toml',
+}
 
 
 def _call(argv: list[str], *, timeout: int = 240) -> subprocess.CompletedProcess[str]:
@@ -32,12 +41,28 @@ def _call(argv: list[str], *, timeout: int = 240) -> subprocess.CompletedProcess
     return p
 
 
+def _verify_resolved_provider(metadata: Mapping, lock: Mapping) -> None:
+    pinned = lock['source_commit']
+    source = f"git+{lock['repository']}?rev={pinned}#{pinned}"
+    packages = [package for package in metadata['packages'] if (package.get('source') or '').startswith('git+')]
+    if ({'kairo-ecs-des', 'kairo-ecs-types'} - {package['name'] for package in packages}
+            or any(package['source'] != source for package in packages)):
+        raise RuntimeError('resolved native Kairos sources do not match the exact locked revision')
+    des = next(package for package in packages if package['name'] == 'kairo-ecs-des')
+    checkout = Path(des['manifest_path']).resolve().parents[2]
+    blobs = lock['inspected_upstream_blob_shas']
+    if set(blobs) != INSPECTED_PATHS:
+        raise RuntimeError('incomplete inspected Kairos source files in provider lock')
+    for name, expected in blobs.items():
+        data = (checkout / name).read_bytes()
+        header = f'blob {len(data)}\0'.encode('ascii')
+        if hashlib.sha1(header + data, usedforsecurity=False).hexdigest() != expected:
+            raise RuntimeError(f'inspected Kairos source differs from the locked Git blob: {name}')
+
+
 def main() -> int:
     try:
-        from icu_liaison.p6_native import (
-            KairosScenario, KairosProducerOutput,
-            compare_native_with_reference, invoke_native_binary,
-        )
+        from icu_liaison.p6_native import KairosProducerOutput, invoke_native_binary
         cargo = shutil.which('cargo')
         rustc = shutil.which('rustc')
         if not cargo or not rustc:
@@ -46,10 +71,7 @@ def main() -> int:
             raise RuntimeError('Cargo.lock missing: generate, independently review, and commit first')
         lock = json.loads(SOURCE_LOCK.read_text())
         meta = json.loads(_call([cargo, 'metadata', '--locked', '--offline', '--format-version', '1']).stdout)
-        pinned = lock['source_commit']
-        providers = [p for p in meta['packages'] if p['name'] in ('kairo-ecs-types', 'kairo-ecs-des')]
-        if len(providers) != 2 or not all(pinned in str(p.get('source', '')) for p in providers):
-            raise RuntimeError('resolved native Kairos sources do not match locked revision')
+        _verify_resolved_provider(meta, lock)
         _call([cargo, 'fmt', '--all', '--check'])
         _call([cargo, 'clippy', '--locked', '--offline', '--all-targets', '--', '-D', 'warnings'])
         _call([cargo, 'test', '--locked', '--offline'], timeout=300)
@@ -59,28 +81,32 @@ def main() -> int:
         if not binary.is_file():
             raise RuntimeError('built binary not present')
         digest = hashlib.sha256(binary.read_bytes()).hexdigest()
-        observed = invoke_native_binary(binary, SCENARIO, expected_sha256=digest,
-                                        provider_lock=lock)
-        again = invoke_native_binary(binary, SCENARIO, expected_sha256=digest,
-                                     provider_lock=lock)
-        if observed['output_sha256'] != again['output_sha256']:
-            raise RuntimeError('replay produced different raw output bytes')
-        raw = _call([str(binary), str(SCENARIO)], timeout=40).stdout
-        expected = json.loads(REFERENCE.read_text())
-        parsed = KairosProducerOutput.model_validate_json(raw)
-        judgement = compare_native_with_reference(parsed.model_dump(), expected,
-                                                  KairosScenario.model_validate_json(SCENARIO.read_text()).model_dump())
-        if not judgement['matches_reference']:
-            raise RuntimeError('actual native output differs from independent reference fixture')
+        replays = []
+        for scenario_path, reference_path in REPLAYS:
+            reference_bytes = reference_path.read_bytes()
+            reference = KairosProducerOutput.model_validate_json(reference_bytes)
+            observed = invoke_native_binary(binary, scenario_path, expected_sha256=digest,
+                                            provider_lock=lock, reference=reference)
+            repeated = invoke_native_binary(binary, scenario_path, expected_sha256=digest,
+                                            provider_lock=lock, reference=reference)
+            if any(observed[key] != repeated[key] for key in ('input_sha256', 'output_sha256')):
+                raise RuntimeError('replay input or output bytes differ')
+            replays.append({
+                'scenario_id': reference.scenario_id,
+                'input_sha256': observed['input_sha256'],
+                'output_sha256': observed['output_sha256'],
+                'reference_sha256': hashlib.sha256(reference_bytes).hexdigest(),
+            })
         result = {
             'status': 'LOCAL_NATIVE_CONSUMER_EXECUTED_NOT_INDEPENDENTLY_ATTESTED',
             'producer': 'icu-liaison-kairos-consumer',
-            'source_commit': pinned,
+            'source_commit': lock['source_commit'],
             'executable_sha256': digest,
             'cargo_lock_sha256': hashlib.sha256((CONSUMER / 'Cargo.lock').read_bytes()).hexdigest(),
             'source_lock_sha256': hashlib.sha256(SOURCE_LOCK.read_bytes()).hexdigest(),
             'exact_replay_matched': True,
             'independent_one_bed_fixture_matched': True,
+            'fixture_replays': replays,
             'clinical_or_finance_approval': False,
             'investment_ready': False,
             'platform': platform.platform(),

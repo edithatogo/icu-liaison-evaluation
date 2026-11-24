@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / 'model-inputs/p6/kairos-synthetic-input.json'
 REFERENCE = ROOT / 'tests/fixtures/p6_native/independent-reference.json'
 LOCK = ROOT / 'model-inputs/p6/kairos-provider-lock.json'
+QUEUE_INPUT = REFERENCE.with_name('queue-scenario.json')
+QUEUE_REFERENCE = REFERENCE.with_name('queue-reference.json')
 
 
 def scenario():
@@ -44,6 +46,65 @@ def test_reference_bridge_audits_one_bed_conservation_without_native_claim():
     assert review['native_binary_executed'] is False
     assert review['native_provenance_qualified'] is False
     assert review['investment_ready'] is False
+
+
+def test_queue_reference_demonstrates_reuse_with_the_same_demand():
+    review = inspect_native_output(
+        KairosProducerOutput.model_validate_json(QUEUE_REFERENCE.read_bytes()),
+        scenario=KairosScenario.model_validate_json(QUEUE_INPUT.read_bytes()),
+        provider_lock=json.loads(LOCK.read_text()),
+    )
+    comparison = review['admission']['paired_comparisons']['liaison_service']
+    assert comparison['admitted_requests_change'] == 1
+    assert comparison['spare_staffed_bed_minutes_change'] == 0
+    assert comparison['mean_wait_minutes_change'] is None
+    assert comparison['mean_wait_minutes_change_among_shared_admissions'] == -30
+    assert comparison['request_disposition_transitions']['censored'] == {
+        'admitted': 1, 'declined': 0, 'censored': 1,
+    }
+
+
+def test_native_trace_rejects_reversed_order_for_simultaneous_arrivals():
+    output = json.loads(QUEUE_REFERENCE.read_bytes())
+    baseline = output['strategies'][0]
+    baseline['occupancies'][1:] = [
+        {'episode_id': 'syn-demand-a', 'start_minute': 120, 'end_minute': 180},
+        {'episode_id': 'syn-demand-z', 'start_minute': 180, 'end_minute': 240},
+    ]
+    baseline['requests'][0]['admitted_minute'] = 180
+    baseline['requests'][1].update(disposition='admitted', admitted_minute=120)
+    with pytest.raises(ValueError, match='FIFO'):
+        inspect_native_output(
+            KairosProducerOutput.model_validate(output),
+            scenario=KairosScenario.model_validate_json(QUEUE_INPUT.read_bytes()),
+            provider_lock=json.loads(LOCK.read_text()),
+        )
+
+
+def test_native_trace_rejects_waiting_with_a_vacant_staffed_bed():
+    output = expected()
+    arm = output['strategies'][1]
+    arm['occupancies'][1].update(start_minute=95, end_minute=155)
+    arm['requests'][0]['admitted_minute'] = 95
+    with pytest.raises(ValueError, match='vacant staffed bed'):
+        inspect_native_output(KairosProducerOutput.model_validate(output),
+                              scenario=KairosScenario.model_validate(scenario()),
+                              provider_lock=json.loads(LOCK.read_text()))
+
+
+@pytest.mark.parametrize(('disposition', 'message'), [
+    ('declined', 'does not decline'),
+    ('censored', 'vacant staffed bed'),
+])
+def test_native_trace_rejects_inconsistent_unadmitted_demand(disposition, message):
+    output = expected()
+    arm = output['strategies'][1]
+    arm['occupancies'].pop()
+    arm['requests'][0].update(disposition=disposition, admitted_minute=None)
+    with pytest.raises(ValueError, match=message):
+        inspect_native_output(KairosProducerOutput.model_validate(output),
+                              scenario=KairosScenario.model_validate(scenario()),
+                              provider_lock=json.loads(LOCK.read_text()))
 
 
 def test_independent_reference_is_explicitly_not_native_execution():

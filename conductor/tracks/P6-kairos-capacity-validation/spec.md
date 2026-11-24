@@ -15,28 +15,25 @@ justified** by aggregate ANZICS exit-block rates.
 - Each admitted request must correspond to an observed occupancy start; censored
   and declined requests are distinct; initial patients may have start minute zero.
 - NumPy event-boundary integration returns staffed/occupied/spare bed-minutes,
-  patient request counts and admission delays, and paired differences when
-  *the same request cohort* is admitted in both arms.
+  request counts and admission delays. The comparison reports transitions
+  among admitted, declined and censored requests and the wait difference
+  for requests admitted in both arms. The original overall wait comparison
+  remains available when both arms admit the same cohort.
 - No costs/QALYs/readmissions are inferred; this trace cannot be substituted for
   annual P4 estimated capacity, local clinical validation or a Kairos execution.
 - No real identifiers permitted: `syn-` fixture IDs only. No unrestricted
   local patient data or raw queue traces admitted to a public report.
 
-## Deferred provider contract
+## Pinned native consumer
 
-Kairos remains the DES/ABM/scheduler owner. A future qualification must inspect
-its **actual pinned API** and map an authenticated producer event envelope to a
-neutral capacity trace, preserving resource-claim intervals, physical departure,
-queue requests/acceptance, timing, cancellations, preemption and staff calendars.
-No schema compatibility or native Kairos run is claimed by this pilot. Local
-approval and data/case-mix calibration must precede a business-case estimate.
+Kairos owns the scheduler and resource allocation. The optional native
+consumer uses the pinned `StagedResourceRuntime` for one staffed bed, fixed
+durations and FIFO demand. The typed adapter checks occupancy and paired
+requests, including simultaneous arrivals, admission at the next available
+bed and censoring at the horizon. The locked local build and both synthetic
+replays passed. Independent build attestation, approved site data and case-mix
+calibration are required for site evaluation. A site producer must also cover
+staff calendars, ward acceptance, cancellation and preemption.
 
-## Source-only native continuation
-
-An optional native consumer now uses the exact pinned Kairos
-`StagedResourceRuntime` API in one-bed, fixed-duration, synthetic-only mode.
-Its typed contract is admitted by `icu_liaison.p6_native`, not directly by the
-fixture-only trace schema. Provider JSON does not by itself establish execution;
-compiled binaries and independent build provenance remain open. The separate
-SciPy admitted-only synthetic holdout score is not a clinical validation.
+The separate SciPy synthetic holdout describes waits among admitted requests.
 See [ADR-0005](../../decisions/ADR-0005-p6-kairos-staged-resource-consumer.md).

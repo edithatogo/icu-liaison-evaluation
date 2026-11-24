@@ -20,11 +20,21 @@ cargo fetch --locked --manifest-path native/kairos-icu-liaison/Cargo.toml
 PYTHONPATH=src .venv/bin/python tools/qualify_p6_native.py
 ```
 
-The script executes actual Cargo format, Clippy, tests and build, performs
-replay and source-pin checks, and compares the binary's output to an independent
-one-bed fixture. The `icu-liaison-p6-native` CLI checks the supplied binary's
-SHA-256 before invoking it. Independent build attestation, CHHHS calibration
-and clinical and Finance review are separate acceptance steps.
+The script checks the exact Git source for every resolved Kairos crate and the
+Git blob IDs of three inspected files before running Cargo format, Clippy,
+tests and build. It runs two fictional inputs twice each and compares their
+actual output with the corresponding hand-authored reference. The receipt
+binds the compiler, binary and lock hashes to the input, reference and output
+digests. Set Cargo's `CARGO_TARGET_DIR` to an isolated absolute directory to
+keep the build in a private workspace. The `icu-liaison-p6-native` CLI checks
+the supplied binary's SHA-256 before invoking it. Independent build attestation,
+CHHHS calibration and clinical and Finance review remain open.
+
+In the contention case, the earlier discharge frees the bed in time to admit
+one more of the same three requests. Both alternatives still use 240 staffed
+bed-minutes. The wait for the common admission falls from 60 to 30 minutes.
+The report gives that paired wait difference separately from the disposition
+counts.
 
 ### Limits of the native scenario
 

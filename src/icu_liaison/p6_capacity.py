@@ -152,6 +152,21 @@ def _arm(bundle: TraceBundle, arm: ArmTrace, staffed: int, cap_starts: np.ndarra
     }
 
 
+def _paired_request_access(
+    baseline: dict[str, AdmissionRequest], proposed: ArmTrace,
+) -> tuple[dict[str, dict[str, int]], float | None]:
+    dispositions = ('admitted', 'declined', 'censored')
+    transitions = {before: dict.fromkeys(dispositions, 0) for before in dispositions}
+    shared_wait_changes = []
+    for after in proposed.requests:
+        before = baseline[after.request_id]
+        transitions[before.disposition][after.disposition] += 1
+        if before.admitted_minute is not None and after.admitted_minute is not None:
+            shared_wait_changes.append(after.admitted_minute - before.admitted_minute)
+    mean_change = sum(shared_wait_changes) / len(shared_wait_changes) if shared_wait_changes else None
+    return transitions, mean_change
+
+
 def audit_trace_bundle(bundle: TraceBundle) -> dict:
     """Admit a paired synthetic trace and report physical/access consequences.
 
@@ -160,31 +175,28 @@ def audit_trace_bundle(bundle: TraceBundle) -> dict:
     """
     b = TraceBundle.model_validate(bundle.model_dump())
     staffed, cap_starts = _capacity(b)
+    baseline = {r.request_id: r.request_minute for r in b.strategies[0].requests}
     for arm in b.strategies[1:]:
-        baseline = {r.request_id: r.request_minute for r in b.strategies[0].requests}
         proposed = {r.request_id: r.request_minute for r in arm.requests}
         if proposed != baseline:
             raise ValueError('paired demand requests must be identical across strategies')
     arms = {arm.strategy_id: _arm(b, arm, staffed, cap_starts) for arm in b.strategies}
     base = arms['current_care']
+    baseline_requests = {r.request_id: r for r in b.strategies[0].requests}
     comparisons = {}
-    for name, outcome in arms.items():
-        if name == 'current_care':
-            continue
-        if base['mean_admission_wait_minutes'] is None or outcome['mean_admission_wait_minutes'] is None:
-            delta_wait = None
-        else:
-            # If different requests are admitted in the arms, an unpaired mean
-            # difference is not a causal same-patient wait effect.
-            base_ids = {r.request_id for r in b.strategies[0].requests if r.disposition == 'admitted'}
-            alt = next(x for x in b.strategies if x.strategy_id == name)
-            alt_ids = {r.request_id for r in alt.requests if r.disposition == 'admitted'}
-            delta_wait = (outcome['mean_admission_wait_minutes'] - base['mean_admission_wait_minutes']
-                          if base_ids == alt_ids else None)
-        comparisons[name] = {
+    for arm in b.strategies[1:]:
+        outcome = arms[arm.strategy_id]
+        transitions, shared_mean = _paired_request_access(baseline_requests, arm)
+        shared_count = transitions['admitted']['admitted']
+        identical_admissions = 0 < shared_count == base['admitted_requests'] == outcome['admitted_requests']
+        delta_wait = (outcome['mean_admission_wait_minutes'] - base['mean_admission_wait_minutes']
+                      if identical_admissions else None)
+        comparisons[arm.strategy_id] = {
             'occupied_bed_days_change': (outcome['occupied_bed_minutes'] - base['occupied_bed_minutes']) / 1440,
             'spare_staffed_bed_minutes_change': outcome['spare_staffed_bed_minutes'] - base['spare_staffed_bed_minutes'],
             'mean_wait_minutes_change': delta_wait,
+            'mean_wait_minutes_change_among_shared_admissions': shared_mean,
+            'request_disposition_transitions': transitions,
             'admitted_requests_change': outcome['admitted_requests'] - base['admitted_requests'],
             'declined_requests_change': outcome['declined_requests'] - base['declined_requests'],
             'staffed_capacity_changed': False,

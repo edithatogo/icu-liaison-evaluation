@@ -118,6 +118,32 @@ def test_unknown_request_disposition_preserved_not_counted_as_decline():
     assert report['strategies']['current_care']['censored_requests'] == 1
     assert report['strategies']['current_care']['declined_requests'] == 0
     assert report['strategies']['current_care']['mean_admission_wait_minutes'] is None
+    comparison = report['paired_comparisons']['liaison_service']
+    assert comparison['request_disposition_transitions']['censored']['censored'] == 1
+    assert comparison['mean_wait_minutes_change_among_shared_admissions'] is None
+
+
+def test_paired_outcomes_preserve_censoring_declines_and_shared_admission_waits():
+    v = sample()
+    current, proposed = v['strategies']
+    current['requests'] += [
+        {'request_id': 'syn-demand-2', 'request_minute': 95, 'disposition': 'censored', 'admitted_minute': None},
+        {'request_id': 'syn-demand-3', 'request_minute': 200, 'disposition': 'declined', 'admitted_minute': None},
+    ]
+    proposed['requests'] += [
+        {'request_id': 'syn-demand-2', 'request_minute': 95, 'disposition': 'admitted', 'admitted_minute': 150},
+        {'request_id': 'syn-demand-3', 'request_minute': 200, 'disposition': 'censored', 'admitted_minute': None},
+    ]
+    proposed['occupancies'].append({'episode_id': 'syn-demand-2', 'start_minute': 150, 'end_minute': 240})
+    report = audit_trace_bundle(TraceBundle.model_validate(v))
+    comparison = report['paired_comparisons']['liaison_service']
+    assert comparison['request_disposition_transitions'] == {
+        'admitted': {'admitted': 1, 'declined': 0, 'censored': 0},
+        'declined': {'admitted': 0, 'declined': 0, 'censored': 1},
+        'censored': {'admitted': 1, 'declined': 0, 'censored': 0},
+    }
+    assert comparison['mean_wait_minutes_change'] is None
+    assert comparison['mean_wait_minutes_change_among_shared_admissions'] == -30
 
 
 def test_cli_reports_only_aggregate_results(tmp_path):

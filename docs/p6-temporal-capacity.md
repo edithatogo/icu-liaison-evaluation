@@ -21,8 +21,8 @@ occupied intervals are half-open `[start, end)`. Staffed capacity must fully
 cover the horizon; changes in available staffed beds are integrated at their
 actual boundaries. Admission requests link to observed occupancy starts, and
 same requests and arrival times are compared across strategies. A request can
-be admitted, declined, or censored; an unknown outcome is not automatically
-coded as no admission.
+be admitted, declined or censored. The report counts disposition changes for
+the same requests and gives the wait difference for shared admissions.
 
 Run from the package root:
 
@@ -40,7 +40,8 @@ annual P4 simulation, and no P4 bed-days should be scaled from them.
 
 ## P6.3/4 native and empirical entry gates
 
-Before any temporal simulation claim, the independent owner must establish:
+Before relying on temporal simulation for a CHHHS decision, establish the
+following evidence.
 
 - Precisely pinned and tested Kairos native provider and real event export,
   including queue state, occupancy, handovers, scheduling order, preemption,
@@ -55,7 +56,6 @@ Before any temporal simulation claim, the independent owner must establish:
 - Demonstrated incremental decision value above the current P4 cohort model;
   do not build a duplicate scheduler merely to produce more elaborate plots.
 
-These are presently **unverified**. The source contract permits inspection of a
-future native producer output only after a separately reviewed adapter defines
-its real upstream field mappings. The portable synthetic CLI does not accept
-private operational data or pretend to run Kairos.
+The [local native check](p6-native-qualification.md) verifies the pinned
+one-bed producer against fictional reference cases. Site use requires
+independent build attestation and local calibration on approved data.

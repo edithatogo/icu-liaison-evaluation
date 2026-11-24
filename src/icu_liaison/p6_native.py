@@ -82,6 +82,21 @@ class KairosProducerOutput(_Strict):
     strategies: list[ArmTrace] = Field(min_length=2, max_length=8)
 
 
+def _audit_single_bed_queue(arm: ArmTrace, ordered_demand: list[ArrivalConfig], horizon: int) -> None:
+    """Check observed intervals against the fixed one-bed FIFO contract."""
+    if any(request.disposition == 'declined' for request in arm.requests):
+        raise ValueError('native one-bed consumer does not decline demand')
+    occupied = sorted(arm.occupancies, key=lambda interval: interval.start_minute)
+    admitted = occupied[1:]  # The physical audit has checked the initial occupant at minute zero.
+    for previous, interval, request in zip(occupied, admitted, ordered_demand):
+        if interval.episode_id != request.request_id:
+            raise ValueError('native admissions violate FIFO demand order')
+        if interval.start_minute != max(previous.end_minute, request.request_minute):
+            raise ValueError('native request waited with a vacant staffed bed')
+    if len(admitted) < len(ordered_demand) and occupied[-1].end_minute < horizon:
+        raise ValueError('native request censored with a vacant staffed bed')
+
+
 def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScenario,
                           provider_lock: Mapping) -> dict:
     """Review self-described provider output as an UNTRUSTED synthetic contract fixture.
@@ -106,6 +121,7 @@ def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScena
     if names != [arm.strategy_id for arm in scenario.strategies]:
         raise ValueError('native strategy contract mismatch')
     expected_demand = {r.request_id: r.request_minute for r in scenario.arrivals}
+    durations = {r.request_id: r.occupied_duration_minutes for r in scenario.arrivals}
     for arm, configuration in zip(output.strategies, scenario.strategies, strict=True):
         if {r.request_id: r.request_minute for r in arm.requests} != expected_demand:
             raise ValueError('paired demand request identity/time mismatch')
@@ -116,14 +132,13 @@ def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScena
             index[0].end_minute != configuration.initial_departure_minute):
             raise ValueError('index physical departure is inconsistent with configuration')
         for obs in arm.occupancies:
-            if obs.episode_id not in {'syn-index-1', *expected_demand.keys()}:
+            if obs.episode_id == 'syn-index-1':
+                continue
+            if obs.episode_id not in durations:
                 raise ValueError('unexpected occupancy identity in native trace')
-        durations = {r.request_id: r.occupied_duration_minutes for r in scenario.arrivals}
-        for obs in arm.occupancies:
-            if obs.episode_id in durations:
-                expected_end = min(obs.start_minute + durations[obs.episode_id], scenario.horizon_minutes)
-                if obs.end_minute != expected_end:
-                    raise ValueError('request occupancy duration mismatch')
+            expected_end = min(obs.start_minute + durations[obs.episode_id], scenario.horizon_minutes)
+            if obs.end_minute != expected_end:
+                raise ValueError('request occupancy duration mismatch')
 
     # A numeric audit uses the pre-existing trace machinery. Normalisation is
     # deliberately not exported as a fake synthetic fixture or trusted native receipt.
@@ -140,6 +155,10 @@ def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScena
         'notes': 'Internal normalisation for independent numeric conservation only.',
     })
     audited = audit_trace_bundle(neutral)
+    # Simultaneous arrivals are submitted in input order, which the stable sort preserves.
+    ordered_demand = sorted(scenario.arrivals, key=lambda request: request.request_minute)
+    for arm in output.strategies:
+        _audit_single_bed_queue(arm, ordered_demand, scenario.horizon_minutes)
     return {
         'status': 'native_output_contract_checked_not_executed',
         'admission': audited,
@@ -176,7 +195,7 @@ def check_native_binary_capability(native_source: Path) -> dict:
 
 
 def invoke_native_binary(binary: Path, scenario_path: Path, *, expected_sha256: str,
-                         provider_lock: Mapping) -> dict:
+                         provider_lock: Mapping, reference: KairosProducerOutput | None = None) -> dict:
     """Run a locally supplied binary, hash its bytes and validate output.
 
     A match to a caller-provided binary hash proves byte identity only. It is
@@ -202,6 +221,8 @@ def invoke_native_binary(binary: Path, scenario_path: Path, *, expected_sha256: 
         raise ValueError('native consumer failed or exceeded bounded output')
     output = KairosProducerOutput.model_validate_json(completed.stdout)
     review = inspect_native_output(output, scenario=scenario, provider_lock=provider_lock)
+    if reference is not None and output != reference:
+        raise ValueError('actual native output differs from independent reference fixture')
     return {
         **review, 'status': 'native_executable_invoked_unattested_build',
         'native_binary_executed': True, 'native_provenance_qualified': False,

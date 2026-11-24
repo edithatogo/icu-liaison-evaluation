@@ -94,8 +94,9 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
    [plan](tracks/P6-kairos-capacity-validation/plan.md)).
   P6.1/2 synthetic neutral event-trace, time-varying staffed-capacity
   conservation, paired-demand and CLI gates are implemented with NumPy/Pydantic.
-  P6.3 passed the pinned local Rust build and one-bed replay. P6.4 includes
-  synthetic holdout diagnostics. Independent build attestation, CHHHS
+  P6.3 passed the pinned local Rust build and two one-bed replays, including
+  FIFO contention and horizon censoring. P6.4 includes synthetic holdout
+  diagnostics. Independent build attestation, CHHHS
   calibration and clinical and Finance governance remain open.
 
 - [~] **Track: P7 — Technical, primary-source and empirical qualification closeout**
