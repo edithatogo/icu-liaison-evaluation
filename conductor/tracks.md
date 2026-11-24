@@ -4,6 +4,11 @@ The exploratory `careops-sim` R78–R81 tracks are historical source context.
 PR #215 was closed after the standalone migration. The exact exploratory head
 is retained in the [migration comparison](../docs/pr215-migration-comparison.md).
 
+The portable implementation and review fixes through P10 are integrated.
+P11 has completed fictional acceptance. The track plans identify the
+outstanding evidence and approvals.
+[Repository reconciliation](tracks/P0-portable-consolidation/handoff.md#repository-reconciliation-on-25-november-2026)
+
 - [~] **Track: P0 — Portable consolidation and Conductor handoff**
   ([index](tracks/P0-portable-consolidation/index.md),
    [spec](tracks/P0-portable-consolidation/spec.md),
@@ -32,9 +37,7 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   native oracle, vendor-test, PEP 740 / PGP attestation, advisory, cross-env
   parity, and P5 reconciliation runs are implemented
   (`verification/p1-native-qualification-2026-11-19.json`). The Voiage
-  macOS arm64 wheel is admitted after signature and native checks. The Dapane
-  release successor passed the APFS case and a clean locked dependency audit.
-  Independent acceptance of the repaired artifact remains open.
+  macOS arm64 wheel is admitted after signature and native checks.
   [P1.4 qualification](tracks/P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
   The two corrected P5 regressions passed with the locked Dapane source build,
   and P0.5 raised the setuptools pin to 84.2.1.
@@ -43,6 +46,8 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   component conservation receipts for the tested macOS arm64, Ubuntu
   x86-64 and Windows Server x86-64 hosts. The Windows rebuild passed
   all 215 vendor tests directly from the upstream fixture fix.
+  The separate Dapane release-assurance successor passed the APFS case and a
+  clean locked dependency audit and awaits independent admission.
   [P1.4 Windows rebuild](tracks/P1-provider-reuse/plan.md#windows-rebuild-after-the-upstream-fixture-fix)
 - [~] **Track: P2 — Clinical/economic model and CHHHS data specification**
   ([index](tracks/P2-clinical-economic-protocol/index.md),

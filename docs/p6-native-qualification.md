@@ -7,11 +7,12 @@
 and inspected Git blob SHAs are in
 `model-inputs/p6/kairos-provider-lock.json`.
 
-On 24 November 2026, Rust 1.100.0 built and tested the consumer at Kairos
-`273bf44`. Two executions returned identical bytes and matched the
-independent synthetic one-bed reference. The committed Cargo.lock fixes all
-30 packages, including the five Kairos crates from that exact revision. The
-24 registry checksums match the previously reviewed Cargo lock.
+On 25 November 2026, Rust 1.100.0 built and tested the consumer at Kairos
+`161c0bf`. Repeated executions of both one-bed scenarios returned identical
+bytes and matched their simultaneous-demand and queue references. The
+committed Cargo.lock fixes all 30 packages, including five Kairos crates
+at that exact revision, and retains the 24 reviewed registry checksums.
+[Dependency check](../conductor/tracks/P6-kairos-capacity-validation/handoff.md#kairos-dependency-check-on-25-november-2026)
 
 To repeat the check, use a supported Rust toolchain and the committed lock.
 

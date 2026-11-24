@@ -76,3 +76,15 @@ carry the replay boundary, holdout diagnostics and regression checks on
 previous output bytes. The next operations are hosted source validation and
 independent review of the build and replay evidence.
 [Verification](test-matrix.md#p6-review-on-24-november-2026)
+
+## Kairos dependency check on 25 November 2026
+
+Both crate pins move to `161c0bfdb496dba77ff4741bfdfe9e93b81f94cd`.
+The three inspected provider blobs and the 24 registry checksums match the
+previously reviewed source and lock. Cargo metadata confirms the new upstream
+checkpoint feature is disabled in this consumer. Rust 1.100.0 passed
+formatting, Clippy, locked tests and the build. Both fictional one-bed cases
+matched their reference values, with identical output bytes on repeat runs.
+The Cargo lock SHA-256 is
+`72b8dd7dc94eef35cb0d21348244640382cde7609568e0b1c723b0fe3e35e8c4`.
+Independent build attestation and site validation remain open.

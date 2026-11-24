@@ -34,8 +34,9 @@
   tested environments. [P1 platform evidence](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
 - [x] Reconcile the admitted Voiage 3.1.0 macOS arm64 wheel and its
   CPython 3.15.2 scope. [P1 Voiage evidence](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
-- [ ] Complete independent acceptance of the repaired Dapane artifact
-  and qualify other provider environments as needed through P1 and P7.
+- [ ] Complete independent admission of the Dapane release-assurance
+  successor and qualify other provider environments as needed through P1 and P7.
+  [P1 successor scope](../P1-provider-reuse/plan.md#dapane-release-assurance-successor)
 
 This source handoff does not authorise reading real CHHHS data or label any clinical or financial result empirically validated.
 

@@ -223,3 +223,31 @@ Conductor now records the admitted P5 Voiage scope, the synthetic P10
 lineage checks and the completed repository migration and hosted runs.
 The separate review receipt required by P7, broader provider qualification
 and CHHHS empirical and governance acceptance remain open.
+
+## Repository reconciliation on 25 November 2026
+
+At `c730eb8`, synthetic and privacy checks passed on `main`. GitHub
+showed 66 merged pull requests, seven closed as superseded and none open.
+The P5–P10 implementation and review PRs, including the P7 companion, are
+integrated, and P11's fictional acceptance is complete.
+[Merged PRs](https://github.com/edithatogo/icu-liaison-evaluation/pulls?q=is%3Apr+is%3Amerged) ·
+[Synthetic run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/45426382962) ·
+[Privacy run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/45426382984)
+
+- PRs #15, #17, #23 and #24 carry the scoped Dapane changes. The extra P9
+  verification on the Dapane candidate is historical and the later P9 and P10
+  PRs carry the current contracts. The one-time Dapane runner commits and
+  checkout material were preserved locally for recovery. The published
+  qualification is recorded in [P1](../P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification).
+- PRs #29, #31, #34, #38 and #43 cover Renovate, the qualified quality hooks,
+  current GitHub Actions pins, hosted privacy scans and the egress audit. The closed
+  StepSecurity branches propose duplicate hooks. The earlier public-data
+  boundary commit is superseded by `c8a85b4` and `873ea0d`.
+- GitHub issue #30 is the standing Renovate dashboard. The
+  [P11 dependency record](../P11-scenario-workflows/handoff.md#dependency-reconciliation-on-25-november-2026)
+  identifies compatible updates and the remaining version constraints.
+
+P7 tracks the independent review receipt for the original receiving revision.
+The other evidence-dependent work includes governed CHHHS episode linkage,
+staffing and paid costs, clinical and Finance review, and the remaining
+provider and evidence admission checks in P1, P3, P6 and P8.
