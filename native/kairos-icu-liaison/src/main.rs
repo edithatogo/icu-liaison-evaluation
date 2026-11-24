@@ -12,7 +12,7 @@ use kairo_ecs_des::{StagedRequestState, StagedResourceRuntime};
 use kairo_ecs_types::SimTime;
 use serde::{Deserialize, Serialize};
 
-const PROVIDER_SHA: &str = "161c0bfdb496dba77ff4741bfdfe9e93b81f94cd";
+const PROVIDER_SHA: &str = "b60c422b9fa90751b6a5349b9aefab2bf272e25e";
 const PRODUCER: &str = "icu-liaison-kairos-consumer";
 const MAX_REQUESTS: usize = 1000;
 

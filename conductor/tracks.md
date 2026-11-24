@@ -100,9 +100,10 @@ outstanding evidence and approvals.
   P6.1/2 synthetic neutral event-trace, time-varying staffed-capacity
   conservation, paired-demand and CLI gates are implemented with NumPy/Pydantic.
   P6.3 passed the pinned local Rust build and two one-bed replays, including
-  FIFO contention and horizon censoring. P6.4 includes synthetic holdout
-  diagnostics. Independent build attestation, CHHHS
+  FIFO contention and horizon censoring, on Kairos `b60c422`. P6.4 includes
+  synthetic holdout diagnostics. Independent build attestation, CHHHS
   calibration and clinical and Finance governance remain open.
+  [Current pin qualification](tracks/P6-kairos-capacity-validation/handoff.md#scheduled-kairos-update-b60c422)
 
 - [~] **Track: P7 — Technical, primary-source and empirical qualification closeout**
   ([index](tracks/P7-technical-empirical-qualification/index.md),
