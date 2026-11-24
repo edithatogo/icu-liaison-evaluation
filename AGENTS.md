@@ -48,7 +48,8 @@ acceptance remain missing.
 ## P6 native and clinical boundary
 
 The optional Rust consumer in `native/kairos-icu-liaison` has a checked local
-one-bed replay. Keep independent build attestation and site acceptance open. Run
+one-bed replay. Record independent build attestation for the exact reviewed
+artifact and runner. Keep site acceptance subject to its own evidence. Run
 `tools/qualify_p6_native.py` only with an approved toolchain, reviewed lock
 and exact upstream source. No direct patient records in public Git.
 

@@ -10,7 +10,9 @@
 - [x] P7.4 Run the pinned Kairos consumer with a reviewed Cargo.lock and check
   byte-identical replay against the two one-bed references.
   [P6 evidence](../P6-kairos-capacity-validation/test-matrix.md#p6-review-on-24-november-2026)
-- [ ] Independently attest the P7.4 build artifact and runner.
+- [x] Independently attest the retained P7.4 Kairos `b60c422` macOS arm64
+  build artifact and runner for the two fictional cases.
+  [Scoped build decision](../P6-kairos-capacity-validation/handoff.md#independent-build-attestation-on-25-november-2026)
 - [~] P7.5 Execute and independently qualify the installed provider artifacts.
   Dapane's pinned macOS arm64, Ubuntu x86-64 and Windows Server x86-64
   artifacts have scoped independent approval. The verified Voiage 3.1.0

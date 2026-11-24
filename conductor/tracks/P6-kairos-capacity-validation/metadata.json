@@ -10,10 +10,10 @@
     "P6.2-synthetic-conformance",
     "P6.3-provider-source-and-trace-contract",
     "P6.3-local-native-Kairos-producer-and-replay",
+    "P6.3-independent-native-build-attestation",
     "P6.4-synthetic-holdout-diagnostics"
   ],
   "blocked_phases": [
-    "P6.3-independent-native-build-attestation",
     "P6.3-ward-costing-and-safety-integration",
     "P6.4-CHHHS-calibration",
     "P6.4-independent-clinical-Finance-governance-review"
@@ -23,6 +23,12 @@
     "P3-evidence-data-infrastructure"
   ],
   "source_provider_revision": "b60c422b9fa90751b6a5349b9aefab2bf272e25e",
-  "native_execution": "local_synthetic_replay_passed_unattested",
+  "native_execution": "independently_attested_fictional_macos_arm64",
+  "independent_build_attestation": {
+    "consumer_revision": "4b6e704c4d1561d6b19b94456031f0b9951a6d3d",
+    "provider_revision": "b60c422b9fa90751b6a5349b9aefab2bf272e25e",
+    "platform": "macos_arm64",
+    "reviewed_on": "2026-11-25"
+  },
   "clinical_validation": false
 }

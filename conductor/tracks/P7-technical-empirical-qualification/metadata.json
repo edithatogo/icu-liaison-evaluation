@@ -4,7 +4,7 @@
   "title": "Native, public evidence and local empirical admission",
   "status": "in_progress",
   "created_at": "2026-11-18",
-  "updated_at": "2026-11-24",
+  "updated_at": "2026-11-25",
   "implementation_started": true,
   "accepted_phases": [
     "P7.1-2023_24-publisher-PDF-page-review",
@@ -12,19 +12,19 @@
     "P7.2-portable-qualification-receipt",
     "P7.3-CHHHS-data-request-and-causal-plan",
     "P7.4-local-Kairos-native-replay",
+    "P7.4-independent-Kairos-build-attestation",
     "P7.5-voiage-macos-arm64-admission",
     "P7.6-direct-publisher-byte-and-page-check",
     "P7.8-dedicated-repo-hosted-integration",
     "P7.8-portable-migration-release"
   ],
   "blocked_phases": [
-    "P7.4-independent-Kairos-build-attestation",
     "P7.5-broader-dapane-release",
     "P7.6-2024_25-independent-source-admission",
     "P7.7-approved-local-data-and-independent-reviews"
   ],
   "dependency_tracks": ["P0-portable-consolidation", "P1-provider-reuse", "P2-clinical-economic-protocol", "P3-evidence-data-infrastructure", "P4-economic-decision-model", "P5-reporting-independent-review", "P6-kairos-capacity-validation"],
   "clinical_validation": false,
-  "native_execution": "kairos_local_replay_and_dapane_platform_scoped_independent_review",
+  "native_execution": "kairos_macos_arm64_attestation_and_dapane_platform_scoped_independent_review",
   "investment_ready": false
 }

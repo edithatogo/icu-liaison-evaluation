@@ -34,8 +34,10 @@
   Voiage's admitted macOS arm64 artifact is recorded in the P1 lock.
   [Provider lock](../../../providers.lock.json) ·
   [Technical P7.5](../P7-technical-empirical-qualification/plan.md)
-  The pinned Kairos consumer passed local replay and awaits independent build
-  attestation.
+  The retained Kairos `b60c422` macOS arm64 fictional build and runner
+  have independent attestation. The site-native receipt still requires
+  separately qualified ward transitions and contract adaptation.
+  [Scoped build decision](../P6-kairos-capacity-validation/handoff.md#independent-build-attestation-on-25-november-2026)
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
 - [x] 5. Integrate the portable source into the selected repository and verify
   hosted checks. CareOps Sim PR #215 is closed and the repository owner

@@ -31,8 +31,10 @@ keep the build in a private workspace. The `icu-liaison-p6-native` CLI runs a
 temporary copy of the binary it checks against the supplied SHA-256, using the
 same input bytes it validated. It requires the integer fields used by the Rust
 consumer and reports invalid locks or timed-out replay as unverified.
-Independent build attestation, CHHHS calibration and clinical and Finance
-review remain open.
+The independent build attestation applies to the exact retained
+`b60c422` macOS arm64 executable and runner. CHHHS calibration and
+clinical and Finance review remain open.
+[Build decision](../conductor/tracks/P6-kairos-capacity-validation/handoff.md#independent-build-attestation-on-25-november-2026)
 
 In the contention case, the earlier discharge frees the bed in time to admit
 one more of the same three requests. Both alternatives still use 240 staffed
