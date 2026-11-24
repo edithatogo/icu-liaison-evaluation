@@ -2,9 +2,10 @@
 
 P7.1 through P7.3 deliver the machine-verifiable register, synthetic P3–P6
 dry run, candidate byte checks and evidence checklist. The bundle verifier
-requires the progress receipt, checklist and the complete P5 report. The
-candidate CLI checks the submission and referenced files against the checkout's
-private-storage rules. [Verification](test-matrix.md)
+checks the receipt's synthetic status and requires all 33 obligations in the
+receipt and checklist. The candidate CLI requires ignored, untracked private
+paths for files inside any enclosing Git checkout. The public audit rejects
+bindings to the designated private directories. [Verification](test-matrix.md)
 
 The 2024/25 ANZICS publisher and locator checks, scoped provider decisions and
 the receiving migration's hosted CI and release decision are recorded in P7.4.

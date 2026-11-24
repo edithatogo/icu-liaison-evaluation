@@ -44,6 +44,8 @@ patient identifiers, hospitalisation keys, linkable timestamp extracts,
 financial ledger exports and recorded governance decisions. P3 synthetic CSV
 fixtures reside under `model-inputs/placeholders/p3-synthetic/` and have
 precommitted SHA-256 checksums. Never commit any real replacements in their place.
+The public audit rejects source bindings and fixture references that enter
+`private/` or `.local/`, including paths that resolve there through a link.
 
 ## What each replacement requires
 
@@ -90,8 +92,8 @@ private-data lane with an explicit approval and retention plan.
 3. For each replacement, create a **private** candidate evidence file and a
    candidate receipt, e.g. the documented schema
    `model-inputs/placeholders/replacement-candidates.schema.json`.
-   Store both in approved private storage outside the checkout or in its
-   ignored `private/` or `.local/` directories.
+   Store both in approved private storage. Within a Git checkout, use
+   `private/` or `.local/` and keep both files ignored and untracked.
    Call `PYTHONPATH=src .venv/bin/python -m icu_liaison.placeholders_cli review-candidates
    --submission /private/absolute/path/to/submission.json`.
    The command checks the location, ID/type and byte hash. The custodian
@@ -124,9 +126,10 @@ clinical safety acceptance remain open.
 - Run `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_p7_placeholder_progress.py`
   for placeholder registration, storage, hash, negative gates and dry-run tests.
 - Run the complete suite (`PYTHONPATH=src .venv/bin/python -m pytest -q`) before promotion.
-- Use `verify_progress_manifest(output_dir)` to verify the synthetic progress
-  receipt, replacement checklist, complete P5 report and manifest hashes.
-  This establishes file completeness and consistency with the manifests.
+- Use `verify_progress_manifest(output_dir)` to check the file inventory and
+  hashes, the complete P5 report, the receipt's synthetic status and all 33
+  unresolved checklist entries. Independent source admission is a separate
+  review.
 - The historic public CareOps Sim PR #215 remains unchanged. This work belongs
   to `edithatogo/icu-liaison-evaluation`; each provider retains its own source
   ownership and acceptance requirements.
