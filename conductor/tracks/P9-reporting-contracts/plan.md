@@ -12,6 +12,11 @@
 - [x] P9.4b Qualify exploratory F05-F09 assets by rerendering from pinned source outputs, never by copying or falsely marking as in-repo.
 - [ ] P9.4c Produce empirical and native-provider figures only after data/assurance admission.
 - [x] P9.4d Generate a companion HTML index with accessible SVGs, source CSVs, seeded provenance and independent numerical reconciliation.
+- [x] P9.4e Check the reporting catalogue against a verified P11 run. Report
+  table and figure paths and hashes, figure source and review evidence, and
+  pending evidence. Bind supported IDs to their actual artifacts and reject
+  relabelled or invented outputs.
+  [Run coverage receipt](../../../verification/p9-run-coverage-2026-11-24.json)
 - [ ] P9.5 Independent clinical, statistical, Finance and relevant First Nations governance acceptance.
 
 - [x] P9.3g Link all seven table and 24 figure contracts to P10 metric/denominator IDs and uncertainty classes.
@@ -19,6 +24,12 @@
 - [x] P9.6 Record four-profile visual review and source-mark evidence for F01 and all 13 baseline P9 figures. The ten evidence-dependent figures have their own review scope.
 
 The [24 November contract review](../../../verification/p10-p11-contract-review-2026-11-24.json)
-records the latest six-scenario production check and four-profile baseline
+records the previous six-scenario production check and four-profile baseline
 review. The [20 November verification](../../../verification/p9-synthetic-figures-2026-11-20.json)
 records the earlier figure bundle.
+
+T05 requires the approved nursing classification and full roster reconciliation.
+T06 requires verified annual calculator parity and admitted episodes. T07
+requires linked outcome data and clinical safety review. F12 requires method
+verification for the information-value curves. The remaining figure evidence
+requirements are in the catalogue, and P9.5 retains its site acceptance gates.

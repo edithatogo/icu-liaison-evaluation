@@ -108,6 +108,31 @@ def test_reporting_schema_rejects_falsely_promoted_placeholder():
         validate_catalogue(c)
 
 
+@pytest.mark.parametrize("table_id", ["T05", "T06", "T07"])
+def test_existing_synthetic_csv_cannot_promote_a_blocked_table(table_id):
+    catalogue = load()
+    table = next(row for row in catalogue["tables"] if row["id"] == table_id)
+    table.update(status="implemented", privacy="synthetic_only",
+                 artifact="cost-consequence.csv", required_columns=["strategy_id"])
+    with pytest.raises(ValueError, match=table_id):
+        validate_catalogue(catalogue)
+
+
+def test_registered_table_cannot_claim_another_report_csv():
+    catalogue = load()
+    sensitivity = next(row for row in catalogue["tables"] if row["id"] == "T03")
+    sensitivity["artifact"] = "paired-comparisons.csv"
+    with pytest.raises(ValueError, match="T03"):
+        validate_catalogue(catalogue)
+
+
+def test_optional_f01_cannot_point_to_an_unproduced_file():
+    catalogue = load()
+    catalogue["figures"][0]["artifact"] = "invented.svg"
+    with pytest.raises(ValueError, match="F01"):
+        validate_catalogue(catalogue)
+
+
 def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthetic_output():
     c = load()
     c["tables"][0]["privacy"] = "approved_aggregates_only"

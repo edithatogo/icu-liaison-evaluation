@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-24",
+  "scope": "synthetic_reporting_contract_and_verified_run_coverage",
+  "python": "3.15.2",
+  "snakemake": "9.27.2",
+  "catalogue_revision": "2026-11-20-P9-supplement-v5",
+  "current_edition": {
+    "summary_id": "77b6543999a6bf3a1d4acb073cead7e95cfe7506b1b7a058cd2a8e6a7701ede2",
+    "coverage_sha256": "77f23c50595b9f7ab62fcf945687d5bfc7c215a87b332da15b966d403174a7ca",
+    "scenario_count": 6,
+    "table_count": 24,
+    "figure_count": 84,
+    "paired_rows": 72,
+    "missing_implemented_outputs": [],
+    "unchanged_rerun_no_op": true
+  },
+  "historical_edition": {
+    "source_commit": "0e98edc30a16744d9f60ffc9fdda7328b11cd2cc",
+    "summary_id": "f9220b6aba291d27144608479bcaaeb0f9fb4d8c1c5503ffddd1781de10f8bf8",
+    "coverage_sha256": "6e8cafc60e11f4dbf8e5eb43be139e4431f1a85537548cd25d62f7c05eed4e12",
+    "scenario_count": 1,
+    "table_count": 4,
+    "figure_count": 7,
+    "figures_added_after_edition": ["F05", "F06", "F07", "F08", "F09", "F13", "F18"]
+  },
+  "blocked_tables": ["T05", "T06", "T07"],
+  "blocked_figures": ["F03", "F04", "F12", "F14", "F16", "F17", "F19", "F21", "F22", "F23"],
+  "visual_reproduction": {
+    "scope": "baseline_four_profile_raster_byte_comparison",
+    "reference_receipt": "verification/portable-synthetic-2026-11-20.json",
+    "capture_manifest_sha256": "a8fe25b3703242fc681b6dcaabe494a7f59847ef869c2a47ecf732fd837ba877",
+    "renderer": "rsvg-convert version 2.63.4",
+    "byte_identical_to_reviewed_captures": 56
+  },
+  "clinical_safety_approved": false,
+  "investment_ready": false
+}
