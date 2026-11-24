@@ -14,8 +14,9 @@ Pydantic; inverse CDF and numerical operations owned by SciPy/NumPy.
 **Admit P2/P3 before modelling:** preserve the 12-month programme horizon,
 AUD price year, primary `current_care` and `liaison_service` comparators and
 all six mandatory balancing outcomes. Reconcile public proxy identity, value,
-source URL, reporting cohort and denominator against the P3 register. Permit
-additional synthetic *variants* but never relabel as approved comparators.
+source URL, reporting period, cohort and denominator against the P3 register.
+Fictional P4 runs and P5 reports reject priors labelled as local aggregates.
+Additional synthetic variants retain their proposed-strategy status.
 
 **Outputs:** annual index ICU days released; physically usable days not
 monetised; early unplanned returns avoided (including negative); gross and net

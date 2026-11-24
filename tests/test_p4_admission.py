@@ -46,6 +46,30 @@ def test_rejects_changed_external_benchmark_and_source_registry():
         admit_p4(EconomicScenario.model_validate(s),p,c,r)
 
 
+def test_rejects_protocol_benchmark_period_that_disagrees_with_p3():
+    from icu_liaison.p4_admission import admit_p4
+
+    scenario, protocol, catalogue, register = inputs()
+    protocol['reference_benchmark']['period'] = '2023-07-01/2024-06-30'
+    with pytest.raises(ValueError, match='benchmark reporting period'):
+        admit_p4(EconomicScenario.model_validate(scenario), protocol, catalogue, register)
+
+
+@pytest.mark.parametrize('parameter', [
+    'baseline.unplanned_72h_return_rate',
+    'resource.net_index_delay_cost_aud_per_day',
+    'strategy.liaison_service.annual_incremental_cost_aud',
+])
+def test_rejects_local_aggregate_priors_in_fictional_admission(parameter):
+    from icu_liaison.p4_admission import admit_p4
+
+    scenario_data, protocol, catalogue, register = inputs()
+    scenario = EconomicScenario.model_validate(scenario_data)
+    scenario.all_priors()[parameter].evidence_status = 'local_aggregate_unvalidated'
+    with pytest.raises(ValueError, match='local aggregate priors'):
+        admit_p4(scenario, protocol, catalogue, register)
+
+
 def test_rejects_missing_required_safety_and_unapproved_source_promotion():
     from icu_liaison.p4_admission import admit_p4
     s,p,c,r=inputs();p['safety']['required_endpoints'].remove('ward_workload')

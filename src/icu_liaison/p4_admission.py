@@ -1,7 +1,7 @@
-"""P4 preflight: P2 clinical contract + P3 independent source metadata.
+"""P4 preflight for the P2 clinical contract and P3 source metadata.
 
-No source label is permitted to promote a pooled ANZICS benchmark into
-observed CHHHS effectiveness. The reviewed publisher PDF remains an open gate.
+The pooled ANZICS benchmark serves as an external proxy. Independent
+publisher-source admission and local CHHHS validation remain open.
 """
 from __future__ import annotations
 import hashlib
@@ -15,6 +15,8 @@ from .public_evidence import Catalogue, reconcile_catalogue, select_external_ben
 
 def admit_p4(scenario: EconomicScenario, protocol: dict, catalogue: dict, register: dict) -> dict[str, Any]:
     s = EconomicScenario.model_validate(scenario.model_dump(mode='json'))
+    if any(prior.evidence_status == 'local_aggregate_unvalidated' for prior in s.all_priors().values()):
+        raise ValueError('local aggregate priors cannot enter a fictional P4 run')
     p = EvaluationProtocol.model_validate(protocol)
     benchmarks = reconcile_catalogue(Catalogue.model_validate(catalogue), register)
     rate = select_external_benchmark(benchmarks, 'CCR_2024_25_EXIT_BLOCK')
@@ -37,6 +39,8 @@ def admit_p4(scenario: EconomicScenario, protocol: dict, catalogue: dict, regist
         or reference.unit != rate['unit']
         or reference.source_id != rate['source_id']):
         raise ValueError('public proxy benchmark conflicts with P2/P3 evidence')
+    if reference.period != rate['period']:
+        raise ValueError('P4/P2 benchmark reporting period conflicts with P3 evidence')
     source = next((x for x in register['sources'] if x['id'] == rate['source_id']), None)
     if not source or source.get('url') != reference.url:
         raise ValueError('public proxy publisher source URL mismatch')

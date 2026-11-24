@@ -71,8 +71,10 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
    [plan](tracks/P4-economic-decision-model/plan.md)).
   Multi-strategy, correlated-uncertainty model, threshold and one-way
   analyses, resource/budget/capacity separation and P2/P3 source admission
-  have source-level local tests. Clinical validation, CHHHS data, independent
-  publisher-source admission and broader provider qualification remain open.
+  have source-level local tests. P4 and P5 reject mismatched benchmark periods
+  and labelled local aggregates in fictional runs. Clinical validation,
+  CHHHS data, independent publisher-source admission and broader provider
+  qualification remain open.
   P1 records the admitted artifacts and their supported environments.
 - [~] **Track: P5 — Reproducible reporting and independent checks**
   ([index](tracks/P5-reporting-independent-review/index.md),
