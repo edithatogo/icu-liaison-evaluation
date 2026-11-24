@@ -102,6 +102,12 @@ def test_changed_model_code_identity_invalidates_run(tmp_path, monkeypatch):
 
 
 def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
+    import os
+    import subprocess
+    import sys
+
+    from tools.validate_reporting_contracts import CATALOGUE, verify_run_coverage
+
     output = tmp_path / 'store'
     data = json.loads((CASES / 'base.json').read_text())
     data['iterations'] = 32
@@ -120,12 +126,32 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
     verified = verify_output(output)
     assert verified['scenarios'] == 1 and verified['priority_figures'] == 6
     assert verified['supplementary_figures'] == 7
+    catalogue = json.loads(CATALOGUE.read_bytes())
+    command = [sys.executable, 'tools/validate_reporting_contracts.py', '--run', str(output)]
+    completed = subprocess.run(command, cwd=ROOT, env={**os.environ, 'PYTHONPATH': str(ROOT / 'src')},
+                               capture_output=True, text=True, timeout=60)
+    assert completed.returncode == 0, completed.stderr
+    coverage = json.loads(completed.stdout)
+    assert coverage['summary_id'] == result['summary_id']
+    assert coverage['investment_ready'] is False
+    assert {entry['id'] for entry in coverage['blocked']} == {
+        'T05', 'T06', 'T07', 'F03', 'F04', 'F12', 'F14', 'F16', 'F17', 'F19', 'F21', 'F22', 'F23'}
+    assert all(entry['evidence_needed'] for entry in coverage['blocked'])
+    case, = coverage['scenarios']
+    assert case['case_id'] == 'base' and case['model_run_id'] == model['model_run_id']
+    assert case['run_catalogue_sha256'] == hashlib.sha256(CATALOGUE.read_bytes()).hexdigest()
+    assert [entry['id'] for entry in case['tables']] == ['T01', 'T02', 'T03', 'T04']
+    assert len(case['figures']) == 14
+    assert case['not_in_run'] == []
+    for entry in case['tables'] + case['figures'] + [figure['source'] for figure in case['figures']]:
+        assert hashlib.sha256((output / entry['path']).read_bytes()).hexdigest() == entry['sha256']
+
     for name in ('f20.svg', 'f18.svg'):
         svg = output / 'priority-figures' / p9['figure_revision'] / 'bundle' / name
         original = svg.read_bytes()
         svg.write_bytes(original + b' ')
         with pytest.raises(ValueError, match='inventory or digest'):
-            verify_output(output)
+            verify_run_coverage(output, catalogue)
         svg.write_bytes(original)
     folder = output / 'summaries' / result['summary_id']
     comparison = folder / 'scenario-comparison.csv'

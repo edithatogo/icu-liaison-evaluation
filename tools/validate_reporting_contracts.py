@@ -1,14 +1,21 @@
-"""P9 table/figure metadata; existing P5 reader owns numerical validation."""
+"""Check P9 contracts and the artifacts in a verified synthetic run."""
 from __future__ import annotations
 import argparse
 import csv
 import json
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "contracts/reporting/catalogue.json"
 SCHEMA = ROOT / "contracts/reporting/catalogue.schema.json"
 DECK_PROFILE = CATALOGUE.with_name("evaluation-deck.json")
+P5_TABLES = {
+    "T01": "cost-consequence.csv",
+    "T02": "paired-comparisons.csv",
+    "T03": "one-way-sensitivity.csv",
+    "T04": "decision-surface.csv",
+}
 
 
 def validate_catalogue(c: dict) -> None:
@@ -43,9 +50,17 @@ def validate_catalogue(c: dict) -> None:
     if errors:
         first = sorted(errors, key=lambda error: str(list(error.path)))[0]
         raise ValueError(f"reporting schema invalid at {list(first.path)}: {first.message}")
+    if [item['id'] for item in c['tables']] != [f'T{i:02d}' for i in range(1, 8)]:
+        raise ValueError('expected stable T01-T07 table ordering')
+    for table in c['tables']:
+        if table['artifact'] != P5_TABLES.get(table['id']):
+            raise ValueError(f"unqualified table or incorrect report artifact: {table['id']}")
     expected = [f'F{i:02d}' for i in range(1, 25)]
     if [item['id'] for item in c['figures']] != expected:
         raise ValueError('expected stable F01-F24 figure ordering')
+    f01 = c['figures'][0]
+    if f01['artifact'] != 'scenario-comparison.svg' or f01['status'] != 'implemented_optional':
+        raise ValueError('F01 must identify the optional scenario comparison SVG')
     for figure in c['figures']:
         tier = figure['evidence_tier']
         if tier != 'synthetic_implemented' and figure['status'] != 'placeholder':
@@ -78,6 +93,13 @@ def validate_catalogue(c: dict) -> None:
         raise ValueError("decision surface must not mix funding")
 
 
+def _check_table_header(path: Path, table: dict) -> None:
+    with path.open(newline="", encoding="utf-8") as fp:
+        header = next(csv.reader(fp), ())
+    if len(header) != len(set(header)) or not set(table["required_columns"]).issubset(header):
+        raise ValueError("P5 contracted header mismatch: " + table["id"])
+
+
 def validate_report(folder: Path, c: dict) -> dict:
     validate_catalogue(c)
     from icu_liaison.p5_reporting import review_report, verify_manifest
@@ -87,10 +109,7 @@ def validate_report(folder: Path, c: dict) -> dict:
     for table in c["tables"]:
         if table["status"] == "placeholder":
             continue
-        with (folder/table["artifact"]).open(newline="",encoding="utf-8") as fp:
-            header = next(csv.reader(fp))
-        if len(header)!=len(set(header)) or not set(table["required_columns"]).issubset(header):
-            raise ValueError("P5 contracted header mismatch: "+table["id"])
+        _check_table_header(folder / table["artifact"], table)
         checked.append(table["id"])
     for f in c["figures"]:
         if f["status"] == "placeholder":
@@ -119,6 +138,56 @@ def validate_report(folder: Path, c: dict) -> dict:
         elif f["status"] != "implemented_optional":
             raise ValueError("mandatory figure missing")
     return {"status":"synthetic_source_consistent_not_clinically_validated","checked":checked}
+
+
+def verify_run_coverage(output: Path, catalogue: dict) -> dict:
+    """Reconcile a verified P11 store with the current reporting contracts."""
+    from icu_liaison.p11_records import digest_file, read_json
+    from icu_liaison.p11_verify import verify_output
+
+    validate_catalogue(catalogue)
+    verified = verify_output(output, include_provenance=True)
+    table_specs = [table for table in catalogue["tables"] if table["artifact"] is not None]
+    figure_specs = {figure["id"]: figure for figure in catalogue["figures"] if figure["artifact"] is not None}
+    scenarios = []
+    for case in verified["provenance"]["scenarios"]:
+        model_record = output / case["model_record"]["path"]
+        model_files = read_json(model_record)["files_sha256"]
+        if digest_file(model_record) != case["model_record"]["sha256"]:
+            raise ValueError("P11 model record changed during coverage verification")
+        tables = []
+        for table in table_specs:
+            relative = f"p5-report/{table['artifact']}"
+            path = model_record.parent / relative
+            expected = model_files.get(relative)
+            if expected is None or digest_file(path) != expected:
+                raise ValueError(f"P11 table missing or changed: {table['id']}")
+            _check_table_header(path, table)
+            tables.append({"id": table["id"], "path": path.relative_to(output).as_posix(), "sha256": expected})
+        figures = []
+        for record in case["figures"]:
+            figure_id = record["id"]
+            spec = figure_specs.get(figure_id)
+            if spec is None or Path(record["figure"]["path"]).name != spec["artifact"]:
+                raise ValueError(f"P11 figure disagrees with its catalogue entry: {figure_id}")
+            figures.append({
+                "id": figure_id, **record["figure"], "source": record["table"],
+                "figure_revision": record["figure_revision"], "review": record["review"],
+            })
+        scenarios.append({
+            "case_id": case["case_id"], "model_run_id": case["model_run_id"],
+            "run_catalogue_sha256": case["catalogue_sha256"], "tables": tables, "figures": figures,
+            "not_in_run": sorted(figure_specs.keys() - {figure["id"] for figure in figures}),
+        })
+    blocked = [{"id": row["id"], "title": row["title"], "evidence_needed": row["uncertainty"]}
+               for row in catalogue["tables"] if row["status"] == "placeholder"]
+    blocked.extend({"id": row["id"], "title": row["title"], "evidence_needed": row["release_gate"]}
+                   for row in catalogue["figures"] if row["status"] == "placeholder")
+    return {
+        "status": verified["status"], "summary_id": verified["summary_id"],
+        "catalogue_revision": catalogue["catalogue_revision"], "scenarios": scenarios, "blocked": blocked,
+        "clinical_safety_approved": False, "investment_ready": False,
+    }
 
 
 def figure_inventory(catalogue: dict, deck: dict) -> list[dict]:
@@ -162,9 +231,17 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--report", type=Path)
+    mode.add_argument("--run", type=Path, help="Verify a P11 output directory and list reporting coverage")
     mode.add_argument("--inventory", action="store_true", help="List both figure contracts as JSON")
     args = parser.parse_args()
     catalogue = json.loads(CATALOGUE.read_text())
+    if args.run is not None:
+        try:
+            coverage = verify_run_coverage(args.run, catalogue)
+        except (OSError, RuntimeError, TypeError, ValueError, KeyError) as exc:
+            parser.exit(2, f"P9 INVALID_OR_UNVERIFIED: {exc}\n")
+        print(json.dumps(coverage, indent=2))
+        return 0
     if args.report:
         print(json.dumps(validate_report(args.report, catalogue)))
         return 0
@@ -175,4 +252,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, str(ROOT))
     raise SystemExit(main())

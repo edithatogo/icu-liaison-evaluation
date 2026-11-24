@@ -10,6 +10,7 @@
     "P9.3f",
     "P9.4",
     "P9.4d",
+    "P9.4e",
     "P9.4b",
     "P9.4.08",
     "P9.4.09",
@@ -50,5 +51,6 @@
     "F13",
     "F18"
   ],
-  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json"
+  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json",
+  "run_coverage_verification": "verification/p9-run-coverage-2026-11-24.json"
 }

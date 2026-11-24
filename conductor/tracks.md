@@ -135,7 +135,11 @@ Status legend: `[~]` is in progress; `[x]` requires acceptance evidence;
 `[!]` is blocked on a stated dependency. Both P7 directories retain their
 historical phase identifiers; use the full track directory in handoffs.
 
-- [~] **Track: P9 - Clinical Director request and reporting contracts** ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)). Four tables and 14 figures are produced for each synthetic scenario. Three tables and ten figures require admitted site or provider evidence.
+- [~] **Track: P9 - Clinical Director request and reporting contracts**
+  ([index](tracks/P9-reporting-contracts/index.md), [plan](tracks/P9-reporting-contracts/plan.md)).
+  Per-run coverage verifies four tables and 14 figures for each current
+  synthetic scenario. Three tables and ten figures require admitted site or
+  provider evidence.
 
 - [~] **Track: P10 — Measurement, provenance, claim and visual assurance** ([index](tracks/P10-measurement-figure-assurance/index.md), [requirements](tracks/P10-measurement-figure-assurance/requirements.md), [plan](tracks/P10-measurement-figure-assurance/plan.md)). M01–M31 and D01–D14, source-linked figures, synthetic mark and visual checks. Site governance and professional review remain open.
 
