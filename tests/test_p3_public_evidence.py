@@ -28,6 +28,12 @@ def test_unverified_source_cannot_be_promoted_to_verified():
                                      ROOT / 'conductor/evidence/source-register.json')
     with pytest.raises(ValueError, match='unverified'):
         select_external_benchmark(data, 'CCR_2024_25_EXIT_BLOCK', require_document_verified=True)
+    data['metrics'][0].update(
+        verification_status='document_hash_attested_and_substantively_reviewed',
+        document_sha256='1' * 64,
+    )
+    with pytest.raises(ValueError, match='independent admission'):
+        select_external_benchmark(data, 'CCR_2024_25_EXIT_BLOCK', require_document_verified=True)
 
 
 def test_wrong_source_or_denominator_is_rejected(tmp_path):

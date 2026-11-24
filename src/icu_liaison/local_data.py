@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 import hashlib
@@ -198,22 +199,30 @@ def _read_feed(root: Path, name: str, spec: FileSpec) -> list:
 def load_and_audit(
     manifest_path: Path, *, restricted_acknowledged: bool = False,
     data_dictionary_path: Path | None = None,
+    before_restricted_read: Callable[[], None] | None = None,
 ) -> dict:
     """Derive aggregate clinical and source-quality counts from versioned feeds.
 
     Fails closed on invalid source lineage, unknown columns, episode overlaps,
     duplicate IDs and missing hospitalisation follow-up. Never emits row data.
     A flag only records operator acknowledgement; it does not grant approval.
+    The CLI checks its output destination before any restricted feed is read.
     """
     path = Path(manifest_path)
     if not path.is_file() or path.is_symlink() or path.stat().st_size > 128_000:
         raise LocalDatasetError('missing or invalid source manifest')
     try:
-        manifest = DatasetManifest.model_validate_json(path.read_text(encoding='utf-8'))
+        manifest_bytes = path.read_bytes()
+        if len(manifest_bytes) > 128_000:
+            raise LocalDatasetError('source manifest exceeds the file limit')
+        manifest = DatasetManifest.model_validate_json(manifest_bytes)
     except (ValidationError, UnicodeDecodeError) as e:
         raise LocalDatasetError('source manifest or governance invalid') from e
-    if manifest.data_class == 'restricted' and not restricted_acknowledged:
-        raise LocalDatasetError('restricted data requires explicit operator acknowledgement')
+    if manifest.data_class == 'restricted':
+        if not restricted_acknowledged:
+            raise LocalDatasetError('restricted data requires explicit operator acknowledgement')
+        if before_restricted_read is not None:
+            before_restricted_read()
     root = path.resolve().parent
     feeds = {name: _read_feed(root, name, spec) for name, spec in manifest.files.items()}
     ep: list[Episode] = feeds['episodes']
@@ -363,7 +372,7 @@ def load_and_audit(
         'source_reference_sha256':hashlib.sha256(manifest.source_id.encode('utf-8')).hexdigest(),
         'interpretation':'aggregate_data_quality_report_not_local_clinical_or_economic_approval',
         'input_provenance':{
-            'manifest_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+            'manifest_sha256':hashlib.sha256(manifest_bytes).hexdigest(),
             'feed_sha256':{k:v.sha256 for k,v in manifest.files.items()},
         },
         'cohort':dict(cohort),

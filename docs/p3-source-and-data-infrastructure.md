@@ -4,20 +4,54 @@
 
 ## Public reference data and source status
 
-- [ANZICS 2024/25 CCR report](https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf): the inherited P2 transcription gives **20.4%** of ward/home discharges delayed ≥12 hours, **18.4%** after hours and **4.5%** ICU/HDU return admission episodes. This publisher PDF could **not be independently accessed in the P3 18-Nov-2026 check**. `model-inputs/anzics-benchmarks.json` explicitly labels these results `previous_transcription_not_independently_reverified` and makes no new document-hash claim. They remain external, mixed-age and binational reference values, not Cairns estimates.
-- [ANZICS 2023/24 CCR report](https://www.anzics.org/wp-content/uploads/2025/05/2023_24-CCR-Activity-Report-1.pdf): official publisher-hosted searchable text was independently checked for **19.8% exit block**, 154 contributing ICUs (printed p.17), and **18.8% after-hours discharge**, 164 ICUs (printed p.16). PDF-image screenshot retrieval failed, and no source-file SHA-256 has been admitted. This is a *publisher-text* check only, not binary/document review. The historical period and contributor sets differ from 2024/25.
+- The retained 2024/25 ANZICS CCR report matched the recorded publisher
+  digest and six page locators. The mixed-age binational reference values
+  include **20.4%** of ward/home discharges delayed ≥12 hours, **18.4%**
+  after hours and **4.5%** ICU/HDU return admission episodes. Independent
+  admission for the intended use remains pending.
+  [ANZICS 2024/25 report](https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf) ·
+  [Publisher check](../verification/p7-anzics-2024-25-publisher-2026-11-24.json)
+- The ANZICS 2023/24 text and rendered pages record **19.8% exit block**
+  across 154 contributing ICUs on p. 17 and **18.8% after-hours discharge**
+  across 164 ICUs on p. 16. The period and contributing sites differ from
+  2024/25. The 2023/24 check has page evidence only.
+  [ANZICS 2023/24 report](https://www.anzics.org/wp-content/uploads/2025/05/2023_24-CCR-Activity-Report-1.pdf) ·
+  [Source register](../conductor/evidence/source-register.json)
 - [ANZICS CORE 2024 Report](https://www.anzics.org/public/311/files/PDFs/CORE/2024-CORE-Report.pdf): the P2 adult patient readmission rate **4.0%**, covering 2023/24, is retained as a previously transcribed external observation. It is not a 72-hour unplanned return risk and is not interchangeable with the CCR 4.5% *episode* rate.
 - [ANZICS APD](https://www.anzics.org/advocacy/core-icu-registries/registry-datasets/adult-patient-database/) publishes variable definitions and descriptions of the CORE Portal; **individual-unit data are returned to authorised contributors**, not as an unrestricted public patient-level download.
 
-`conductor/evidence/source-register.json` is the human-readable source register; `model-inputs/anzics-benchmarks.json` is the machine-readable, offline benchmark crosswalk. The P3 validator requires matching reference IDs, amounts, units, page locations and numbers of contributors across both files. It never silently changes published rates into local parameters, accepts a 72-hour rate from CCR, or upgrades a transcription to verified publisher bytes.
+`conductor/evidence/source-register.json` is the source register.
+`model-inputs/anzics-benchmarks.json` is the offline benchmark crosswalk.
+The P3 validator checks matching reference IDs, amounts, units, page
+locations and contributor counts. The catalogue status tracks independent
+document admission. The publisher check reports the receipt and saved
+document separately.
 
-A future document-level verification requires independently obtained copyright-compliant report bytes, a SHA-256 receipt, a substantive reviewer record, and explicit claims about what was read. **The source metadata alone never proves this.** Do not store unlicensed PDFs in a public repo.
+To reconcile the recorded publisher check with the current source register,
+run from the repository root:
+
+```sh
+PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli sources \
+  --catalogue model-inputs/anzics-benchmarks.json \
+  --source-register conductor/evidence/source-register.json \
+  --publisher-receipt verification/p7-anzics-2024-25-publisher-2026-11-24.json
+```
+
+For an already retained local copy, add
+`--publisher-document /secure/evidence/ANZICS-CCR-2024-25.pdf` to check
+its size and SHA-256. The command runs offline and checks the recorded
+locators against the register. The original page checks are documented
+in the receipt. Independent source admission still requires reviewer and
+licensing evidence for the intended use. Keep publisher files in their
+approved private location.
 
 ## Existing providers: avoid duplicate components
 
 - Use **Searchright** to acquire/deduplicate/screen scientific literature and export its native CSL-JSON/receipt formats. This project stores only a source-register *consumer* contract; it does **not** reimplement Searchright or claim a search run happened. When available, register a Searchright run ID, exact source commit, exported artefact hash, dates, search protocol, inclusion decisions and reviewer receipts in a separate approved ingest track.
-- Use **Dapane** for exact resource valuation (unverified installed provider under P1). P3 checks cost-line identity, price year, currency and segment only; it does not value expenditures or call a provider in this phase.
-- Use **Voiage** for decision uncertainty/VOI once economic inputs and installed provider are qualified; P3 imports do not directly trigger numerical model calibration.
+- Use **Dapane** for exact resource valuation and **Voiage** for decision
+  uncertainty within their recorded platform scopes. The P3 audit checks
+  cost-line identity, currency, price year and segment.
+  [P1 provider evidence](../conductor/tracks/P1-provider-reuse/index.md)
 - Use **Kairos** only for the later, optional temporal DES. A time-stamped ICU extract here does not establish a simulator or capacity benefit.
 - Reuse **Pydantic** for structured validation, **Python's CSV and SHA-256 implementations** for bounded local parsing/integrity. No new data-processing, distribution, citation or numerical dependency was added.
 
@@ -33,6 +67,10 @@ The P3 intake is a *source gate*: it accepts a manifest referring to four CSV fe
 | `cost_lines.csv` (optional) | Distinct resource component/usage | Hospitalisation, ICU episode, ledger entry, use and component ID | Nonnegative quantities; mutually exclusive index vs return segments; AUD, price year and economic or financial basis |
 
 The manifest is JSON with `schema_version=1`, `data_class=synthetic|restricted`, an offset-aware `extracted_at` timestamp, source reference, governance attestation, and a SHA-256 plus optional original-to-canonical `column_map` for every feed. A manifest cannot be dated before its latest observed ICU departure. The audit reports elapsed days since that episode without applying an invented freshness threshold. The column map permits adaptation to approved local extract headers **without hard-coding the source system into the model**. A feed must match exactly the expected canonical columns after mapping; unexpected patient-name fields fail rather than being silently retained.
+
+The audit reads the manifest once and uses those bytes for validation,
+privacy checks and the reported manifest SHA-256. The CLI checks the private
+destination before opening restricted feeds.
 
 The JSON Schema for the manifest and feed rows is generated directly from the Pydantic contracts (`p3_cli schema`), avoiding a separately maintained schema fork. This is a candidate interchange contract, not a promise that CHHHS' current systems export all necessary values.
 
@@ -65,7 +103,12 @@ PYTHONPATH=src .venv/bin/python -m icu_liaison.p3_cli audit \
   --private-output /secure/approved-output/qa-summary.json
 ```
 
-The CLI requires a separate private output location, creates an aggregate output with mode 0600 (on platforms supporting it), does not print restricted counts, and refuses writing into source-controlled directories except explicitly ignored `.local/` or `private/`. This is a **defence in depth**, not a certified secure environment. No interactive upload, Git commit, third-party API call, automated extraction or publication is performed.
+The CLI writes the aggregate report with mode 0600 on platforms that support
+it. Standard output contains a status message. For a destination inside a Git
+checkout, use `.local/` or `private/` and confirm that Git ignores the
+report path. The destination check also applies to the installed command.
+The approved private runtime and disclosure controls remain the custodian's
+responsibility.
 
 ## Public repository boundary
 
@@ -98,8 +141,8 @@ The 32-field P2 dictionary is carried into the output. It includes candidate ope
 
 The explicit remaining gates are:
 
-1. External verification of the 2024/25 report (PDF/document bytes and, if licensing permits, evidence digest), plus source-backed revisions to benchmark values if necessary.
+1. Independent admission of the retained 2024/25 report for the intended use, with reviewer and licensing evidence.
 2. Approval of CHHHS extract ownership and source mapping, privacy/ethics/QI permissions, and local governance including relevant First Nations data-governance requirements.
 3. Linkage/field completeness in actual APD and hospital systems, reconciliation to unit-level CORE Portal returns and local counts, and agreement on minimum quality thresholds and censoring methods.
 4. New incident/MET, capacity, roster, ward workload, patient experience and costing feeds for the remaining P2 fields; clinical/Finance sign-off and independent validation.
-5. Installed Dapane/Voiage provider gates (P1), full model revision (P4) and non-disclosive business-case publication (P5) before any investment recommendation.
+5. Provider qualification for the intended runtime (P1), full model revision (P4) and disclosure-reviewed reporting (P5) before any investment recommendation.

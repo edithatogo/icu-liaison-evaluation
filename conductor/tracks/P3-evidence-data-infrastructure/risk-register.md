@@ -1,6 +1,6 @@
 # P3 material risks
 
-- **Source drift/freshness:** newer 2024/25 CCR PDF was inaccessible in this session; inherited numbers are not independently admitted. 2023/24 searchable publisher text is not the same as verified binary/hash.
+- **Source drift and freshness.** The retained 2024/25 PDF and six locators match the publisher receipt. Independent admission remains open. The 2023/24 review retained text and page evidence.
 - **Denominator error:** CCR admission-episode, APD surviving-adult-patient and locally eligible first ward-discharge denominators are distinct. Unplanned 72h risk cannot be inferred from published all-return rates.
 - **Hidden missingness and censoring:** readiness, treatment-goal status, return planning and hospital separation require source confirmation; planned returns, death and transfers must not be reclassified as zeros.
 - **Patient confidentiality:** pseudonym-shaped IDs do not prove de-identification; filename and schema checks do not establish secure deployment, privacy approval or Indigenous data governance.

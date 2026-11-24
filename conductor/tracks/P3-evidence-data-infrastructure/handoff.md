@@ -18,3 +18,14 @@ No claim of completed document verification, live source integration, clinical r
 The prior 15 P0–P2 source/input files compared byte-for-byte with the original P2 ZIP have no differences; the illustrative simulation JSON is byte-for-byte equivalent at the JSON-object level to the inherited P2 source receipt. `conductor/evidence/source-register.json`, the migration manifest, and documentation have append-only P3 source qualification updates and therefore intentionally differ from P2.
 
 The 2023/24 publisher text was independently inspected via ANZICS' public PDF search text; the 2024/25 publisher report link could not be retrieved in this source pass. `public_evidence.py` fails closed if the machine catalogue's benchmark numerators/denominators/amounts/page/contributors disagree with its source register, and a required full-document verification is still blocked.
+
+## P3 evidence and intake update on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carried the P3 CLI, source reconciliation and intake changes on
+`codex/icu-p3-evidence-admission`. The offline check matched all six
+2024/25 locators and the saved PDF digest. The intake audit used one
+manifest for privacy and provenance and ran on fictional fixtures.
+Independent admission, approved local feeds and empirical checks remain
+with their existing owners. The publisher PDF and run outputs stay private.
+[Source and intake guide](../../../docs/p3-source-and-data-infrastructure.md)
