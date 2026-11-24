@@ -20,8 +20,8 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   with 342 tests passing in hosted CI and locally with Dapane installed.
   [Migration receipt](../verification/python-315-migration-2026-11-19.json)
   The repository owner approved the verified portable migration release on
-  24 November 2026. Voiage admission, broader Dapane release review and CHHHS
-  calibration remain open.
+  24 November 2026. Voiage's macOS artifact is admitted. Broader Dapane
+  release review and CHHHS calibration remain open.
   [Portable source release](../docs/pr215-migration-comparison.md#portable-source-release)
 - [~] **Track: P1 — Runtime provider reuse qualification**
   ([index](tracks/P1-provider-reuse/index.md),
@@ -31,9 +31,11 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   consumer, offline conformance tests, and macOS arm64 / Python 3.15.2
   native oracle, vendor-test, PEP 740 / PGP attestation, advisory, cross-env
   parity, and P5 reconciliation runs are implemented
-  (`verification/p1-native-qualification-2026-11-19.json`). **Voiage
-  adjudication and broader release review remain open** (`dapane-cli`
-  APFS non-UTF-8 test and `RUSTSEC-2026-0543` unmaintained `chrono` documented).
+  (`verification/p1-native-qualification-2026-11-19.json`). The Voiage
+  macOS arm64 wheel is admitted after signature and native checks. The Dapane
+  release successor passed the APFS case and a clean locked dependency audit.
+  Independent acceptance of the repaired artifact remains open.
+  [P1.4 qualification](tracks/P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
   The two corrected P5 regressions passed with the locked Dapane source build,
   and P0.5 raised the setuptools pin to 84.2.1.
   The corrected Rust 1.99.1 Dapane wheel passed P1/P5. The independent reviewer
@@ -70,8 +72,8 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   Multi-strategy, correlated-uncertainty model, threshold and one-way
   analyses, resource/budget/capacity separation and P2/P3 source admission
   have source-level local tests. Clinical validation, CHHHS data, independent
-  publisher-source admission and Voiage qualification remain open. P1 records
-  the approved Dapane artifacts and their supported environments.
+  publisher-source admission and broader provider qualification remain open.
+  P1 records the admitted artifacts and their supported environments.
 - [~] **Track: P5 — Reproducible reporting and independent checks**
   ([index](tracks/P5-reporting-independent-review/index.md),
    [spec](tracks/P5-reporting-independent-review/spec.md),
@@ -97,9 +99,9 @@ is retained in the [migration comparison](../docs/pr215-migration-comparison.md)
   [plan](tracks/P7-technical-empirical-qualification/plan.md)).
   Adds independent P3/P4 oracles, structured CHHHS data request and publisher
   2023/24 review. P7.5 records scoped approval of the Dapane artifacts and
-  native execution receipts on three tested hosts. Broader Dapane
-  qualification and release review, Voiage admission, independent review of
-  the retrieved 2024/25 PDF, CHHHS calibration and approvals remain open.
+  native execution receipts on three tested hosts and the exact Voiage
+  macOS arm64 admission. Broader Dapane release review, independent admission
+  of the retrieved 2024/25 PDF, CHHHS calibration and approvals remain open.
   Hosted integration evidence is tracked in the repository import record.
   [P7.5 Windows upstream rebuild decision](tracks/P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
 

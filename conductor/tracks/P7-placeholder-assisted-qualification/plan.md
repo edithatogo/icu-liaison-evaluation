@@ -25,12 +25,13 @@
 - [ ] 3. Execute and independently qualify pinned Dapane/Voiage/Kairos provider artifacts.
   Dapane's approved wheels, extensions and native pricing receipts are
   scoped to the environments recorded in the lock. The companion Dapane
-  placeholder continues to track broader provider qualification through
-  `provider_qualification_receipt_sha256`.
+  placeholder continues to track broader qualification of both providers
+  through their separate `provider_qualification_receipt_sha256` fields.
+  Voiage's admitted macOS arm64 artifact is recorded in the P1 lock.
   [Provider lock](../../../providers.lock.json) ·
   [Technical P7.5](../P7-technical-empirical-qualification/plan.md)
-  The pinned Kairos consumer also passed local native replay. Independent
-  build attestation remains open.
+  The pinned Kairos consumer passed local replay and awaits independent build
+  attestation.
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
 - [~] 5. The portable source is in the selected repository with passing
   hosted checks. CareOps Sim PR #215 is closed and the repository owner approved

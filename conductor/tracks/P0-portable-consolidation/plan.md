@@ -63,9 +63,11 @@
   on 24 November 2026 following the technical verification.
   [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
 
-- [ ] Record Voiage artifact admission and the broader Dapane release decision.
-  These are the remaining P0.4 requirements tracked in
-  [P1.4](../P1-provider-reuse/plan.md) and
+- [x] Record the Voiage 3.1.0 macOS arm64 artifact admission.
+  [P1.4 Voiage admission](../P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
+- [ ] Record broader Dapane release acceptance. The repaired candidate awaits
+  independent admission under
+  [P1.4](../P1-provider-reuse/plan.md#dapane-release-assurance-successor) and
   [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review).
 
 ## P0.5 — Python and hosted CI runtime migration

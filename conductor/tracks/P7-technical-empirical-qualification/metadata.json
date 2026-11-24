@@ -11,13 +11,14 @@
     "P7.2-independent-source-and-numerical-validation",
     "P7.3-CHHHS-data-request-and-causal-plan",
     "P7.4-local-Kairos-native-replay",
+    "P7.5-voiage-macos-arm64-admission",
     "P7.6-direct-publisher-byte-and-page-check",
     "P7.8-dedicated-repo-hosted-integration",
     "P7.8-portable-migration-release"
   ],
   "blocked_phases": [
     "P7.4-independent-Kairos-build-attestation",
-    "P7.5-installed-Dapane-Voiage",
+    "P7.5-broader-dapane-release",
     "P7.6-2024_25-independent-source-admission",
     "P7.7-approved-local-data-and-independent-reviews"
   ],

@@ -36,6 +36,32 @@ def test_registry_covers_replacement_gates_and_is_explicitly_unresolved():
     assert report['external_gates_pending']
 
 
+def test_scoped_voiage_artifact_does_not_accept_broader_qualification(tmp_path):
+    from shutil import copyfile, copytree
+
+    from icu_liaison.placeholders import audit_placeholders
+
+    record = registry()
+    entry = next(row for row in record.entries if row.id == 'native_voiage_receipt')
+    assert 'native_voiage_receipt' in audit_placeholders(record, root=ROOT)['unresolved_ids']
+    assert entry.binding.pointer == '/providers/voiage/provider_qualification_receipt_sha256'
+
+    copytree(ROOT / 'model-inputs', tmp_path / 'model-inputs')
+    for artifact in {row.binding.artifact for row in record.entries}:
+        target = tmp_path / artifact
+        if not target.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            copyfile(ROOT / artifact, target)
+    lock_path = tmp_path / entry.binding.artifact
+    lock = json.loads(lock_path.read_text())
+    voiage = lock['providers']['voiage']
+    assert voiage['binary_sha256'] and voiage['provider_qualification_receipt_sha256'] is None
+    voiage['provider_qualification_receipt_sha256'] = 'f' * 64
+    lock_path.write_text(json.dumps(lock))
+    with pytest.raises(ValueError, match='native_voiage_receipt.*qualified independently'):
+        audit_placeholders(record, root=tmp_path)
+
+
 def test_known_repository_url_does_not_satisfy_hosted_ci_evidence(tmp_path):
     import shutil
     from icu_liaison.placeholders import audit_placeholders

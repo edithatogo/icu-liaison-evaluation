@@ -38,10 +38,14 @@
   Server x86-64 hosts. The Windows rebuild includes the upstream fixture fix.
   [Platform decisions](#linux-and-windows-x86-64-qualification) ·
   [Provider lock](../../../providers.lock.json)
-- [ ] Independently admit the Voiage artifact and its source provenance.
-- [ ] Complete broader Dapane release review, including the recorded APFS
-  filename failure and `RUSTSEC-2026-0543` disposition. P0.5 records the
-  completed setuptools remediation for the evaluation repository.
+- [x] Independently verify and admit the Voiage 3.1.0 wheel for macOS arm64
+  on CPython 3.15.2. The verified PyPI publisher signature identifies the
+  exact tagged source, and the installed native extension matches the wheel.
+  [Voiage macOS artifact admission](#voiage-macos-artifact-admission)
+- [~] Complete broader Dapane release review. The upstream successor resolves
+  the APFS filename test and removes the `chrono` dependency. The exact
+  successor artifact still needs independent admission before promotion.
+  [Release assurance successor](#dapane-release-assurance-successor)
 - [x] Run unchanged full tests using that runtime, compare cross-environment
   reproducibility/precision, record remaining qualification findings:
   `icu_liaison.cli` produced byte-identical JSON across Python `3.13.18` vs
@@ -220,6 +224,50 @@ and all six pricing ledger replays, including component conservation. The
 Windows lock entry now records this source revision and the three signed
 digests. [Provider lock](../../../providers.lock.json) ·
 [P7.5 Windows decision](../P7-technical-empirical-qualification/plan.md#windows-upstream-rebuild-decision)
+
+### Voiage macOS artifact admission
+
+On 24 November 2026, the downstream review verified PyPI's attestation for
+the macOS arm64 Voiage 3.1.0 wheel with `pypi-attestations`. The signed
+publisher identity names the repository's release workflow and identifies
+commit `d40af0276019a7d63657349b53dad96845e2b4c1`, which matches the
+verified `v3.1.0` tag. The packaged Apache-2.0 licence matches that source.
+All 198 hashed wheel members matched the fresh installation, including the
+loaded Rust extension. The locked Python runtime's PyPI advisory
+check covered 43 distributions and returned zero active findings. The
+release commit's Rust supply-chain policy passed.
+
+The native two-state EVPI returned AUD 5.00, and the P5 report using both
+providers reconciled. Admission covers the exact macOS arm64 wheel and
+CPython 3.15.2 runtime recorded in the provider lock for P1's annual
+programme decision analysis.
+[PyPI release](https://pypi.org/project/voiage/3.1.0/#files) ·
+[Signed source tag](https://github.com/edithatogo/voiage/tree/v3.1.0) ·
+[Rust supply-chain policy](https://github.com/edithatogo/voiage/actions/runs/41368561002)
+
+### Dapane release assurance successor
+
+Dapane's signed Linux x86-64 prerelease `v0.1.0` comes from
+`5a24196c6e3b8905613dcf5100c239018c919b7a`. Its source archive and wheel
+match the GitHub provenance statement. The published Linux build used
+CPython 3.15.1. The source contains the release-assurance fix
+`2311d602`, which replaces `chrono` with `time` and gives the macOS
+CLI fixture a valid UTF-8 filename while retaining the invalid-argument
+check.
+
+On macOS arm64 and APFS, all six CLI tests passed, including the reported
+filename case. The core suite passed, and the locked release passed the
+current Cargo advisory, licence, source and dependency-ban checks. The
+installed candidate passed all 357 upstream Python tests. A wheel
+built from the verified source using Rust 1.99.1 and CPython 3.15.2 passed
+the installed P1 numerical checks and P5 fictional report reconciliation.
+
+The existing Dapane pins identify earlier, scoped approvals. The repaired
+macOS artifact is a candidate for independent P7 review. Its exact binary
+and build evidence are retained privately.
+[Upstream prerelease](https://github.com/edithatogo/dapane/releases/tag/v0.1.0) ·
+[Release assurance](https://github.com/edithatogo/dapane/actions/runs/44841721904) ·
+[RustSec advisory](https://rustsec.org/advisories/RUSTSEC-2026-0543.html)
 
 ## P1.5 — Dedicated repository integration and release review
 - [x] Integrate P0/P1 into `edithatogo/icu-liaison-evaluation`, reconcile the

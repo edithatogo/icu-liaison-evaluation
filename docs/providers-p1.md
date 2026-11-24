@@ -9,13 +9,16 @@ in the P1 plan.
 `providers.lock.json` holds the reviewed public source references:
 
 - **Dapane 0.1.0** uses JSON contract `0.1` and method
-  `dapane-exact-v0.1.0`. Build the unpublished native wheel from the
-  reviewed source for the selected host. Use the Dapane `source_commit`
+  `dapane-exact-v0.1.0`. Use the reviewed source-built wheel for the selected
+  host. The newer upstream Linux prerelease has separate evidence.
+  Use the Dapane `source_commit`
   for macOS and Linux and `reviewed_platforms.windows-x86_64.source_commit`
   for the rebuilt Windows wheel. [Provider lock](../providers.lock.json)
 - **Voiage 3.1.0**: annotated tag `v3.1.0` points to release commit
   `d40af0276019a7d63657349b53dad96845e2b4c1`.
-  This release requires Python `>=3.15.2,<3.16` for its published package.
+  Publisher metadata allows Python `>=3.15.1,<3.16`. This repository
+  qualifies the exact reviewed macOS arm64 wheel on CPython 3.15.2.
+  [Artifact evidence](../conductor/tracks/P1-provider-reuse/plan.md#voiage-macos-artifact-admission)
 
 The lock does not pretend to freeze all transitive dependencies. Qualifying
 operators must record exact wheel hashes, native extension hashes, distribution
@@ -25,8 +28,8 @@ An approved `binary_sha256` identifies the native extension.
 synthetic pricing receipt for that exact installation. The original Dapane
 entry records the macOS wheel and its receipt. `reviewed_platforms` records
 each additional approved wheel, extension and receipt with its tested host
-and ABI. The companion P7 placeholder tracks broader provider qualification
-in `provider_qualification_receipt_sha256`.
+and ABI. For both providers, the companion P7 placeholder binds the broader
+qualification obligation to `provider_qualification_receipt_sha256`.
 [P1.4 platform qualification](../conductor/tracks/P1-provider-reuse/plan.md#linux-and-windows-x86-64-qualification)
 
 ## Source-dependent runtime setup (on a network-enabled authorised workstation)
