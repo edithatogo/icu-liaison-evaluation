@@ -13,8 +13,13 @@
    Its separately pinned submodule entry must match the staged/committed gitlink.
 6. Review the final diff and open a scoped PR. Check the exact PR head's hosted
    results before integration. Record any unavailable qualification separately.
-7. Reconcile the track's plan and metadata against actual evidence. Retain
-   historical receipts without changing their claimed runtime or test results.
+7. Confirm the GitHub merge and fast-forward the clean local `main`. Reconcile
+   worktree and branch tips against the merged source. Record whether residual
+   changes were integrated, superseded or retained for a separate scope.
+8. Reconcile the track's plan and metadata against actual evidence. Close
+   GitHub issues when their requested work has verified completion, and record
+   the evidence still needed for open items. Retain historical receipts with
+   their original runtime and test results.
 
 ## Source verification
 
@@ -54,8 +59,8 @@ governance gates.
 
 ## Evidence and release boundaries
 
-Source CI does not close native, empirical or governance gates. Candidate data
-receipts require the separately authorised owners' review. All real data stay
-outside tracked fixtures. A successful repository import does not retire the
-exploratory CareOps Sim PR #215; that requires its own exact source comparison
-and independent migration acceptance.
+Candidate data receipts require the separately authorised owners' review.
+Native, empirical and governance acceptance have their own evidence.
+All real data stay outside tracked fixtures. Preserve the comparison and
+release decision for the closed exploratory CareOps Sim PR #215.
+[Migration disposition](../docs/pr215-migration-comparison.md#source-pr-disposition)

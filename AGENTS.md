@@ -1,9 +1,9 @@
 # Agent ownership and safety map
 
 This public repository owns the portable ICU liaison evaluation source.
-The deployment and local evaluation require separate approvals. Preserve original sources,
-the separate workbook and exploratory CareOps Sim PR #215 until its migration
-comparison and acceptance are complete.
+Deployment and local evaluation require separate approvals. Preserve the
+original sources, the separate workbook and the historical migration evidence
+for [CareOps Sim PR #215](docs/pr215-migration-comparison.md#source-pr-disposition).
 
 Use `conductor/index.md` then `conductor/tracks.md`; do not take over CareOps
 Sim, Dapane, Voiage, Kairos, Searchright or CareOps Finance tasks. No private
@@ -42,8 +42,8 @@ acceptance. Run full Python tests and a synthetic P5 CLI report. Do not
 promote a previously transcribed ANZICS figure into a document-verified rate,
 run model data on real patients in the public portable package, mark Dapane or
 Voiage native qualification based on injected stubs, or infer clinical safety
-from the monetary result. Authorised local-data sources and empirical acceptance remain missing. Preserve the exploratory careops-sim PR #215 pending
-an exact reconciled migration.
+from the monetary result. Authorised local-data sources and empirical
+acceptance remain missing.
 
 ## P6 native and clinical boundary
 

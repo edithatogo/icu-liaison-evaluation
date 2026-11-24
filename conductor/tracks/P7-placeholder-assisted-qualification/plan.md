@@ -33,11 +33,13 @@
   The pinned Kairos consumer passed local replay and awaits independent build
   attestation.
 - [ ] 4. Perform controlled comparison and clinical/Finance/research/cultural governance reviews.
-- [~] 5. The portable source is in the selected repository with passing
-  hosted checks. CareOps Sim PR #215 is closed and the repository owner approved
-  release of the verified migration. P7.4 retains the dedicated repository CI
-  evidence obligation in the public placeholder register.
+- [x] 5. Integrate the portable source into the selected repository and verify
+  hosted checks. CareOps Sim PR #215 is closed and the repository owner
+  approved release of the verified migration.
   [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
+- [ ] 5a. Record the independent PR review receipt for the receiving commit
+  required by the `dedicated_repo_ci` placeholder.
+  [Evidence register](../../../model-inputs/placeholders/registry.json)
 
 **P7.1–P7.3 passing means only synthetic implementation progress.** It cannot
 waive P7.4 or any other repository's validation and release gate.

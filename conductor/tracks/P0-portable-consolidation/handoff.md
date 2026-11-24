@@ -191,3 +191,35 @@ public-data check to tenant root links, and rejects invalid and non-finite
 scenarios without echoing their data. The 48 focused tests passed and the
 standard fictional output kept its SHA-256 at seed `20261117`. P0.4 tracks
 the outstanding provider acceptance from P1.4 and P7.5 in its checklist.
+
+## Repository reconciliation on 24 November 2026
+
+The same chat and source worktree carry this Conductor reconciliation on
+`codex/icu-reconcile-conductor`. The scope is source records, GitHub issue
+and branch disposition, and the source manifest. The next operation is
+hosted validation of the reconciliation commit.
+
+At `a5fa2fa` all nine local worktrees were clean. The dedicated repository
+had 51 merged pull requests, six closed pull requests and no open pull
+requests. Both the synthetic and privacy workflows passed after PR #58.
+[Synthetic run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/45360450060) ·
+[Privacy run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/45360450058)
+
+- Of the 40 local branch tips besides `main`, 32 were reachable from `main`
+  and four had patch-equivalent commits already integrated through PRs #15,
+  #17, #23 and #24. The Dapane pin branch's additional hosted P9 verification
+  is recorded in [P1](../P1-provider-reuse/plan.md#corrected-rust-1991-candidate).
+- PR #43's privacy workflow matched the merged source exactly. The detached
+  public-data branch's changes were carried by `c8a85b4` and the later P0
+  staged-manifest and privacy checks.
+- The two Dapane runner branches contain one-time qualification workflows.
+  Their scoped native results are recorded separately in PRs #23 and #24.
+  Keep the runner checkouts with their evidence and ownership.
+- GitHub's only open issue was Renovate's Dependency Dashboard. It tracks
+  workflow dependency proposals and a scheduled Kairos update.
+  [Dependency Dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
+
+Conductor now records the admitted P5 Voiage scope, the synthetic P10
+lineage checks and the completed repository migration and hosted runs.
+The separate review receipt required by P7, broader provider qualification
+and CHHHS empirical and governance acceptance remain open.

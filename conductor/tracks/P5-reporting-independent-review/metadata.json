@@ -12,10 +12,11 @@
     "P5.3-local-reproducibility",
     "P5.3-independent-semantic-report-reader",
     "P5.2-platform-scoped-dapane",
+    "P5.2-macos-arm64-voiage",
     "P5.4-hosted-synthetic-checks"
   ],
   "blocked_phases": [
-    "P5.2-voiage-and-broader-dapane-admission",
+    "P5.2-broader-provider-admission",
     "P5.4-independent-code-and-supply-chain-release-review",
     "P5.4-independent-clinical-economic-review"
   ],

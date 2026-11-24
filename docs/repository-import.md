@@ -91,3 +91,6 @@ comparison with CareOps Sim PR #215 is documented in `docs/pr215-migration-compa
 (`verification/p0-pr215-migration-comparison-2026-11-19.json`).
 The [disposition](pr215-migration-comparison.md#source-pr-disposition) links
 the later closure to the tested standalone migration.
+
+The [repository reconciliation](../conductor/tracks/P0-portable-consolidation/handoff.md#repository-reconciliation-on-24-november-2026)
+records the later pull-request, issue and worktree dispositions.

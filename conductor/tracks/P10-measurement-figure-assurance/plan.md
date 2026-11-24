@@ -1,6 +1,6 @@
 # P10 execution plan — bounded testable increments
 
-## Source-level (implemented; requires hosted acceptance)
+## Implemented source contracts
 - [x] P10.01 Version denominator D01–D13 and metric M01–M30 definitions with explicit censoring.
 - [x] P10.02 Link all T01–T07 and F01–F24 to metric IDs; reject unknown/disjoint references.
 - [x] P10.03 Preserve methodological denominator pins and source dataset IDs with regression tests.
