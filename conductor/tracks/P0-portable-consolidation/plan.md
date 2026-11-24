@@ -63,8 +63,10 @@
   on 24 November 2026 following the technical verification.
   [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
 
-P0.4 remains in progress pending Voiage artifact admission and broader Dapane
-release review in P1.4 and P7.5.
+- [ ] Record Voiage artifact admission and the broader Dapane release decision.
+  These are the remaining P0.4 requirements tracked in
+  [P1.4](../P1-provider-reuse/plan.md) and
+  [technical P7.5](../P7-technical-empirical-qualification/plan.md#p75-independent-provider-review).
 
 ## P0.5 — Python and hosted CI runtime migration
 
@@ -75,3 +77,9 @@ release review in P1.4 and P7.5.
   The two focused P5 regressions also passed with Dapane installed.
   [Migration receipt](../../../verification/python-315-migration-2026-11-19.json)
   · [Hosted run](https://github.com/edithatogo/icu-liaison-evaluation/actions/runs/44473577455)
+
+## Review fixes
+
+- [x] Apply the portable consolidation review fixes (`873ea0d`). Verify
+  exact staged source hashes, reject tenant links and non-finite results, and
+  keep rejected input values out of CLI errors.
