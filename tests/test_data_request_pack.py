@@ -1,9 +1,11 @@
 """Source-derived CHHHS request pack; headers only, no patient records."""
 from pathlib import Path
 import json
+import sys
 import pytest
 
 from icu_liaison.data_request import DataRequestCatalogue, render_request_markdown, render_request_csv
+from tools import export_chhhs_data_request
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -42,3 +44,45 @@ def test_catalogue_rejects_duplicate_dataset_and_unsafe_data_class():
     data['datasets'][0]['data_class'] = 'unrestricted_patient_identifiers'
     with pytest.raises(ValueError):
         DataRequestCatalogue.model_validate(data)
+
+
+def test_request_export_recovers_after_a_failed_second_write(tmp_path, monkeypatch):
+    output = tmp_path / 'request'
+    output.mkdir()
+    monkeypatch.setattr(sys, 'argv', ['export-request', '--output-dir', str(output)])
+    original_open = Path.open
+
+    def fail_csv(path, mode='r', *args, **kwargs):
+        if path.suffix == '.csv' and mode in {'w', 'x'}:
+            raise OSError('fictional export failure')
+        return original_open(path, mode, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Path, 'open', fail_csv)
+        with pytest.raises(SystemExit) as stopped:
+            export_chhhs_data_request.main()
+        assert stopped.value.code == 2
+    assert not list(output.iterdir())
+    assert export_chhhs_data_request.main() == 0
+    assert {item.suffix for item in output.iterdir()} == {'.md', '.csv'}
+
+
+def test_request_export_preserves_a_file_created_during_publication(tmp_path, monkeypatch):
+    output = tmp_path / 'request'
+    output.mkdir()
+    csv_path = output / 'CHHHS_ICU_Liaison_Fields.csv'
+    monkeypatch.setattr(sys, 'argv', ['export-request', '--output-dir', str(output)])
+    original_open = Path.open
+
+    def existing_csv(path, mode='r', *args, **kwargs):
+        if path == csv_path and mode in {'w', 'x'}:
+            with original_open(path, 'x', encoding='utf-8') as stream:
+                stream.write('Fictional contents from another writer')
+        return original_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, 'open', existing_csv)
+    with pytest.raises(SystemExit) as stopped:
+        export_chhhs_data_request.main()
+    assert stopped.value.code == 2
+    assert list(output.iterdir()) == [csv_path]
+    assert csv_path.read_text(encoding='utf-8') == 'Fictional contents from another writer'

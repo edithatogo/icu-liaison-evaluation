@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
 from math import isfinite
+import re
 
 from scipy.stats import binomtest
 
@@ -17,6 +18,10 @@ def _bounded_count(counts: Mapping, name: str, limit: int) -> int:
     if type(value) is not int or not (0 <= value <= limit):
         raise ValueError(f'{name}: inconsistent aggregate count')
     return value
+
+
+def _is_sha256(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None
 
 
 def audit_local_aggregate(audit: Mapping) -> dict:
@@ -31,8 +36,12 @@ def audit_local_aggregate(audit: Mapping) -> dict:
     if audit.get('data_class') not in {'synthetic', 'restricted'}:
         raise ValueError('invalid data provenance class')
     provenance = audit.get('input_provenance')
-    if not isinstance(provenance, dict) or not provenance.get('manifest_sha256') or not provenance.get('feed_sha256'):
-        raise ValueError('missing input provenance digest')
+    if not isinstance(provenance, Mapping) or not _is_sha256(provenance.get('manifest_sha256')):
+        raise ValueError('missing or invalid manifest provenance digest')
+    feeds = provenance.get('feed_sha256')
+    if (not isinstance(feeds, Mapping) or not {'episodes', 'followup'} <= feeds.keys()
+            or not all(_is_sha256(digest) for digest in feeds.values())):
+        raise ValueError('missing or invalid feed provenance digest')
     counts = audit.get('cohort')
     if not isinstance(counts, Mapping):
         raise ValueError('missing cohort counts')
@@ -54,8 +63,10 @@ def audit_local_aggregate(audit: Mapping) -> dict:
     if death > unknown:
         raise ValueError('competing death should be in non-ascertained-return partition')
     complete = _bounded_count(counts, 'followup_complete_72h', n)
-    if complete > yes + no:
-        raise ValueError('complete followup exceeds known outcome count')
+    # No-event classifications require full follow-up. Planned status can
+    # remain unknown after full follow-up. A competing death falls before 72 hours.
+    if not no <= complete <= n - death:
+        raise ValueError('complete follow-up conflicts with no-event or competing-death counts')
     afterhours = _bounded_count(counts, 'index_after_hours_departure', n)
 
     if readiness:
@@ -88,6 +99,7 @@ def audit_local_aggregate(audit: Mapping) -> dict:
         'exit_block_ge12h': delay_measure,
         'after_hours': {'numerator': afterhours, 'denominator': n, 'rate': afterhours / n},
         'return_72h': {
+            'followup_complete_72h': complete,
             'positive': yes,
             'no_event': no,
             'unknown': unknown,

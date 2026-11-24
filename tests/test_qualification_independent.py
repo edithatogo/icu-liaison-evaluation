@@ -1,6 +1,9 @@
 """Independent source and numerical controls for the portable qualification lane."""
 from copy import deepcopy
+import hashlib
+import json
 from pathlib import Path
+from shutil import copytree
 
 import numpy as np
 import pytest
@@ -47,6 +50,47 @@ def test_complete_observation_collapses_the_missing_outcome_bounds():
     assert result['exit_block_ge12h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 1 / 3])
     assert result['return_72h']['eligible_cohort_fraction_bounds'] == pytest.approx([1 / 3, 1 / 3])
     assert result['return_72h']['complete_cohort_risk_estimable'] is True
+
+
+def test_complete_followup_can_include_a_return_with_unknown_planned_status(tmp_path):
+    fixture = ROOT / 'tests/fixtures/p3_episodes'
+    directory = copytree(fixture, tmp_path / 'case')
+    episodes = directory / 'episodes.csv'
+    raw = episodes.read_bytes().replace(b',unplanned', b',unknown', 1)
+    episodes.write_bytes(raw)
+    path = directory / 'manifest.json'
+    manifest = json.loads(path.read_bytes())
+    manifest['files']['episodes']['sha256'] = hashlib.sha256(raw).hexdigest()
+    path.write_text(json.dumps(manifest), encoding='utf-8')
+    audit = load_and_audit(path)
+    assert audit['cohort']['followup_complete_72h'] == 2
+    assert audit['cohort']['early_return_unknown'] == 2
+    result = audit_local_aggregate(audit)['return_72h']
+    assert result['followup_complete_72h'] == 2
+    assert result['no_event'] == 1
+    assert result['eligible_cohort_fraction_bounds'] == pytest.approx([0, 2 / 3])
+    assert result['complete_cohort_risk_estimable'] is False
+
+
+@pytest.mark.parametrize('complete', [0, 3])
+def test_aggregate_rejects_inconsistent_followup_and_outcome_counts(complete):
+    audit = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
+    audit['cohort']['followup_complete_72h'] = complete
+    with pytest.raises(ValueError, match='follow-up conflicts'):
+        audit_local_aggregate(audit)
+
+
+@pytest.mark.parametrize(('field', 'value'), [
+    ('manifest_sha256', 'unverified marker'),
+    ('feed_sha256', 'unverified marker'),
+    ('feed_sha256', {'episodes': '1' * 64}),
+    ('feed_sha256', {'episodes': '1' * 64, 'followup': 'unverified marker'}),
+])
+def test_aggregate_rejects_incomplete_or_invalid_source_fingerprints(field, value):
+    audit = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
+    audit['input_provenance'][field] = value
+    with pytest.raises(ValueError, match='provenance'):
+        audit_local_aggregate(audit)
 
 
 def test_aggregate_refuses_inconsistent_return_counts_and_readiness_overrun():

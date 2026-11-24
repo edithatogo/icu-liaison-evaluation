@@ -49,9 +49,10 @@ def qualify(*, publisher_document: Path | None = None) -> dict:
         raise ValueError('this source-level QA may only consume the committed synthetic fixture')
     local = audit_local_aggregate(data)
     run = evaluate_scenarios(scenario)
-    numerical = audit_p4_draws(
-        run, sampled_indices=[0, 1, 7, 53, scenario.iterations // 2, scenario.iterations - 1],
-    )
+    iterations = scenario.iterations
+    candidates = (0, 1, 7, 53, iterations // 2, iterations - 1)
+    sampled_indices = sorted({index for index in candidates if index < iterations})
+    numerical = audit_p4_draws(run, sampled_indices=sampled_indices)
     return {
         'status': 'SOURCE_ORACLES_PASSED_SYNTHETIC_ONLY',
         'date': datetime.now(UTC).date().isoformat(),

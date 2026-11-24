@@ -8,4 +8,6 @@ The portable receipt binds the source catalogue, recorded publisher check,
 synthetic P3 manifest and feeds, P4 seed and inputs, and the two renderings
 of the CHHHS request. The aggregate audit gives the observed-only estimates
 and full eligible-cohort ranges under extreme outcomes for unresolved records.
+The receipt records complete observation time separately from known 72-hour
+return status and checks both required feed fingerprints.
 Source admission and the empirical gates require their separate evidence.
