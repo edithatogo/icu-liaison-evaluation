@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-25",
+  "scope": "synthetic_reporting_review",
+  "python": "3.15.2",
+  "snakemake": "9.27.2",
+  "regressions": {
+    "reproduced_and_fixed": [
+      "incorrect_scenario_seed",
+      "incorrect_denominator_id",
+      "missing_figure_source_link",
+      "incorrect_svg_description",
+      "malformed_f01_svg",
+      "unsupported_f01_clinical_safety_approval"
+    ],
+    "focused_tests_passed": 70
+  },
+  "saved_coverage_reproduced": {
+    "reference_receipt": "verification/p9-run-coverage-2026-11-24.json",
+    "edition_1_sha256": "6e8cafc60e11f4dbf8e5eb43be139e4431f1a85537548cd25d62f7c05eed4e12",
+    "edition_2_sha256": "77f23c50595b9f7ab62fcf945687d5bfc7c215a87b332da15b966d403174a7ca"
+  },
+  "fresh_run": {
+    "summary_id": "f45e6bb594e06013922cc949812783dec54da21a7035920eb2467ef5677b4338",
+    "coverage_sha256": "9293c60d31c866fc0e6196278b77f7256d9fa486c4a65d67d94552aa72c79568",
+    "scenarios": 6,
+    "table_files": 24,
+    "figure_files": 84,
+    "model_ids_and_artifact_and_source_hashes_reproduced": true,
+    "unchanged_rerun_no_op": true
+  },
+  "visual_reproduction": {
+    "reference_receipt": "verification/portable-synthetic-2026-11-20.json",
+    "capture_manifest_sha256": "50baac09cb738ff1f94614c1c5f3b43cb3c30e3fd028a908b0507dbe10552938",
+    "renderer": "rsvg-convert version 2.63.4",
+    "byte_identical_to_reviewed_captures": 56
+  },
+  "clinical_safety_approved": false,
+  "investment_ready": false
+}

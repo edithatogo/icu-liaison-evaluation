@@ -35,9 +35,14 @@ def verify_figure(folder: Path, *, model: Path | None = None) -> dict:
             or folder.name != record['figure_revision']
             or digest_json(record['identity']) != record['figure_revision']):
         raise ValueError('synthetic figure identity or readiness mismatch')
+    if record.get('clinical_safety_approved') is not False:
+        raise ValueError('F01 clinical safety cannot be approved by a synthetic figure record')
     if record.get('files_sha256') != inventory(folder, exclude='figure.json'):
         raise ValueError('synthetic figure file inventory or digest mismatch')
-    svg = ElementTree.parse(folder / 'scenario-comparison.svg').getroot()
+    try:
+        svg = ElementTree.parse(folder / 'scenario-comparison.svg').getroot()
+    except ElementTree.ParseError as exc:
+        raise ValueError('malformed F01 SVG') from exc
     desc = svg.find('.//{http://purl.org/dc/elements/1.1/}description')
     if desc is None or desc.text != DESCRIPTION:
         raise ValueError('synthetic figure description differs from P5 contract')

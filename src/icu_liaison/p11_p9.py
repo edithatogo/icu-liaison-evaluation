@@ -14,8 +14,7 @@ import tempfile
 
 from .p11_model import MODEL_SOURCES, verify_case
 from .p11_records import atomic_json, digest_file, digest_json, inventory, read_json, valid_digest
-from .p9_figures import FIGURE_IDS, build_figures, review_figures
-from .p9_supplement_data import SUPPLEMENT_IDS
+from .p9_figures import build_figures, figure_contract_records, review_figures
 
 ROOT = Path(__file__).resolve().parents[2]
 LEGACY_SOURCE_PATHS = tuple(dict.fromkeys((*MODEL_SOURCES,
@@ -113,7 +112,6 @@ def verify_p9(folder: Path, model: Path) -> dict:
             or identity['model_run_id'] != run['model_run_id']
             or identity['run_record_sha256'] != digest_file(model / 'run.json')):
         raise ValueError('P9 figure revision does not match its scenario model')
-    expected_ids = list(FIGURE_IDS) if edition == 1 else sorted((*FIGURE_IDS, *SUPPLEMENT_IDS))
     if (set(identity['inputs_sha256']) != (LEGACY_INPUTS if edition == 1 else set(input_files()))
             or set(identity['sources_sha256']) != set(LEGACY_SOURCE_PATHS if edition == 1 else SOURCE_PATHS)):
         raise ValueError('P9 source or input snapshot inventory mismatch')
@@ -123,27 +121,50 @@ def verify_p9(folder: Path, model: Path) -> dict:
     bundle = folder / 'bundle'
     manifest = read_json(bundle / 'manifest.json')
     review = read_json(folder / 'review.json')
-    expected_files = {'index.html', *(f'{key.lower()}.{ext}' for key in expected_ids for ext in ('svg', 'csv'))}
+    model_summary = read_json(model / 'p5-report/model-summary.json')
+    recorded_runtime = identity['runtime']
+    expected_metadata = {
+        'schema_version': 1, 'data_class': 'synthetic',
+        'scenario_id': model_summary['scenario_id'], 'scenario_seed': run['seed'],
+        'draws': run['draws'], 'price_year': model_summary['price_year'],
+        'model_input_sha256': model_summary['input_digest_sha256'],
+        'python': recorded_runtime['python'],
+        'versions': {name: recorded_runtime['versions'][name] for name in ('matplotlib', 'numpy', 'scipy')},
+    }
+    if (manifest.get('investment_ready') is not False
+            or any(manifest.get(key) != value for key, value in expected_metadata.items())):
+        raise ValueError('P9 figure manifest disagrees with its source run or recorded runtime')
+    inputs = folder / 'inputs'
+    feeds = tuple(read_json(inputs / 'p3_manifest.json')['files']) if edition == 2 else None
+    descriptions, expected_figures = figure_contract_records(
+        read_json(inputs / 'catalogue.json'), read_json(inputs / 'metrics.json'),
+        price_year=model_summary['price_year'], supplementary_feeds=feeds,
+    )
+    if manifest.get('figures') != expected_figures:
+        raise ValueError('P9 figure manifest differs from its frozen catalogue, denominators or source links')
+    expected_files = {'index.html'} | {
+        item[kind] for item in expected_figures for kind in ('svg', 'csv')
+    }
     inner_files = inventory(bundle, exclude='manifest.json')
     if (set(inner_files) != expected_files or manifest.get('files_sha256') != inner_files
-            or manifest.get('inputs_sha256') != _bundle_inputs(identity, run)
-            or any(item['svg'] != f"{item['id'].lower()}.svg" or item['csv'] != f"{item['id'].lower()}.csv"
-                   for item in manifest['figures'])):
+            or manifest.get('inputs_sha256') != _bundle_inputs(identity, run)):
         raise ValueError('P9 inner manifest disagrees with its frozen inputs or figure files')
     if (review.get('status') != 'synthetic_source_and_marks_verified'
             or review.get('investment_ready') is not False
-            or review.get('figures_checked') != expected_ids
-            or review.get('manifest_sha256') != digest_file(bundle / 'manifest.json')
-            or manifest.get('data_class') != 'synthetic'
-            or manifest.get('investment_ready') is not False
-            or [item['id'] for item in manifest['figures']] != expected_ids):
-        raise ValueError('P9 figure bundle review or catalogue mismatch')
+            or review.get('figures_checked') != list(descriptions)
+            or review.get('manifest_sha256') != digest_file(bundle / 'manifest.json')):
+        raise ValueError('P9 figure bundle review mismatch')
     recorded = {key: identity[key] for key in ('sources_sha256', 'inputs_sha256', 'runtime')}
     if recorded == fingerprint():
         replay = review_figures(model / 'inputs/effective-scenario.json', model / 'p5-report', bundle,
                                 include_supplement=edition == 2)
         if replay != review:
             raise ValueError('P9 numerical and visual-mark review differs from replay')
+    else:
+        from .p9_figure_review import read_accessible_svg
+
+        for figure in expected_figures:
+            read_accessible_svg(bundle / figure['svg'], descriptions[figure['id']])
     return record
 
 

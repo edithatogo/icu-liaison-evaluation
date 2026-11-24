@@ -33,3 +33,10 @@ T06 requires verified annual calculator parity and admitted episodes. T07
 requires linked outcome data and clinical safety review. F12 requires method
 verification for the information-value curves. The remaining figure evidence
 requirements are in the catalogue, and P9.5 retains its site acceptance gates.
+
+## Review fixes
+
+- [x] Applied in `4f33681`. Reconstruct figure metadata and source links from
+  the frozen inputs and check accessible SVG labels in archived runs. Reject
+  malformed F01 markup and unsupported clinical safety claims in its record.
+  [Review receipt](../../../verification/p9-frozen-figure-review-2026-11-25.json)

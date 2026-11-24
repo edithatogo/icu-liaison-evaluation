@@ -153,6 +153,37 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
         with pytest.raises(ValueError, match='inventory or digest'):
             verify_run_coverage(output, catalogue)
         svg.write_bytes(original)
+
+    f01_pointer_path = output / 'state/figures/base.json'
+    f01_pointer = json.loads(f01_pointer_path.read_bytes())
+    f01_folder = output / 'figures' / f01_pointer['figure_revision']
+    f01_svg = f01_folder / 'scenario-comparison.svg'
+    f01_record = f01_folder / 'figure.json'
+    original_files = {file: file.read_bytes() for file in (f01_pointer_path, f01_svg, f01_record)}
+    f01_svg.write_text('<svg', encoding='utf-8')
+    figure = json.loads(original_files[f01_record])
+    figure['files_sha256'][f01_svg.name] = hashlib.sha256(f01_svg.read_bytes()).hexdigest()
+    f01_record.write_text(json.dumps(figure), encoding='utf-8')
+    f01_pointer['figure_record_sha256'] = hashlib.sha256(f01_record.read_bytes()).hexdigest()
+    f01_pointer_path.write_text(json.dumps(f01_pointer), encoding='utf-8')
+    rejected = subprocess.run(command, cwd=ROOT, env={**os.environ, 'PYTHONPATH': str(ROOT / 'src')},
+                              capture_output=True, text=True, timeout=60)
+    assert rejected.returncode == 2
+    assert rejected.stdout == '' and 'P9 INVALID_OR_UNVERIFIED' in rejected.stderr
+    assert 'Traceback' not in rejected.stderr
+    for file, content in original_files.items():
+        file.write_bytes(content)
+
+    figure = json.loads(original_files[f01_record])
+    figure['clinical_safety_approved'] = True
+    f01_record.write_text(json.dumps(figure), encoding='utf-8')
+    f01_pointer['figure_record_sha256'] = hashlib.sha256(f01_record.read_bytes()).hexdigest()
+    f01_pointer_path.write_text(json.dumps(f01_pointer), encoding='utf-8')
+    with pytest.raises(ValueError, match='F01 clinical safety'):
+        verify_run_coverage(output, catalogue)
+    for file, content in original_files.items():
+        file.write_bytes(content)
+
     folder = output / 'summaries' / result['summary_id']
     comparison = folder / 'scenario-comparison.csv'
     comparison.write_text(comparison.read_text().replace('within_run_paired_parameter_draws', 'false', 1))
@@ -190,8 +221,15 @@ def test_rehashed_f01_interval_is_checked_against_model(tmp_path):
         verify_figure(folder)
 
 
-@pytest.mark.parametrize('alter', ['bundle_file', 'source_hash'])
-def test_archived_p9_checks_its_inner_manifest_even_when_replay_is_unavailable(tmp_path, monkeypatch, alter):
+@pytest.mark.parametrize(('alter', 'error'), [
+    ('bundle_file', 'manifest'),
+    ('source_hash', 'manifest'),
+    ('scenario_seed', 'source run'),
+    ('denominator_ids', 'catalogue'),
+    ('sources', 'catalogue'),
+    ('accessible_description', 'accessibility'),
+])
+def test_archived_p9_checks_frozen_figure_evidence(tmp_path, monkeypatch, alter, error):
     import icu_liaison.p11_p9 as figures
     from icu_liaison.p11_records import digest_file, inventory
 
@@ -207,7 +245,22 @@ def test_archived_p9_checks_its_inner_manifest_even_when_replay_is_unavailable(t
     else:
         manifest_file = folder / 'bundle/manifest.json'
         manifest = json.loads(manifest_file.read_bytes())
-        manifest['inputs_sha256']['p3_episodes'] = '1' * 64
+        if alter == 'source_hash':
+            manifest['inputs_sha256']['p3_episodes'] = '1' * 64
+        elif alter == 'scenario_seed':
+            manifest['scenario_seed'] += 1
+        elif alter == 'denominator_ids':
+            manifest['figures'][0]['denominator_ids'] = ['D01']
+        elif alter == 'sources':
+            manifest['figures'][0]['sources'].remove('p5_model_summary')
+        elif alter == 'accessible_description':
+            svg = folder / 'bundle/f02.svg'
+            markup = svg.read_text(encoding='utf-8')
+            catalogue = json.loads((folder / 'inputs/catalogue.json').read_bytes())
+            text = next(figure['alt_text'] for figure in catalogue['figures'] if figure['id'] == 'F02')
+            assert text in markup
+            svg.write_text(markup.replace(text, 'Description from a different figure'), encoding='utf-8')
+            manifest['files_sha256'][svg.name] = digest_file(svg)
         manifest_file.write_text(json.dumps(manifest))
         review_file = folder / 'review.json'
         review = json.loads(review_file.read_bytes())
@@ -217,5 +270,5 @@ def test_archived_p9_checks_its_inner_manifest_even_when_replay_is_unavailable(t
     record = json.loads(record_file.read_bytes())
     record['files_sha256'] = inventory(folder, exclude='figure-set.json')
     record_file.write_text(json.dumps(record))
-    with pytest.raises(ValueError, match='manifest'):
+    with pytest.raises(ValueError, match=error):
         figures.verify_p9(folder, output / 'models' / model['model_run_id'])

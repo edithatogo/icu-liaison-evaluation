@@ -1,4 +1,5 @@
 """Check each SVG's actual data marks against the independently loaded source rows."""
+from pathlib import Path
 import re
 from xml.etree import ElementTree as ET
 
@@ -88,7 +89,8 @@ def _cell_bounds(bounds, day, hour):
                      y0 + day * dy, y0 + (day + 1) * dy])
 
 
-def review_svg(path, figure, rows):
+def read_accessible_svg(path: Path, figure: dict) -> ET.Element:
+    """Verify the SVG title and description against the figure's catalogue entry."""
     try:
         svg = ET.parse(path).getroot()
     except ET.ParseError as exc:
@@ -101,6 +103,11 @@ def review_svg(path, figure, rows):
             or desc is None or desc.get('id') != 'figure-desc' or desc.text != figure['alt_text']
             or description is None or description.text != figure['alt_text']):
         raise ValueError('SVG accessibility title or description differs from the catalogue')
+    return svg
+
+
+def review_svg(path, figure, rows):
+    svg = read_accessible_svg(path, figure)
     nodes = {node.get('id'): node for node in svg.iter() if node.get('id')}
     marks = [node.get('id') for node in svg.iter() if node.get('id', '').startswith('data-')]
     if len(set(marks)) != len(marks):

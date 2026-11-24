@@ -62,10 +62,12 @@ The check runs the existing P11 verifier before listing artifacts. It checks
 the four contracted table headers and lists each scenario's
 verified table and SVG paths and SHA-256 hashes, figure source and review
 links, and frozen catalogue hash. Paths are relative to the run directory.
-Matching source and runtime allow numerical and SVG mark replay. Archived
-runs retain their original scope, so newer figures appear in `not_in_run`.
-Tables and figures awaiting evidence appear in `blocked`. The private
-presentation continues to use its own manifest.
+The verifier binds each figure's metadata, metrics, denominators, source
+links and SVG accessibility text to the frozen model and reporting inputs.
+Matching source, inputs and runtime allow numerical and SVG mark replay.
+Archived runs retain their original scope, so newer figures appear in
+`not_in_run`. Tables and figures awaiting evidence appear in `blocked`.
+The private presentation continues to use its own manifest.
 
 ## Private evaluation presentation
 
