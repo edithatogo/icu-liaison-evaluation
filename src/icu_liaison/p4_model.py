@@ -349,7 +349,12 @@ def nominal_counterfactual(scenario: EconomicScenario) -> dict[str, dict[str, fl
 
 def financial_decision_surface(run: P4Run, *, objective: Literal['net_resource', 'budget'] = 'net_resource') -> tuple[np.ndarray, list[str]]:
     """Produce Voiage's row-draw/column-strategy input; **not EVPI code**."""
-    field = 'net_resource_benefit_aud' if objective == 'net_resource' else 'net_budget_impact_aud'
+    if objective == 'net_resource':
+        field = 'net_resource_benefit_aud'
+    elif objective == 'budget':
+        field = 'net_budget_impact_aud'
+    else:
+        raise ValueError('decision surface objective must be net_resource or budget')
     labels = [arm.id for arm in run.scenario.strategies]
     array = np.column_stack([getattr(run.strategies[arm], field) for arm in labels])
     if not np.isfinite(array).all():
@@ -385,13 +390,19 @@ def _thresholds(scenario: EconomicScenario, arm: Strategy) -> dict[str, float | 
                          * x[f'strategy.{arm.id}.delay_success_fraction']
                          * x['resource.hours_released_per_improved_case'] / 24
                          * x['resource.net_index_delay_cost_aud_per_day'])
-    return_per_covered = (n * x['baseline.unplanned_72h_return_rate']
-                          * x[f'strategy.{arm.id}.relative_return_effect']
-                          * x['resource.incremental_return_cost_aud_per_return'])
+    risk = x['baseline.unplanned_72h_return_rate']
+    effect = x[f'strategy.{arm.id}.relative_return_effect']
+    # Treated return probability is capped at one in the simulation.
+    returns_avoided_at_full_coverage = max(n * risk * effect, n * (risk - 1))
+    return_per_covered = (
+        returns_avoided_at_full_coverage * x['resource.incremental_return_cost_aud_per_return']
+    )
     value_at_full_coverage = delay_per_covered + return_per_covered
     service = x[f'strategy.{arm.id}.annual_incremental_cost_aud']
     coverage = x[f'strategy.{arm.id}.coverage_fraction']
     threshold = (service / value_at_full_coverage) if value_at_full_coverage > 0 else None
+    if arm.role == 'proposed' and value_at_full_coverage == service == 0:
+        threshold = 0.0
     return {
         'threshold_annual_service_cost_aud': float(coverage * value_at_full_coverage),
         'break_even_coverage_fraction': (float(threshold) if threshold is not None else None),
@@ -477,6 +488,6 @@ def summarise_p4(run: P4Run) -> dict:
             'Usable capacity days are distinct from cash or economic resource changes.',
             'Cash realisability fractions are hypothetical and do not establish finance savings.',
             'Mortality, cardiac arrest, escalation and ward workload have not been measured or monetised.',
-            'P1 installed Dapane/Voiage validation and the dedicated GitHub repository remain external gates.',
+            'P1 records the scope of the qualified provider artifacts.',
         ],
     }

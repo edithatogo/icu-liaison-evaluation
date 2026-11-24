@@ -22,3 +22,14 @@ The next source step is hosted synthetic and privacy validation. Independent
 ANZICS admission, approved CHHHS data and calibration, model review, and
 provider acceptance beyond the admitted environments remain in P4.4.
 [P4.4 acceptance](plan.md#p44--empiricalprovider-acceptance-blocked)
+
+## P4 review on 24 November 2026
+
+The [source worktree and chat recorded for P1](../P1-provider-reuse/handoff.md#p1-artifact-review-on-24-november-2026)
+carry the P4 calculation, admission and CLI fixes, their regression tests
+and the source manifest on `codex/icu-p4-review-fixes`. The review uses
+fictional inputs. The break-even threshold matches the bounded return risk
+in the simulation. Public admission rejects local strategy evidence, and
+the CLI publishes a complete decision CSV after validation. The focused
+tests and P4 and P5 reruns passed. The next step is hosted validation.
+[Review verification](test-matrix.md#p4-review-rerun-on-24-november-2026)

@@ -10,14 +10,21 @@ import csv
 import json
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
+
+from numpy import ndarray
 
 
-def _write_surface(path: Path, names: list[str], matrix) -> None:
+def _write_surface(path: Path, names: list[str], matrix: ndarray) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open('x', newline='', encoding='utf-8') as stream:
-        writer = csv.writer(stream)
-        writer.writerow(names)
-        writer.writerows(matrix.tolist())
+    with TemporaryDirectory(prefix='.p4-surface-', dir=path.parent) as scratch:
+        staged = Path(scratch) / 'decision.csv'
+        with staged.open('x', newline='', encoding='utf-8') as stream:
+            writer = csv.writer(stream)
+            writer.writerow(names)
+            writer.writerows(matrix.tolist())
+        # A complete file becomes visible at the destination without overwriting it.
+        path.hardlink_to(staged)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,16 +63,16 @@ def main(argv: list[str] | None = None) -> int:
                 'status': 'illustrative_prior_diagnostic_not_joint_posterior',
                 'drivers': one_way_sensitivity(scenario, args.one_way_strategy),
             }
-        if args.decision_surface is not None:
-            matrix, names = financial_decision_surface(run)
-            _write_surface(args.decision_surface, names, matrix)
-        print(json.dumps(report, indent=2, sort_keys=True, allow_nan=False))
+        payload = json.dumps(report, indent=2, sort_keys=True, allow_nan=False)
         if args.require_local_ready or args.require_investment_ready:
-            # A successful computation is not proof of clinical safety, national
-            # source authentication, a valid counterfactual or financial savings.
+            print(payload)
             print('UNVERIFIED: approved local data, clinical safety and native Dapane/Voiage gates remain open',
                   file=sys.stderr)
             return 2
+        if args.decision_surface is not None:
+            matrix, names = financial_decision_surface(run)
+            _write_surface(args.decision_surface, names, matrix)
+        print(payload)
         return 0
     except (OSError, ValueError, TypeError) as error:
         print(f'P4 INVALID_OR_UNVERIFIED: {type(error).__name__}', file=sys.stderr)

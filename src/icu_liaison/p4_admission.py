@@ -18,6 +18,11 @@ def admit_p4(scenario: EconomicScenario, protocol: dict, catalogue: dict, regist
     if any(prior.evidence_status == 'local_aggregate_unvalidated' for prior in s.all_priors().values()):
         raise ValueError('local aggregate priors cannot enter a fictional P4 run')
     p = EvaluationProtocol.model_validate(protocol)
+    if any(
+        arm.evidence_status == 'locally_verified' or arm.site_source_reference is not None
+        for arm in p.strategies
+    ):
+        raise ValueError('local strategy evidence cannot enter a fictional P4 run')
     benchmarks = reconcile_catalogue(Catalogue.model_validate(catalogue), register)
     rate = select_external_benchmark(benchmarks, 'CCR_2024_25_EXIT_BLOCK')
     reference = p.reference_benchmark
