@@ -9,7 +9,7 @@ publish = false
 # Only the accepted Kairos staged-resource runtime and types are consumed.
 # Match the same immutable revision; no internal scheduler or queueing library.
 [dependencies]
-kairo-ecs-des = { git = "https://github.com/edithatogo/kairos", rev = "273bf44956dfadd31336a9f9f645eba6b39779f9" }
-kairo-ecs-types = { git = "https://github.com/edithatogo/kairos", rev = "273bf44956dfadd31336a9f9f645eba6b39779f9" }
+kairo-ecs-des = { git = "https://github.com/edithatogo/kairos", rev = "161c0bfdb496dba77ff4741bfdfe9e93b81f94cd" }
+kairo-ecs-types = { git = "https://github.com/edithatogo/kairos", rev = "161c0bfdb496dba77ff4741bfdfe9e93b81f94cd" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

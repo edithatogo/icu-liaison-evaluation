@@ -154,3 +154,14 @@ The combined Packaging and interface-plugin proposals and the combined
 SQLModel and SQLAlchemy proposals also failed to resolve. Interface Common
 1.23.1 and 1.24.0 likewise require Packaging 26.1 or later. The existing
 workflow lock remains the qualified combination.
+
+## Dependency reconciliation on 25 November 2026
+
+Packaging 26.4 resolved in the isolated source CI and quality environments
+on CPython 3.15.2. The P11 lock remains on Packaging 25.0 because pinned
+Snakemake 9.27.2 requires a release below 26. The newer Packaging candidate
+and the other seven workflow proposals remain subject to the constraints
+above. The two Kairos pins passed the locked native check on the scheduled
+revision. Issue #30 stays open for future dependency proposals.
+[Renovate dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
+[Kairos check](../P6-kairos-capacity-validation/handoff.md#kairos-dependency-check-on-25-november-2026)
