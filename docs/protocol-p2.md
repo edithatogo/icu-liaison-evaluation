@@ -80,8 +80,10 @@ The pooled CCR **20.4% >=12-hour** delay rate is an external comparison proxy,
 not a local rate or automatically valid as this narrower first-index ward cohort.
 
 The synthetic endpoint reference deliberately excludes an event exactly
-at 72h; non-complete 72h surveillance is right-censored. Death before
-completion is a competing event, not an observed zero risk. A later method
+at 72h. It compares timestamps in UTC for elapsed hours and uses
+Australia/Brisbane for the after-hours classification. Incomplete 72h
+surveillance is right-censored. Death before 72h and before an observed
+unplanned return is a competing event. A later method
 should estimate cumulative incidence or a suitable adjusted contrast with
 censoring/competing-risk handling. This Boolean classifier alone is **not**
 a survival model, and the early-return numerator must be interpreted

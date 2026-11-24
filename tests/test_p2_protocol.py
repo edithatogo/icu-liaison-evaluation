@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -49,6 +50,15 @@ def test_baseline_must_not_be_assumed_zero_current_liaison_coverage():
         EvaluationProtocol.model_validate(proto)
 
 
+def test_protocol_rejects_nonfinite_staffing_even_with_a_source_reference():
+    proto = original()
+    proto['strategies'][0].update(
+        funded_fte=float('inf'), evidence_status='locally_verified', site_source_reference='fictional-source',
+    )
+    with pytest.raises(ValueError, match='finite number'):
+        EvaluationProtocol.model_validate(proto)
+
+
 def test_eligibility_index_discharge_and_denominator_are_pinned():
     proto = original()
     proto['eligibility']['analysis_unit'] = 'all_icu_admissions'
@@ -71,6 +81,25 @@ def test_wrong_icu_return_window_and_clock_rejected():
         EvaluationProtocol.model_validate(proto)
 
 
+@pytest.mark.parametrize(('endpoint', 'field', 'value'), [
+    ('unplanned_72h_return', 'role', 'context'),
+    ('unplanned_72h_return', 'threshold_hours', 12),
+    ('ready_to_physical_departure_hours', 'window_hours', 48),
+])
+def test_required_endpoint_roles_and_optional_clocks_are_pinned(endpoint, field, value):
+    proto = original()
+    proto['endpoints'][endpoint][field] = value
+    with pytest.raises(ValueError, match=endpoint):
+        EvaluationProtocol.model_validate(proto)
+
+
+def test_extra_endpoint_cannot_reuse_a_required_endpoint_identity():
+    proto = original()
+    proto['endpoints']['context_metric'] = dict(proto['endpoints']['post_icu_death'], role='context')
+    with pytest.raises(ValueError, match='endpoint identity'):
+        EvaluationProtocol.model_validate(proto)
+
+
 def test_missing_safety_endpoint_or_guardrail_is_rejected():
     proto = original()
     del proto['endpoints']['post_icu_death']
@@ -79,6 +108,13 @@ def test_missing_safety_endpoint_or_guardrail_is_rejected():
     proto = original()
     proto['safety']['required_endpoints'].remove('ward_cardiac_arrest')
     with pytest.raises(ValueError):
+        EvaluationProtocol.model_validate(proto)
+
+
+def test_duplicate_required_safety_endpoint_is_rejected():
+    proto = original()
+    proto['safety']['required_endpoints'].append('ward_cardiac_arrest')
+    with pytest.raises(ValueError, match='clinical safety endpoints'):
         EvaluationProtocol.model_validate(proto)
 
 
@@ -217,12 +253,48 @@ def test_utc_timestamps_respect_australia_brisbane_evening():
     assert out.after_hours_departure is True
 
 
+def test_readiness_delay_uses_elapsed_hours_through_a_clock_change():
+    sydney = ZoneInfo('Australia/Sydney')
+    ready = datetime(2026, 10, 3, 21, 30, tzinfo=sydney)
+    depart = datetime(2026, 10, 4, 9, 30, tzinfo=sydney)
+    result = classify_transition(observation(
+        clinically_ready_at=ready, physical_departure_at=depart,
+        observed_until=datetime(2026, 10, 7, 10, 30, tzinfo=sydney),
+    ))
+    assert result.delay_hours == 11.0
+    assert result.exit_block_ge12h is False
+
+
+def test_return_exactly_72_elapsed_hours_after_departure_is_excluded_across_clock_change():
+    sydney = ZoneInfo('Australia/Sydney')
+    depart = datetime(2026, 4, 4, 18, tzinfo=sydney)
+    event = datetime(2026, 4, 7, 17, tzinfo=sydney)
+    result = classify_transition(observation(
+        clinically_ready_at=None, physical_departure_at=depart,
+        observed_until=event, returns=[ReturnEvent(event, 'unplanned')],
+    ))
+    assert result.followup_complete_72h is True
+    assert result.unplanned_return_within_72h is False
+
+
+def test_completed_followup_requires_72_elapsed_hours_across_clock_change():
+    sydney = ZoneInfo('Australia/Sydney')
+    depart = datetime(2026, 10, 3, 18, tzinfo=sydney)
+    with pytest.raises(ValueError, match='at least 72 hours observed'):
+        classify_transition(observation(
+            clinically_ready_at=None, physical_departure_at=depart,
+            observed_until=datetime(2026, 10, 6, 18, tzinfo=sydney),
+        ))
+
+
 def test_invalid_return_precedes_discharge_and_missing_censor_reason_rejected():
     depart=observation().physical_departure_at
     with pytest.raises(ValueError):
         classify_transition(observation(returns=[ReturnEvent(at=depart-timedelta(minutes=1),planned='unplanned')]))
     with pytest.raises(ValueError):
         classify_transition(observation(observed_until=depart+timedelta(hours=30),censor_reason='completed_72h'))
+    with pytest.raises(ValueError, match='censor reason'):
+        classify_transition(observation(censor_reason=None))
 
 
 def test_published_exit_block_proxy_must_match_explicit_source_and_value():

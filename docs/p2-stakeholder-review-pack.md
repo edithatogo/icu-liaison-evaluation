@@ -55,7 +55,8 @@ PYTHONPATH=src .venv/bin/python -m icu_liaison.protocol_cli \
 ```
 
 The audit checks all 32 dictionary mappings and binds the form to the exact
-protocol and dictionary files. The form's gate counts describe the decisions
+protocol and dictionary files. Numeric staffing, completeness and safety
+values supplied in a form must be finite. The gate counts describe decisions
 recorded in the form. A completed form that declares approval is reported as
 `site_approval_declared_unverified`. The audit leaves
 `site_authority_verified` and `ready_for_local_claims` false. Add

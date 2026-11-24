@@ -153,3 +153,18 @@ def test_complete_signoff_form_does_not_establish_local_authority(tmp_path: Path
     assert audited["site_authority_verified"] is False
     assert audited["ready_for_local_claims"] is False
     assert "fictional-gate" not in json.dumps(audited)
+
+
+@pytest.mark.parametrize(("field", "value"), [
+    ("current_care_funded_fte", float("inf")),
+    ("approved_noninferiority_margins", {"post_icu_death": float("nan")}),
+])
+def test_signoff_rejects_nonfinite_protocol_values(tmp_path: Path, field: str, value: object) -> None:
+    pack = json.loads(SIGNOFF.read_text(encoding="utf-8"))
+    pack["status"] = "in_review"
+    pack["pending_protocol_decisions"][field] = value
+    input_path = tmp_path / "signoff.json"
+    input_path.write_text(json.dumps(pack), encoding="utf-8")
+
+    with pytest.raises(ValidationError, match="finite number"):
+        audit_governance_signoff(input_path, PROTOCOL, DICTIONARY)

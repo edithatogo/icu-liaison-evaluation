@@ -44,3 +44,13 @@ P10 safety and preregistration checks confirmed their draft status. The
 site decision remains with the clinical, consumer and First Nations,
 Finance, ethics and data governance owners.
 [Run the review-pack audit](../../../docs/p2-stakeholder-review-pack.md#5-verify-the-review-pack)
+
+## P2 protocol review on 24 November 2026
+
+The same source worktree carried the review on `codex/icu-p2-review-fixes`.
+The reference classifier measures elapsed time across clock changes,
+preserves Brisbane after-hours classification and rejects invalid censor
+labels. Protocol and sign-off validation now reject altered endpoint roles
+or clocks, duplicate endpoint identities and nonfinite proposed values.
+The fictional model and review-pack results reproduced byte for byte.
+[P2 test matrix](test-matrix.md)

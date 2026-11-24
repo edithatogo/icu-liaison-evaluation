@@ -6,12 +6,13 @@ confounding and health-service-specific completeness validation.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Literal
+from datetime import UTC, datetime, timedelta
+from typing import Literal, get_args
 from zoneinfo import ZoneInfo
 
 BRISBANE = ZoneInfo('Australia/Brisbane')
 WINDOW = timedelta(hours=72)
+CensorReason = Literal['completed_72h', 'hospital_discharge', 'interhospital_transfer', 'death', 'unknown']
 
 
 @dataclass(frozen=True)
@@ -26,7 +27,7 @@ class TransitionObservation:
     physical_departure_at: datetime
     observed_until: datetime
     returns: list[ReturnEvent]
-    censor_reason: Literal['completed_72h', 'hospital_discharge', 'interhospital_transfer', 'death', 'unknown']
+    censor_reason: CensorReason
 
 
 @dataclass(frozen=True)
@@ -39,9 +40,10 @@ class TransitionResult:
     competing_death: bool
 
 
-def _aware(value: datetime, name: str) -> None:
+def _utc(value: datetime, name: str) -> datetime:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError(f'{name}: timezone-aware datetime required')
+    return value.astimezone(UTC)
 
 
 def classify_transition(value: TransitionObservation) -> TransitionResult:
@@ -52,40 +54,42 @@ def classify_transition(value: TransitionObservation) -> TransitionResult:
     return's planned status is unknown, no-return remains unknown rather than
     false. Death before full follow-up is a competing event, not non-readmission.
     """
-    t = value.physical_departure_at
-    _aware(t, 'physical_departure_at')
-    _aware(value.observed_until, 'observed_until')
-    if value.observed_until < t:
+    departure = _utc(value.physical_departure_at, 'physical_departure_at')
+    observed_until = _utc(value.observed_until, 'observed_until')
+    if value.censor_reason not in get_args(CensorReason):
+        raise ValueError('unrecognised follow-up censor reason')
+    if observed_until < departure:
         raise ValueError('observation ends before ICU departure')
-    if value.censor_reason == 'completed_72h' and value.observed_until - t < WINDOW:
+    full_followup = observed_until - departure >= WINDOW
+    if value.censor_reason == 'completed_72h' and not full_followup:
         raise ValueError('completed_72h label requires at least 72 hours observed')
     delay = None
     if value.clinically_ready_at is not None:
-        _aware(value.clinically_ready_at, 'clinically_ready_at')
-        if value.clinically_ready_at > t:
+        ready = _utc(value.clinically_ready_at, 'clinically_ready_at')
+        if ready > departure:
             raise ValueError('readiness after ICU departure')
-        delay = (t - value.clinically_ready_at).total_seconds() / 3600
+        delay = (departure - ready).total_seconds() / 3600
 
+    early_statuses = set()
     for event in value.returns:
-        _aware(event.at, 'return.at')
-        if event.at < t or event.at > value.observed_until:
+        at = _utc(event.at, 'return.at')
+        if not departure <= at <= observed_until:
             raise ValueError('ICU return outside observed interval')
         if event.planned not in {'planned', 'unplanned', 'unknown'}:
             raise ValueError('unrecognised ICU return planned status')
+        if at - departure < WINDOW:
+            early_statuses.add(event.planned)
 
-    within = [event for event in value.returns if event.at - t < WINDOW]
-    any_unplanned = any(event.planned == 'unplanned' for event in within)
-    unknown_within = any(event.planned == 'unknown' for event in within)
-    full_followup = (value.observed_until - t >= WINDOW)
+    any_unplanned = 'unplanned' in early_statuses
     early_return: bool | None
     if any_unplanned:
         early_return = True
-    elif unknown_within or not full_followup:
+    elif 'unknown' in early_statuses or not full_followup:
         early_return = None
     else:
         early_return = False
 
-    local_hour = t.astimezone(BRISBANE).hour
+    local_hour = departure.astimezone(BRISBANE).hour
     return TransitionResult(
         delay_hours=delay,
         exit_block_ge12h=(delay >= 12 if delay is not None else None),
