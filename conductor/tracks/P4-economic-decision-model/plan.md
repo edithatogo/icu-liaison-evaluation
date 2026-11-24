@@ -29,3 +29,15 @@
   the exact artifacts and hosts in the P1 lock. [P1 plan](../P1-provider-reuse/plan.md)
 - [ ] Complete independent model review and the outstanding P1 provider
   admission for the intended analysis.
+
+## Phase — Review fixes
+
+- [x] Apply the simulation's return-risk bound to break-even thresholds,
+  handle cost-free neutral strategies, reject unknown decision objectives
+  and local protocol strategy evidence, and publish decision CSVs only
+  after validation and a complete write (`7e94f15`).
+
+All 103 focused tests passed. The adverse-return stress case agreed with
+the simulated ledger at 75% coverage. The standard decision draws and report
+tables reproduced byte for byte.
+[Review verification](test-matrix.md#p4-review-rerun-on-24-november-2026)
