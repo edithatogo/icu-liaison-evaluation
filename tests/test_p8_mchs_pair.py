@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 import copy
+from types import SimpleNamespace
 import pytest
 
 from icu_liaison.adapters.p8_mchs import MchsPair, run_mchs_pair
@@ -90,6 +91,51 @@ def test_missing_mchs_installation_is_explicit_not_a_fake_success(monkeypatch):
 def test_native_path_demands_an_explicit_reference_bundle_directory():
     with pytest.raises(ValueError,match='reference'):
         run_mchs_pair(example(),provider=None)
+
+
+@pytest.mark.parametrize('change', ['none', 'before', 'during'])
+def test_installed_route_binds_the_sas_table_bytes(tmp_path, monkeypatch, change):
+    import icu_liaison.adapters.p8_mchs as module
+
+    table = tmp_path / 'nep25_aa_price_weights.sas7bdat'
+    table.write_bytes(b'fictional reference bytes')
+    case = example(source_bundle_sha256=module.mchs_reference_sha256(tmp_path))
+    seen = []
+
+    def calculate_acute(rows, _params, *, year, ref_dir):
+        seen.append((year, ref_dir))
+        if change == 'during' and len(seen) == 1:
+            table.write_bytes(b'changed reference bytes')
+        return [{'NWAU25': '1.0', 'Error_Code': 0}]
+
+    imports = {
+        'nwau_py.calculators.acute': SimpleNamespace(calculate_acute=calculate_acute, AcuteParams=object),
+        'polars': SimpleNamespace(DataFrame=list),
+    }
+    monkeypatch.setattr(module, 'import_module', imports.__getitem__)
+    if change == 'before':
+        table.write_bytes(b'changed reference bytes')
+        with pytest.raises(ValueError, match='SHA-256 differs'):
+            run_mchs_pair(case, ref_dir=str(tmp_path))
+        assert not seen
+    elif change == 'during':
+        with pytest.raises(ValueError, match='changed during'):
+            run_mchs_pair(case, ref_dir=str(tmp_path))
+    else:
+        result = run_mchs_pair(case, ref_dir=str(tmp_path))
+        assert result['source_bundle_sha256_declared'] == case.source_bundle_sha256
+        assert result['annual_calculator_parity'] == 'unverified'
+        assert seen == [('2025', tmp_path.resolve())] * 2
+
+
+def test_reference_fingerprint_rejects_linked_tables(tmp_path):
+    from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
+
+    table = tmp_path / 'table.txt'
+    table.write_bytes(b'fictional reference bytes')
+    (tmp_path / 'nep25_aa_price_weights.sas7bdat').symlink_to(table)
+    with pytest.raises(ValueError, match='regular files'):
+        mchs_reference_sha256(tmp_path)
 
 
 def test_provider_output_requires_single_complete_row_and_keeps_comparator_copy():

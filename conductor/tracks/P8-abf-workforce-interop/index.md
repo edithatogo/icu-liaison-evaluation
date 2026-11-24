@@ -9,9 +9,9 @@ MCHS, Microcosting Health Workforce, Dapane, Voiage and optional Kairos. An
 inspectable provider-capability register, a strict **planning-only** source
 crosswalk, **synthetic annual MCHS paired-input and nursing quote consumers**,
 and focused negative tests are implemented and integrated. The plan records
-scoped fictional MCHS and Dapane runs. Official annual NWAU parity, local
-pricing and roster entitlement, and Finance and clinical acceptance remain
-open with their respective owners.
+scoped fictional MCHS, workforce, Dapane and Voiage runs. Official annual
+NWAU parity, local funding and roster entitlement, and Finance and clinical
+acceptance remain open with their respective owners.
 
 [Capability register](../../../model-inputs/p8/provider-capabilities.json) |
 [Null-valued source-only contract](../../../model-inputs/p8/synthetic-null-shadow.json) |

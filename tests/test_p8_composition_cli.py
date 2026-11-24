@@ -69,3 +69,19 @@ def test_cli_combines_two_synthetic_provider_shadows_without_monetisation():
     assert out['workforce']['request_line_count']==1
     assert out['workforce']['annual_labour_cost_aud'] is None
     assert out['extra_workforce_cost_applied_to_p4'] is False
+
+
+def test_cli_labels_assumed_case_funding_and_preserves_default_shape():
+    args = (INPUT, '--strategy', 'liaison_service', '--mchs-result', P8/'synthetic-mchs-provider-output.json')
+    baseline = cli(*args)
+    assert baseline.returncode == 0, baseline.stderr
+    priced = cli(*args, '--funding-pricing-year', '2025', '--assumed-aud-per-nwau', '1000')
+    assert priced.returncode == 0, priced.stderr
+    payload = json.loads(priced.stdout)
+    assert payload.pop('episode_funding_sensitivity') == {
+        'actual_revenue_aud': None, 'assumed_aud_per_nwau': '1000', 'case_change_aud': '-100.0000',
+        'pricing_year': 2025, 'scope': 'one_synthetic_episode_at_assumed_price',
+    }
+    assert payload == json.loads(baseline.stdout)
+    invalid = cli(*args, '--assumed-aud-per-nwau', '1000')
+    assert invalid.returncode == 2 and not invalid.stdout

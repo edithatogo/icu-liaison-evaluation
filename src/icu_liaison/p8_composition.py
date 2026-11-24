@@ -9,13 +9,16 @@ REPLACE the appropriate P4 prior component after reconciliation, not be added.
 """
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 import re
 from typing import Any, Literal, Mapping
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
-from .p4_model import P4Run, summarise_p4
+from .adapters.voiage import financial_evpi_aud, make_voiage_decision
+from .p4_model import P4Run, financial_decision_surface, summarise_p4
+
+DecisionObjective = Literal['net_resource', 'budget']
 
 
 class _Strict(BaseModel):
@@ -44,6 +47,27 @@ class WorkforceShadow(_Strict):
     reconciliation_to_p4_cost_prior: Literal['not_reconciled'] = 'not_reconciled'
 
 
+class FictionalFundingPrice(_Strict):
+    pricing_year: Literal[2024, 2025]
+    aud_per_nwau: str
+
+
+class EpisodeFundingSensitivity(_Strict):
+    scope: Literal['one_synthetic_episode_at_assumed_price'] = 'one_synthetic_episode_at_assumed_price'
+    pricing_year: Literal[2024, 2025]
+    assumed_aud_per_nwau: str
+    case_change_aud: str
+    actual_revenue_aud: None = None
+
+
+class VoiageComparison(_Strict):
+    objective: DecisionObjective
+    strategy_ids: list[str] = Field(min_length=2, max_length=2)
+    draws: int = Field(gt=0)
+    evpi_aud_per_annual_programme_decision: float = Field(ge=0)
+    provider_evidence: Literal['injected_contract_test_only', 'native_provider_called_unqualified']
+
+
 class P8Composition(_Strict):
     schema_version: Literal[1] = 1
     data_class: Literal['synthetic'] = 'synthetic'
@@ -58,6 +82,8 @@ class P8Composition(_Strict):
     p4_illustrative_net_budget_impact_aud_mean: float
     mchs: MchsShadow
     workforce: WorkforceShadow
+    episode_funding_sensitivity: EpisodeFundingSensitivity | None = None
+    voiage_comparison: VoiageComparison | None = None
     net_modelled_nwau_aud: None = None
     actual_hospital_revenue_change_aud: None = None
     extra_workforce_cost_applied_to_p4: Literal[False] = False
@@ -180,6 +206,38 @@ def _admit_workforce(
     )
 
 
+def _episode_funding(mchs: MchsShadow, price: FictionalFundingPrice) -> EpisodeFundingSensitivity:
+    if mchs.case_change_nwau is None or mchs.pricing_year != price.pricing_year:
+        raise ValueError('fictional funding price requires an MCHS episode from the same pricing year')
+    rate = _exact_decimal(price.aud_per_nwau, 'fictional AUD per NWAU', nonnegative=True)
+    change = _exact_decimal(mchs.case_change_nwau, 'change NWAU')
+    with localcontext(prec=len(rate.as_tuple().digits) + len(change.as_tuple().digits)):
+        amount = change * rate
+    return EpisodeFundingSensitivity(
+        pricing_year=price.pricing_year, assumed_aud_per_nwau=price.aud_per_nwau,
+        case_change_aud=format(amount, 'f'),
+    )
+
+
+def _voiage_comparison(
+    run: P4Run, strategy_id: str, objective: DecisionObjective, *,
+    value_array_factory=None, analysis_factory=None,
+) -> VoiageComparison:
+    values, labels = financial_decision_surface(run, objective=objective)
+    chosen = ['current_care', strategy_id]
+    pair = values[:, [labels.index(arm) for arm in chosen]]
+    analysis = make_voiage_decision(
+        pair, chosen, value_array_factory=value_array_factory, analysis_factory=analysis_factory,
+    )
+    return VoiageComparison(
+        objective=objective, strategy_ids=chosen, draws=len(pair),
+        evpi_aud_per_annual_programme_decision=financial_evpi_aud(analysis),
+        provider_evidence=('injected_contract_test_only'
+                           if value_array_factory is not None or analysis_factory is not None
+                           else 'native_provider_called_unqualified'),
+    )
+
+
 def compose_p8_shadow(
     run: P4Run,
     *,
@@ -187,6 +245,10 @@ def compose_p8_shadow(
     mchs_result: Mapping[str, Any] | None = None,
     workforce_result: Mapping[str, Any] | None = None,
     expected_roster_scenario_id: str | None = None,
+    fictional_funding_price: FictionalFundingPrice | None = None,
+    voiage_objective: DecisionObjective | None = None,
+    value_array_factory=None,
+    analysis_factory=None,
 ) -> dict[str, Any]:
     """Attach source-only context to one strategy without changing financial draws.
 
@@ -200,6 +262,13 @@ def compose_p8_shadow(
         raise ValueError('P8 composition supports synthetic-source data only')
     mchs=_admit_mchs(mchs_result)
     workforce=_admit_workforce(workforce_result,expected_roster_scenario_id,run.scenario.price_year)
+    funding = _episode_funding(mchs, fictional_funding_price) if fictional_funding_price is not None else None
+    comparison = None
+    if voiage_objective is not None:
+        comparison = _voiage_comparison(
+            run, strategy_id, voiage_objective,
+            value_array_factory=value_array_factory, analysis_factory=analysis_factory,
+        )
     summary=summarise_p4(run)['strategies'][strategy_id]
     arm=next(a for a in run.scenario.strategies if a.id == strategy_id)
     out=P8Composition(
@@ -212,5 +281,9 @@ def compose_p8_shadow(
         p4_illustrative_net_budget_impact_aud_mean=summary['net_budget_impact_aud']['mean'],
         mchs=mchs,
         workforce=workforce,
+        episode_funding_sensitivity=funding,
+        voiage_comparison=comparison,
     )
-    return out.model_dump(mode='json')
+    omitted = {field for field in ('episode_funding_sensitivity', 'voiage_comparison')
+               if getattr(out, field) is None}
+    return out.model_dump(mode='json', exclude=omitted)

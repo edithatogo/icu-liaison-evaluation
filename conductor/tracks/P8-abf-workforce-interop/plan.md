@@ -25,6 +25,11 @@
   produces exactly zero. The locked macOS arm64 Rust canary also passed.
   [Scoped execution receipt](../../../verification/p8-mchs-paired-acute-2026-11-24.json)
 
+- [x] P8.2.1a Fingerprint the exact annual SAS table directory before and
+  after the paired calls. Replay the fictional inlier and unchanged episode
+  for both supported pricing years against the saved independent oracles.
+  [Provider workflow receipt](../../../verification/p8-provider-workflow-2026-11-24.json)
+
 - [ ] P8.2.1 Record pricing-year, AR-DRG/coding edition and hospital episode
   identity, ICU-eligible hours, whole-stay LOS, patient and establishment
   eligibility, HAC/AHR adjustments; freeze complete current-care and intervention
@@ -36,14 +41,31 @@
 - [ ] P8.2.3 Keep actual CHHHS funding/revenue `unknown` until local ABF/Finance
   authorises applicable contract and realised-allocation interpretation.
 
+IHACPA publishes the 2026–27 acute calculator and specifies AR-DRG v12.0
+for that year. The pinned P8 consumer still requires parity evidence before
+accepting that year and edition.
+[Calculators](https://www.ihacpa.gov.au/health-care/pricing/nwau-calculators) ·
+[2026–27 determination](https://www.ihacpa.gov.au/resources/national-efficient-price-determination-2026-27)
+
 ## P8.3 — Queensland nursing roster and wage consumer (source adapter implemented; award qualification pending)
 
 - [x] P8.3.0 Implement the thin, exact-decimal synthetic roster segment -> `QuoteQuantity` -> existing workforce `build_dapane_request` consumer, with component/overlap/source/price-year and request-integrity guards. Synthetic source tests only.
+
+- [x] P8.3.2a Verify the quote release classification, returned quantities
+  and synthetic exposure labels. Replay three dated fictional quantities
+  through the pinned workforce source and reviewed Dapane extension. Reject
+  the HP3 quote artifact for a different roster classification.
+  [Provider workflow receipt](../../../verification/p8-provider-workflow-2026-11-24.json)
 
 - [ ] P8.3.1 Confirm nursing award/enterprise agreement, position grade, band,
   pay point, coverage hours, skill mix, effective/knowledge dates, employer
   conditions and salary components; do not reuse the HP3 health-practitioner
   wage example as a Clinical Nurse rate.
+  The published wage tables and NMEB12 agreement identify candidate sources.
+  The applicable pay point, Award interaction and roster conditions still
+  require role-specific HR confirmation.
+  [Nursing wage tables](https://www.health.qld.gov.au/hrpolicies/wage-rates/nursing) ·
+  [Certified agreement](https://www.qirc.qld.gov.au/documents/1081)
 - [ ] P8.3.2 Map rostered productive and paid exposure, superannuation,
   allowances/penalties, leave relief, backfill and training in the existing
   workforce `UnitQuoteRelease`/conditions-costing interfaces; preserve unique
@@ -51,7 +73,7 @@
 - [ ] P8.3.3 Reconcile nominal and uncertainty-based staff cost through Dapane,
   independently match payroll/HR source and avoid salary-oncost duplication.
 
-## P8.4 — Provider-aware economic shadow composition (source-side partial; native valuation pending)
+## P8.4 — Provider-aware economic shadow composition
 
 - [x] P8.4.0 Add a synthetic-only, typed sidecar that binds source-level MCHS
   paired NWAU and workforce/Dapane financial-cost requests to an existing
@@ -59,12 +81,19 @@
   NWAU change into a programme or cash result. Reject duplicate, unsigned,
   inconsistent, misclassified or promoted provider outputs. Publish a JSON
   Schema, small synthetic fixtures, CLI and reproducibility/negative tests.
-  This **does not** perform Dapane valuation or Voiage EVPI.
+  The original default command remains provider-free.
 - [x] P8.4.1a Execute separate economic and cash cost comparisons for a fictional
   episode with the reviewed macOS Dapane wheel. Check each staffing component
   once and reject a duplicate salary component. Carry the hypothetical
   case-level funding value separately from both valuation runs.
   [Native synthetic valuation receipt](../../../verification/p8-native-synthetic-valuation-2026-11-24.json)
+
+- [x] P8.4.2a Add an opt-in, same-year case funding sensitivity at an explicit
+  fictional price and a Voiage comparison for a selected P4 strategy and
+  resource or budget objective. Keep episode funding and workforce amounts
+  separate from the annual draws. Independently reproduce all four selected
+  strategy and objective comparisons with the reviewed macOS Voiage artifact.
+  [Provider workflow receipt](../../../verification/p8-provider-workflow-2026-11-24.json)
 
 - [ ] P8.4.1 Preserve separate economic/financial/funding runs and exact resource
   quantities in Dapane. Do not treat MCHS NWAU or an inpatient tariff as extra
@@ -78,9 +107,11 @@
 - [x] P8.5.0 Integrate the source-side contracts and their synthetic tests in
   the dedicated repository with hosted CI. See the
   [hosted source receipt](../../../verification/hosted-ci-public-2026-11-19.json).
-- [ ] P8.5.1 Execute installed MCHS 2024–25/2025–26 parity fixtures, current-year
+- [~] P8.5.1 Execute installed MCHS 2024–25/2025–26 parity fixtures, current-year
   qualification where supported, workforce full-roster cases, Dapane and Voiage
   native consumers; record SHA/lock/host and independent numeric results.
+  The scoped fictional runs above have receipts. Full annual parity and
+  full-roster and cross-environment qualification remain open.
 - [ ] P8.5.2 Receive authorised CHHHS linkable hospitalisation and costing data,
   approved nursing classification/roster/leave cover and funding mechanism.
   Verify direct resource costs, incremental budgets and activity shadows
@@ -89,5 +120,7 @@
   qualified provider and site analysis before considering intervention effect
   and financial approval.
 
-P8.0–P8.1 and the narrow source-adapter subincrements P8.2.0/P8.3.0 are implemented. Annual official-calculator parity, real nursing source/roster qualification, native providers and CHHHS acceptance are **not accepted**.
-Existing provider owners retain their code and their historical track IDs.
+The fictional workflow covers installed annual reference replay, dated
+workforce quotation and Dapane valuation, and selected Voiage comparisons.
+Full official-calculator parity, approved nursing cost inputs, reconciliation
+to the annual P4 service-cost prior and CHHHS acceptance remain open.

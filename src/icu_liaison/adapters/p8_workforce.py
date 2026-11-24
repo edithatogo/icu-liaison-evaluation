@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from importlib import import_module
+import json
 from typing import Any, Callable, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -24,7 +25,7 @@ class RosterExposure(_Strict):
     quote_id: str = Field(min_length=2, max_length=128)
     unit: str = Field(min_length=1, max_length=32)
     quantity: Decimal
-    kind: Literal["analyst_assumption", "observed_use"]
+    kind: Literal["analyst_assumption"]
     component: str = Field(min_length=1, max_length=100)
     segment_start: datetime
     segment_end: datetime
@@ -120,6 +121,12 @@ def prepare_workforce_dapane_request(
         builder = builder or provider.build_dapane_request
         quantity_type = quantity_type or types.QuoteQuantity
 
+    artifact = json.loads(scenario.source_artifact_json)
+    release = artifact.get("release_snapshot") if isinstance(artifact, dict) else None
+    if (not isinstance(release, dict) or release.get("jurisdiction") not in ("QLD", "Queensland")
+            or release.get("classification") != scenario.classification):
+        raise ValueError("workforce release jurisdiction or classification differs from the roster")
+
     quantities = tuple(quantity_type(
         quantity_id=e.quantity_id,
         quote_id=e.quote_id,
@@ -165,6 +172,11 @@ def prepare_workforce_dapane_request(
             raise ValueError("workforce bridge changed a roster valuation date")
         if quote.get("basis") != "financial_cost" or exposure.component not in quote.get("components", []):
             raise ValueError("workforce bridge changed cost component or financial valuation basis")
+        if RosterExposure.exact_quantity(use.get("quantity")) != exposure.quantity:
+            raise ValueError("workforce bridge changed the exact roster quantity")
+        source = use.get("source")
+        if not isinstance(source, dict) or source.get("evidence") != "synthetic":
+            raise ValueError("workforce bridge must preserve synthetic exposure evidence")
     return {
         "provider_evidence": "injected_contract_test_only" if injected
         else "unqualified_installed_workforce_source",
