@@ -10,9 +10,12 @@ from collections import Counter
 from collections.abc import Mapping
 import csv
 import hashlib
+import io
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
+import subprocess
 import tempfile
 from typing import Literal
 
@@ -41,6 +44,12 @@ EVIDENCE_TYPES = {
     'costing_schedule', 'staffing_roster', 'native_execution_receipt',
     'governance_signoff', 'repository_ci',
 }
+PRIVATE_DIRECTORIES = frozenset({'.local', 'private'})
+PROGRESS_STATUS = 'synthetic_progress_complete_external_gates_open'
+CHECKLIST_FIELDS = (
+    'id', 'track', 'owner_role', 'prospective_source', 'replacement_type',
+    'acceptance_criteria', 'blocking_gates', 'status',
+)
 
 
 def _valid_relative_artifact(raw: str) -> bool:
@@ -153,12 +162,22 @@ def load_registry(path: Path) -> PlaceholderRegistry:
     return PlaceholderRegistry.model_validate_json(source.read_text(encoding='utf-8'))
 
 
+def _public_file(root: Path, relative_path: Path) -> Path:
+    base = root.resolve()
+    file = base / relative_path
+    resolved = file.resolve()
+    if file.is_symlink() or not file.is_file() or not resolved.is_relative_to(base):
+        raise ValueError('missing, symlinked or escaped source artifact for placeholder binding')
+    parts = (*relative_path.parts, *resolved.relative_to(base).parts)
+    if any(part.casefold() in PRIVATE_DIRECTORIES for part in parts):
+        raise ValueError('placeholder audit cannot read source artifacts from private storage')
+    return resolved
+
+
 def _public_artifact(root: Path, relative_path: str) -> Path:
     if not _valid_relative_artifact(relative_path):
         raise ValueError('invalid binding source artifact path')
-    file = root / relative_path
-    if file.is_symlink() or not file.is_file() or not file.resolve().is_relative_to(root.resolve()):
-        raise ValueError('missing, symlinked or escaped source artifact for placeholder binding')
+    file = _public_file(root, Path(relative_path))
     if file.stat().st_size > 1_000_000:
         raise ValueError('oversized placeholder source artifact')
     return file
@@ -219,13 +238,10 @@ def audit_placeholders(registry: PlaceholderRegistry, *, root: Path) -> dict:
         if shape == 'sample_file':
             if not isinstance(value, dict) or not isinstance(value.get('path'), str):
                 raise ValueError(f'{entry.id}: synthetic feed binding must name a file')
-            source_dir = source.parent
-            reference = value['path']
-            if Path(reference).is_absolute() or '..' in Path(reference).parts or '\\' in reference:
+            reference = Path(value['path'])
+            if reference.is_absolute() or '..' in reference.parts or '\\' in value['path']:
                 raise ValueError(f'{entry.id}: source fixture path escaped')
-            feed = source_dir / reference
-            if feed.is_symlink() or not feed.is_file() or not feed.resolve().is_relative_to(source_dir.resolve()):
-                raise ValueError(f'{entry.id}: source fixture is missing or escaped')
+            feed = _public_file(source.parent, reference)
             if hashlib.sha256(feed.read_bytes()).hexdigest() != value.get('sha256'):
                 raise ValueError(f'{entry.id}: source fixture digest mismatch')
 
@@ -253,11 +269,25 @@ def _private_evidence_file(path: Path, project_root: Path) -> Path:
         raise ValueError('candidate evidence requires a private regular file')
     root = Path(project_root).resolve()
     resolved = path.resolve()
-    for location in (path.absolute(), resolved):
+    for location in {Path(os.path.abspath(path)), resolved}:
         if location.is_relative_to(root):
             parts = location.relative_to(root).parts
-            if not parts or parts[0] not in {'.local', 'private'}:
+            if not parts or parts[0] not in PRIVATE_DIRECTORIES:
                 raise ValueError('evidence candidates must remain in private storage')
+        for checkout in (parent for parent in location.parents if (parent / '.git').exists()):
+            relative = location.relative_to(checkout)
+            if relative.parts[0] not in PRIVATE_DIRECTORIES:
+                raise ValueError('evidence candidates must remain in private storage')
+            # Git cannot inspect a path past a symlink. Check the index for the file
+            # at its resolved location, using that checkout's Git environment.
+            if location == resolved:
+                ignored = subprocess.run(
+                    ['git', '-C', str(checkout), 'check-ignore', '--quiet', '--', relative.as_posix()],
+                    env={key: value for key, value in os.environ.items() if not key.startswith('GIT_')},
+                    capture_output=True, check=False,
+                )
+                if ignored.returncode != 0:
+                    raise ValueError('evidence candidates must be ignored and untracked in private storage')
     return resolved
 
 
@@ -314,8 +344,41 @@ def _json_write(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + '\n', encoding='utf-8')
 
 
+def _verify_progress_receipt(content: bytes) -> None:
+    receipt = json.loads(content)
+    required_false = (
+        'native_kairos_executed', 'native_dapane_executed', 'native_voiage_executed',
+        'observed_CHHHS_data_used', 'investment_ready',
+    )
+    if (not isinstance(receipt, dict) or receipt.get('schema_version') != 1
+            or receipt.get('status') != PROGRESS_STATUS or receipt.get('data_class') != 'synthetic'
+            or any(receipt.get(flag) is not False for flag in required_false)):
+        raise ValueError('invalid synthetic progress receipt')
+
+    queue = receipt.get('placeholders')
+    qualification_flags = (
+        'observed_CHHHS_data_used', 'native_providers_qualified', 'clinical_safety_approved',
+        'finance_approved', 'investment_ready',
+    )
+    if (not isinstance(queue, dict) or queue.get('status') != 'development_placeholders_only'
+            or queue.get('unresolved_count') != len(REQUIRED_IDS)
+            or queue.get('unresolved_ids') != sorted(REQUIRED_IDS)
+            or any(queue.get(flag) is not False for flag in qualification_flags)):
+        raise ValueError('synthetic progress receipt must retain all unresolved placeholders')
+
+
+def _verify_replacement_checklist(content: bytes) -> None:
+    with io.StringIO(content.decode('utf-8'), newline='') as stream:
+        reader = csv.DictReader(stream)
+        rows = list(reader)
+    if (reader.fieldnames != list(CHECKLIST_FIELDS) or len(rows) != len(REQUIRED_IDS)
+            or {row['id'] for row in rows} != REQUIRED_IDS
+            or any(row['status'] != 'UNRESOLVED_PLACEHOLDER' for row in rows)):
+        raise ValueError('replacement checklist must list all unresolved placeholders')
+
+
 def verify_progress_manifest(directory: Path) -> bool:
-    """Verify that the required dry-run deliverables are present and match their manifests."""
+    """Verify the dry-run inventory, hashes and unresolved evidence status."""
     from .p5_reporting import verify_manifest as verify_p5_manifest
 
     root = Path(directory)
@@ -341,8 +404,13 @@ def verify_progress_manifest(directory: Path) -> bool:
     if set(expected) != set(found):
         raise ValueError('missing/extra file in progress report')
     for name, path in found.items():
-        if hashlib.sha256(path.read_bytes()).hexdigest() != expected[name]:
+        raw = path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != expected[name]:
             raise ValueError('progress report file hash drift')
+        if name == 'progress.json':
+            _verify_progress_receipt(raw)
+        elif name == 'replacement-checklist.csv':
+            _verify_replacement_checklist(raw)
     return verify_p5_manifest(root / 'p5-report')
 
 
@@ -408,7 +476,7 @@ def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_d
             raise ValueError('P5 model cannot be promoted into an accepted site finding')
         progress = {
             'schema_version': 1,
-            'status': 'synthetic_progress_complete_external_gates_open',
+            'status': PROGRESS_STATUS,
             'data_class': 'synthetic',
             'placeholders': registered,
             'p3': clinical,
@@ -429,8 +497,7 @@ def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_d
         _json_write(staging/'progress.json', progress)
         with (staging/'replacement-checklist.csv').open('w',newline='',encoding='utf-8') as stream:
             writer = csv.writer(stream)
-            writer.writerow(['id','track','owner_role','prospective_source','replacement_type',
-                             'acceptance_criteria','blocking_gates','status'])
+            writer.writerow(CHECKLIST_FIELDS)
             for e in registry.entries:
                 writer.writerow([e.id,e.track,e.owner_role,e.prospective_source,
                     e.replacement.evidence_type,'; '.join(e.replacement.requirements),
@@ -451,7 +518,7 @@ def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_d
             raise FileExistsError('output appeared while synthetic progress was building')
         staging.rename(destination)
     return {
-        'status':'synthetic_progress_complete_external_gates_open',
+        'status': PROGRESS_STATUS,
         'output_directory':str(destination),
         'unresolved_count':len(registry.entries),
         'manifest_verified':verify_progress_manifest(destination),

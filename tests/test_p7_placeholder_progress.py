@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -132,6 +133,37 @@ def test_source_binding_rejects_absolute_parent_symlink_or_bad_pointer(tmp_path)
         audit_placeholders(PlaceholderRegistry.model_validate(raw),root=ROOT)
 
 
+@pytest.mark.parametrize('location', ['private_binding', 'binding_alias', 'private_feed'])
+def test_public_audit_rejects_sources_in_private_storage(tmp_path, location):
+    from icu_liaison.placeholders import PlaceholderRegistry, audit_placeholders
+
+    shutil.copytree(ROOT / 'model-inputs', tmp_path / 'model-inputs')
+    shutil.copyfile(ROOT / 'providers.lock.json', tmp_path / 'providers.lock.json')
+    record = registry().model_dump(mode='json')
+    if location == 'private_feed':
+        manifest = tmp_path / 'model-inputs/placeholders/p3-synthetic/manifest.json'
+        feeds = json.loads(manifest.read_bytes())
+        episode = feeds['files']['episodes']
+        private_dir = manifest.parent / '.local'
+        private_dir.mkdir()
+        (manifest.parent / episode['path']).rename(private_dir / episode['path'])
+        episode['path'] = '.local/' + episode['path']
+        manifest.write_text(json.dumps(feeds), encoding='utf-8')
+    else:
+        private_dir = tmp_path / 'private'
+        private_dir.mkdir()
+        (private_dir / 'fictional.json').write_text('{"clinical_safety_approval": null}', encoding='utf-8')
+        artifact = 'private/fictional.json'
+        if location == 'binding_alias':
+            (tmp_path / 'source-alias').symlink_to(private_dir, target_is_directory=True)
+            artifact = 'source-alias/fictional.json'
+        entry = next(item for item in record['entries'] if item['id'] == 'clinical_safety_approval')
+        entry['binding']['artifact'] = artifact
+
+    with pytest.raises(ValueError, match='private storage'):
+        audit_placeholders(PlaceholderRegistry.model_validate(record), root=tmp_path)
+
+
 def test_private_replacement_candidate_hash_is_checked_but_not_approved(tmp_path):
     from icu_liaison.placeholders import inspect_replacement_candidates
 
@@ -219,6 +251,46 @@ def test_cli_requires_a_private_candidate_submission(tmp_path, monkeypatch, caps
     assert report['unresolved_count'] == 33
     assert 'FICTIONAL-REFERENCE' not in accepted.out
     assert str(artifact) not in accepted.out
+
+
+@pytest.mark.parametrize('checked_file', ['submission', 'artifact'])
+@pytest.mark.parametrize('tracked', [False, True])
+def test_candidate_files_in_other_checkout_require_ignored_storage(tmp_path, checked_file, tracked):
+    from icu_liaison.placeholders import review_candidate_submission
+
+    checkout = tmp_path / 'other-checkout'
+    subprocess.run([
+        'git', 'init', '--quiet', '--separate-git-dir', str(tmp_path / 'git-directory'), str(checkout),
+    ], check=True)
+    (checkout / '.gitignore').write_text('private/\n', encoding='utf-8')
+    safe_dir = tmp_path / 'evidence-storage'
+    safe_dir.mkdir()
+    candidate_dir = checkout / 'private' if tracked else checkout
+    candidate_dir.mkdir(exist_ok=True)
+    submission = (candidate_dir if checked_file == 'submission' else safe_dir) / 'submission.json'
+    artifact = (candidate_dir if checked_file == 'artifact' else safe_dir) / 'candidate.txt'
+    artifact.write_text('FICTIONAL CANDIDATE', encoding='utf-8')
+    submission.write_text(json.dumps({
+        'schema_version': 1,
+        'status': 'candidates_for_independent_review',
+        'entries': [{
+            'id': 'local_icu_episodes',
+            'evidence_type': 'approved_site_extract',
+            'artifact_path': str(artifact),
+            'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
+            'source_custodian_role': 'Example custodian',
+            'approval_reference': 'FICTIONAL-REFERENCE',
+        }],
+    }), encoding='utf-8')
+    record = registry()
+    if tracked:
+        report = review_candidate_submission(submission, record, project_root=ROOT)
+        assert report['candidate_hashes_matched'] == 1 and report['independently_approved'] is False
+        to_add = submission if checked_file == 'submission' else artifact
+        subprocess.run(['git', '-C', str(checkout), 'add', '-f', '--', str(to_add)], check=True)
+
+    with pytest.raises(ValueError, match='private storage'):
+        review_candidate_submission(submission, record, project_root=ROOT)
 
 
 def test_synthetic_progress_builds_reproducible_existing_p3_p4_p5_p6_assets(tmp_path):
@@ -339,6 +411,35 @@ def test_progress_manifest_requires_complete_nested_p5_report(tmp_path):
     manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
 
     with pytest.raises(ValueError, match='file-set mismatch'):
+        verify_progress_manifest(dest)
+
+
+@pytest.mark.parametrize('change', ['readiness_claim', 'closed_placeholder', 'empty_checklist'])
+def test_progress_verifier_rejects_inconsistent_contents_even_with_matching_hashes(tmp_path, change):
+    from icu_liaison.placeholders import build_synthetic_progress_bundle, verify_progress_manifest
+
+    dest = tmp_path / 'receipt'
+    build_synthetic_progress_bundle(root=ROOT, registry_path=REGISTRY, output_dir=dest)
+    if change == 'empty_checklist':
+        target = dest / 'replacement-checklist.csv'
+        with target.open(encoding='utf-8') as file:
+            header = file.readline()
+        target.write_text(header, encoding='utf-8')
+    else:
+        target = dest / 'progress.json'
+        progress = json.loads(target.read_bytes())
+        if change == 'readiness_claim':
+            progress['investment_ready'] = True
+        else:
+            progress['placeholders']['unresolved_ids'].remove('finance_approval')
+            progress['placeholders']['unresolved_count'] -= 1
+        target.write_text(json.dumps(progress), encoding='utf-8')
+    manifest_path = dest / 'manifest.json'
+    manifest = json.loads(manifest_path.read_bytes())
+    manifest['files_sha256'][target.name] = hashlib.sha256(target.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+
+    with pytest.raises(ValueError, match='synthetic progress receipt|unresolved placeholders'):
         verify_progress_manifest(dest)
 
 
