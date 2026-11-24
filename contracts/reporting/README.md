@@ -15,6 +15,26 @@ Every figure specifies a decision question, estimand, source table, units, denom
 
 [Metric registry](metrics.json) and [schema](metrics.schema.json): 31 canonical metrics and 14 denominators tied to the Clinical Director and CHHHS 11-dataset request. [Claim policy](claim-policy.json) and [schema](claim-policy.schema.json) deny external approval by public-source flags. [Figure provenance](provenance-record.schema.json) and [unproduced template](provenance-template.json) do not represent completed figures. [Visual review matrix](visual-review.json) specifies the display profiles; [uncertainty taxonomy](uncertainty-taxonomy.json) distinguishes PSA from empirical sampling uncertainty. Historical [v2 catalogue](history/catalogue-figure-programme-v2.json) and [v2 schema](history/catalogue-schema-figure-programme-v2.json) remain versioned. The current catalogue revision is P9-v5.
 
+### Assess a claim
+
+Select an artifact from a [P11 run](../../docs/p11-scenario-workflows.md).
+
+```sh
+PYTHONPATH=src private/venv-p11/bin/python -m tools.validate_measurement_contracts \
+  --claim synthetic_illustration --run outputs/p11 --case base --artifact F01
+```
+
+A permitted decision applies to the specific artifact hash, scenario, model,
+metric and denominator IDs, and reporting and claim policy hashes in the
+response. It allows use of that artifact as a fictional illustration with the
+stated disclosure. The command checks the P5 model replay and the applicable
+figure mark review. It prints a reason and exits with code 2 when the claim
+is denied. Archived runs remain inspectable through the coverage check.
+
+Visual acceptance uses its own evidence. Clinical effects, realised savings,
+NWAU activity, provider qualification and investment readiness require
+separate trusted verification.
+
 ## Visual review
 
 Generate the figures using the [repository workflow](../../README.md#p9-priority-synthetic-figures).

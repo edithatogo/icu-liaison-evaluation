@@ -95,6 +95,18 @@ def test_claim_policy_cannot_authorise_site_sources():
     with pytest.raises(ValueError,match="external claim"):
         validate_assurance(policy=p)
 
+def test_claim_policy_requires_all_registered_claim_classes():
+    policy = load("claim-policy.json")
+    policy["claim_classes"][-1]["id"] = "unrelated_class"
+    with pytest.raises(ValueError, match="claim policy incomplete"):
+        validate_assurance(policy=policy)
+
+def test_claim_policy_requires_p5_evidence_for_synthetic_class():
+    policy = load("claim-policy.json")
+    policy["claim_classes"][0]["required_evidence"].remove("p5_numeric_review")
+    with pytest.raises(ValueError, match="synthetic claim requirements"):
+        validate_assurance(policy=policy)
+
 def test_uncertainty_taxonomy_must_remain_unfitted():
     u=load("uncertainty-taxonomy.json")
     u["status"]="fitted_to_CHHHS"

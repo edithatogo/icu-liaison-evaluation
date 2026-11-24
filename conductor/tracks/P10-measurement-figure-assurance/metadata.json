@@ -9,6 +9,7 @@
     "P10.04",
     "P10.05",
     "P10.06",
+    "P10.06a",
     "P10.07",
     "P10.08",
     "P10.10",
@@ -28,9 +29,11 @@
   "blocked": [
     "P10.09",
     "P10.11",
-    "P10.12",
+    "P10.12c",
     "P10.13",
-    "P10.14"
+    "P10.14c",
+    "P10.15c",
+    "P10.16d"
   ],
   "depends_on": [
     "P3-evidence-data-infrastructure",
@@ -41,5 +44,6 @@
   "claims_verified": 0,
   "visual_checks_executed": 56,
   "visual_scope": "Four rendered profiles for 14 figures on the fictional baseline",
-  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json"
+  "expanded_synthetic_verification": "verification/portable-synthetic-2026-11-20.json",
+  "synthetic_claim_assessment_receipt": "verification/p10-claim-assurance-2026-11-25.json"
 }

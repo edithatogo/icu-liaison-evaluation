@@ -17,7 +17,10 @@
       "const": 1
     },
     "policy_revision": {
-      "const": "2026-11-19-P10-source-claims-v1"
+      "enum": [
+        "2026-11-19-P10-source-claims-v1",
+        "2026-11-25-P10-source-claims-v2"
+      ]
     },
     "source_mode": {
       "const": "fail_closed_without_trusted_external_verifier"
@@ -29,7 +32,10 @@
       "$ref": "#/$defs/nonblank"
     },
     "synthetic_evidence_receipt_status": {
-      "const": "template_only"
+      "enum": [
+        "template_only",
+        "verified_run_assessment"
+      ]
     },
     "claim_classes": {
       "type": "array",

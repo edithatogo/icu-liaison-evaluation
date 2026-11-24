@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "policy_revision": "2026-11-19-P10-source-claims-v1",
+  "policy_revision": "2026-11-25-P10-source-claims-v2",
   "source_mode": "fail_closed_without_trusted_external_verifier",
   "public_repository_prohibition": "source_attestation_is_not_a_governance_approval",
   "claim_classes": [
@@ -85,5 +85,5 @@
     }
   ],
   "issuer_boundary": "external_authority_must_be_verified_by_separate_trusted_adapter_not_repository_boolean",
-  "synthetic_evidence_receipt_status": "template_only"
+  "synthetic_evidence_receipt_status": "verified_run_assessment"
 }

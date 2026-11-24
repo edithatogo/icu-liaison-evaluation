@@ -7,6 +7,10 @@
 - [x] P10.04 Version six uncertainty classes and interval semantics; separate source-quality from model uncertainty.
 - [x] P10.05 Define a figure provenance record schema and unproduced template; fake output hashes do not grant qualification.
 - [x] P10.06 Define a claim-policy schema and fail-closed source validator for clinical, Finance, NWAU, provider and investment gates.
+- [x] P10.06a Assess one registered fictional table or figure from a verified
+  P11 run. Bind the decision to the artifact hash, measurement contract and
+  claim policy. Deny unsupported external claims before opening run evidence.
+  [Synthetic claim assessment receipt](../../../verification/p10-claim-assurance-2026-11-25.json)
 - [x] P10.07 Define responsive/print visual acceptance matrix with clear **unexecuted** status.
 - [x] P10.08 Integrate with P9 catalogue validation and full CI; retain original v2 catalogue/schema for migration audit.
 
