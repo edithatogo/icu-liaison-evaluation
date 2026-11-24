@@ -10,6 +10,7 @@
       "url": "https://www.anzics.org/public/311/files/PDFs/CORE/2024_2025-CCR-Activity-Report.pdf",
       "period": "2024-07-01/2025-06-30",
       "publication": "2026-07",
+      "publisher_receipt_sha256": "d4bb055ef8db86a3e365e5068ed86f43734b54267b5d7e3241207dcc19cf9537",
       "outcomes": [
         {
           "name": "live_ward_home_discharge_delay_ge12h",

@@ -4,7 +4,7 @@
 
 The P2 clinical protocol and 32-field dictionary are unchanged and remain draft/unapproved. The existing P1 Dapane and Voiage runtime integration is still unverified. The exploratory CareOps Sim PR #215 remains unmerged as historical source and is not a destination for this feature.
 
-## Blockers
+## Blockers at the 18 November handoff
 
 1. Obtain source PDF binary/reviewer evidence for the 2024/25 CCR report, and reassess any conflicting value without guessing.
 2. Obtain CHHHS data steward and clinical/Finance governance, appropriate privacy and Indigenous data-governance approvals, site-specific source mappings, permitted processing and disclosure limits.
@@ -29,3 +29,12 @@ manifest for privacy and provenance and ran on fictional fixtures.
 Independent admission, approved local feeds and empirical checks remain
 with their existing owners. The publisher PDF and run outputs stay private.
 [Source and intake guide](../../../docs/p3-source-and-data-infrastructure.md)
+
+## P3 review on 24 November 2026
+
+The same source worktree carried the review on `codex/icu-p3-review-fixes`.
+The source register pins the reviewed receipt. The audit checks the
+benchmark's report edition and reporting period. It rejects follow-up and
+hospital separation after extraction, counts identifiers at the
+dictionary grain and rejects an existing output before opening restricted
+feeds. The PDF and audit outputs stay private.

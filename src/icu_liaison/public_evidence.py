@@ -53,12 +53,18 @@ class Metric(_Strict):
 
 
 REGISTER_OUTCOMES = {
-    'CCR_2024_25_EXIT_BLOCK': 'live_ward_home_discharge_delay_ge12h',
-    'CCR_2024_25_AFTER_HOURS': 'live_ward_home_after_hours_discharge',
-    'CCR_2024_25_RETURN_EPISODES': 'return_icu_hdu_admission_episodes',
-    'APD_2023_24_ADULT_READMITTED': 'adult_readmitted_patients',
-    'CCR_2023_24_EXIT_BLOCK': 'live_ward_home_discharge_delay_ge12h',
-    'CCR_2023_24_AFTER_HOURS': 'live_ward_home_after_hours_discharge',
+    'CCR_2024_25_EXIT_BLOCK': ('ANZICS-CCR-2024-25', 'live_ward_home_discharge_delay_ge12h'),
+    'CCR_2024_25_AFTER_HOURS': ('ANZICS-CCR-2024-25', 'live_ward_home_after_hours_discharge'),
+    'CCR_2024_25_RETURN_EPISODES': ('ANZICS-CCR-2024-25', 'return_icu_hdu_admission_episodes'),
+    'APD_2023_24_ADULT_READMITTED': ('ANZICS-CORE-2024', 'adult_readmitted_patients'),
+    'CCR_2023_24_EXIT_BLOCK': ('ANZICS-CCR-2023-24', 'live_ward_home_discharge_delay_ge12h'),
+    'CCR_2023_24_AFTER_HOURS': ('ANZICS-CCR-2023-24', 'live_ward_home_after_hours_discharge'),
+}
+
+REPORT_PERIODS = {
+    'ANZICS-CCR-2024-25': ('2024-07-01/2025-06-30', 'period', '2024-07-01/2025-06-30'),
+    'ANZICS-CCR-2023-24': ('2023-07-01/2024-06-30', 'period', '2023-07-01/2024-06-30'),
+    'ANZICS-CORE-2024': ('2023-07-01/2024-06-30', 'data_period', '2023/24'),
 }
 
 METRIC_DENOMINATORS = {
@@ -120,16 +126,23 @@ class PublisherReceipt(_Strict):
     local_calibration: Literal[False]
 
 
+def _index_sources(registry: dict) -> dict[str, dict]:
+    entries = registry['sources']
+    sources = {source['id']: source for source in entries}
+    if len(sources) != len(entries):
+        raise ValueError('duplicate source ID in benchmark register')
+    return sources
+
+
 def audit_publisher_receipt(
     receipt_path: Path, registry: dict, *, document_path: Path | None = None,
 ) -> dict:
     """Reconcile the retained 2024/25 publisher check with the source register."""
     raw = receipt_path.read_bytes()
     receipt = PublisherReceipt.model_validate_json(raw)
-    sources = [s for s in registry['sources'] if s['id'] == receipt.source_id]
-    if len(sources) != 1:
-        raise ValueError('publisher receipt needs one registered source')
-    source = sources[0]
+    source = _index_sources(registry).get(receipt.source_id)
+    if source is None:
+        raise ValueError('publisher receipt needs a registered source')
     if (receipt.publisher, receipt.publisher_url) != (source.get('publisher'), source.get('url')):
         raise ValueError('publisher receipt source identity mismatch')
     outcomes = source['outcomes']
@@ -147,6 +160,9 @@ def audit_publisher_receipt(
         ) != (row['value'], row['page'], row.get('table'), row['contributors']):
             raise ValueError(f'{outcome}: publisher locator disagrees with the source register')
 
+    receipt_digest = hashlib.sha256(raw).hexdigest()
+    if receipt_digest != source.get('publisher_receipt_sha256'):
+        raise ValueError('publisher receipt SHA-256 disagrees with the source register')
     if document_path is not None:
         if document_path.stat().st_size != receipt.document.size_bytes:
             raise ValueError('saved publisher document size mismatch')
@@ -159,7 +175,7 @@ def audit_publisher_receipt(
         'source_id': receipt.source_id,
         'checked_on': receipt.checked_on.isoformat(),
         'checked_outcome_count': len(observed),
-        'receipt_sha256': hashlib.sha256(raw).hexdigest(),
+        'receipt_sha256': receipt_digest,
         'receipt_document_sha256': receipt.document.sha256,
         'document_sha256_matched': document_path is not None,
         'independent_source_admission': receipt.independent_source_admission,
@@ -173,16 +189,20 @@ def reconcile_catalogue(catalogue: Catalogue, registry: dict) -> dict:
     Metadata reconciliation is not publisher-document authentication.
     """
     catalogue = Catalogue.model_validate(catalogue.model_dump(mode='json'))
-    sources = {s['id']: s for s in registry['sources']}
+    sources = _index_sources(registry)
     for m in catalogue.metrics:
+        source_id, outcome = REGISTER_OUTCOMES[m.id]
+        if m.source_id != source_id:
+            raise ValueError(f'{m.id}: source report edition mismatch')
         if m.source_id not in sources:
             raise ValueError(f'{m.id}: missing source reference')
-        if not sources[m.source_id].get('url', '').startswith('https://'):
+        source = sources[source_id]
+        expected_period, period_field, registered_period = REPORT_PERIODS[source_id]
+        if m.period != expected_period or source.get(period_field) != registered_period:
+            raise ValueError(f'{m.id}: source reporting period mismatch')
+        if not source.get('url', '').startswith('https://'):
             raise ValueError(f'{m.id}: source lacks HTTPS publisher link')
-        if not m.source_id.startswith('ANZICS-'):
-            raise ValueError('non-ANZICS record in ANZICS benchmark catalogue')
-        matches = [x for x in sources[m.source_id].get('outcomes', [])
-                   if x.get('name') == REGISTER_OUTCOMES[m.id]]
+        matches = [x for x in source.get('outcomes', []) if x.get('name') == outcome]
         if len(matches) != 1:
             raise ValueError(f'{m.id}: source register outcome missing or duplicated')
         observed = matches[0]
@@ -190,7 +210,7 @@ def reconcile_catalogue(catalogue: Catalogue, registry: dict) -> dict:
             observed.get('page') != m.page or
             observed.get('contributors') != m.reporting_icus):
             raise ValueError(f'{m.id}: source register outcome value, page or cohort conflict')
-        status = sources[m.source_id].get('verification_status',
+        status = source.get('verification_status',
             'previous_transcription_not_independently_reverified')
         if status != m.verification_status:
             raise ValueError(f'{m.id}: source verification status conflict')

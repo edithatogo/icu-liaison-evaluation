@@ -231,6 +231,30 @@ def test_extraction_cannot_predate_observed_episode_departure(tmp_path):
         load_and_audit(mf)
 
 
+@pytest.mark.parametrize('future_field', ['followup_observation_end_at', 'hospitalisation_final_departure_at'])
+def test_extraction_cannot_predate_observed_followup_or_separation(tmp_path, future_field):
+    directory = fixture(tmp_path)
+    future = '2026-11-19T08:00:00+10:00'
+
+    def edit(rows):
+        rows[0][future_field] = future
+        if future_field == 'followup_observation_end_at':
+            rows[0]['hospitalisation_final_departure_at'] = ''
+
+    rewrite_csv(directory, 'followup.csv', edit)
+    with pytest.raises(LocalDatasetError, match='extraction'):
+        load_and_audit(directory / 'manifest.json')
+
+
+def test_identifier_completeness_uses_the_dictionary_grain():
+    report = load_and_audit(FIX / 'manifest.json')
+    fields = report['quality']['field_completeness']
+    assert fields['hospitalisation_pseudonym']['source_feed'] == 'followup'
+    assert fields['hospitalisation_pseudonym']['present'] == report['cohort']['hospitalisations']
+    assert fields['index_icu_episode_id']['source_feed'] == 'episodes'
+    assert fields['index_icu_episode_id']['present'] == report['cohort']['all_icu_episodes']
+
+
 def test_index_delay_mean_excludes_repeats_home_and_unknown_readiness(tmp_path):
     directory = fixture(tmp_path)
     metric = load_and_audit(directory / 'manifest.json')['index_ready_delay']

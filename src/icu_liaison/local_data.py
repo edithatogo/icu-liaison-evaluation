@@ -232,6 +232,11 @@ def load_and_audit(
     last_departure = max(e.icu_actual_departure_at for e in ep)
     if last_departure > manifest.extracted_at:
         raise LocalDatasetError('extraction timestamp predates an observed ICU episode')
+    if any(
+        (row.hospitalisation_final_departure_at or row.followup_observation_end_at) > manifest.extracted_at
+        for row in fu
+    ):
+        raise LocalDatasetError('extraction timestamp predates observed hospital followup or separation')
     for episode in ep:
         _validate_token(episode.hospitalisation_pseudonym, 'hospitalisation pseudonym')
         _validate_token(episode.index_icu_episode_id, 'ICU episode key')
@@ -344,10 +349,13 @@ def load_and_audit(
 
     # All field names are registered from the P2 dictionary. Missing feeds are
     # explicitly not observed; these counts are audit indicators, not approval.
+    identity_feeds = {'hospitalisation_pseudonym': 'followup', 'index_icu_episode_id': 'episodes'}
     observed_by_field: dict[str, dict[str,int|str]]={}
     for name, model in FEED_MODELS.items():
         if name in feeds:
             for field in model.model_fields:
+                if field in identity_feeds and identity_feeds[field] != name:
+                    continue
                 values=[getattr(row,field) for row in feeds[name]]
                 observed_by_field[field]={
                     'source_feed':name,'present':sum(v is not None for v in values),
