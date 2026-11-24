@@ -18,6 +18,9 @@ Outputs:
 - Admission CLI and tests that reject false clinical/budget authority and
   contradictory definitions, record stable version/provenance and return
   nonzero when local-readiness is demanded.
+- Run the P2.5 field-crosswalk and sign-off audits from the admission CLI
+  against the same versioned sources. A form's declared decisions and
+  matching hashes leave site authority and readiness unverified.
 - Prespecified potential observational study and safety constraints, no
   invented numeric margins, staffing or local effects, and transparent
   outstanding evidence and HREC/data governance gates.

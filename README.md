@@ -217,6 +217,9 @@ clinical-safety evaluation and financial validation are available. The P1
 probabilistic model and optional provider interfaces are unchanged; P2 does
 not license a new clinical claim or native runtime status.
 
+The same CLI can verify the field crosswalk and governance sign-off template
+in one run. [P2 stakeholder review pack](docs/p2-stakeholder-review-pack.md#5-verify-the-review-pack)
+
 ## P3: public source and authorised-local-data intake
 
 P3 adds a [versioned ANZICS benchmark catalogue](model-inputs/anzics-benchmarks.json),

@@ -76,6 +76,16 @@ def test_committed_signoff_template_audits_and_stays_unapproved() -> None:
     assert report["ready_for_local_claims"] is False
 
 
+def test_crosswalk_requires_a_valid_dictionary_even_if_field_names_match(tmp_path: Path) -> None:
+    dictionary = json.loads(DICTIONARY.read_text(encoding="utf-8"))
+    dictionary["fields"].append(dictionary["fields"][0])
+    duplicate = tmp_path / "dictionary-with-duplicate.json"
+    duplicate.write_text(json.dumps(dictionary), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate dictionary field"):
+        validate_p2_chhhs_crosswalk(CROSSWALK, duplicate, REQUEST)
+
+
 def test_signoff_rejects_hash_tampering_missing_gate_and_false_approval(tmp_path: Path) -> None:
     p = tmp_path / "signoff.json"
 
@@ -118,22 +128,28 @@ def test_signoff_rejects_hash_tampering_missing_gate_and_false_approval(tmp_path
     with pytest.raises(ValidationError, match="unapproved template"):
         audit_governance_signoff(p, PROTOCOL, DICTIONARY)
 
-    # Full valid site_approved scenario succeeds only when every gate and decision is supplied.
-    valid_approved = json.loads(SIGNOFF.read_text(encoding="utf-8"))
-    valid_approved["status"] = "site_approved"
-    valid_approved["pending_protocol_decisions"] = {
+
+def test_complete_signoff_form_does_not_establish_local_authority(tmp_path: Path) -> None:
+    claimed = json.loads(SIGNOFF.read_text(encoding="utf-8"))
+    claimed["status"] = "site_approved"
+    claimed["pending_protocol_decisions"] = {
         "current_care_funded_fte": 0.5,
         "liaison_service_funded_fte": 2.0,
         "hours_of_coverage_per_week": 80.0,
         "approved_noninferiority_margins": {"post_icu_death": 0.01},
         "minimum_data_completeness_approved": 0.9,
-        "ethics_or_qi_pathway": "CHHHS-HREC-APPROVED-EXAMPLE",
+        "ethics_or_qi_pathway": "fictional-ethics-reference",
     }
-    for idx, gate in enumerate(valid_approved["gates"]):
+    for idx, gate in enumerate(claimed["gates"]):
         gate["decision"] = "approved"
-        gate["approval_reference"] = f"CHHHS-GATE-{idx + 1}"
+        gate["approval_reference"] = f"fictional-gate-{idx + 1}"
         gate["signed_date"] = "2026-11-19"
-    p.write_text(json.dumps(valid_approved), encoding="utf-8")
-    ok = audit_governance_signoff(p, PROTOCOL, DICTIONARY)
-    assert ok["ready_for_local_claims"] is True
-    assert ok["approved_gate_count"] == 7
+    signoff = tmp_path / "fictional-signoff.json"
+    signoff.write_text(json.dumps(claimed), encoding="utf-8")
+    audited = audit_governance_signoff(signoff, PROTOCOL, DICTIONARY)
+    assert audited["status"] == "site_approval_declared_unverified"
+    assert audited["declared_status"] == "site_approved"
+    assert audited["approved_gate_count"] == 7
+    assert audited["site_authority_verified"] is False
+    assert audited["ready_for_local_claims"] is False
+    assert "fictional-gate" not in json.dumps(audited)

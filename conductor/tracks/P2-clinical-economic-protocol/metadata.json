@@ -4,21 +4,21 @@
   "title": "ICU liaison clinical and economic model specification",
   "status": "in_progress",
   "created_at": "2026-11-18",
-  "updated_at": "2026-11-19",
+  "updated_at": "2026-11-24",
   "implementation_started": true,
-  "accepted_phases": ["P2.1", "P2.2", "P2.3", "P2.4"],
-  "blocked_phases": ["P2.5"],
+  "accepted_phases": ["P2.1", "P2.2", "P2.3", "P2.4", "P2.5-stakeholder-pack-and-source-audit", "P2.6-source-safety-contract", "P2.7-draft-preregistration"],
+  "blocked_phases": ["P2.5-site-signoffs-and-linked-inputs", "P2.6-site-safety-review", "P2.7-site-design-and-fidelity-approval"],
   "dependencies": ["P0-portable-consolidation", "P1-provider-reuse"],
-  "source_acceptance_boundary": "draft schema, synthetic time classifier, P2-to-CHHHS 32-to-115 crosswalk, fail-closed sign-off template, and verified local/hosted source tests only",
+  "source_acceptance_boundary": "Draft protocol, synthetic time classifier, crosswalk and sign-off form audit, safety contract and draft preregistration. The source audit leaves site authority and local claims unverified.",
   "stakeholder_review_pack": "docs/p2-stakeholder-review-pack.md",
   "field_crosswalk": "model-inputs/p2-chhhs-field-crosswalk.json",
   "signoff_template": "model-inputs/p2-governance-signoff-TEMPLATE.json",
   "governance_crosswalk_receipt": "verification/p2-governance-crosswalk-2026-11-19.json",
-  "blocker": "No site-approved model-of-care, CHHHS Clinical/Finance/HREC/First Nations governance sign-off, or local ICU/ward data. P1 macOS arm64 / Python 3.15.2 native provider oracles executed, while independent providers.lock.json binary_sha256 adjudication and Linux/Windows qualification remain open.",
+  "blocker": "Site Clinical, Nursing, Finance, ethics and data stewardship, and First Nations and consumer governance decisions remain open. Site-approved cohort and safety definitions, a frozen analysis plan, and linked clinical, staffing and costing inputs are required. P1 records the scoped provider approvals and the repaired Dapane artifact awaiting independent acceptance.",
   "external_dependencies": [
     {"provider":"ANZICS CORE", "requirement":"local APD/CCR checks and numerator/denominator reconciliation", "status":"local_unverified"},
     {"provider":"CHHHS", "requirement":"approved care model, data linkage, workforce/Finance rates and governance", "status":"local_unverified"},
-    {"provider":"dapane", "requirement":"exact native valuation", "status":"native_unverified_under_P1"},
-    {"provider":"voiage", "requirement":"installed EVPI/decision analysis", "status":"native_unverified_under_P1"}
+    {"provider":"dapane", "requirement":"exact native valuation", "status":"platform_scoped_native_execution_reviewed_release_pending"},
+    {"provider":"voiage", "requirement":"installed EVPI/decision analysis", "status":"macos_arm64_pypi_artifact_admitted"}
   ]
 }

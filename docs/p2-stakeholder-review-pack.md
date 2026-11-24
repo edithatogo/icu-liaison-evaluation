@@ -11,6 +11,7 @@ This pack coordinates the external P2.5 clinical, workforce, Finance, ethics/dat
 - Authoritative 115-field CHHHS data request: [`docs/clinical-director-data-request.md`](clinical-director-data-request.md) and [`model-inputs/chhhs-data-request.json`](../model-inputs/chhhs-data-request.json)
 - Machine-checked 32↔115 field crosswalk: [`model-inputs/p2-chhhs-field-crosswalk.json`](../model-inputs/p2-chhhs-field-crosswalk.json)
 - Fail-closed governance sign-off template: [`model-inputs/p2-governance-signoff-TEMPLATE.json`](../model-inputs/p2-governance-signoff-TEMPLATE.json) (validated by [`src/icu_liaison/p2_governance.py`](../src/icu_liaison/p2_governance.py))
+- [Draft causal preregistration and service fidelity](../contracts/clinical/preregistration.json) and [six-outcome safety decision contract](../contracts/clinical/safety-decision.json)
 
 ## 2. Seven-Role Governance Sign-Off Matrix (All Pending)
 
@@ -42,6 +43,29 @@ Reviewing [`model-inputs/p2-chhhs-field-crosswalk.json`](../model-inputs/p2-chhh
 - **Deterioration recognition vs escalation request (`deterioration_recognised_at` -> `clinical_safety.escalation_request_at`):** Verify whether `escalation_request_at` captures initial clinical recognition or only formal MET activation time.
 - **Treatment limitation capture (`treatment_goals_at_discharge` -> `clinical_safety.treatment_limitation_status`):** Confirm treatment goals are captured at index ICU departure (`icu_episodes`) rather than only for patients who later trigger a safety event.
 
-## 5. Privacy & Repository Boundary
+## 5. Verify the review pack
+
+```sh
+PYTHONPATH=src .venv/bin/python -m icu_liaison.protocol_cli \
+  model-inputs/clinical-economic-protocol.json model-inputs/illustrative.json \
+  --data-dictionary model-inputs/clinical-data-dictionary.json \
+  --field-crosswalk model-inputs/p2-chhhs-field-crosswalk.json \
+  --chhhs-request model-inputs/chhhs-data-request.json \
+  --governance-signoff model-inputs/p2-governance-signoff-TEMPLATE.json
+```
+
+The audit checks all 32 dictionary mappings and binds the form to the exact
+protocol and dictionary files. The form's gate counts describe the decisions
+recorded in the form. A completed form that declares approval is reported as
+`site_approval_declared_unverified`. The audit leaves
+`site_authority_verified` and `ready_for_local_claims` false. Add
+`--require-local-ready` to enforce this boundary with exit code 2.
+
+The site decision requires verification of the signatories' authority and
+approval scope, plus the approved linked data, staffing and costing inputs
+and safety and analysis decisions. The P10 draft and safety checks can run
+before these decisions are available.
+
+## 6. Privacy & Repository Boundary
 
 All patient-level extracts, direct identifiers, site rosters/payroll, and signed local governance records stay inside approved CHHHS infrastructure. Public repository files contain schemas, crosswalks, synthetic tests, and unapproved templates only.
