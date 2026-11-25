@@ -22,7 +22,7 @@
     "P4-economic-decision-model",
     "P3-evidence-data-infrastructure"
   ],
-  "source_provider_revision": "9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b",
+  "source_provider_revision": "ddd0f4bf36b985a1e1e3c1189728739640aa53d9",
   "native_execution": "locally_qualified_fictional_macos_arm64",
   "clinical_validation": false,
   "previous_independent_build_attestation": {

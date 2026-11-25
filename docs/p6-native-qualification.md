@@ -1,6 +1,6 @@
 # P6.3 native consumer and P6.4 holdout checklist
 
-On 26 November 2026, the scheduled update to Kairos `9d76ca7` passed a fresh locked native build and both fictional reference replays. The earlier independent decision continues to identify its original artifact. [Current build and scope](../conductor/tracks/P6-kairos-capacity-validation/handoff.md#scheduled-kairos-update-9d76ca7)
+On 26 November 2026, the scheduled update to Kairos `ddd0f4b` passed a fresh locked native build and both fictional reference replays. The earlier independent decision continues to identify its original artifact. [Current build and scope](../conductor/tracks/P6-kairos-capacity-validation/handoff.md#scheduled-kairos-update-ddd0f4b)
 
 ## Native provider
 

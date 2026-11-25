@@ -27,7 +27,7 @@ checksum = "3bd1574e617a9a6c1f8f8181bd7e841e1f20e4277607ef28945765188d6284d4"
 [[package]]
 name = "kairo-ecs-core"
 version = "0.0.0"
-source = "git+https://github.com/edithatogo/kairos?rev=9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b#9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b"
+source = "git+https://github.com/edithatogo/kairos?rev=ddd0f4bf36b985a1e1e3c1189728739640aa53d9#ddd0f4bf36b985a1e1e3c1189728739640aa53d9"
 dependencies = [
  "kairo-ecs-types",
 ]
@@ -35,7 +35,7 @@ dependencies = [
 [[package]]
 name = "kairo-ecs-des"
 version = "0.1.0"
-source = "git+https://github.com/edithatogo/kairos?rev=9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b#9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b"
+source = "git+https://github.com/edithatogo/kairos?rev=ddd0f4bf36b985a1e1e3c1189728739640aa53d9#ddd0f4bf36b985a1e1e3c1189728739640aa53d9"
 dependencies = [
  "kairo-ecs-core",
  "kairo-ecs-rng",
@@ -46,7 +46,7 @@ dependencies = [
 [[package]]
 name = "kairo-ecs-rng"
 version = "0.0.0"
-source = "git+https://github.com/edithatogo/kairos?rev=9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b#9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b"
+source = "git+https://github.com/edithatogo/kairos?rev=ddd0f4bf36b985a1e1e3c1189728739640aa53d9#ddd0f4bf36b985a1e1e3c1189728739640aa53d9"
 dependencies = [
  "kairo-ecs-types",
  "rand",
@@ -59,7 +59,7 @@ dependencies = [
 [[package]]
 name = "kairo-ecs-state"
 version = "0.0.0"
-source = "git+https://github.com/edithatogo/kairos?rev=9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b#9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b"
+source = "git+https://github.com/edithatogo/kairos?rev=ddd0f4bf36b985a1e1e3c1189728739640aa53d9#ddd0f4bf36b985a1e1e3c1189728739640aa53d9"
 dependencies = [
  "kairo-ecs-core",
  "kairo-ecs-types",
@@ -68,7 +68,7 @@ dependencies = [
 [[package]]
 name = "kairo-ecs-types"
 version = "0.0.0"
-source = "git+https://github.com/edithatogo/kairos?rev=9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b#9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b"
+source = "git+https://github.com/edithatogo/kairos?rev=ddd0f4bf36b985a1e1e3c1189728739640aa53d9#ddd0f4bf36b985a1e1e3c1189728739640aa53d9"
 
 [[package]]
 name = "libm"
