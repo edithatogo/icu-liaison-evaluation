@@ -14,3 +14,6 @@ artifact hashes and the evidence needed for blocked outputs. The private
 presentation has its own [figure profile](../../../contracts/reporting/evaluation-deck.json).
 
 P9 consumes the shared [P10 measurement/evidence assurance](../P10-measurement-figure-assurance/index.md) contracts. P10 owns metric meanings and claims; P9 retains figure generation and P5 independent numerical review.
+
+The [report edition gate](../../../contracts/reporting/edition-assurance.md)
+checks saved source and output hashes and four distinct editorial receipts.

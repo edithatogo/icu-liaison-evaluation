@@ -129,3 +129,10 @@ Git. The renderer rejects private inputs and outputs in Git worktrees. Fictional
 examples use `synthetic_only` and display a visible label. The output has PNGs
 for slide inclusion, SVGs for review and an input, contract, renderer and
 artifact hash manifest.
+
+## Maintained document editions
+
+Follow the [artefact catalogue and editorial evidence contract](edition-assurance.md)
+for substantive source reading and delivery. Run its verifier on the saved
+edition before delivery. Keep locally governed files, extracts and receipts in
+their authorised storage.
