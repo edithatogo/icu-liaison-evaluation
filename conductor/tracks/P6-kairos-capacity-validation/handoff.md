@@ -127,3 +127,9 @@ The consumer pins the signed upstream revision `9d76ca7f4b7f4b5898f2ec77515a7a76
 The eight outstanding Python dependency proposals conflict with the pinned Snakemake 9.27.2 environment. The resolver also rejected coupled SQLModel and SQLAlchemy updates and the combined packaging and interface updates. Their existing pins remain in the reproducible workflow.
 
 [Upstream revision](https://github.com/edithatogo/kairos/commit/9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b) · [Dependency dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
+
+## Scheduled Kairos update ddd0f4b
+
+The signed revision `ddd0f4bf36b985a1e1e3c1189728739640aa53d9` advances six commits. The three inspected upstream blob identities are unchanged. On macOS arm64, Rust 1.100.0 passed formatting, Clippy, locked tests and the two fictional occupancy and contention replays. The executable SHA-256 is `3fcf1fed9327cd9f263ec30bd2b8bb7190789cd44050249c999c21a2c93f2868`. The independent historical build decision still applies to the identified b60c422 binary. The new artifact has local technical qualification.
+
+[Upstream revision](https://github.com/edithatogo/kairos/commit/ddd0f4bf36b985a1e1e3c1189728739640aa53d9)

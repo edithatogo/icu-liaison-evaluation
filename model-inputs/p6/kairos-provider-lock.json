@@ -2,7 +2,7 @@
   "schema_version": 1,
   "provider": "kairo-ecs-des",
   "repository": "https://github.com/edithatogo/kairos",
-  "source_commit": "9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b",
+  "source_commit": "ddd0f4bf36b985a1e1e3c1189728739640aa53d9",
   "api": "kairo-ecs-des::StagedResourceRuntime",
   "status": "upstream_api_source_inspected_binary_identity_required_at_runtime",
   "rust_version_policy": "1.99.1 or later with exact supported lockfile",

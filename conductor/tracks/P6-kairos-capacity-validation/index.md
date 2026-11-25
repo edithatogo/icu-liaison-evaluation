@@ -9,7 +9,7 @@ fictional one-bed replays and independent attestation of the retained
 Kairos `b60c422` macOS arm64 build and runner. CHHHS calibration and signed
 site approvals remain open.
 
-On 26 November 2026, the scheduled update to Kairos `9d76ca7` passed a fresh locked native build and both fictional reference replays. The earlier independent decision continues to identify its original artifact. [Current build and scope](handoff.md#scheduled-kairos-update-9d76ca7)
+On 26 November 2026, the scheduled update to Kairos `ddd0f4b` passed a fresh locked native build and both fictional reference replays. The earlier independent decision continues to identify its original artifact. [Current build and scope](handoff.md#scheduled-kairos-update-ddd0f4b)
 
 See [usage and qualification gates](../../../docs/p6-temporal-capacity.md).
 

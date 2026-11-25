@@ -27,7 +27,7 @@ def test_track_metadata_records_local_replay_and_outstanding_qualification() -> 
 def test_source_lock_is_immutable_but_does_not_fake_an_installed_binary() -> None:
     lock = json.loads((ROOT / 'model-inputs/p6/kairos-provider-lock.json').read_text())
     revision = lock['source_commit']
-    assert revision == '9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b'
+    assert revision == 'ddd0f4bf36b985a1e1e3c1189728739640aa53d9'
     track = ROOT / 'conductor/tracks/P6-kairos-capacity-validation/metadata.json'
     assert json.loads(track.read_text())['source_provider_revision'] == revision
     consumer = ROOT / 'native/kairos-icu-liaison'

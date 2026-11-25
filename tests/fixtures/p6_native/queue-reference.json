@@ -6,7 +6,7 @@
   "producer_contract_version": "0.1.0",
   "provider": {
     "repository": "https://github.com/edithatogo/kairos",
-    "source_commit": "9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b",
+    "source_commit": "ddd0f4bf36b985a1e1e3c1189728739640aa53d9",
     "api": "kairo-ecs-des::StagedResourceRuntime"
   },
   "scenario_id": "syn-icu-liaison-kairos-queued-demand",
