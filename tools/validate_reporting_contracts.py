@@ -233,7 +233,16 @@ def main() -> int:
     mode.add_argument("--report", type=Path)
     mode.add_argument("--run", type=Path, help="Verify a P11 output directory and list reporting coverage")
     mode.add_argument("--inventory", action="store_true", help="List both figure contracts as JSON")
+    mode.add_argument("--edition", type=Path, help="Verify saved artefacts and their local editorial receipts")
+    parser.add_argument("--artefact-root", type=Path, action="append", default=[],
+                        help="Authorise a local root for saved artefacts outside the catalogue directory")
     args = parser.parse_args()
+    if args.artefact_root and args.edition is None:
+        parser.error("--artefact-root requires --edition")
+    if args.edition is not None:
+        from tools.verify_report_edition import verify_edition
+        print(json.dumps(verify_edition(args.edition, artefact_roots=tuple(args.artefact_root))))
+        return 0
     catalogue = json.loads(CATALOGUE.read_text())
     if args.run is not None:
         try:

@@ -10,3 +10,7 @@ implemented figures. The [claim assessment](../../../contracts/reporting/README.
 checks the artifact and binds a fictional illustration to its case, metrics
 and denominators. CHHHS data admission, trusted authority verification and
 clinical review remain open. [Synthetic verification](../../../verification/portable-synthetic-2026-11-20.json)
+
+[Report edition evidence](../../../contracts/reporting/edition-assurance.md)
+records citation extraction, source identity, contextual prose review and
+scoped readability. The governed claim and scientific acceptance gates still apply.

@@ -45,6 +45,11 @@ Voiage native qualification based on injected stubs, or infer clinical safety
 from the monetary result. Authorised local-data sources and empirical
 acceptance remain missing.
 
+For maintained reports and documents, use the [edition catalogue and editorial
+evidence contract](contracts/reporting/edition-assurance.md). Verify the saved
+files with the repository-local Python. The catalogue and four tool receipts
+for governed work belong in the authorised local evidence store.
+
 ## P6 native and clinical boundary
 
 The optional Rust consumer in `native/kairos-icu-liaison` has a checked local
