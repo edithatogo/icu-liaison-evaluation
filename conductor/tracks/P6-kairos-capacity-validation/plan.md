@@ -19,7 +19,7 @@
 ## P6.3 — Kairos native source and local replay
 
 - [x] Inspect immutable upstream Kairos staged runtime API and file blob SHAs;
-  pin a single-ICU-bed Rust consumer to commit `b60c422b9fa90751b6a5349b9aefab2bf272e25e`.
+  pin a single-ICU-bed Rust consumer to commit `9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b`.
 - [x] Author native source, synthetic fixture and independent consumer contract,
   with standalone Cargo format, build and test qualification runner.
 - [x] Review Cargo.lock against its sources and pass the Rust format, lint,

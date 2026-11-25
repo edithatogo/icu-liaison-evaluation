@@ -22,13 +22,14 @@
     "P4-economic-decision-model",
     "P3-evidence-data-infrastructure"
   ],
-  "source_provider_revision": "b60c422b9fa90751b6a5349b9aefab2bf272e25e",
-  "native_execution": "independently_attested_fictional_macos_arm64",
-  "independent_build_attestation": {
+  "source_provider_revision": "9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b",
+  "native_execution": "locally_qualified_fictional_macos_arm64",
+  "clinical_validation": false,
+  "previous_independent_build_attestation": {
     "consumer_revision": "4b6e704c4d1561d6b19b94456031f0b9951a6d3d",
     "provider_revision": "b60c422b9fa90751b6a5349b9aefab2bf272e25e",
     "platform": "macos_arm64",
     "reviewed_on": "2026-11-25"
   },
-  "clinical_validation": false
+  "current_build_attestation": "pending"
 }
