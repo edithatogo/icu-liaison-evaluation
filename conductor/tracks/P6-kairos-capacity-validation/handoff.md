@@ -119,3 +119,11 @@ The decision resolves the scoped P6.3 and P7.4 technical build items.
 CHHHS calibration, ward and costing integration, and site approvals
 remain open.
 [Site inputs and governance](../../../docs/p6-native-qualification.md#chhhs-inputs-and-governance-outstanding)
+
+## Scheduled Kairos update 9d76ca7
+
+The consumer pins the signed upstream revision `9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b`. The qualification checked the three reviewed upstream source blobs, formatted and linted the Rust consumer, built from the refreshed Cargo lock, and replayed both fictional scenarios twice with matching reference results. The local macOS arm64 executable digest was `27fa045d15f7fa73c9ae1143d2ee4427ec70e4cb5a3d05a9eb0b4ee8770c2de8`. Independent attestation is scoped to the artifact and runner identified in its own record.
+
+The eight outstanding Python dependency proposals conflict with the pinned Snakemake 9.27.2 environment. The resolver also rejected coupled SQLModel and SQLAlchemy updates and the combined packaging and interface updates. Their existing pins remain in the reproducible workflow.
+
+[Upstream revision](https://github.com/edithatogo/kairos/commit/9d76ca7f4b7f4b5898f2ec77515a7a7639f1478b) · [Dependency dashboard](https://github.com/edithatogo/icu-liaison-evaluation/issues/30)
