@@ -1,5 +1,6 @@
 """Rasterise source-verified P9 SVGs at the four visual review sizes."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import hashlib
@@ -15,7 +16,7 @@ from PIL import Image, ImageOps, __version__ as pillow_version
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def capture(bundle: Path, output: Path, f01: Path | None = None) -> dict:
+def capture(bundle: Path, output: Path, f01: Path | None = None) -> dict[str, Any]:
     if output.exists() or output.is_symlink() or output.resolve().is_relative_to(bundle.resolve()):
         raise ValueError('choose a fresh capture directory outside the figure bundle')
     manifest_file = bundle / 'manifest.json'
@@ -90,7 +91,7 @@ def capture(bundle: Path, output: Path, f01: Path | None = None) -> dict:
     return result
 
 
-def main():
+def main() -> None:
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument('figures', type=Path)
     cli.add_argument('output', type=Path)

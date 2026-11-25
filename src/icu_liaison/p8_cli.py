@@ -1,5 +1,6 @@
 """Synthetic-only ICU evaluation P8 provider-consumer CLI (no hidden fallback)."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import json
@@ -11,7 +12,7 @@ from .adapters.p8_mchs import MchsPair, mchs_reference_sha256, run_mchs_pair
 from .adapters.p8_workforce import RosterScenario, prepare_workforce_dapane_request
 
 
-def _no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+def _no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, Any]:
     result = {}
     for key, value in pairs:
         if key in result:
@@ -20,7 +21,7 @@ def _no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
     return result
 
 
-def _load(path: Path) -> dict:
+def _load(path: Path) -> dict[str, Any]:
     if path.stat().st_size > 2_000_000:
         raise ValueError("P8 synthetic input is too large")
     data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_no_duplicate_keys)
@@ -29,7 +30,7 @@ def _load(path: Path) -> dict:
     return data
 
 
-def _emit(message: dict) -> None:
+def _emit(message: dict[str, Any]) -> None:
     print(json.dumps(message, sort_keys=True, allow_nan=False))
 
 

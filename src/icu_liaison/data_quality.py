@@ -14,9 +14,9 @@ import hashlib
 import json
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, Literal, Never, TypedDict, cast, overload
 
-from .endpoints import ReturnEvent, TransitionObservation, classify_transition
+from .endpoints import CensorReason, ReturnEvent, TransitionObservation, classify_transition
 from .protocol import load_data_dictionary
 
 MAX_FILE_SIZE = 30 * 1024 * 1024
@@ -45,17 +45,39 @@ CENSORS = {'completed_72h', 'hospital_discharge', 'interhospital_transfer', 'dea
 COST_SEGMENTS = {'index_ready_to_departure', 'return_episode', 'incremental_service'}
 
 
+type EpisodeKey = tuple[str, str]
+
+
+class _Episode(TypedDict):
+    key: EpisodeKey
+    admission: datetime
+    departure: datetime
+    ready: datetime | None
+    observed_until: datetime
+    censor_reason: CensorReason
+    destination: str
+    age: int
+
+
 class ContractError(ValueError):
     """Privacy-safe validation failure (never contains row contents or IDs)."""
 
 
-def _reject(message: str) -> None:
+def _reject(message: str) -> Never:
     raise ContractError(message)
 
 
 def _check(condition: bool, message: str) -> None:
     if not condition:
         _reject(message)
+
+
+@overload
+def _parse_dt(value: str, field: str, table: str, index: int, optional: Literal[False] = False) -> datetime: ...
+
+
+@overload
+def _parse_dt(value: str, field: str, table: str, index: int, optional: Literal[True]) -> datetime | None: ...
 
 
 def _parse_dt(value: str, field: str, table: str, index: int, optional: bool=False) -> datetime | None:
@@ -90,13 +112,18 @@ def _safe_id(value: str, table: str, index: int, field: str) -> str:
     return value
 
 
-def _read_manifest(manifest_file: Path, folder: Path, root: Path, allow_restricted: bool) -> dict:
+def _read_manifest(manifest_file: Path, folder: Path, root: Path, allow_restricted: bool) -> dict[str, Any]:
     _check(manifest_file.is_file() and not manifest_file.is_symlink(), 'manifest unavailable or symlink')
     try:
         m = json.loads(manifest_file.read_text(encoding='utf-8'))
     except (ValueError, OSError, UnicodeError):
         _reject('invalid manifest JSON')
-    _check(type(m) is dict and m.get('schema_version') == 1, 'manifest schema version mismatch')
+    if not isinstance(m, dict) or type(m.get('schema_version')) is not int or m['schema_version'] != 1:
+        _reject('manifest schema version mismatch')
+    allowed = {'schema_version', 'data_class', 'clock_timezone', 'source_system', 'site',
+               'capture_status', 'tables', 'governance_reference', 'approval_reference', 'extract_owner_role'}
+    if set(m) - allowed:
+        _reject('unexpected manifest field')
     kind = m.get('data_class')
     _check(kind in {'synthetic_example', 'restricted_local_extract'}, 'unsupported data class')
     _check(m.get('clock_timezone') == 'Australia/Brisbane', 'unqualified timezone semantics')
@@ -130,7 +157,7 @@ def _read_manifest(manifest_file: Path, folder: Path, root: Path, allow_restrict
     return m
 
 
-def _load_csv(folder: Path, table: str, info: dict) -> list[dict[str,str]]:
+def _load_csv(folder: Path, table: str, info: dict[str, Any]) -> list[dict[str,str]]:
     path = folder / info['file']
     _check(path.is_file() and not path.is_symlink(), f'{table}: file unavailable or symlink')
     _check(path.stat().st_size <= MAX_FILE_SIZE, f'{table}: oversize file')
@@ -140,8 +167,8 @@ def _load_csv(folder: Path, table: str, info: dict) -> list[dict[str,str]]:
         content = raw.decode('utf-8-sig')
         reader = csv.DictReader(content.splitlines(), strict=True)
         header = reader.fieldnames
-        _check(isinstance(header,list) and len(header) == len(set(header)),
-               f'{table}: duplicate/missing header')
+        if header is None or len(header) != len(set(header)):
+            _reject(f'{table}: duplicate/missing header')
         cmap = info['column_map']
         fields = SUPPORTED_TABLES[table]
         mapping = {k:cmap.get(k,k) for k in fields}
@@ -181,8 +208,8 @@ def inspect_extract(input_dir: str | Path, manifest: str | Path,
     _check((mapped-ADDITIONAL_TRANSPORT_KEYS) <= known, 'projected field missing from P2 dictionary')
     tables={name:_load_csv(folder,name,info) for name,info in m['tables'].items()}
     episodes=tables['episodes']
-    by_episode={}
-    by_hospital=defaultdict(list)
+    by_episode: dict[EpisodeKey, _Episode] = {}
+    by_hospital: defaultdict[str, list[_Episode]] = defaultdict(list)
     missing_ready=0
     for index,row in enumerate(episodes,2):
         hosp=_safe_id(row['hospitalisation_pseudonym'],'episodes',index,'hospitalisation_pseudonym')
@@ -211,21 +238,19 @@ def inspect_extract(input_dir: str | Path, manifest: str | Path,
         age=_numeric(row['adult_age_at_icu_admission_years'],'episodes',index,'age',integral=True)
         _check(age <= 120, f'episodes row {index}: invalid age')
         if ready is None:missing_ready+=1
-        record={'key':key,'admission':admission,'departure':depart,'ready':ready,
-                'observed_until':end,'censor_reason':row['censor_reason'],
+        record: _Episode = {'key':key,'admission':admission,'departure':depart,'ready':ready,
+                'observed_until':end,'censor_reason':cast(CensorReason, row['censor_reason']),
                 'destination':row['destination_category'],'age':int(age)}
         by_episode[key]=record
         by_hospital[hosp].append(record)
 
-    def get_key(row,table,index,allow_service=False):
-        if allow_service and not row.get('hospitalisation_pseudonym') and not row.get('index_icu_episode_id'):
-            return None
+    def get_key(row: dict[str, str], table: str, index: int) -> EpisodeKey:
         key=(_safe_id(row['hospitalisation_pseudonym'],table,index,'hospitalisation_pseudonym'),
              _safe_id(row['index_icu_episode_id'],table,index,'index_icu_episode_id'))
         _check(key in by_episode, f'{table} row {index}: orphan event/episode join')
         return key
 
-    returns=defaultdict(list)
+    returns: defaultdict[EpisodeKey, list[ReturnEvent]] = defaultdict(list)
     seen_returns=set()
     for index,row in enumerate(tables['returns'],2):
         key=get_key(row,'returns',index)
@@ -238,7 +263,7 @@ def inspect_extract(input_dir: str | Path, manifest: str | Path,
                f'returns row {index}: chronology incompatible with episode follow-up')
         planned=row['readmission_planned_status']
         _check(planned in {'planned','unplanned','unknown'},f'returns row {index}: invalid planned status')
-        returns[key].append(ReturnEvent(at=at,planned=planned))
+        returns[key].append(ReturnEvent(at=at,planned=cast(Literal['planned', 'unplanned', 'unknown'], planned)))
 
     seen_contacts=set()
     for index,row in enumerate(tables['contacts'],2):
@@ -277,21 +302,22 @@ def inspect_extract(input_dir: str | Path, manifest: str | Path,
             _check(actual is None, f'safety_events row {index}: incompatible arrest event')
 
     costids=set()
-    segments=Counter()
+    segments: Counter[str] = Counter()
     for index,row in enumerate(tables['cost_lines'],2):
         ident=_safe_id(row['cost_ledger_entry_id'],'cost_lines',index,'cost_ledger_entry_id')
         _check(ident not in costids, 'cost_lines: duplicate cost ledger entry across segments')
         costids.add(ident)
         seg=row['cost_resource_segment']
         _check(seg in COST_SEGMENTS, f'cost_lines row {index}: unknown resource segment')
-        key=get_key(row,'cost_lines',index,allow_service=True)
-        _check((key is None)==(seg=='incremental_service'),
+        cost_key = (get_key(row, 'cost_lines', index) if row['hospitalisation_pseudonym']
+                    or row['index_icu_episode_id'] else None)
+        _check((cost_key is None)==(seg=='incremental_service'),
                f'cost_lines row {index}: service vs episode resource identity mismatch')
         _numeric(row['cost_resource_quantity'],'cost_lines',index,'cost_resource_quantity')
         _numeric(row['cost_unit_quotation'],'cost_lines',index,'cost_unit_quotation')
         _check(row['cost_currency']=='AUD' and row['cost_price_year']=='2026',
                f'cost_lines row {index}: cost perspective/currency or price-year mismatch')
-        _check(seg!='return_episode' or bool(returns.get(key)),
+        _check(seg!='return_episode' or (cost_key is not None and bool(returns.get(cost_key))),
                f'cost_lines row {index}: return cost without linked return episode')
         segments[seg]+=1
 
@@ -299,22 +325,22 @@ def inspect_extract(input_dir: str | Path, manifest: str | Path,
     for hospital, records in by_hospital.items():
         options=[r for r in records if r['age']>=16 and r['destination'] in {'ward_same_hospital','ward_same_hhs'}]
         if options: eligible.append(min(options,key=lambda r:(r['departure'],r['key'][1])))
-    counts=Counter();missing_index=0;block=0;after_hours=0;observed_delay=0;deaths=0
-    for row in eligible:
+    counts: Counter[str] = Counter();missing_index=0;block=0;after_hours=0;observed_delay=0;deaths=0
+    for episode in eligible:
         try:
             result=classify_transition(TransitionObservation(
-                clinically_ready_at=row['ready'],
-                physical_departure_at=row['departure'],
-                observed_until=row['observed_until'],
-                returns=returns.get(row['key'],[]),
-                censor_reason=row['censor_reason'],
+                clinically_ready_at=episode['ready'],
+                physical_departure_at=episode['departure'],
+                observed_until=episode['observed_until'],
+                returns=returns.get(episode['key'],[]),
+                censor_reason=episode['censor_reason'],
             ))
         except ValueError:
             _reject('episode transition clock or censor invalid')
         if result.delay_hours is None:missing_index+=1
         else:
             observed_delay+=1
-            block+=int(result.exit_block_ge12h)
+            block+=int(result.exit_block_ge12h is True)
         after_hours+=int(result.after_hours_departure)
         code='unknown' if result.unplanned_return_within_72h is None else (
             'unplanned_yes' if result.unplanned_return_within_72h else 'unplanned_no')

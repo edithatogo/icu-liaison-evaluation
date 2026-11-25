@@ -1,9 +1,12 @@
 """Claim decisions tied to actual fictional workflow artifacts."""
+from icu_liaison.p4_model import P4Run
+from pytest import CaptureFixture, MonkeyPatch, TempPathFactory
 
 from hashlib import sha256
 import json
 import os
 from pathlib import Path
+from typing import Any
 import subprocess
 import sys
 
@@ -38,7 +41,7 @@ def _build_synthetic_run(directory: Path) -> Path:
 
 
 @pytest.fixture(scope="module")
-def synthetic_run(tmp_path_factory):
+def synthetic_run(tmp_path_factory: TempPathFactory) -> Path:
     return _build_synthetic_run(tmp_path_factory.mktemp("p10-run"))
 
 
@@ -47,7 +50,7 @@ def synthetic_run(tmp_path_factory):
     ("F01", "M25", "D09"),
     ("F20", "M16", "D11"),
 ])
-def test_claim_binds_a_verified_artifact_to_measures(synthetic_run, artifact, metric, denominator):
+def test_claim_binds_a_verified_artifact_to_measures(synthetic_run: Path, artifact: str, metric: str, denominator: str) -> None:
     result = assess_claim("synthetic_illustration", run=synthetic_run, case_id="base", artifact_id=artifact)
     assert result["permitted"] is True and result["scope"] == "synthetic_illustration_only"
     assert metric in result["metric_ids"] and denominator in result["denominator_ids"]
@@ -64,21 +67,21 @@ def test_claim_binds_a_verified_artifact_to_measures(synthetic_run, artifact, me
     "local_descriptive", "clinical_effectiveness", "cash_savings",
     "nwau_activity", "provider_qualified", "investment_ready",
 ])
-def test_external_claims_remain_denied_before_any_artifact_read(tmp_path, claim):
+def test_external_claims_remain_denied_before_any_artifact_read(tmp_path: Path, claim: str) -> None:
     assert assess_claim(claim, {"approved": True}, run=tmp_path / "missing",
                         case_id="base", artifact_id="F01") == {
         "permitted": False, "reason": "trusted_external_verifier_not_connected",
     }
 
 
-def test_claim_cannot_substitute_a_placeholder_or_unknown_scenario(synthetic_run):
+def test_claim_cannot_substitute_a_placeholder_or_unknown_scenario(synthetic_run: Path) -> None:
     blocked = assess_claim("synthetic_illustration", run=synthetic_run, case_id="base", artifact_id="F16")
     assert blocked["permitted"] is False and blocked["reason"] == "reporting_artifact_requires_external_evidence"
     missing = assess_claim("synthetic_illustration", run=synthetic_run, case_id="different", artifact_id="F01")
     assert missing["permitted"] is False and missing["reason"] == "unknown_scenario"
 
 
-def test_archived_figure_without_current_mark_replay_cannot_receive_claim(synthetic_run, monkeypatch):
+def test_archived_figure_without_current_mark_replay_cannot_receive_claim(synthetic_run: Path, monkeypatch: MonkeyPatch) -> None:
     import icu_liaison.p11_p9 as figures
 
     monkeypatch.setattr(figures, "fingerprint", lambda: {"historical": True})
@@ -86,7 +89,7 @@ def test_archived_figure_without_current_mark_replay_cannot_receive_claim(synthe
     assert result == {"permitted": False, "reason": "figure_replay_unavailable"}
 
 
-def test_archived_model_without_current_numeric_replay_cannot_receive_claim(synthetic_run, monkeypatch):
+def test_archived_model_without_current_numeric_replay_cannot_receive_claim(synthetic_run: Path, monkeypatch: MonkeyPatch) -> None:
     import icu_liaison.p11_model as model
 
     monkeypatch.setattr(model, "_runtime", lambda: {"historical": True})
@@ -94,7 +97,7 @@ def test_archived_model_without_current_numeric_replay_cannot_receive_claim(synt
     assert result == {"permitted": False, "reason": "model_replay_unavailable"}
 
 
-def test_claim_does_not_use_a_different_reporting_catalogue(synthetic_run, tmp_path, monkeypatch):
+def test_claim_does_not_use_a_different_reporting_catalogue(synthetic_run: Path, tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     from tools import validate_reporting_contracts as reporting
 
     catalogue = json.loads(reporting.CATALOGUE.read_bytes())
@@ -107,12 +110,12 @@ def test_claim_does_not_use_a_different_reporting_catalogue(synthetic_run, tmp_p
 
 
 @pytest.mark.parametrize("artifact_id", ["T01", "T03"])
-def test_claim_requires_report_values_to_match_seeded_replay(tmp_path, monkeypatch, artifact_id):
+def test_claim_requires_report_values_to_match_seeded_replay(tmp_path: Path, monkeypatch: MonkeyPatch, artifact_id: str) -> None:
     from icu_liaison import p5_reporting
 
     build_rows = p5_reporting._rows
 
-    def inconsistent_report(run):
+    def inconsistent_report(run: P4Run) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
         consequences, pairs, sensitivity = build_rows(run)
         if artifact_id == "T01":
             cost = next(row for row in consequences if row["measure"] == "incremental_service_cost_aud")
@@ -131,11 +134,11 @@ def test_claim_requires_report_values_to_match_seeded_replay(tmp_path, monkeypat
 
 
 @pytest.mark.parametrize("exception", [ValueError, AttributeError])
-def test_claim_cli_omits_untrusted_failure_details(tmp_path, monkeypatch, capsys, exception):
+def test_claim_cli_omits_untrusted_failure_details(tmp_path: Path, monkeypatch: MonkeyPatch, capsys: CaptureFixture[str], exception: type[Exception]) -> None:
     from tools import validate_measurement_contracts as measurement
     from tools import validate_reporting_contracts as reporting
 
-    def invalid_run(*_args):
+    def invalid_run(*_args: object) -> None:
         raise exception("example input value that must stay out of the decision")
 
     monkeypatch.setattr(reporting, "verify_run_coverage", invalid_run)
@@ -153,7 +156,7 @@ def test_claim_cli_omits_untrusted_failure_details(tmp_path, monkeypatch, capsys
     }
 
 
-def test_claim_cli_rejects_a_changed_svg(synthetic_run):
+def test_claim_cli_rejects_a_changed_svg(synthetic_run: Path) -> None:
     pointer = json.loads((synthetic_run / "state/figures/base.json").read_bytes())
     svg = synthetic_run / "figures" / pointer["figure_revision"] / "scenario-comparison.svg"
     command = [sys.executable, "-m", "tools.validate_measurement_contracts",

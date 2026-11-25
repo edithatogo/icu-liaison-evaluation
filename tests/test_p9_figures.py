@@ -1,4 +1,5 @@
 """Fictional figure regression and source-to-mark rejection checks."""
+from typing import Any
 import csv
 import hashlib
 import json
@@ -25,18 +26,20 @@ P3_MANIFEST = ROOT / 'model-inputs/placeholders/p3-synthetic/manifest.json'
 
 
 @pytest.fixture
-def scenario():
+def scenario() -> EconomicScenario:
     source = json.loads(SCENARIO_FILE.read_text())
     source['iterations'] = 32
     return EconomicScenario.model_validate(source)
 
 
 @pytest.fixture
-def fixture_inputs():
-    return json.loads(FIXTURES_FILE.read_text())
+def fixture_inputs() -> dict[str, Any]:
+    value = json.loads(FIXTURES_FILE.read_text())
+    assert isinstance(value, dict)
+    return value
 
 
-def test_waterfall_reconciles_three_unique_resource_components(scenario):
+def test_waterfall_reconciles_three_unique_resource_components(scenario: EconomicScenario) -> None:
     rows = resource_waterfall(scenario)
     assert [row['value_aud'] for row in rows] == pytest.approx(
         [13770, 67500, -250000, -168730]
@@ -44,7 +47,7 @@ def test_waterfall_reconciles_three_unique_resource_components(scenario):
     assert rows[-1]['end_aud'] == pytest.approx(sum(row['value_aud'] for row in rows[:-1]))
 
 
-def test_break_even_limited_to_stated_priors(scenario):
+def test_break_even_limited_to_stated_priors(scenario: EconomicScenario) -> None:
     rows = break_even_grid(scenario)
     assert {min(r['delay_success'] for r in rows), max(r['delay_success'] for r in rows)} == {0.2, 0.8}
     assert {min(r['annual_cost_aud'] for r in rows), max(r['annual_cost_aud'] for r in rows)} == {200000, 380000}
@@ -59,7 +62,7 @@ def test_break_even_limited_to_stated_priors(scenario):
     assert min(r['net_resource_aud'] for r in results) < 0 < max(r['net_resource_aud'] for r in results)
 
 
-def test_fixed_no_effect_prior_produces_a_one_dimensional_break_even(tmp_path, scenario):
+def test_fixed_no_effect_prior_produces_a_one_dimensional_break_even(tmp_path: Path, scenario: EconomicScenario) -> None:
     no_effect = _variant(scenario.model_dump(mode='json'), 'no_effect')
     rows = break_even_grid(no_effect)
     assert len(rows) == 17
@@ -77,7 +80,7 @@ def test_fixed_no_effect_prior_produces_a_one_dimensional_break_even(tmp_path, s
 
 
 @pytest.mark.parametrize('fixed_effect', [False, True])
-def test_fixed_cost_and_fixed_both_axes_use_only_stated_values(tmp_path, fixed_effect):
+def test_fixed_cost_and_fixed_both_axes_use_only_stated_values(tmp_path: Path, fixed_effect: bool) -> None:
     case = json.loads((ROOT / 'model-inputs/p11/cases/base.json').read_text())
     case['iterations'] = 32
     case['overrides']['strategy.liaison_service.annual_incremental_cost_aud'] = {
@@ -107,7 +110,7 @@ def test_fixed_cost_and_fixed_both_axes_use_only_stated_values(tmp_path, fixed_e
         assert 'breakeven-zero' in text
 
 
-def test_draw_order_must_match_the_seeded_model(tmp_path, scenario):
+def test_draw_order_must_match_the_seeded_model(tmp_path: Path, scenario: EconomicScenario) -> None:
     p5 = tmp_path / 'p5'
     build_report(scenario, p5)
     surface = p5 / 'decision-surface.csv'
@@ -119,7 +122,7 @@ def test_draw_order_must_match_the_seeded_model(tmp_path, scenario):
         paired_capacity(run, surface)
 
 
-def test_journey_conserves_elapsed_time_and_distinguishes_unknown(fixture_inputs):
+def test_journey_conserves_elapsed_time_and_distinguishes_unknown(fixture_inputs: dict[str, Any]) -> None:
     rows = journey_rows(Fixtures.model_validate(fixture_inputs).journeys, P3_MANIFEST)
     assert [r['duration_minutes'] for r in rows if r['episode'] == 'A'] == [75, 585, 120]
     unresolved = [r for r in rows if r['stage'] == 'unresolved_stage']
@@ -132,7 +135,7 @@ def test_journey_conserves_elapsed_time_and_distinguishes_unknown(fixture_inputs
         journey_rows(Fixtures.model_validate(fixture_inputs).journeys, P3_MANIFEST)
 
 
-def test_coverage_conserves_hours_and_rejects_overlap_and_rates(fixture_inputs):
+def test_coverage_conserves_hours_and_rejects_overlap_and_rates(fixture_inputs: dict[str, Any]) -> None:
     rows = coverage_rows(Fixtures.model_validate(fixture_inputs).week)
     assert len(rows) == 168
     assert sum(r['paid_staff_hours'] for r in rows) == 44
@@ -151,7 +154,7 @@ def test_coverage_conserves_hours_and_rejects_overlap_and_rates(fixture_inputs):
         Fixtures.model_validate(fixture_inputs)
 
 
-def test_clinical_stress_grid_retains_null_and_harm(scenario):
+def test_clinical_stress_grid_retains_null_and_harm(scenario: EconomicScenario) -> None:
     rows = sensitivity_grid(evaluate_scenarios(scenario))
     joint_null, = (row for row in rows if row['effect_class'] == 'joint_null')
     assert joint_null['mean_returns_avoided'] == 0
@@ -172,7 +175,7 @@ def test_clinical_stress_grid_retains_null_and_harm(scenario):
             assert row['return_contrast_aud'] == 0
 
 
-def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path, scenario):
+def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path: Path, scenario: EconomicScenario) -> None:
     p5, out = tmp_path / 'p5', tmp_path / 'p9'
     scenario_file = tmp_path / 'scenario.json'
     scenario_file.write_text(scenario.model_dump_json())
@@ -189,7 +192,7 @@ def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path, scenario):
     group = next(node for node in svg.iter() if node.attrib.get('id') == 'paired-scatter')
     dots = [node for node in group.iter() if node.tag.endswith('}use')]
     assert len(dots) == scenario.iterations
-    dots[1].set('y', dots[0].get('y'))
+    dots[1].set('y', dots[0].attrib['y'])
     plot.write_bytes(ET.tostring(svg))
     manifest['files_sha256'][plot.name] = hashlib.sha256(plot.read_bytes()).hexdigest()
     manifest_file.write_text(json.dumps(manifest))
@@ -214,7 +217,7 @@ def test_bundle_detects_rehashed_mark_and_table_tampering(tmp_path, scenario):
 @pytest.mark.parametrize('mutation', ['missing_coverage', 'displaced_coverage',
                                        'invisible_coverage', 'off_canvas_demand',
                                        'missing_demand_cell'])
-def test_f20_rejects_rehashed_geometry_or_missing_marks(tmp_path, scenario, mutation):
+def test_f20_rejects_rehashed_geometry_or_missing_marks(tmp_path: Path, scenario: EconomicScenario, mutation: str) -> None:
     p5, out = tmp_path / 'p5', tmp_path / 'p9'
     scenario_file = tmp_path / 'scenario.json'
     scenario_file.write_text(scenario.model_dump_json())
@@ -228,10 +231,10 @@ def test_f20_rejects_rehashed_geometry_or_missing_marks(tmp_path, scenario, muta
         group.remove(next(child for child in group if child.tag.endswith('}path')))
     elif mutation == 'displaced_coverage':
         path = next(child for child in nodes['coverage-0-9'] if child.tag.endswith('}path'))
-        path.set('d', re.sub(r'(?<=M )[-+0-9.]+', '0', path.get('d'), count=1))
+        path.set('d', re.sub(r'(?<=M )[-+0-9.]+', '0', path.attrib['d'], count=1))
     elif mutation == 'invisible_coverage':
         path = next(child for child in nodes['coverage-0-9'] if child.tag.endswith('}path'))
-        path.set('style', path.get('style').replace('fill: #196872', 'fill: none'))
+        path.set('style', path.attrib['style'].replace('fill: #196872', 'fill: none'))
     elif mutation == 'off_canvas_demand':
         label = next(child for child in nodes['demand-0-7'] if child.tag.endswith('}text'))
         label.set('x', '-1000')

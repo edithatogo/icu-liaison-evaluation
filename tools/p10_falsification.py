@@ -1,10 +1,12 @@
 """Adversarial synthetic P4 scenarios; no clinical or financial acceptance."""
 from __future__ import annotations
+from typing import Any
 
 import json
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from icu_liaison.p4_model import EconomicScenario, evaluate_scenarios
 from tools.evaluate_safety_decision import evaluate_decision
@@ -13,12 +15,12 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "contracts/reporting/falsification-matrix.json"
 
 
-def _fixed(prior: dict, value: float) -> None:
+def _fixed(prior: dict[str, Any], value: float) -> None:
     prior["family"] = "fixed"
     prior["params"] = {"value": value}
 
 
-def _variant(raw: dict, case: str) -> EconomicScenario:
+def _variant(raw: dict[str, Any], case: str) -> EconomicScenario:
     data = json.loads(json.dumps(raw))
     if case == "no_effect":
         for arm in data["strategies"]:
@@ -47,7 +49,7 @@ def _variant(raw: dict, case: str) -> EconomicScenario:
     return EconomicScenario.model_validate(data)
 
 
-def run_suite(iterations: int = 128) -> dict:
+def run_suite(iterations: int = 128) -> dict[str, Any]:
     if not 32 <= iterations <= 10000:
         raise ValueError("synthetic audit iterations outside 32..10000")
     specification = json.loads(MATRIX.read_text(encoding="utf-8"))
@@ -72,12 +74,13 @@ def run_suite(iterations: int = 128) -> dict:
                 continue
             current = base.strategies[strategy.id]
             outcome = run.strategies[strategy.id]
-            close = lambda a,b: np.allclose(a,b,rtol=0,atol=1e-8)
+            def close(a: ArrayLike, b: ArrayLike) -> bool:
+                return np.allclose(a, b, rtol=0, atol=1e-8)
             if case == "no_effect":
                 passed = close(outcome.icu_bed_days_released,0) and close(
-                    outcome.readmissions_avoided,0) and np.all(outcome.net_resource_benefit_aud<0)
+                    outcome.readmissions_avoided,0) and bool(np.all(outcome.net_resource_benefit_aud<0))
             elif case == "harmful_returns":
-                passed = np.all(outcome.readmissions_avoided<0)
+                passed = bool(np.all(outcome.readmissions_avoided<0))
             elif case == "zero_addressable_delay":
                 passed = close(outcome.icu_bed_days_released,0)
             elif case == "zero_usable_capacity":

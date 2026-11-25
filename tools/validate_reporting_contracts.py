@@ -1,5 +1,6 @@
 """Check P9 contracts and the artifacts in a verified synthetic run."""
 from __future__ import annotations
+from typing import Any
 import argparse
 import csv
 import json
@@ -18,7 +19,7 @@ P5_TABLES = {
 }
 
 
-def validate_catalogue(c: dict) -> None:
+def validate_catalogue(c: dict[str, Any]) -> None:
     if c.get("schema_version") != 1 or c.get("source_class") != "synthetic_only":
         raise ValueError("unqualified reporting catalogue")
     for group in ("tables", "figures"):
@@ -69,10 +70,9 @@ def validate_catalogue(c: dict) -> None:
             raise ValueError('unknown empirical observation misrepresented')
         if tier == 'external_exploratory_only' and figure['exploratory_reference']['in_repo']:
             raise ValueError('external image wrongly claimed as repo artifact')
-    if __package__:
-        from tools.validate_measurement_contracts import validate_assurance
-    else:
-        from validate_measurement_contracts import validate_assurance
+    if not __package__:
+        sys.path.insert(0, str(ROOT))
+    from tools.validate_measurement_contracts import validate_assurance
     validate_assurance(catalogue=c)
     from icu_liaison.p9_figure_data import FIGURE_IDS
     if tuple(f["id"] for f in c["figures"] if f.get("bundle") == "p9") != FIGURE_IDS:
@@ -93,14 +93,14 @@ def validate_catalogue(c: dict) -> None:
         raise ValueError("decision surface must not mix funding")
 
 
-def _check_table_header(path: Path, table: dict) -> None:
+def _check_table_header(path: Path, table: dict[str, Any]) -> None:
     with path.open(newline="", encoding="utf-8") as fp:
         header = next(csv.reader(fp), ())
     if len(header) != len(set(header)) or not set(table["required_columns"]).issubset(header):
         raise ValueError("P5 contracted header mismatch: " + table["id"])
 
 
-def validate_report(folder: Path, c: dict) -> dict:
+def validate_report(folder: Path, c: dict[str, Any]) -> dict[str, Any]:
     validate_catalogue(c)
     from icu_liaison.p5_reporting import review_report, verify_manifest
     verify_manifest(folder)
@@ -140,7 +140,7 @@ def validate_report(folder: Path, c: dict) -> dict:
     return {"status":"synthetic_source_consistent_not_clinically_validated","checked":checked}
 
 
-def verify_run_coverage(output: Path, catalogue: dict) -> dict:
+def verify_run_coverage(output: Path, catalogue: dict[str, Any]) -> dict[str, Any]:
     """Reconcile a verified P11 store with the current reporting contracts."""
     from icu_liaison.p11_records import digest_file, read_json
     from icu_liaison.p11_verify import verify_output
@@ -190,7 +190,7 @@ def verify_run_coverage(output: Path, catalogue: dict) -> dict:
     }
 
 
-def figure_inventory(catalogue: dict, deck: dict) -> list[dict]:
+def figure_inventory(catalogue: dict[str, Any], deck: dict[str, Any]) -> list[dict[str, Any]]:
     """List both contracts without making the deck a P11 input."""
     figures = [
         {

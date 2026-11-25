@@ -1,5 +1,6 @@
 """P10 draft causal preregistration and implementation fidelity admission."""
 from __future__ import annotations
+from typing import Any
 
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ PROTOCOL = ROOT / "model-inputs/clinical-economic-protocol.json"
 METRICS = ROOT / "contracts/reporting/metrics.json"
 
 
-def validate_preregistration(value: dict | None = None) -> dict:
+def validate_preregistration(value: dict[str, Any] | None = None) -> dict[str, Any]:
     data = value if value is not None else json.loads(REGISTRY.read_text())
     schema = json.loads(SCHEMA.read_text())
     Draft202012Validator.check_schema(schema)

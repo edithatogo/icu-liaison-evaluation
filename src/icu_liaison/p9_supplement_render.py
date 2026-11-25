@@ -1,5 +1,6 @@
 """Supplementary fictional figures. Mark IDs identify the source series."""
 from __future__ import annotations
+from typing import Any
 
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch, PathPatch
@@ -9,11 +10,11 @@ from matplotlib.ticker import MaxNLocator
 from .p9_figure_render import INK, PALE, RUST, TEAL, _heading, _panel
 
 
-def _arm(name):
+def _arm(name: str) -> str:
     return name.replace('_service', '').replace('_', ' ').capitalize()
 
 
-def resources(rows, year, cohort):
+def resources(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     arms = list(dict.fromkeys(r['strategy'] for r in rows))
     fig, ax = _panel('Resources and cash budget',
                      f'Annual difference from current care · {cohort:,} discharges',
@@ -33,7 +34,7 @@ def resources(rows, year, cohort):
     return fig
 
 
-def signs(rows, year, cohort):
+def signs(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     arms = list(dict.fromkeys(r['strategy'] for r in rows))
     fig, ax = _panel('Sign of paired resource benefit',
                      f'Each strategy versus current care · {rows[0]["draws"]:,} draws',
@@ -64,7 +65,7 @@ _PARAMETER_LABELS = {
 }
 
 
-def tornado(rows, year, cohort):
+def tornado(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     displayed = rows[:5]
     pivot = rows[0]['pivot_aud'] / 1000
     fig, ax = _panel('One-way sensitivity',
@@ -86,7 +87,7 @@ def tornado(rows, year, cohort):
     return fig
 
 
-def histogram(rows, year, cohort):
+def histogram(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     fig, ax = _panel('Distribution of paired differences',
                      'Liaison minus current care · annual net resources')
     for i, row in enumerate(rows):
@@ -100,7 +101,7 @@ def histogram(rows, year, cohort):
     return fig
 
 
-def trace(rows, year, cohort):
+def trace(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     arms = list(dict.fromkeys(r['strategy'] for r in rows))
     fig = Figure(figsize=(5.7, 2.05*len(arms)+1.9), facecolor='white')
     _heading(fig, 'Occupancy and waiting requests',
@@ -123,7 +124,7 @@ def trace(rows, year, cohort):
     return fig
 
 
-def flow(rows, year, cohort):
+def flow(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     total = rows[0]['eligible_indices']
     fig, ax = _panel('Flow after an index discharge',
                      f'{total} fictional first ward discharges · 72-hour follow-up',
@@ -148,7 +149,7 @@ def flow(rows, year, cohort):
     return fig
 
 
-def event_study(rows, year, cohort):
+def event_study(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     fig, ax = _panel('Controlled event-study design',
                      'Fictional ward means · rollout ward minus comparison ward\n'
                      'Difference from week −1, the reference week.', left=.16, bottom=.20)

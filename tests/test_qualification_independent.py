@@ -15,7 +15,7 @@ from icu_liaison.qualification_independent import audit_local_aggregate, audit_p
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_p3_aggregate_denominators_do_not_treat_missing_as_zero():
+def test_p3_aggregate_denominators_do_not_treat_missing_as_zero() -> None:
     data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     check = audit_local_aggregate(data)
     assert check['provenance_class'] == 'synthetic'
@@ -32,7 +32,7 @@ def test_p3_aggregate_denominators_do_not_treat_missing_as_zero():
     assert check['investment_ready'] is False
 
 
-def test_missing_readiness_leaves_the_eligible_cohort_range_unidentified():
+def test_missing_readiness_leaves_the_eligible_cohort_range_unidentified() -> None:
     data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     data['cohort'].update(index_with_readiness=0, index_exit_block_ge12h=0)
     result = audit_local_aggregate(data)['exit_block_ge12h']
@@ -41,7 +41,7 @@ def test_missing_readiness_leaves_the_eligible_cohort_range_unidentified():
     assert result['eligible_cohort_fraction_bounds'] == [0, 1]
 
 
-def test_complete_observation_collapses_the_missing_outcome_bounds():
+def test_complete_observation_collapses_the_missing_outcome_bounds() -> None:
     data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     data['cohort'].update(index_with_readiness=3, early_return_unknown=0,
                           early_return_observed_no_event=2, competing_death_before_return=0,
@@ -52,7 +52,7 @@ def test_complete_observation_collapses_the_missing_outcome_bounds():
     assert result['return_72h']['complete_cohort_risk_estimable'] is True
 
 
-def test_complete_followup_can_include_a_return_with_unknown_planned_status(tmp_path):
+def test_complete_followup_can_include_a_return_with_unknown_planned_status(tmp_path: Path) -> None:
     fixture = ROOT / 'tests/fixtures/p3_episodes'
     directory = copytree(fixture, tmp_path / 'case')
     episodes = directory / 'episodes.csv'
@@ -73,7 +73,7 @@ def test_complete_followup_can_include_a_return_with_unknown_planned_status(tmp_
 
 
 @pytest.mark.parametrize('complete', [0, 3])
-def test_aggregate_rejects_inconsistent_followup_and_outcome_counts(complete):
+def test_aggregate_rejects_inconsistent_followup_and_outcome_counts(complete: int) -> None:
     audit = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     audit['cohort']['followup_complete_72h'] = complete
     with pytest.raises(ValueError, match='follow-up conflicts'):
@@ -86,14 +86,14 @@ def test_aggregate_rejects_inconsistent_followup_and_outcome_counts(complete):
     ('feed_sha256', {'episodes': '1' * 64}),
     ('feed_sha256', {'episodes': '1' * 64, 'followup': 'unverified marker'}),
 ])
-def test_aggregate_rejects_incomplete_or_invalid_source_fingerprints(field, value):
+def test_aggregate_rejects_incomplete_or_invalid_source_fingerprints(field: str, value: dict[str, str] | str) -> None:
     audit = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     audit['input_provenance'][field] = value
     with pytest.raises(ValueError, match='provenance'):
         audit_local_aggregate(audit)
 
 
-def test_aggregate_refuses_inconsistent_return_counts_and_readiness_overrun():
+def test_aggregate_refuses_inconsistent_return_counts_and_readiness_overrun() -> None:
     data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     altered = deepcopy(data)
     altered['cohort']['unplanned_return_within_72h'] = 3
@@ -105,7 +105,7 @@ def test_aggregate_refuses_inconsistent_return_counts_and_readiness_overrun():
         audit_local_aggregate(altered)
 
 
-def test_aggregate_requires_audit_source_identity_and_will_not_promote_approval():
+def test_aggregate_requires_audit_source_identity_and_will_not_promote_approval() -> None:
     data = load_and_audit(ROOT / 'tests/fixtures/p3_episodes/manifest.json')
     altered = deepcopy(data)
     altered.pop('input_provenance')
@@ -117,7 +117,7 @@ def test_aggregate_requires_audit_source_identity_and_will_not_promote_approval(
         audit_local_aggregate(altered)
 
 
-def test_independent_draw_oracle_and_denominator_coverage():
+def test_independent_draw_oracle_and_denominator_coverage() -> None:
     scenario = EconomicScenario.model_validate_json((ROOT / 'model-inputs/p4/illustrative.json').read_text())
     run = evaluate_scenarios(scenario)
     check = audit_p4_draws(run, sampled_indices=[0, 7, 53, scenario.iterations - 1])
@@ -127,7 +127,7 @@ def test_independent_draw_oracle_and_denominator_coverage():
     assert check['clinical_or_causal_validation'] is False
 
 
-def test_independent_oracle_rejects_perturbed_budget_or_return_ledger():
+def test_independent_oracle_rejects_perturbed_budget_or_return_ledger() -> None:
     scenario = EconomicScenario.model_validate_json((ROOT / 'model-inputs/p4/illustrative.json').read_text())
     run = evaluate_scenarios(scenario)
     arm = scenario.strategies[1].id
@@ -136,7 +136,7 @@ def test_independent_oracle_rejects_perturbed_budget_or_return_ledger():
         audit_p4_draws(run, sampled_indices=[0])
 
 
-def test_2023_24_pdf_text_and_page_image_review_has_its_own_nonhash_status():
+def test_2023_24_pdf_text_and_page_image_review_has_its_own_nonhash_status() -> None:
     from icu_liaison.public_evidence import load_benchmark_catalogue, select_external_benchmark
     data=load_benchmark_catalogue(ROOT/'model-inputs/anzics-benchmarks.json',
                                   ROOT/'conductor/evidence/source-register.json')

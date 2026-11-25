@@ -1,4 +1,6 @@
 """Versioned P11 summaries and figure revisions."""
+from pytest import MonkeyPatch
+from typing import Any
 import hashlib
 import json
 from pathlib import Path
@@ -18,7 +20,7 @@ CASES = ROOT / 'model-inputs/p11/cases'
 STYLE = ROOT / 'model-inputs/p11/f01-style.json'
 
 
-def build_short_case(tmp_path, output, name):
+def build_short_case(tmp_path: Path, output: Path, name: str) -> tuple[dict[str, Any], Path]:
     data = json.loads((CASES / f'{name}.json').read_text())
     data['iterations'] = 32
     case = tmp_path / f'{name}.json'
@@ -27,7 +29,7 @@ def build_short_case(tmp_path, output, name):
     return build_case(case, BASE, output, pointer), pointer
 
 
-def test_summary_links_verified_paired_runs(tmp_path):
+def test_summary_links_verified_paired_runs(tmp_path: Path) -> None:
     output = tmp_path / 'store'
     base, base_pointer = build_short_case(tmp_path, output, 'base')
     harm, harm_pointer = build_short_case(tmp_path, output, 'harmful_returns')
@@ -48,7 +50,7 @@ def test_summary_links_verified_paired_runs(tmp_path):
     assert record['investment_ready'] is False
 
 
-def test_style_revision_reuses_same_model(tmp_path):
+def test_style_revision_reuses_same_model(tmp_path: Path) -> None:
     output = tmp_path / 'store'
     model, model_pointer = build_short_case(tmp_path, output, 'base')
     run_json = output / 'models' / model['model_run_id'] / 'run.json'
@@ -70,7 +72,7 @@ def test_style_revision_reuses_same_model(tmp_path):
         second_folder / 'scenario-comparison.svg').read_bytes()
 
 
-def test_rehashed_paired_outcome_fails_numerical_replay(tmp_path):
+def test_rehashed_paired_outcome_fails_numerical_replay(tmp_path: Path) -> None:
     output = tmp_path / 'store'
     model, _ = build_short_case(tmp_path, output, 'base')
     folder = output / 'models' / model['model_run_id']
@@ -85,7 +87,7 @@ def test_rehashed_paired_outcome_fails_numerical_replay(tmp_path):
         verify_case(folder)
 
 
-def test_changed_model_code_identity_invalidates_run(tmp_path, monkeypatch):
+def test_changed_model_code_identity_invalidates_run(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     import icu_liaison.p11_model as model
 
     output = tmp_path / 'store'
@@ -101,7 +103,7 @@ def test_changed_model_code_identity_invalidates_run(tmp_path, monkeypatch):
     assert (output / 'models' / second['model_run_id']).is_dir()
 
 
-def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
+def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path: Path) -> None:
     import os
     import subprocess
     import sys
@@ -199,7 +201,7 @@ def test_current_outputs_detect_changed_summary_even_after_rehash(tmp_path):
     assert (output / 'models' / model['model_run_id']).is_dir()
 
 
-def test_rehashed_f01_interval_is_checked_against_model(tmp_path):
+def test_rehashed_f01_interval_is_checked_against_model(tmp_path: Path) -> None:
     import re
 
     output = tmp_path / 'store'
@@ -229,7 +231,7 @@ def test_rehashed_f01_interval_is_checked_against_model(tmp_path):
     ('sources', 'catalogue'),
     ('accessible_description', 'accessibility'),
 ])
-def test_archived_p9_checks_frozen_figure_evidence(tmp_path, monkeypatch, alter, error):
+def test_archived_p9_checks_frozen_figure_evidence(tmp_path: Path, monkeypatch: MonkeyPatch, alter: str, error: str) -> None:
     import icu_liaison.p11_p9 as figures
     from icu_liaison.p11_records import digest_file, inventory
 

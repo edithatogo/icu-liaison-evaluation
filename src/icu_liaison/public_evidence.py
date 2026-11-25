@@ -4,18 +4,20 @@ Publisher receipts and saved documents can be matched offline. Independent
 admission requires separate reviewer and licensing evidence.
 """
 from __future__ import annotations
+from typing import Any
 
 from datetime import date
 import hashlib
 import json
 from pathlib import Path
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import Literal
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', validate_assignment=True)
+    model_config = ConfigDict(strict=True, extra='forbid', validate_assignment=True)
 
 
 class Metric(_Strict):
@@ -78,7 +80,7 @@ METRIC_DENOMINATORS = {
 
 
 class Catalogue(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     purpose: Literal['external_comparators_never_site_observations']
     metrics: list[Metric] = Field(min_length=1)
 
@@ -114,7 +116,7 @@ class PublisherLocator(_Strict):
 
 
 class PublisherReceipt(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     source_id: Literal['ANZICS-CCR-2024-25']
     publisher: str = Field(min_length=1)
     publisher_url: str = Field(pattern=r'^https://')
@@ -126,7 +128,7 @@ class PublisherReceipt(_Strict):
     local_calibration: Literal[False]
 
 
-def _index_sources(registry: dict) -> dict[str, dict]:
+def _index_sources(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
     entries = registry['sources']
     sources = {source['id']: source for source in entries}
     if len(sources) != len(entries):
@@ -135,8 +137,8 @@ def _index_sources(registry: dict) -> dict[str, dict]:
 
 
 def audit_publisher_receipt(
-    receipt_path: Path, registry: dict, *, document_path: Path | None = None,
-) -> dict:
+    receipt_path: Path, registry: dict[str, Any], *, document_path: Path | None = None,
+) -> dict[str, Any]:
     """Reconcile the retained 2024/25 publisher check with the source register."""
     raw = receipt_path.read_bytes()
     receipt = PublisherReceipt.model_validate_json(raw)
@@ -183,7 +185,7 @@ def audit_publisher_receipt(
     }
 
 
-def reconcile_catalogue(catalogue: Catalogue, registry: dict) -> dict:
+def reconcile_catalogue(catalogue: Catalogue, registry: dict[str, Any]) -> dict[str, Any]:
     """Pure P3 source and denominator reconciliation, also reused by P4/P5.
 
     Metadata reconciliation is not publisher-document authentication.
@@ -220,17 +222,17 @@ def reconcile_catalogue(catalogue: Catalogue, registry: dict) -> dict:
     return catalogue.model_dump(mode='json')
 
 
-def load_benchmark_catalogue(path: Path, source_register_path: Path) -> dict:
+def load_benchmark_catalogue(path: Path, source_register_path: Path) -> dict[str, Any]:
     """Read verified metadata contracts from versioned source files."""
     catalogue = Catalogue.model_validate_json(Path(path).read_text(encoding='utf-8'))
     registry = json.loads(Path(source_register_path).read_text(encoding='utf-8'))
     return reconcile_catalogue(catalogue, registry)
 
 
-def select_external_benchmark(catalogue: dict, benchmark_id: str, *, require_document_verified: bool = False) -> dict:
+def select_external_benchmark(catalogue: dict[str, Any], benchmark_id: str, *, require_document_verified: bool = False) -> dict[str, Any]:
     """Return an external comparator; never supply an unplanned 72h risk."""
     for metric in catalogue['metrics']:
-        if metric['id'] == benchmark_id:
+        if isinstance(metric, dict) and metric.get('id') == benchmark_id:
             if require_document_verified:
                 raise ValueError(f'{benchmark_id}: unverified document source needs independent admission')
             return metric

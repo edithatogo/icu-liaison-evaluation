@@ -17,6 +17,7 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Literal
 
+from ..schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
@@ -44,7 +45,7 @@ def _decimal_text(value: Any, *, name: str) -> Decimal:
 
 
 class MchsPair(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal["synthetic"]
     episode_id: str = Field(min_length=11, max_length=128, pattern=r"^synthetic-[a-zA-Z0-9_-]+$")
     pricing_year: Literal[2024, 2025]
@@ -108,7 +109,7 @@ def _installed_acute() -> Callable[..., Any]:
     module = import_module("nwau_py.calculators.acute")
     pl = import_module("polars")
 
-    def calculate(rows: list[dict], *, year: str, ref_dir: str):
+    def calculate(rows: list[dict[str, Any]], *, year: str, ref_dir: str) -> object:
         return module.calculate_acute(
             pl.DataFrame(rows), module.AcuteParams(), year=year, ref_dir=Path(ref_dir),
         )
@@ -146,7 +147,10 @@ def _first_row(result: Any, *, output_column: str) -> Decimal:
 def exact_nwau_change(current: Decimal, proposed: Decimal) -> Decimal:
     """Subtract finite episode weights without rounding to the caller's context."""
     highest = max(current.adjusted(), proposed.adjusted())
-    lowest = min(current.as_tuple().exponent, proposed.as_tuple().exponent)
+    exponents = (current.as_tuple().exponent, proposed.as_tuple().exponent)
+    if not isinstance(exponents[0], int) or not isinstance(exponents[1], int):
+        raise ValueError("paired episode weights must be finite")
+    lowest = min(exponents[0], exponents[1])
     with localcontext(prec=max(1, highest - lowest + 1)):
         return proposed - current
 
@@ -228,4 +232,7 @@ def run_mchs_pair(
         }
         raise ValueError(reference_errors.get(completed.returncode,
                                                "MCHS installed calculation failed in its isolated workspace"))
-    return json.loads(completed.stdout)
+    result = json.loads(completed.stdout)
+    if not isinstance(result, dict):
+        raise ValueError("MCHS result must be an object")
+    return result

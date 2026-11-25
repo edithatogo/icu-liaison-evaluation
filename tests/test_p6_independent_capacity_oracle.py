@@ -8,7 +8,7 @@ import random
 from icu_liaison.p6_capacity import TraceBundle, audit_trace_bundle
 
 
-def test_randomised_shift_boundaries_equal_independent_integer_minute_sweep():
+def test_randomised_shift_boundaries_equal_independent_integer_minute_sweep() -> None:
     rng = random.Random(20261118)
     for i in range(80):
         horizon = rng.randrange(12, 240)

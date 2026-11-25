@@ -1,5 +1,6 @@
 """P10.10 source-to-F01 provenance: real synthetic reports and negative cases."""
 from __future__ import annotations
+from pytest import TempPathFactory
 import hashlib
 import json
 from pathlib import Path
@@ -13,7 +14,7 @@ from tools.validate_reporting_contracts import ROOT
 
 
 @pytest.fixture(scope="module")
-def source_bundle(tmp_path_factory):
+def source_bundle(tmp_path_factory: TempPathFactory) -> tuple[Path, Path, Path]:
     base = tmp_path_factory.mktemp("p10-provenance")
     scenario_path = ROOT / "model-inputs/p4/illustrative.json"
     scenario = EconomicScenario.model_validate_json(scenario_path.read_text())
@@ -22,7 +23,7 @@ def source_bundle(tmp_path_factory):
     return report, scenario_path, base
 
 
-def test_genuine_synthetic_figure_has_recomputed_lineage_not_approval(source_bundle):
+def test_genuine_synthetic_figure_has_recomputed_lineage_not_approval(source_bundle: tuple[Path, Path, Path]) -> None:
     report, scenario, _ = source_bundle
     receipt = compile_receipt(report, scenario)
     assert receipt["figure_id"] == "F01"
@@ -38,7 +39,7 @@ def test_genuine_synthetic_figure_has_recomputed_lineage_not_approval(source_bun
     assert result["external_claims_approved"] is False
 
 
-def test_modified_scenario_with_matching_id_and_iterations_is_denied(source_bundle):
+def test_modified_scenario_with_matching_id_and_iterations_is_denied(source_bundle: tuple[Path, Path, Path]) -> None:
     report, scenario, tmp = source_bundle
     altered = json.loads(scenario.read_text())
     altered["seed"] += 1
@@ -48,7 +49,7 @@ def test_modified_scenario_with_matching_id_and_iterations_is_denied(source_bund
         compile_receipt(report, changed)
 
 
-def test_rehashed_svg_can_still_not_pass_old_receipt(source_bundle, tmp_path):
+def test_rehashed_svg_can_still_not_pass_old_receipt(source_bundle: tuple[Path, Path, Path], tmp_path: Path) -> None:
     report, scenario, _ = source_bundle
     receipt = compile_receipt(report, scenario)
     # Retain P9 accessibility text so a manifest rehash alone cannot fool P10.
@@ -68,7 +69,7 @@ def test_rehashed_svg_can_still_not_pass_old_receipt(source_bundle, tmp_path):
         manifest_path.write_bytes(original_manifest)
 
 
-def test_no_svg_cannot_be_called_generated(source_bundle, tmp_path):
+def test_no_svg_cannot_be_called_generated(source_bundle: tuple[Path, Path, Path], tmp_path: Path) -> None:
     report, scenario, _ = source_bundle
     svg = report / "scenario-comparison.svg"
     tmp = tmp_path / svg.name
@@ -81,7 +82,7 @@ def test_no_svg_cannot_be_called_generated(source_bundle, tmp_path):
         svg.write_bytes(tmp.read_bytes())
 
 
-def test_receipt_remains_output_outside_p5_manifest(source_bundle):
+def test_receipt_remains_output_outside_p5_manifest(source_bundle: tuple[Path, Path, Path]) -> None:
     report, scenario, _ = source_bundle
     before = set(p.name for p in report.iterdir())
     _ = compile_receipt(report, scenario)

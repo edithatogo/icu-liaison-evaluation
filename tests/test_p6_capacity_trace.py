@@ -1,5 +1,6 @@
 """P6 RED: independent time-aware capacity trace acceptance, not a new DES."""
 from __future__ import annotations
+from typing import Any
 
 from copy import deepcopy
 from pathlib import Path
@@ -15,11 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'model-inputs/p6/synthetic-trace.json'
 
 
-def sample() -> dict:
-    return json.loads(FIXTURE.read_text(encoding='utf-8'))
+def sample() -> dict[str, Any]:
+    value = json.loads(FIXTURE.read_text(encoding='utf-8'))
+    assert isinstance(value, dict)
+    return value
 
 
-def test_trace_integrates_half_open_occupancy_and_admission_wait():
+def test_trace_integrates_half_open_occupancy_and_admission_wait() -> None:
     report = audit_trace_bundle(TraceBundle.model_validate(sample()))
     assert report['status'] == 'synthetic_trace_admitted_not_a_DES_run'
     assert report['trace_source'] == 'synthetic_fixture'
@@ -34,7 +37,7 @@ def test_trace_integrates_half_open_occupancy_and_admission_wait():
     assert report['capacity_is_cash_saving'] is False
 
 
-def test_staffed_bed_hours_and_time_varying_capacity_are_integrated():
+def test_staffed_bed_hours_and_time_varying_capacity_are_integrated() -> None:
     v = sample()
     v['capacity'] = [
         {'start_minute': 0, 'end_minute': 120, 'staffed_beds': 1},
@@ -47,7 +50,7 @@ def test_staffed_bed_hours_and_time_varying_capacity_are_integrated():
     assert report['paired_comparisons']['liaison_service']['staffed_capacity_changed'] is False
 
 
-def test_missing_capacity_calendar_and_overbooking_rejected():
+def test_missing_capacity_calendar_and_overbooking_rejected() -> None:
     v = sample()
     v['capacity'][0]['end_minute'] = 239
     with pytest.raises(ValueError, match='capacity'):
@@ -60,7 +63,7 @@ def test_missing_capacity_calendar_and_overbooking_rejected():
         audit_trace_bundle(TraceBundle.model_validate(v))
 
 
-def test_admission_must_link_to_actual_occupancy_without_ghost_beds():
+def test_admission_must_link_to_actual_occupancy_without_ghost_beds() -> None:
     v = sample()
     v['strategies'][1]['requests'][0]['admitted_minute'] = 80
     with pytest.raises(ValueError, match='matching occupancy'):
@@ -72,14 +75,14 @@ def test_admission_must_link_to_actual_occupancy_without_ghost_beds():
         audit_trace_bundle(TraceBundle.model_validate(v))
 
 
-def test_paired_demand_provenance_must_match_across_strategies():
+def test_paired_demand_provenance_must_match_across_strategies() -> None:
     v = sample()
     v['strategies'][1]['requests'][0]['request_minute'] = 61
     with pytest.raises(ValueError, match='paired demand'):
         audit_trace_bundle(TraceBundle.model_validate(v))
 
 
-def test_individual_episode_cannot_overlap_or_end_at_horizon_without_provenance():
+def test_individual_episode_cannot_overlap_or_end_at_horizon_without_provenance() -> None:
     v = sample()
     v['strategies'][0]['occupancies'].append({
         'episode_id':'syn-index-1','start_minute':0,'end_minute':10
@@ -92,7 +95,7 @@ def test_individual_episode_cannot_overlap_or_end_at_horizon_without_provenance(
         audit_trace_bundle(TraceBundle.model_validate(v))
 
 
-def test_physical_capacity_does_not_infer_cost_or_safety_evidence():
+def test_physical_capacity_does_not_infer_cost_or_safety_evidence() -> None:
     report = audit_trace_bundle(TraceBundle.model_validate(sample()))
     assert report['independent_empirical_calibration'] is False
     assert report['kairos_native_execution_verified'] is False
@@ -101,14 +104,14 @@ def test_physical_capacity_does_not_infer_cost_or_safety_evidence():
     assert report['clinical_safety_evaluated'] is False
 
 
-def test_direct_kairos_claim_rejected_until_native_adapter_qualified():
+def test_direct_kairos_claim_rejected_until_native_adapter_qualified() -> None:
     v = sample()
     v['source_engine'] = 'kairos'
     with pytest.raises(ValueError):
         TraceBundle.model_validate(v)
 
 
-def test_unknown_request_disposition_preserved_not_counted_as_decline():
+def test_unknown_request_disposition_preserved_not_counted_as_decline() -> None:
     v = sample()
     for arm in v['strategies']:
         arm['occupancies'] = [x for x in arm['occupancies'] if x['episode_id'] != 'syn-demand-1']
@@ -123,7 +126,7 @@ def test_unknown_request_disposition_preserved_not_counted_as_decline():
     assert comparison['mean_wait_minutes_change_among_shared_admissions'] is None
 
 
-def test_paired_outcomes_preserve_censoring_declines_and_shared_admission_waits():
+def test_paired_outcomes_preserve_censoring_declines_and_shared_admission_waits() -> None:
     v = sample()
     current, proposed = v['strategies']
     current['requests'] += [
@@ -146,7 +149,7 @@ def test_paired_outcomes_preserve_censoring_declines_and_shared_admission_waits(
     assert comparison['mean_wait_minutes_change_among_shared_admissions'] == -30
 
 
-def test_cli_reports_only_aggregate_results(tmp_path):
+def test_cli_reports_only_aggregate_results(tmp_path: Path) -> None:
     result = subprocess.run(
         [sys.executable, '-m', 'icu_liaison.p6_cli', str(FIXTURE)],
         env={'PYTHONPATH':str(ROOT/'src')},cwd=ROOT,capture_output=True,text=True,
@@ -158,7 +161,7 @@ def test_cli_reports_only_aggregate_results(tmp_path):
     assert report['trace_sha256']
 
 
-def test_committed_schema_matches_native_pydantic_contract():
+def test_committed_schema_matches_native_pydantic_contract() -> None:
     from jsonschema import Draft202012Validator
     schema = json.loads((ROOT/'model-inputs/p6/trace-schema.json').read_text())
     assert schema == TraceBundle.model_json_schema()
@@ -166,7 +169,7 @@ def test_committed_schema_matches_native_pydantic_contract():
     Draft202012Validator(schema).validate(sample())
 
 
-def test_real_or_restricted_patient_trace_rejected_even_with_synthetic_looking_ids():
+def test_real_or_restricted_patient_trace_rejected_even_with_synthetic_looking_ids() -> None:
     v=sample();v['data_class']='restricted'
     with pytest.raises(ValueError):TraceBundle.model_validate(v)
     v=sample();v['strategies'][0]['occupancies'][0]['episode_id']='patient-1049'

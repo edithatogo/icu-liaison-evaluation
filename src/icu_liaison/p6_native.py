@@ -6,6 +6,7 @@ This module normalises its trace for independent NumPy resource conservation
 without duplicating event scheduling or treating the result as causal evidence.
 """
 from __future__ import annotations
+from typing import Any
 
 from collections.abc import Mapping
 import hashlib
@@ -83,7 +84,7 @@ class KairosProducerOutput(_Strict):
     strategies: list[ArmTrace] = Field(min_length=2, max_length=8)
 
 
-def _provider_from_lock(lock: Mapping) -> KairosProvider:
+def _provider_from_lock(lock: Mapping[str, Any]) -> KairosProvider:
     if (not isinstance(lock, Mapping) or type(lock.get('schema_version')) is not int
             or lock['schema_version'] != 1 or lock.get('provider') != 'kairo-ecs-des'):
         raise ValueError('unknown Kairos provider lock')
@@ -106,7 +107,7 @@ def _audit_single_bed_queue(arm: ArmTrace, ordered_demand: list[ArrivalConfig], 
 
 
 def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScenario,
-                          provider_lock: Mapping) -> dict:
+                          provider_lock: Mapping[str, Any]) -> dict[str, Any]:
     """Review self-described provider output as an UNTRUSTED synthetic contract fixture.
 
     No supplied JSON, revision string or hash proves a compiled Kairos execution.
@@ -172,8 +173,8 @@ def inspect_native_output(output: KairosProducerOutput, *, scenario: KairosScena
     }
 
 
-def compare_native_with_reference(actual: Mapping, reference: Mapping,
-                                  scenario: Mapping) -> dict:
+def compare_native_with_reference(actual: Mapping[str, Any], reference: Mapping[str, Any],
+                                  scenario: Mapping[str, Any]) -> dict[str, Any]:
     """Compare outputs with an independent source-side fixture, not a simulated run."""
     candidate = KairosProducerOutput.model_validate(actual)
     oracle = KairosProducerOutput.model_validate(reference)
@@ -185,7 +186,7 @@ def compare_native_with_reference(actual: Mapping, reference: Mapping,
             'reference': 'hand_authored_synthetic_oracle_not_native_execution'}
 
 
-def check_native_binary_capability(native_source: Path) -> dict:
+def check_native_binary_capability(native_source: Path) -> dict[str, Any]:
     rustc = shutil.which('rustc')
     cargo = shutil.which('cargo')
     return {
@@ -199,7 +200,7 @@ def check_native_binary_capability(native_source: Path) -> dict:
 
 
 def invoke_native_binary(binary: Path, scenario_path: Path, *, expected_sha256: str,
-                         provider_lock: Mapping, reference: KairosProducerOutput | None = None) -> dict:
+                         provider_lock: Mapping[str, Any], reference: KairosProducerOutput | None = None) -> dict[str, Any]:
     """Run a locally supplied binary, hash its bytes and validate output.
 
     A match to a caller-provided binary hash proves byte identity only. It is

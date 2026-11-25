@@ -1,5 +1,7 @@
 """Source-derived CHHHS request pack; headers only, no patient records."""
+from pytest import MonkeyPatch
 from pathlib import Path
+from typing import IO, Any
 import json
 import sys
 import pytest
@@ -10,7 +12,7 @@ from tools import export_chhhs_data_request
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_request_is_structured_with_owners_priority_and_privacy():
+def test_request_is_structured_with_owners_priority_and_privacy() -> None:
     request = DataRequestCatalogue.model_validate_json((ROOT/'model-inputs/chhhs-data-request.json').read_text())
     assert request.status == 'request_only_no_local_data_obtained'
     assert len(request.datasets) >= 9
@@ -19,7 +21,7 @@ def test_request_is_structured_with_owners_priority_and_privacy():
     assert all(x.data_class in {'approved_pseudonymised','aggregate_only'} for x in request.datasets)
 
 
-def test_request_renderers_include_denominators_and_explicit_missingness():
+def test_request_renderers_include_denominators_and_explicit_missingness() -> None:
     doc = DataRequestCatalogue.model_validate_json((ROOT/'model-inputs/chhhs-data-request.json').read_text())
     md = render_request_markdown(doc)
     csv = render_request_csv(doc)
@@ -35,7 +37,7 @@ def test_request_renderers_include_denominators_and_explicit_missingness():
     assert len(csv.splitlines()) > 40
 
 
-def test_catalogue_rejects_duplicate_dataset_and_unsafe_data_class():
+def test_catalogue_rejects_duplicate_dataset_and_unsafe_data_class() -> None:
     data = json.loads((ROOT/'model-inputs/chhhs-data-request.json').read_text())
     data['datasets'].append(dict(data['datasets'][0]))
     with pytest.raises(ValueError,match='duplicate'):
@@ -46,16 +48,17 @@ def test_catalogue_rejects_duplicate_dataset_and_unsafe_data_class():
         DataRequestCatalogue.model_validate(data)
 
 
-def test_request_export_recovers_after_a_failed_second_write(tmp_path, monkeypatch):
+def test_request_export_recovers_after_a_failed_second_write(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     output = tmp_path / 'request'
     output.mkdir()
     monkeypatch.setattr(sys, 'argv', ['export-request', '--output-dir', str(output)])
     original_open = Path.open
 
-    def fail_csv(path, mode='r', *args, **kwargs):
+    def fail_csv(path: Path, mode: str='r', buffering: int=-1, encoding: str | None=None,
+                 errors: str | None=None, newline: str | None=None) -> IO[Any]:
         if path.suffix == '.csv' and mode in {'w', 'x'}:
             raise OSError('fictional export failure')
-        return original_open(path, mode, *args, **kwargs)
+        return original_open(path, mode, buffering, encoding, errors, newline)
 
     with monkeypatch.context() as patch:
         patch.setattr(Path, 'open', fail_csv)
@@ -67,18 +70,19 @@ def test_request_export_recovers_after_a_failed_second_write(tmp_path, monkeypat
     assert {item.suffix for item in output.iterdir()} == {'.md', '.csv'}
 
 
-def test_request_export_preserves_a_file_created_during_publication(tmp_path, monkeypatch):
+def test_request_export_preserves_a_file_created_during_publication(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     output = tmp_path / 'request'
     output.mkdir()
     csv_path = output / 'CHHHS_ICU_Liaison_Fields.csv'
     monkeypatch.setattr(sys, 'argv', ['export-request', '--output-dir', str(output)])
     original_open = Path.open
 
-    def existing_csv(path, mode='r', *args, **kwargs):
+    def existing_csv(path: Path, mode: str='r', buffering: int=-1, encoding: str | None=None,
+                 errors: str | None=None, newline: str | None=None) -> IO[Any]:
         if path == csv_path and mode in {'w', 'x'}:
             with original_open(path, 'x', encoding='utf-8') as stream:
                 stream.write('Fictional contents from another writer')
-        return original_open(path, mode, *args, **kwargs)
+        return original_open(path, mode, buffering, encoding, errors, newline)
 
     monkeypatch.setattr(Path, 'open', existing_csv)
     with pytest.raises(SystemExit) as stopped:

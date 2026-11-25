@@ -1,5 +1,9 @@
+from pytest import MonkeyPatch
+from subprocess import CompletedProcess
 import json
 from pathlib import Path
+from typing import TextIO
+import csv
 import subprocess
 import sys
 
@@ -9,12 +13,12 @@ ROOT=Path(__file__).resolve().parents[1]
 SCENARIO=ROOT/'model-inputs/p4/illustrative.json'
 
 
-def run(*args):
+def run(*args: str) -> CompletedProcess[str]:
     return subprocess.run([sys.executable,'-m','icu_liaison.p4_cli',str(SCENARIO),*args],
                           cwd=ROOT,env={'PYTHONPATH':str(ROOT/'src')},text=True,capture_output=True,check=False)
 
 
-def test_real_cli_runs_and_prints_only_labelled_synthetic_aggregates():
+def test_real_cli_runs_and_prints_only_labelled_synthetic_aggregates() -> None:
     r=run()
     assert r.returncode==0,r.stderr
     out=json.loads(r.stdout)
@@ -25,7 +29,7 @@ def test_real_cli_runs_and_prints_only_labelled_synthetic_aggregates():
 
 
 @pytest.mark.parametrize('flag', ['--require-local-ready', '--require-investment-ready'])
-def test_cli_fail_closed_on_require_readiness(tmp_path, flag):
+def test_cli_fail_closed_on_require_readiness(tmp_path: Path, flag: str) -> None:
     output = tmp_path / 'new' / 'decision.csv'
     r = run(flag, '--decision-surface', str(output))
     assert r.returncode==2
@@ -34,7 +38,7 @@ def test_cli_fail_closed_on_require_readiness(tmp_path, flag):
     assert not output.parent.exists()
 
 
-def test_cli_emits_no_synthetic_patient_rows_and_optional_decision_matrix(tmp_path):
+def test_cli_emits_no_synthetic_patient_rows_and_optional_decision_matrix(tmp_path: Path) -> None:
     out=tmp_path/'decision.csv'
     r=run('--decision-surface',str(out))
     assert r.returncode==0,r.stderr
@@ -44,37 +48,37 @@ def test_cli_emits_no_synthetic_patient_rows_and_optional_decision_matrix(tmp_pa
     assert all('patient' not in line for line in lines)
 
 
-def test_cli_rejects_overwriting_existing_decision_file(tmp_path):
+def test_cli_rejects_overwriting_existing_decision_file(tmp_path: Path) -> None:
     out=tmp_path/'decision.csv';out.write_text('do-not-overwrite')
     r=run('--decision-surface',str(out))
     assert r.returncode==2
     assert out.read_text()=='do-not-overwrite'
 
 
-def test_cli_failed_surface_write_can_retry_the_same_output(tmp_path, monkeypatch):
+def test_cli_failed_surface_write_can_retry_the_same_output(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     from icu_liaison import p4_cli
 
     class InterruptedWriter:
-        def __init__(self, stream):
+        def __init__(self, stream: TextIO) -> None:
             self.stream = stream
 
-        def writerow(self, row):
+        def writerow(self, row: list[str]) -> None:
             self.stream.write(','.join(row) + '\n')
 
-        def writerows(self, rows):
+        def writerows(self, rows: list[list[object]]) -> None:
             raise OSError('fictional interrupted write')
 
     output = tmp_path / 'decision.csv'
     args = [str(SCENARIO), '--decision-surface', str(output)]
     with monkeypatch.context() as patch:
-        patch.setattr(p4_cli.csv, 'writer', InterruptedWriter)
+        patch.setattr(csv, 'writer', InterruptedWriter)
         assert p4_cli.main(args) == 2
         assert list(tmp_path.iterdir()) == []
     assert p4_cli.main(args) == 0
     assert len(output.read_text().splitlines()) == 5001
 
 
-def test_cli_invalid_summary_never_publishes_a_surface(tmp_path, monkeypatch):
+def test_cli_invalid_summary_never_publishes_a_surface(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     from icu_liaison import p4_cli, p4_model
 
     output = tmp_path / 'decision.csv'
@@ -83,7 +87,7 @@ def test_cli_invalid_summary_never_publishes_a_surface(tmp_path, monkeypatch):
     assert not output.exists()
 
 
-def test_cli_one_way_sensitivity_has_explicit_illustrative_status():
+def test_cli_one_way_sensitivity_has_explicit_illustrative_status() -> None:
     r=run('--one-way-strategy','liaison_service')
     assert r.returncode==0,r.stderr
     out=json.loads(r.stdout)

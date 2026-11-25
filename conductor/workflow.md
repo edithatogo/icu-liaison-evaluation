@@ -29,6 +29,7 @@ runtime and build dependencies.
 
 ```sh
 .venv/bin/python tools/verify_source_manifest.py
+.venv/bin/python -m mypy
 PYTHONPATH=src .venv/bin/python -m pytest -q
 PYTHONPATH=src .venv/bin/python tools/ci_smoke.py
 ```
@@ -47,15 +48,19 @@ bash tools/install_git_hooks.sh
 .venv/bin/python tools/run_local_ci.py --mode full
 ```
 
-`.pre-commit-config.yaml` mirrors the same `tools/run_local_ci.py` entrypoints
-(`--mode pre-commit --check-staged --gitleaks` on `pre-commit` and `--mode full`
-on `pre-push`; `.githooks/pre-commit` and `.githooks/pre-merge-commit` also
-require `gitleaks protect --staged`). Stage the reviewed source and refreshed manifest together. Commit hooks
-verify the manifest against Git's staged blobs and gitlinks. Local CI enforces
-forbidden-path checks, `pytest`, `tools/ci_smoke.py`,
-`tools/qualify_current_portable.py`, and `icu_liaison.cli` output contracts.
-Passing local CI does not close hosted, native-provider, empirical, or
-governance gates.
+Git commit and merge hooks run from a disposable checkout reconstructed from
+the Git index. Partially staged files are checked exactly as they would be
+committed. The pre-push hook inspects outgoing history for private content and
+checks each pushed tip. The pinned pre-commit client invokes strict mypy,
+strict pytest, the source manifest, fictional smoke tests and shell/text checks.
+Merge and push also exercise the portable qualification and CLI examples.
+Gitleaks inspects staged changes on commit and merge. The hosted privacy job
+runs Gitleaks, Presidio and TruffleHog.
+
+P11 uses numerical types, a closed model-run envelope and explicit synthetic
+classification. Its tests include a favourable resource result with unmeasured
+clinical safety and unverified site authority. The decision remains unauthorised.
+
 
 ## Evidence and release boundaries
 

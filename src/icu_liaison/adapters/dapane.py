@@ -9,6 +9,10 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Callable, Any
 
+from ..schemas import Parameter, Scenario
+
+type ValuationProvider = Callable[[dict[str, Any]], dict[str, Any]]
+
 
 @dataclass(frozen=True)
 class CostLine:
@@ -44,7 +48,7 @@ def make_request(
         raise ValueError('same underlying use must not be counted twice')
     quotes, usage = [], []
     date = f'{price_year}-07-01'
-    def source(identifier: str) -> dict:
+    def source(identifier: str) -> dict[str, Any]:
         return {'id':identifier, 'version':'1.0.0', 'evidence':'synthetic',
                 'access':'public', 'validation':'unvalidated'}
     for item in lines:
@@ -77,13 +81,15 @@ def make_request(
             'quotes':quotes,'usage':usage}
 
 
-def evaluate_request(request: dict, *, provider: Callable | None = None):
+def evaluate_request(request: dict[str, Any], *, provider: ValuationProvider | None = None) -> dict[str, Any]:
     if provider is None:
         try:
-            from dapane import evaluate
+            evaluate = __import__("dapane").evaluate
         except ImportError as exc:
             raise RuntimeError('Dapane native 0.1 provider not installed; cannot claim exact valuation') from exc
         provider = evaluate
+    if provider is None:
+        raise RuntimeError("Dapane evaluator unavailable")
     return provider(request)
 
 
@@ -102,8 +108,6 @@ def make_nominal_cost_bridge(
     overlap. Use the existing PSA engine to derive modal resource quantities;
     only Dapane values them.
     """
-    from ..schemas import Scenario
-
     # Even caller-mutated or model_construct data must be validated afresh.
     checked = Scenario.model_validate(scenario.model_dump())
     i = checked.inputs
@@ -111,7 +115,8 @@ def make_nominal_cost_bridge(
     # *nominal* cohort identities in Decimal rather than transporting rounded
     # NumPy binary floats into the exact provider contract. The stochastic PSA
     # remains separately owned by SciPy/NumPy.
-    d = lambda parameter: Decimal(str(parameter.value))
+    def d(parameter: Parameter) -> Decimal:
+        return Decimal(str(parameter.value))
     n = Decimal(checked.annual_eligible_discharges)
     index_days = (
         n * d(i.delayed_discharge_ge12h_rate)
@@ -146,14 +151,13 @@ def make_nominal_cost_bridge(
             'additional-early-return', 'additional_return', 'readmission',
             format((-avoided_returns).normalize(), 'f'), return_price, ['post_icu_readmission'],
         ))
-    common = {'price_year': price_year, 'perspective': perspective, 'basis': basis}
     return {
-        'current_care': make_request(f'{checked.scenario_id}-current', current_lines, **common),
-        'liaison_service': make_request(f'{checked.scenario_id}-liaison', liaison_lines, **common),
+        'current_care': make_request(f'{checked.scenario_id}-current', current_lines, price_year=price_year, perspective=perspective, basis=basis),
+        'liaison_service': make_request(f'{checked.scenario_id}-liaison', liaison_lines, price_year=price_year, perspective=perspective, basis=basis),
     }
 
 
-def _admit_valuation_report(report: dict, request: dict) -> Decimal:
+def _admit_valuation_report(report: dict[str, Any], request: dict[str, Any]) -> Decimal:
     """Check the exact Dapane 0.1 output envelope before using its rounded total.
 
     These checks are a narrow consumer gate, not a replacement for the provider's
@@ -190,7 +194,7 @@ def _admit_valuation_report(report: dict, request: dict) -> Decimal:
 
 
 def compare_valued_scenarios(
-    requests: dict[str, dict], *, provider: Callable | None = None,
+    requests: dict[str, dict[str, Any]], *, provider: ValuationProvider | None = None,
 ) -> dict[str, Any]:
     """Value the same two strategies independently with Dapane; subtract only.
 

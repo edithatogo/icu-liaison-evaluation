@@ -1,10 +1,14 @@
 """P3 CLI red tests: source provenance and private results boundaries."""
+from pytest import CaptureFixture, MonkeyPatch
+from subprocess import CompletedProcess
 import hashlib
 import json
 import subprocess
 import os
 import sys
 from pathlib import Path
+from collections.abc import Callable
+from typing import Concatenate
 import shutil
 
 import pytest
@@ -21,12 +25,12 @@ SOURCE_ARGS = (
 )
 
 
-def cli(*arguments):
+def cli(*arguments: object) -> CompletedProcess[str]:
     return subprocess.run([sys.executable,'-m','icu_liaison.p3_cli',*map(str,arguments)],
         cwd=ROOT,env=PKG_ENV,capture_output=True,text=True)
 
 
-def test_public_sources_check_does_not_certify_binary():
+def test_public_sources_check_does_not_certify_binary() -> None:
     result=cli('sources','--catalogue',ROOT/'model-inputs/anzics-benchmarks.json',
                '--source-register',ROOT/'conductor/evidence/source-register.json')
     assert result.returncode==0,result.stderr
@@ -36,7 +40,7 @@ def test_public_sources_check_does_not_certify_binary():
     assert out['eligible_local_72h_readmission_rate_available'] is False
 
 
-def test_sources_reconciles_the_publisher_receipt_without_granting_admission():
+def test_sources_reconciles_the_publisher_receipt_without_granting_admission() -> None:
     result = cli(*SOURCE_ARGS, '--publisher-receipt', PUBLISHER_RECEIPT)
     assert result.returncode == 0, result.stderr
     report = json.loads(result.stdout)
@@ -51,7 +55,7 @@ def test_sources_reconciles_the_publisher_receipt_without_granting_admission():
 
 
 @pytest.mark.parametrize('change', ['locator', 'coverage', 'claimed_admission', 'different_document', 'receipt_edition'])
-def test_sources_rejects_inconsistent_publisher_evidence(tmp_path, change):
+def test_sources_rejects_inconsistent_publisher_evidence(tmp_path: Path, change: str) -> None:
     receipt = json.loads(PUBLISHER_RECEIPT.read_text(encoding='utf-8'))
     receipt_path = tmp_path / 'receipt.json'
     args = [*SOURCE_ARGS, '--publisher-receipt', receipt_path]
@@ -78,7 +82,7 @@ def test_sources_rejects_inconsistent_publisher_evidence(tmp_path, change):
     assert not result.stdout
 
 
-def test_synthetic_source_quality_cli_no_rows():
+def test_synthetic_source_quality_cli_no_rows() -> None:
     result=cli('audit','--manifest',ROOT/'tests/fixtures/p3_episodes/manifest.json',
                '--dictionary',ROOT/'model-inputs/clinical-data-dictionary.json')
     assert result.returncode==0,result.stderr
@@ -88,7 +92,7 @@ def test_synthetic_source_quality_cli_no_rows():
     assert report['investment_ready'] is False
 
 
-def test_restricted_local_requires_acknowledgment_and_private_destination(tmp_path):
+def test_restricted_local_requires_acknowledgment_and_private_destination(tmp_path: Path) -> None:
     x=tmp_path/'source';shutil.copytree(ROOT/'tests/fixtures/p3_episodes',x)
     manifest=x/'manifest.json';raw=json.loads(manifest.read_text())
     raw['data_class']='restricted';raw['governance']={'status':'approved_local_processing',
@@ -106,7 +110,7 @@ def test_restricted_local_requires_acknowledgment_and_private_destination(tmp_pa
     assert 'eligible_index_discharges' not in result.stdout
 
 
-def test_private_report_can_not_be_written_to_public_repository(tmp_path):
+def test_private_report_can_not_be_written_to_public_repository(tmp_path: Path) -> None:
     x=tmp_path/'source';shutil.copytree(ROOT/'tests/fixtures/p3_episodes',x)
     manifest=x/'manifest.json';raw=json.loads(manifest.read_text())
     raw['data_class']='restricted';raw['governance']={'status':'approved_local_processing',
@@ -119,7 +123,7 @@ def test_private_report_can_not_be_written_to_public_repository(tmp_path):
     assert not out.exists()
 
 
-def test_audit_uses_one_manifest_for_privacy_and_provenance(tmp_path, monkeypatch, capsys):
+def test_audit_uses_one_manifest_for_privacy_and_provenance(tmp_path: Path, monkeypatch: MonkeyPatch, capsys: CaptureFixture[str]) -> None:
     source = tmp_path / 'source'
     shutil.copytree(ROOT / 'tests/fixtures/p3_episodes', source)
     manifest = source / 'manifest.json'
@@ -132,8 +136,8 @@ def test_audit_uses_one_manifest_for_privacy_and_provenance(tmp_path, monkeypatc
     }
     reads = 0
 
-    def replace_after_read(method):
-        def read(path, *args, **kwargs):
+    def replace_after_read[**P, R](method: Callable[Concatenate[Path, P], R]) -> Callable[Concatenate[Path, P], R]:
+        def read(path: Path, /, *args: P.args, **kwargs: P.kwargs) -> R:
             nonlocal reads
             contents = method(path, *args, **kwargs)
             if path == manifest:
@@ -159,7 +163,7 @@ def test_audit_uses_one_manifest_for_privacy_and_provenance(tmp_path, monkeypatc
     assert not capsys.readouterr().out
 
 
-def test_output_check_finds_the_destination_checkout_for_an_installed_cli(tmp_path):
+def test_output_check_finds_the_destination_checkout_for_an_installed_cli(tmp_path: Path) -> None:
     checkout = tmp_path / 'checkout'
     checkout.mkdir()
     subprocess.run(['git', 'init', '--quiet', str(checkout)], check=True)
@@ -171,7 +175,7 @@ def test_output_check_finds_the_destination_checkout_for_an_installed_cli(tmp_pa
     assert _restricted_output_allowed(checkout / 'private/report.json', package_home)
 
 
-def test_existing_private_output_is_rejected_before_opening_feeds(tmp_path, monkeypatch, capsys):
+def test_existing_private_output_is_rejected_before_opening_feeds(tmp_path: Path, monkeypatch: MonkeyPatch, capsys: CaptureFixture[str]) -> None:
     source = tmp_path / 'source'
     shutil.copytree(ROOT / 'tests/fixtures/p3_episodes', source)
     manifest = source / 'manifest.json'
@@ -185,7 +189,7 @@ def test_existing_private_output_is_rejected_before_opening_feeds(tmp_path, monk
     output = tmp_path / 'existing-report.json'
     output.write_text('existing fictional report')
 
-    def unexpected_read(*args, **kwargs):
+    def unexpected_read(*args: object, **kwargs: object) -> None:
         pytest.fail('a feed was opened before rejecting the destination')
 
     monkeypatch.setattr(local_data, '_read_feed', unexpected_read)
@@ -198,7 +202,7 @@ def test_existing_private_output_is_rejected_before_opening_feeds(tmp_path, monk
     assert output.read_text() == 'existing fictional report'
 
 
-def test_machine_schema_is_public_and_dependency_generated():
+def test_machine_schema_is_public_and_dependency_generated() -> None:
     result=cli('schema')
     assert result.returncode==0,result.stderr
     schema=json.loads(result.stdout)

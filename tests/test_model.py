@@ -1,4 +1,6 @@
 """Independent model identities and fail-closed contracts."""
+from icu_liaison.schemas import Parameter
+from pytest import CaptureFixture
 from pathlib import Path
 import json
 import math
@@ -10,15 +12,15 @@ from icu_liaison.model import simulate, summarise
 FIXTURE = Path(__file__).resolve().parents[1] / 'model-inputs' / 'illustrative.json'
 
 
-def scenario():
+def scenario() -> Scenario:
     return Scenario.model_validate_json(FIXTURE.read_text())
 
 
-def lock(parameter, value):
+def lock(parameter: Parameter, value: float) -> None:
     parameter.low = parameter.value = parameter.high = value
 
 
-def test_reproducible_draws_and_run_metadata():
+def test_reproducible_draws_and_run_metadata() -> None:
     s = scenario()
     a = simulate(s)
     b = simulate(s)
@@ -28,7 +30,7 @@ def test_reproducible_draws_and_run_metadata():
     assert len(a.net_resource_benefit_aud) == s.iterations
 
 
-def test_nominal_annual_accounting_identity():
+def test_nominal_annual_accounting_identity() -> None:
     s = scenario()
     for parameter in s.inputs.__dict__.values():
         lock(parameter, parameter.value)
@@ -42,7 +44,7 @@ def test_nominal_annual_accounting_identity():
     assert result['net_resource_benefit_aud']['mean'] == pytest.approx(expected_gross - 250_000)
 
 
-def test_no_effect_is_not_savings():
+def test_no_effect_is_not_savings() -> None:
     s = scenario()
     lock(s.inputs.addressable_cases_improved_fraction, 0)
     lock(s.inputs.relative_readmission_reduction, 0)
@@ -53,20 +55,20 @@ def test_no_effect_is_not_savings():
     assert np.all(res.net_resource_benefit_aud < 0)
 
 
-def test_more_appropriate_early_returns_can_be_modelled():
+def test_more_appropriate_early_returns_can_be_modelled() -> None:
     s = scenario()
     lock(s.inputs.relative_readmission_reduction, -.25)
     assert np.all(simulate(s).readmissions_avoided < 0)
 
 
-def test_public_rate_is_not_an_early_unplanned_readmission_rate():
+def test_public_rate_is_not_an_early_unplanned_readmission_rate() -> None:
     s = scenario()
     assert s.inputs.delayed_discharge_ge12h_rate.value == .204
     assert s.inputs.unplanned_72h_readmission_risk.status == 'illustrative_assumption'
     assert s.inputs.unplanned_72h_readmission_risk.value == .03
 
 
-def test_unknown_or_untraceable_public_input_fails():
+def test_unknown_or_untraceable_public_input_fails() -> None:
     data = json.loads(FIXTURE.read_text())
     data['inputs']['delayed_discharge_ge12h_rate']['url'] = None
     with pytest.raises(ValueError): Scenario.model_validate(data)
@@ -78,7 +80,7 @@ def test_unknown_or_untraceable_public_input_fails():
     with pytest.raises(ValueError): Scenario.model_validate(data)
 
 
-def test_nonfinite_and_nonmonotonic_parameters_fail():
+def test_nonfinite_and_nonmonotonic_parameters_fail() -> None:
     s = scenario().model_dump()
     s['inputs']['annual_incremental_service_cost_aud']['value'] = float('nan')
     with pytest.raises(ValueError): Scenario.model_validate(s)
@@ -87,7 +89,7 @@ def test_nonfinite_and_nonmonotonic_parameters_fail():
     with pytest.raises(ValueError): Scenario.model_validate(s)
 
 
-def test_distinct_input_seed_changes_uncertainty_draws():
+def test_distinct_input_seed_changes_uncertainty_draws() -> None:
     s = scenario()
     a = simulate(s)
     s.seed += 1
@@ -95,7 +97,7 @@ def test_distinct_input_seed_changes_uncertainty_draws():
     assert not np.array_equal(a.net_resource_benefit_aud, b.net_resource_benefit_aud)
 
 
-def test_sensitivity_interval_is_ordered_and_probability_bounded():
+def test_sensitivity_interval_is_ordered_and_probability_bounded() -> None:
     out = summarise(simulate(scenario()))
     assert out['net_resource_benefit_aud']['p05'] <= out['net_resource_benefit_aud']['p50'] <= out['net_resource_benefit_aud']['p95']
     assert 0 <= out['probability_net_resource_benefit_nonnegative'] <= 1
@@ -105,7 +107,7 @@ def test_sensitivity_interval_is_ordered_and_probability_bounded():
 @pytest.mark.parametrize(
     "parameter", ["net_avoidable_cost_per_icu_day_aud", "annual_incremental_service_cost_aud"]
 )
-def test_portable_cli_rejects_nonfinite_results(tmp_path, capsys, parameter):
+def test_portable_cli_rejects_nonfinite_results(tmp_path: Path, capsys: CaptureFixture[str], parameter: str) -> None:
     from icu_liaison.cli import main
 
     s = scenario()
@@ -123,7 +125,7 @@ def test_portable_cli_rejects_nonfinite_results(tmp_path, capsys, parameter):
     assert "finite" in captured.err
 
 
-def test_portable_cli_does_not_echo_rejected_input(tmp_path, capsys):
+def test_portable_cli_does_not_echo_rejected_input(tmp_path: Path, capsys: CaptureFixture[str]) -> None:
     from icu_liaison.cli import main
 
     data = json.loads(FIXTURE.read_text())

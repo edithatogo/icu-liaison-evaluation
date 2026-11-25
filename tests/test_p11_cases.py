@@ -1,4 +1,6 @@
 """P11 synthetic run identity, paired outcomes and atomic publication."""
+from pytest import MonkeyPatch
+from typing import Any, Literal
 from concurrent.futures import ThreadPoolExecutor
 import csv
 import hashlib
@@ -16,7 +18,7 @@ CASES = ROOT / 'model-inputs/p11/cases'
 
 
 @pytest.fixture
-def case_file(tmp_path):
+def case_file(tmp_path: Path) -> Path:
     source = json.loads((CASES / 'base.json').read_text())
     source['iterations'] = 32
     path = tmp_path / 'base.json'
@@ -24,12 +26,12 @@ def case_file(tmp_path):
     return path
 
 
-def rows(folder):
+def rows(folder: Path) -> list[dict[str, Any]]:
     with (folder / 'paired-outcomes.csv').open(newline='') as stream:
         return list(csv.DictReader(stream))
 
 
-def test_fixed_override_preserves_other_dependence_submatrix():
+def test_fixed_override_preserves_other_dependence_submatrix() -> None:
     base = json.loads(BASE.read_text())
     groups = base['dependence_groups']
     groups[1]['variables'].append('resource.hours_released_per_improved_case')
@@ -48,7 +50,7 @@ def test_fixed_override_preserves_other_dependence_submatrix():
     }
 
 
-def test_base_run_preserves_paired_p5_comparisons(tmp_path, case_file):
+def test_base_run_preserves_paired_p5_comparisons(tmp_path: Path, case_file: Path) -> None:
     output = tmp_path / 'run-store'
     receipt = build_case(case_file, BASE, output, tmp_path / 'base-pointer.json')
     folder = output / 'models' / receipt['model_run_id']
@@ -76,7 +78,7 @@ def test_base_run_preserves_paired_p5_comparisons(tmp_path, case_file):
     'no_effect', 'harmful_returns', 'zero_addressable_delay',
     'zero_usable_capacity', 'zero_cash_realisability',
 ])
-def test_existing_stress_cases_preserve_invariants(tmp_path, variant):
+def test_existing_stress_cases_preserve_invariants(tmp_path: Path, variant: str) -> None:
     data = json.loads((CASES / f'{variant}.json').read_text())
     data['iterations'] = 32
     case = tmp_path / f'{variant}.json'
@@ -102,7 +104,7 @@ def test_existing_stress_cases_preserve_invariants(tmp_path, variant):
     assert verify_case(folder)['case_id'] == variant
 
 
-def test_changed_input_produces_new_version_and_preserves_prior(tmp_path, case_file):
+def test_changed_input_produces_new_version_and_preserves_prior(tmp_path: Path, case_file: Path) -> None:
     output = tmp_path / 'store'
     pointer = tmp_path / 'pointer.json'
     first = build_case(case_file, BASE, output, pointer)
@@ -120,7 +122,7 @@ def test_changed_input_produces_new_version_and_preserves_prior(tmp_path, case_f
     assert verify_case(output / 'models' / second['model_run_id'])['seed'] == 20261119
 
 
-def test_rehashed_claim_and_tampering_are_rejected(tmp_path, case_file):
+def test_rehashed_claim_and_tampering_are_rejected(tmp_path: Path, case_file: Path) -> None:
     output = tmp_path / 'store'
     receipt = build_case(case_file, BASE, output, tmp_path / 'pointer.json')
     folder = output / 'models' / receipt['model_run_id']
@@ -131,19 +133,22 @@ def test_rehashed_claim_and_tampering_are_rejected(tmp_path, case_file):
         verify_case(folder)
 
 
-def test_interrupted_publication_can_be_retried(tmp_path, case_file, monkeypatch):
+def test_interrupted_publication_can_be_retried(tmp_path: Path, case_file: Path, monkeypatch: MonkeyPatch) -> None:
     import icu_liaison.p11_model as model
 
     output = tmp_path / 'store'
     pointer = tmp_path / 'pointer.json'
     first = build_case(case_file, BASE, output, pointer)
-    original = model.build_report
+    from icu_liaison.p5_reporting import build_report as original
+    from icu_liaison.p4_model import EconomicScenario
     data = json.loads(case_file.read_text())
     data['seed'] = 20261119
     case_file.write_text(json.dumps(data))
 
-    def interrupted(*args, **kwargs):
-        original(*args, **kwargs)
+    def interrupted(scenario: EconomicScenario, target: Path, *, protocol: Path, catalogue: Path, source_register: Path,
+                    voiage_mode: Literal["skip", "provider"], dapane_mode: Literal["skip", "provider"], plots: bool) -> None:
+        original(scenario, target, protocol=protocol, catalogue=catalogue, source_register=source_register,
+                 voiage_mode=voiage_mode, dapane_mode=dapane_mode, plots=plots)
         raise KeyboardInterrupt()
 
     monkeypatch.setattr(model, 'build_report', interrupted)
@@ -157,7 +162,7 @@ def test_interrupted_publication_can_be_retried(tmp_path, case_file, monkeypatch
     assert verify_case(output / 'models' / second['model_run_id'])
 
 
-def test_concurrent_same_identity_publishes_one_verified_object(tmp_path, case_file):
+def test_concurrent_same_identity_publishes_one_verified_object(tmp_path: Path, case_file: Path) -> None:
     output = tmp_path / 'store'
     with ThreadPoolExecutor(max_workers=2) as pool:
         futures = [pool.submit(build_case, case_file, BASE, output, tmp_path / f'pointer-{i}.json')
@@ -166,3 +171,41 @@ def test_concurrent_same_identity_publishes_one_verified_object(tmp_path, case_f
     assert results[0]['model_run_id'] == results[1]['model_run_id']
     assert len(list((output / 'models').iterdir())) == 1
     assert verify_case(output / 'models' / results[0]['model_run_id'])
+
+@pytest.mark.parametrize(('key', 'value'), [
+    ('schema_version', True), ('schema_version', 1.0), ('iterations', '32'),
+    ('data_class', 'unrecognised'), ('unregistered_source', 'fictional'),
+], ids=['boolean-version', 'float-version', 'coerced-count', 'unknown-class', 'extra-field'])
+def test_case_boundary_rejects_invalid_json_types_and_fields(key: str, value: object) -> None:
+    case = json.loads((CASES / 'base.json').read_bytes())
+    case[key] = value
+    with pytest.raises(ValueError):
+        materialise(json.dumps(case).encode(), BASE.read_bytes())
+
+
+def test_favourable_fictional_scenario_cannot_authorise_unknown_clinical_or_finance_results(
+    tmp_path: Path, case_file: Path,
+) -> None:
+    from tools.evaluate_safety_decision import evaluate_decision
+    output = tmp_path / 'store'
+    raw = json.loads(BASE.read_bytes())
+    for strategy in raw['strategies']:
+        if strategy['role'] == 'proposed':
+            cost = strategy['annual_incremental_cost_aud']
+            cost.update(family='fixed', params={'value': 0.0})
+    base = tmp_path / 'baseline.json'
+    base.write_text(json.dumps(raw))
+    receipt = build_case(case_file, base, output, tmp_path / 'pointer.json')
+    folder = output / 'models' / receipt['model_run_id']
+    run = verify_case(folder)
+    summary = json.loads((folder / 'p5-report/model-summary.json').read_bytes())
+    positive = summary['strategies']['liaison_service']['net_resource_benefit_aud']['mean']
+    assert positive > 0
+    decision = evaluate_decision(positive)
+    assert decision['decision'] == 'not_authorised' and decision['site_authority_verified'] is False
+    assert run['investment_ready'] is run['clinical_safety_approved'] is False
+    assert summary['dapane_valuation']['status'] == 'not_executed'
+    run['unregistered_finance_authority'] = True
+    (folder / 'run.json').write_text(json.dumps(run))
+    with pytest.raises(ValueError, match='unexpected'):
+        verify_case(folder)

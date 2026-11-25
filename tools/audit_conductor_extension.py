@@ -1,5 +1,6 @@
 """Audit pinned extensions/conductor submodule against installed Gemini CLI extension."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import hashlib
@@ -89,12 +90,12 @@ def hash_tree(
     return dict(sorted(digests.items()))
 
 
-def inspect_policies(extension_root: Path) -> dict:
+def inspect_policies(extension_root: Path) -> dict[str, Any]:
     """Parse policies/*.toml and flag any rule whose decision is not 'ask_user'."""
     root_path = Path(extension_root)
     policies_dir = root_path / "policies"
-    rules: list[dict] = []
-    unapproved: list[dict] = []
+    rules: list[dict[str, Any]] = []
+    unapproved: list[dict[str, Any]] = []
     policy_files: dict[str, str] = {}
 
     if policies_dir.is_dir():
@@ -123,7 +124,7 @@ def inspect_policies(extension_root: Path) -> dict:
     }
 
 
-def _commands_summary(pinned_hashes: dict[str, str], installed_hashes: dict[str, str]) -> dict[str, dict]:
+def _commands_summary(pinned_hashes: dict[str, str], installed_hashes: dict[str, str]) -> dict[str, dict[str, Any]]:
     command_paths = sorted(
         p for p in (set(pinned_hashes) | set(installed_hashes))
         if p.startswith("commands/conductor/") and p.endswith(".toml")
@@ -139,7 +140,7 @@ def _commands_summary(pinned_hashes: dict[str, str], installed_hashes: dict[str,
     }
 
 
-def _read_install_metadata(installed_dir: Path) -> dict | None:
+def _read_install_metadata(installed_dir: Path) -> dict[str, Any] | None:
     meta_file = installed_dir / ".gemini-extension-install.json"
     if not meta_file.is_file():
         return None
@@ -152,7 +153,7 @@ def _read_install_metadata(installed_dir: Path) -> dict | None:
     }
 
 
-def audit_extension(pinned_dir: Path, installed_dir: Path) -> dict:
+def audit_extension(pinned_dir: Path, installed_dir: Path) -> dict[str, Any]:
     """Compare pinned extension tree and policies against installed Gemini extension."""
     pinned_path = Path(pinned_dir)
     installed_path = Path(installed_dir)

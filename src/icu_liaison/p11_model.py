@@ -1,5 +1,6 @@
 """Build immutable, source-bound P4/P5 runs for fictional P11 scenarios."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import csv
@@ -21,7 +22,7 @@ from .p11_records import (
     atomic_json, attempt, canonical, digest_bytes, digest_file, digest_json,
     inventory, read_json, valid_digest,
 )
-from .p4_model import EconomicScenario, evaluate_scenarios, financial_decision_surface
+from .p4_model import EconomicScenario, P4Run, evaluate_scenarios, financial_decision_surface
 from .p5_reporting import MEASURES, _stats, build_report, review_report
 from .qualification_independent import audit_p4_draws
 
@@ -56,7 +57,7 @@ INPUTS = {
 }
 
 
-def _runtime() -> dict:
+def _runtime() -> dict[str, Any]:
     return {
         'python': platform.python_version(),
         'implementation': platform.python_implementation(),
@@ -71,7 +72,7 @@ def _source_hashes() -> dict[str, str]:
     return {name: digest_file(ROOT / name) for name in MODEL_SOURCES}
 
 
-def _git_source_state() -> dict:
+def _git_source_state() -> dict[str, Any]:
     revision = subprocess.run(
         ['git', '-C', str(ROOT), 'rev-parse', '--verify', 'HEAD'],
         check=True, capture_output=True, text=True,
@@ -84,7 +85,7 @@ def _git_source_state() -> dict:
     return {'git_revision': revision, 'executed_source_dirty': bool(status)}
 
 
-def _paired_rows(scenario: EconomicScenario):
+def _paired_rows(scenario: EconomicScenario) -> tuple[P4Run, dict[str, Any], list[dict[str, Any]]]:
     run = evaluate_scenarios(scenario)
     audit = audit_p4_draws(run)
     baseline = run.strategies['current_care']
@@ -107,7 +108,7 @@ def _paired_rows(scenario: EconomicScenario):
     return run, audit, rows
 
 
-def _check_surface(folder: Path, run) -> None:
+def _check_surface(folder: Path, run: P4Run) -> None:
     expected, labels = financial_decision_surface(run)
     with (folder / 'decision-surface.csv').open(newline='', encoding='utf-8') as stream:
         reader = csv.reader(stream)
@@ -118,7 +119,7 @@ def _check_surface(folder: Path, run) -> None:
         raise ValueError('P5 paired draws differ from the seeded P4 replay')
 
 
-def _check_variant(variant: str, run) -> None:
+def _check_variant(variant: str, run: P4Run) -> None:
     for arm in run.scenario.strategies[1:]:
         result = run.strategies[arm.id]
         if variant == 'no_effect':
@@ -137,14 +138,14 @@ def _check_variant(variant: str, run) -> None:
                 raise ValueError('zero-cash case violates its P10 invariant')
 
 
-def _write_rows(path: Path, rows: list[dict]) -> None:
+def _write_rows(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open('w', encoding='utf-8', newline='') as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 
 
-def _validate_rows(path: Path, expected: list[dict]) -> None:
+def _validate_rows(path: Path, expected: list[dict[str, Any]]) -> None:
     with path.open(encoding='utf-8', newline='') as stream:
         reader = csv.DictReader(stream)
         if reader.fieldnames != list(expected[0]):
@@ -155,16 +156,30 @@ def _validate_rows(path: Path, expected: list[dict]) -> None:
         raise ValueError('paired outcomes differ from P4 replay')
 
 
-def verify_case(folder: Path) -> dict:
+def verify_case(folder: Path) -> dict[str, Any]:
     folder = Path(folder)
     if folder.is_symlink() or not folder.is_dir():
         raise ValueError('synthetic model output directory is missing or unsafe')
     record = read_json(folder / 'run.json')
     run_id = record.get('model_run_id')
-    if (record.get('schema_version') != 1 or record.get('data_class') != 'synthetic'
+    if set(record) != {
+        'schema_version', 'data_class', 'model_run_id', 'identity', 'case_id', 'variant',
+        'description', 'seed', 'draws', 'source', 'created_at_utc', 'assumption_changes',
+        'provider_versions_locked', 'provider_execution', 'clinical_safety_approved',
+        'investment_ready', 'files_sha256',
+    }:
+        raise ValueError('unexpected or missing synthetic run field')
+    if (type(record['schema_version']) is not int or record['schema_version'] != 1 or record.get('data_class') != 'synthetic'
             or record.get('investment_ready') is not False
             or record.get('clinical_safety_approved') is not False):
         raise ValueError('synthetic run has unsupported readiness')
+    identity = record['identity']
+    if (not isinstance(identity, dict) or set(identity) != {
+            'schema_version', 'data_class', 'case_id', 'inputs_sha256', 'effective_scenario_sha256',
+            'model_source_sha256', 'runtime', 'provider_execution',
+        } or type(identity['schema_version']) is not int or identity['schema_version'] != 1
+        or identity['data_class'] != 'synthetic' or identity['case_id'] != record['case_id']):
+        raise ValueError('invalid synthetic model identity')
     if not valid_digest(run_id) or folder.name != run_id or digest_json(record['identity']) != run_id:
         raise ValueError('model run identity mismatch')
     if (record.get('provider_execution') != {'dapane': 'not_executed', 'voiage': 'not_executed'}
@@ -172,7 +187,6 @@ def verify_case(folder: Path) -> dict:
         raise ValueError('unsupported provider qualification claim')
     if record.get('files_sha256') != inventory(folder, exclude='run.json'):
         raise ValueError('synthetic model output file inventory or digest mismatch')
-    identity = record['identity']
     expected_inputs = {'case.json', 'base-scenario.json', *INPUTS}
     if set(identity['inputs_sha256']) != expected_inputs:
         raise ValueError('synthetic input snapshot inventory mismatch')
@@ -206,7 +220,7 @@ def verify_case(folder: Path) -> dict:
 
 
 def build_case(case_file: Path, base_file: Path, output: Path, pointer: Path, *,
-               expected_case: str | None = None) -> dict:
+               expected_case: str | None = None) -> dict[str, Any]:
     case_file, base_file, output, pointer = map(Path, (case_file, base_file, output, pointer))
     case_bytes = case_file.read_bytes() if not case_file.is_symlink() else None
     base_bytes = base_file.read_bytes() if not base_file.is_symlink() else None

@@ -4,12 +4,20 @@ Clinical effects and QALYs are not in this input. Do not describe the resulting
 cost-only information value as healthcare cost-effectiveness or utility.
 """
 from __future__ import annotations
+from numpy import float64
+from numpy.typing import NDArray
+from collections.abc import Callable
+from importlib import import_module
 from typing import Any
 import numpy as np
 from ..model import PSADraws
 
 
-def financial_decision_array(draws: PSADraws) -> tuple[np.ndarray, list[str]]:
+type ValueArrayFactory = Callable[[NDArray[float64], list[str]], Any]
+type AnalysisFactory = Callable[[Any], Any]
+
+
+def financial_decision_array(draws: PSADraws) -> tuple[NDArray[float64], list[str]]:
     """Rows are parameter-uncertainty draws; columns are decision strategies.
 
     The standard-care strategy is the zero incremental reference; the new
@@ -22,7 +30,7 @@ def financial_decision_array(draws: PSADraws) -> tuple[np.ndarray, list[str]]:
 
 
 def make_voiage_decision(
-    values: np.ndarray, strategies: list[str], *, value_array_factory=None, analysis_factory=None,
+    values: NDArray[float64], strategies: list[str], *, value_array_factory: ValueArrayFactory | None = None, analysis_factory: AnalysisFactory | None = None,
 ) -> Any:
     """Pass a selected financial decision surface to the supported Voiage API.
 
@@ -32,18 +40,20 @@ def make_voiage_decision(
     """
     if value_array_factory is None or analysis_factory is None:
         try:
-            from voiage.schema import ValueArray
-            from voiage.analysis import DecisionAnalysis
+            ValueArray = import_module('voiage.schema').ValueArray
+            DecisionAnalysis = import_module('voiage.analysis').DecisionAnalysis
         except ImportError as exc:
             raise RuntimeError('Voiage is not installed in a qualified Python >=3.15.2 environment') from exc
         if value_array_factory is None:
             value_array_factory = ValueArray.from_numpy
         if analysis_factory is None:
             analysis_factory = DecisionAnalysis
+    if analysis_factory is None or value_array_factory is None:
+        raise RuntimeError("Voiage factories unavailable")
     return analysis_factory(value_array_factory(values, strategies))
 
 
-def make_voiage_analysis(draws: PSADraws, *, value_array_factory=None, analysis_factory=None):
+def make_voiage_analysis(draws: PSADraws, *, value_array_factory: ValueArrayFactory | None = None, analysis_factory: AnalysisFactory | None = None) -> Any:
     array, labels = financial_decision_array(draws)
     return make_voiage_decision(
         array, labels, value_array_factory=value_array_factory, analysis_factory=analysis_factory,
@@ -61,8 +71,8 @@ def financial_evpi_aud(analysis: Any) -> float:
 
 
 def evaluate_financial_information(
-    draws: PSADraws, *, value_array_factory=None, analysis_factory=None,
-) -> dict:
+    draws: PSADraws, *, value_array_factory: ValueArrayFactory | None = None, analysis_factory: AnalysisFactory | None = None,
+) -> dict[str, Any]:
     """Ask Voiage for EVPI using a two-strategy, financial-only surface.
 
     The EVPI calculation is *entirely* Voiage-owned. No bespoke VOI method or

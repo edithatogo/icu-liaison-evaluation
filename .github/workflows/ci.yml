@@ -37,7 +37,9 @@ jobs:
       - name: Check the public data boundary
         run: .venv/bin/python tools/publication_guard.py
       - name: Install pinned source, test and report dependencies
-        run: .venv/bin/python -m pip install -c requirements-ci.txt --build-constraint requirements-ci.txt '.[test,report]'
+        run: .venv/bin/python -m pip install -c requirements-ci.txt --build-constraint requirements-ci.txt '.[test,report,check]'
+      - name: Strict type checking of production, tools and tests
+        run: .venv/bin/python -m mypy
       - name: Verify project hashes and Conductor gitlink
         run: .venv/bin/python tools/verify_source_manifest.py
       - name: Validate source-only table and figure catalogue
@@ -50,10 +52,6 @@ jobs:
         run: .venv/bin/python -m tools.p10_falsification --iterations 128
       - name: Verify causal pre-registration and exposure remain draft
         run: .venv/bin/python tools/validate_preregistration.py
-      - name: Run synthetic contract and numerical tests
-        run: .venv/bin/python -m pytest -q
-      - name: Exercise synthetic reports and closed admission gates
-        run: .venv/bin/python tools/ci_smoke.py
       - name: Set up repository-local quality tools
         env:
           PYTHONPATH: ""
@@ -62,6 +60,10 @@ jobs:
           test "$(private/venv-quality/bin/python --version)" = "Python $(cat .python-version)"
           private/venv-quality/bin/python -m pip install -r requirements-quality.txt --build-constraint requirements-p11-build.txt
           private/venv-quality/bin/python -m pip check
+      - name: Run synthetic contract and numerical tests
+        run: .venv/bin/python -m pytest -q
+      - name: Exercise synthetic reports and closed admission gates
+        run: .venv/bin/python tools/ci_smoke.py
       - name: Run shell and text quality checks
         env:
           PYTHONPATH: ""

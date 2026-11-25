@@ -1,17 +1,21 @@
 """Validate and exercise the aggregate-only presentation figure profile."""
+from pathlib import Path
+from typing import Any
 
 from hashlib import sha256
 import json
 from math import isnan
 
 import pytest
+from matplotlib import pyplot as plt
+import numpy as np
 
 pytest.importorskip("matplotlib")
 
 from tools import render_evaluation_figures as deck
 
 
-def sample():
+def sample() -> dict[str, Any]:
     return {
         "input_class": "synthetic_only", "period_months": 3,
         "activity": [
@@ -30,7 +34,7 @@ def sample():
     }
 
 
-def test_contract_renders_registered_figures(tmp_path):
+def test_contract_renders_registered_figures(tmp_path: Path) -> None:
     data = sample()
     inputs = tmp_path / "inputs.json"
     inputs.write_text(json.dumps(data))
@@ -51,28 +55,28 @@ def test_contract_renders_registered_figures(tmp_path):
         deck.build(inputs, destination)
 
 
-def test_numeric_marks_preserve_missingness_and_cash_sign():
+def test_numeric_marks_preserve_missingness_and_cash_sign() -> None:
     figures = [
         deck.activity(sample(), {}),
         deck.funding(sample(), {"payment_range_percent": [75, 100]}),
     ]
     try:
-        assert isnan(figures[0].axes[1].lines[0].get_ydata()[1])
-        assert list(figures[1].axes[0].lines[0].get_xdata()) == [75, 100]
-        assert list(figures[1].axes[0].lines[0].get_ydata()) == [-10.0, 15.0]
+        assert isnan(float(np.asarray(figures[0].axes[1].lines[0].get_ydata())[1]))
+        assert np.asarray(figures[1].axes[0].lines[0].get_xdata()).tolist() == [75, 100]
+        assert np.asarray(figures[1].axes[0].lines[0].get_ydata()).tolist() == [-10.0, 15.0]
     finally:
         for fig in figures:
-            deck.plt.close(fig)
+            plt.close(fig)
 
 
-def test_invalid_screening_rejected():
+def test_invalid_screening_rejected() -> None:
     data = sample()
     data["pathways"]["chart_review"] = 22
     with pytest.raises(ValueError, match="counts do not reconcile"):
         deck.validate(data)
 
 
-def test_private_input_rejected_in_git_worktree(tmp_path):
+def test_private_input_rejected_in_git_worktree(tmp_path: Path) -> None:
     project = tmp_path / "project"
     project.mkdir()
     (project / ".git").write_text("gitdir: fixture")

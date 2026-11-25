@@ -1,5 +1,7 @@
 """RED: P5 reporting is a consumer of the accepted P4 draw table."""
 from __future__ import annotations
+from numpy import float64
+from numpy.typing import NDArray
 import csv
 from dataclasses import replace
 import hashlib
@@ -15,11 +17,11 @@ from icu_liaison.p4_model import EconomicScenario, evaluate_scenarios
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def case():
+def case() -> EconomicScenario:
     return EconomicScenario.model_validate_json((ROOT/'model-inputs/p4/illustrative.json').read_text())
 
 
-def test_p5_bundle_contains_nonoverlapping_outcomes_and_explicit_source_status(tmp_path):
+def test_p5_bundle_contains_nonoverlapping_outcomes_and_explicit_source_status(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report, verify_manifest
     out=tmp_path/'report'
     build_report(case(),out,voiage_mode='skip')
@@ -37,7 +39,7 @@ def test_p5_bundle_contains_nonoverlapping_outcomes_and_explicit_source_status(t
     assert 'Clinical safety' in body
 
 
-def test_p5_independent_accounting_detects_tampered_array():
+def test_p5_independent_accounting_detects_tampered_array() -> None:
     from icu_liaison.p5_reporting import audit_p4_accounting
     r=evaluate_scenarios(case())
     assert audit_p4_accounting(r)['passed'] is True
@@ -48,7 +50,7 @@ def test_p5_independent_accounting_detects_tampered_array():
         audit_p4_accounting(r)
 
 
-def test_p5_reproducible_content_and_refuses_existing_output(tmp_path):
+def test_p5_reproducible_content_and_refuses_existing_output(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     a=tmp_path/'a';b=tmp_path/'b'
     build_report(case(),a,voiage_mode='skip')
@@ -59,7 +61,7 @@ def test_p5_reproducible_content_and_refuses_existing_output(tmp_path):
         build_report(case(),a,voiage_mode='skip')
 
 
-def test_p5_fully_fixed_scenario_publishes_a_header_only_sensitivity_table(tmp_path):
+def test_p5_fully_fixed_scenario_publishes_a_header_only_sensitivity_table(tmp_path: Path) -> None:
     from icu_liaison.p4_model import Prior
     from icu_liaison.p5_reporting import build_report, review_report
 
@@ -74,13 +76,14 @@ def test_p5_fully_fixed_scenario_publishes_a_header_only_sensitivity_table(tmp_p
     build_report(EconomicScenario.model_validate(data), target)
     with (target / 'one-way-sensitivity.csv').open(newline='') as stream:
         reader = csv.DictReader(stream)
+        assert reader.fieldnames is not None
         assert 'strategy_id' in reader.fieldnames and 'parameter' in reader.fieldnames
         assert list(reader) == []
     assert 'All model priors are fixed' in (target / 'report.md').read_text()
     assert review_report(target)['strategies_checked'] == 3
 
 
-def test_p5_uses_surface_order_for_an_alphabetically_earlier_variant(tmp_path):
+def test_p5_uses_surface_order_for_an_alphabetically_earlier_variant(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report, review_report
 
     data = case().model_dump()
@@ -92,12 +95,12 @@ def test_p5_uses_surface_order_for_an_alphabetically_earlier_variant(tmp_path):
     assert review_report(target)['strategies_checked'] == 4
 
 
-def test_p5_voiage_only_uses_provider_not_homegrown_evpi(tmp_path):
+def test_p5_voiage_only_uses_provider_not_homegrown_evpi(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     class Stub:
-        def __init__(self, value):self.value=value
-        def evpi(self):return 123.45
-    def value_array(arr,labels):
+        def __init__(self, value: NDArray[float64]) -> None:self.value=value
+        def evpi(self) -> float:return 123.45
+    def value_array(arr: NDArray[float64],labels: list[str]) -> NDArray[float64]:
         assert arr.shape==(5000,3)
         assert labels==['current_care','liaison_service','extended_cover']
         return arr
@@ -110,7 +113,7 @@ def test_p5_voiage_only_uses_provider_not_homegrown_evpi(tmp_path):
     assert d['investment_ready'] is False
 
 
-def test_p5_requires_provider_and_does_not_publish_partial_bundle(tmp_path):
+def test_p5_requires_provider_and_does_not_publish_partial_bundle(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     out=tmp_path/'not-published'
     with pytest.raises((RuntimeError,ValueError)):
@@ -119,7 +122,7 @@ def test_p5_requires_provider_and_does_not_publish_partial_bundle(tmp_path):
     assert not out.exists()
 
 
-def test_p5_cli_generates_and_checks_bundle_without_local_claim(tmp_path):
+def test_p5_cli_generates_and_checks_bundle_without_local_claim(tmp_path: Path) -> None:
     out=tmp_path/'report'
     r=subprocess.run([sys.executable,'-m','icu_liaison.p5_cli',str(ROOT/'model-inputs/p4/illustrative.json'),
                       '--output-dir',str(out)],cwd=ROOT,env={'PYTHONPATH':str(ROOT/'src')},capture_output=True,text=True)
@@ -133,11 +136,11 @@ def test_p5_cli_generates_and_checks_bundle_without_local_claim(tmp_path):
     assert not (tmp_path/'blocked').exists()
 
 
-def test_voiage_invalid_negative_and_nonfinite_result_rejected(tmp_path):
+def test_voiage_invalid_negative_and_nonfinite_result_rejected(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     class Stub:
-        def __init__(self,value):self.value=value
-        def evpi(self):return self.value
+        def __init__(self,value: float) -> None:self.value=value
+        def evpi(self) -> float:return self.value
     for bad in [-0.1,float('nan'),float('inf')]:
         with pytest.raises(ValueError,match='EVPI'):
             build_report(case(),tmp_path/str(bad),voiage_mode='provider',
@@ -145,7 +148,7 @@ def test_voiage_invalid_negative_and_nonfinite_result_rejected(tmp_path):
                          analysis_factory=lambda _:Stub(bad))
 
 
-def test_p5_manifest_detects_tampering_and_missing_files(tmp_path):
+def test_p5_manifest_detects_tampering_and_missing_files(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report, verify_manifest
     d=tmp_path/'signed-bundle';build_report(case(),d,voiage_mode='skip')
     a=d/'report.md'
@@ -159,7 +162,7 @@ def test_p5_manifest_detects_tampering_and_missing_files(tmp_path):
         verify_manifest(d)
 
 
-def test_p5_optional_chart_is_labelled_and_does_not_change_decision_inputs(tmp_path):
+def test_p5_optional_chart_is_labelled_and_does_not_change_decision_inputs(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report, verify_manifest
     import pytest
     pytest.importorskip('matplotlib')
@@ -170,7 +173,7 @@ def test_p5_optional_chart_is_labelled_and_does_not_change_decision_inputs(tmp_p
     assert verify_manifest(d)
 
 
-def test_p5_cost_consequence_rows_have_separate_budget_and_capacity_units(tmp_path):
+def test_p5_cost_consequence_rows_have_separate_budget_and_capacity_units(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     import csv
     d=tmp_path/'audit';build_report(case(),d,voiage_mode='skip')
@@ -182,7 +185,7 @@ def test_p5_cost_consequence_rows_have_separate_budget_and_capacity_units(tmp_pa
     assert {r['unit'] for r in rows if r['measure']=='net_budget_impact_aud'}=={'AUD_2026'}
 
 
-def test_p5_report_contains_nominal_thresholds_and_important_sensitivity_drivers(tmp_path):
+def test_p5_report_contains_nominal_thresholds_and_important_sensitivity_drivers(tmp_path: Path) -> None:
     from icu_liaison.p5_reporting import build_report
     target=tmp_path/'report';build_report(case(),target)
     body=(target/'report.md').read_text(encoding='utf-8')

@@ -4,6 +4,7 @@ The manifest intentionally excludes itself to avoid a self-referential digest.
 No patient data, private configuration or generated caches are admitted.
 """
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import configparser
@@ -48,7 +49,7 @@ def source_files(root: Path, *, submodule_paths: frozenset[str] = frozenset()) -
     return result
 
 
-def _submodule_paths(manifest: dict) -> frozenset[str]:
+def _submodule_paths(manifest: dict[str, Any]) -> frozenset[str]:
     pins = manifest.get('git_submodules', {})
     if not isinstance(pins, dict):
         return frozenset()
@@ -77,7 +78,7 @@ def _index_entries(root: Path) -> dict[str, tuple[str, str]]:
 
 
 def verify_git_submodules(
-    root: Path, manifest: dict, *, staged: dict[str, tuple[str, str]] | None = None,
+    root: Path, manifest: dict[str, Any], *, staged: dict[str, tuple[str, str]] | None = None,
 ) -> list[str]:
     """Check declared path/URL and the Git index's exact mode and commit.
 
@@ -136,7 +137,7 @@ def verify_git_submodules(
     return problems
 
 
-def _inventory_errors(manifest: dict, observed: dict[str, str]) -> list[str]:
+def _inventory_errors(manifest: dict[str, Any], observed: dict[str, str]) -> list[str]:
     declared = manifest.get('file_sha256')
     if not isinstance(declared, dict):
         return ['manifest has no file_sha256 object']
@@ -147,7 +148,7 @@ def _inventory_errors(manifest: dict, observed: dict[str, str]) -> list[str]:
     return problems
 
 
-def verify_manifest(root: Path, manifest: dict) -> list[str]:
+def verify_manifest(root: Path, manifest: dict[str, Any]) -> list[str]:
     observed = source_files(root, submodule_paths=_submodule_paths(manifest))
     return _inventory_errors(manifest, observed) + verify_git_submodules(root, manifest)
 

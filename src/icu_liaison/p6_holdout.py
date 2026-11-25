@@ -5,16 +5,18 @@ SciPy owns the distribution comparisons. Separate censoring/decline profiles
 and patient-level correlation require authorised study data and methods.
 """
 from __future__ import annotations
+from typing import Any
 
 from typing import Literal, Mapping
 
 import numpy as np
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from scipy.stats import ks_2samp, wasserstein_distance
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', frozen=True)
+    model_config = ConfigDict(strict=True, extra='forbid', frozen=True)
 
 
 class WaitSample(_Strict):
@@ -24,7 +26,7 @@ class WaitSample(_Strict):
 
 
 class HoldoutBundle(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal['synthetic']
     scenario_id: str = Field(pattern=r'^syn-[a-z0-9_-]{1,80}$')
     endpoint: Literal['admission_wait_minutes_among_admitted']
@@ -43,7 +45,7 @@ class HoldoutBundle(_Strict):
         return self
 
 
-def compare_holdout(bundle: HoldoutBundle) -> dict:
+def compare_holdout(bundle: HoldoutBundle) -> dict[str, Any]:
     """Compare observed and predicted waits for a held-out synthetic admitted cohort."""
     b = HoldoutBundle.model_validate(bundle.model_dump())
     obs = np.array([r.observed_wait_minutes for r in b.holdout], dtype=np.float64)
@@ -79,7 +81,7 @@ REQUIRED_GATES = frozenset({
 })
 
 
-def gate_readiness(declarations: Mapping[str, bool]) -> dict:
+def gate_readiness(declarations: Mapping[str, bool]) -> dict[str, Any]:
     """Return an evidence request list; self-declarations never grant approval."""
     if any(k not in REQUIRED_GATES for k in declarations):
         raise ValueError('unrecognised readiness declaration')

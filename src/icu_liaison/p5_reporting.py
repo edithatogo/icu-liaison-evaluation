@@ -5,6 +5,9 @@ statistical, valuation, or value-of-information engine. Only synthetic P4 inputs
 are admitted, and missing Voiage/Dapane qualifications remain explicit.
 """
 from __future__ import annotations
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any
 
 import csv
 import hashlib
@@ -13,7 +16,9 @@ import json
 from pathlib import Path
 from decimal import Decimal, ROUND_HALF_EVEN
 import tempfile
-from typing import Callable, Literal
+from typing import Literal
+from .adapters.voiage import AnalysisFactory, ValueArrayFactory
+from .adapters.dapane import ValuationProvider
 
 import numpy as np
 
@@ -53,7 +58,7 @@ REQUIRED_REPORT_FILES = {
 OPTIONAL_REPORT_FILES = {'dapane-nominal-valuation.json', 'scenario-comparison.svg'}
 
 
-def _stats(a: np.ndarray) -> dict[str, float]:
+def _stats(a: NDArray[float64]) -> dict[str, float]:
     z = np.asarray(a, dtype=np.float64)
     if z.ndim != 1 or z.size == 0 or not np.isfinite(z).all():
         raise ValueError('nonfinite/empty P4 report array')
@@ -62,7 +67,7 @@ def _stats(a: np.ndarray) -> dict[str, float]:
             'p50': float(q50), 'p95': float(q95)}
 
 
-def audit_p4_accounting(run: P4Run) -> dict:
+def audit_p4_accounting(run: P4Run) -> dict[str, Any]:
     """Reconcile independent component identities across every sampled draw.
 
     This is an accounting/conservation audit, not a second causal estimator or
@@ -95,7 +100,7 @@ def audit_p4_accounting(run: P4Run) -> dict:
 
 
 def _admission(scenario: EconomicScenario, *, protocol: Path, catalogue: Path,
-               register: Path) -> dict:
+               register: Path) -> dict[str, Any]:
     p = json.loads(protocol.read_text(encoding='utf-8'))
     c = json.loads(catalogue.read_text(encoding='utf-8'))
     r = json.loads(register.read_text(encoding='utf-8'))
@@ -103,8 +108,8 @@ def _admission(scenario: EconomicScenario, *, protocol: Path, catalogue: Path,
 
 
 def _evpi(run: P4Run, *, mode: Literal['skip', 'provider'],
-          value_array_factory: Callable | None = None,
-          analysis_factory: Callable | None = None) -> dict:
+          value_array_factory: ValueArrayFactory | None = None,
+          analysis_factory: AnalysisFactory | None = None) -> dict[str, Any]:
     if mode == 'skip':
         return {
             'status': 'not_executed',
@@ -136,9 +141,9 @@ def _evpi(run: P4Run, *, mode: Literal['skip', 'provider'],
 
 
 def _dapane_nominal(
-    scenario: EconomicScenario, requests: dict[str, dict[str, dict | None]], *,
-    mode: Literal['skip', 'provider'], provider: Callable | None,
-) -> tuple[dict, dict[str, dict] | None]:
+    scenario: EconomicScenario, requests: dict[str, dict[str, dict[str, Any] | None]], *,
+    mode: Literal['skip', 'provider'], provider: ValuationProvider | None,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]] | None]:
     """Optional Dapane exact valuation, never an alternate valuation engine.
 
     The independent point-input identity bounds cent-rounding differences but
@@ -152,7 +157,7 @@ def _dapane_nominal(
     if mode != 'provider':
         raise ValueError('unsupported Dapane mode')
     point = nominal_counterfactual(scenario)
-    outputs: dict[str, dict] = {}
+    outputs: dict[str, dict[str, Any]] = {}
     no_call = 'no_provider_call_no_resource_use'
     status = no_call
     for arm, request in requests.items():
@@ -181,8 +186,8 @@ def _dapane_nominal(
              'method': 'dapane-exact-v0.1.0'}, outputs)
 
 
-def _rows(run: P4Run) -> tuple[list[dict], list[dict], list[dict]]:
-    consequences: list[dict] = []
+def _rows(run: P4Run) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    consequences: list[dict[str, Any]] = []
     for arm in run.scenario.strategies:
         result = run.strategies[arm.id]
         for measure, unit, boundary in MEASURES:
@@ -218,7 +223,7 @@ def _rows(run: P4Run) -> tuple[list[dict], list[dict], list[dict]]:
     return consequences, pairs, sensitivity
 
 
-def _markdown(model: dict, pairs: list[dict], sensitivity: list[dict], admission: dict) -> str:
+def _markdown(model: dict[str, Any], pairs: list[dict[str, Any]], sensitivity: list[dict[str, Any]], admission: dict[str, Any]) -> str:
     lines = [
         '# Illustrative ICU liaison economic evaluation — decision brief',
         '',
@@ -332,7 +337,7 @@ def _markdown(model: dict, pairs: list[dict], sensitivity: list[dict], admission
     return '\n'.join(lines)
 
 
-def _csv(path: Path, rows: list[dict], *, columns: tuple[str, ...] | None = None) -> None:
+def _csv(path: Path, rows: list[dict[str, Any]], *, columns: tuple[str, ...] | None = None) -> None:
     if columns is None and not rows:
         raise ValueError('empty decision report table')
     fields = columns if columns is not None else tuple(rows[0])
@@ -350,7 +355,7 @@ def _draw_surface(path: Path, run: P4Run) -> None:
         writer.writerows(array.tolist())
 
 
-def _plot(path: Path, model: dict) -> None:
+def _plot(path: Path, model: dict[str, Any]) -> None:
     # Matplotlib is a maintained optional reporting dependency; no custom SVG
     # geometry or charting runtime is introduced. It is not needed for core P5.
     try:
@@ -381,7 +386,7 @@ def _plot(path: Path, model: dict) -> None:
     plt.close(fig)
 
 
-def _read_verified_bundle(directory: Path) -> tuple[dict, dict[str, bytes]]:
+def _read_verified_bundle(directory: Path) -> tuple[dict[str, Any], dict[str, bytes]]:
     directory = Path(directory)
     manifest_file = directory / 'manifest.json'
     if manifest_file.is_symlink() or not manifest_file.is_file():
@@ -431,12 +436,12 @@ def _match_report_value(actual: str | float, expected: float, label: str) -> Non
         raise ValueError(f'P5 {label} summary differs from report evidence')
 
 
-def _match_report_summary(actual: dict, expected: dict, label: str) -> None:
+def _match_report_summary(actual: dict[str, Any], expected: dict[str, Any], label: str) -> None:
     for stat in SUMMARY_FIELDS:
         _match_report_value(actual[stat], expected[stat], label)
 
 
-def _review_cost_consequences(data: bytes, model: dict) -> None:
+def _review_cost_consequences(data: bytes, model: dict[str, Any]) -> None:
     outcomes = model['strategies']
     measures = {name: (unit, boundary) for name, unit, boundary in (*MEASURES, SERVICE_COST)}
     expected = {(arm, measure) for arm in outcomes for measure in measures}
@@ -457,7 +462,7 @@ def _review_cost_consequences(data: bytes, model: dict) -> None:
             raise ValueError('P5 cost-consequence service cost is inconsistent')
 
 
-def _review_paired_comparisons(data: bytes, model: dict, draws: dict[str, np.ndarray]) -> list[dict[str, str]]:
+def _review_paired_comparisons(data: bytes, model: dict[str, Any], draws: dict[str, NDArray[float64]]) -> list[dict[str, str]]:
     outcomes = model['strategies']
     reference = 'current_care'
     budget_measure = 'net_budget_impact_aud'
@@ -505,7 +510,7 @@ def _review_sensitivity(data: bytes, strategies: set[str]) -> list[dict[str, str
     return rows
 
 
-def review_report(directory: Path) -> dict:
+def review_report(directory: Path) -> dict[str, Any]:
     """Review draw-based resource results and cross-check the other published tables."""
     manifest, bundle = _read_verified_bundle(directory)
     model = json.loads(bundle['model-summary.json'])
@@ -581,11 +586,11 @@ def build_report(
     source_register: Path | None = None,
     voiage_mode: Literal['skip','provider'] = 'skip',
     dapane_mode: Literal['skip','provider'] = 'skip',
-    dapane_provider: Callable | None = None,
-    value_array_factory: Callable | None = None,
-    analysis_factory: Callable | None = None,
+    dapane_provider: ValuationProvider | None = None,
+    value_array_factory: ValueArrayFactory | None = None,
+    analysis_factory: AnalysisFactory | None = None,
     plots: bool = False,
-) -> dict:
+) -> dict[str, Any]:
     """Publish a whole synthetic report directory atomically, without overwrite.
 
     The public mode does not accept real clinical records. Exact mathematical

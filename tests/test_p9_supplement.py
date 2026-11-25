@@ -1,4 +1,5 @@
 """Synthetic source values, conserved counts and rehashed visual tampering."""
+from typing import Any
 import csv
 import hashlib
 import json
@@ -15,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 IDS = {'F05', 'F06', 'F07', 'F08', 'F09', 'F13', 'F18'}
 
 
-def test_supplement_source_and_mark_reconciliation(tmp_path):
+def test_supplement_source_and_mark_reconciliation(tmp_path: Path) -> None:
     raw = json.loads((ROOT / 'model-inputs/p4/illustrative.json').read_text())
     raw['iterations'] = 32
     scenario = EconomicScenario.model_validate(raw)
@@ -25,7 +26,7 @@ def test_supplement_source_and_mark_reconciliation(tmp_path):
     receipt = build_figures(case, p5, out, include_supplement=True)
     assert IDS <= set(receipt['figures_checked'])
 
-    def rows(key):
+    def rows(key: str) -> list[dict[str, Any]]:
         with (out / f'{key}.csv').open(newline='') as stream:
             return list(csv.DictReader(stream))
 
@@ -66,7 +67,7 @@ def test_supplement_source_and_mark_reconciliation(tmp_path):
 
 
 @pytest.mark.parametrize('edit', ['duplicate', 'gap', 'no_baseline', 'observed'])
-def test_event_design_requires_fictional_consecutive_periods(tmp_path, edit):
+def test_event_design_requires_fictional_consecutive_periods(tmp_path: Path, edit: str) -> None:
     from icu_liaison.p9_supplement_data import DESIGN, event_rows
 
     spec = json.loads(DESIGN.read_bytes())
@@ -84,7 +85,7 @@ def test_event_design_requires_fictional_consecutive_periods(tmp_path, edit):
         event_rows(path)
 
 
-def test_constant_zero_differences_preserve_ties_and_histogram_total(tmp_path):
+def test_constant_zero_differences_preserve_ties_and_histogram_total(tmp_path: Path) -> None:
     from icu_liaison.p9_figure_data import paired_capacity
     from icu_liaison.p9_supplement_data import economic_rows
 
@@ -104,7 +105,7 @@ def test_constant_zero_differences_preserve_ties_and_histogram_total(tmp_path):
     assert occupied['lower_aud'] <= 0 <= occupied['upper_aud'] and occupied['count'] == 32
 
 
-def test_restricted_manifest_is_rejected_before_opening_episode_feeds(tmp_path):
+def test_restricted_manifest_is_rejected_before_opening_episode_feeds(tmp_path: Path) -> None:
     from icu_liaison.p9_figures import DEFAULT_P3
     from icu_liaison.p9_supplement_data import flow_rows
 

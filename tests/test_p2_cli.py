@@ -1,4 +1,5 @@
 """End-to-end executable P2 admission without a local clinical dataset."""
+from subprocess import CompletedProcess
 import hashlib
 import json
 import os
@@ -15,13 +16,13 @@ REQUEST = ROOT / 'model-inputs/chhhs-data-request.json'
 SIGNOFF = ROOT / 'model-inputs/p2-governance-signoff-TEMPLATE.json'
 
 
-def run(*args):
+def run(*args: object) -> CompletedProcess[str]:
     env = {**os.environ, 'PYTHONPATH': str(ROOT / 'src')}
     return subprocess.run([sys.executable, '-m', 'icu_liaison.protocol_cli', *map(str, args)],
                           cwd=ROOT, env=env, capture_output=True, text=True, check=False)
 
 
-def test_cli_produces_reproducible_source_trace_and_reports_blocks():
+def test_cli_produces_reproducible_source_trace_and_reports_blocks() -> None:
     result = run(PROTOCOL, SCENARIO, '--data-dictionary', DICTIONARY)
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
@@ -32,14 +33,14 @@ def test_cli_produces_reproducible_source_trace_and_reports_blocks():
     assert result.stdout == run(PROTOCOL, SCENARIO, '--data-dictionary', DICTIONARY).stdout
 
 
-def test_cli_can_fail_closed_when_local_investment_ready_is_required():
+def test_cli_can_fail_closed_when_local_investment_ready_is_required() -> None:
     result = run(PROTOCOL, SCENARIO, '--data-dictionary', DICTIONARY, '--require-local-ready')
     assert result.returncode == 2
     assert json.loads(result.stdout)['ready_for_local_claims'] is False
     assert 'UNVERIFIED' in result.stderr
 
 
-def test_cli_audits_the_review_pack_with_the_same_sources():
+def test_cli_audits_the_review_pack_with_the_same_sources() -> None:
     args = (PROTOCOL, SCENARIO, '--data-dictionary', DICTIONARY, '--field-crosswalk', CROSSWALK,
             '--chhhs-request', REQUEST, '--governance-signoff', SIGNOFF)
     result = run(*args)
@@ -56,7 +57,7 @@ def test_cli_audits_the_review_pack_with_the_same_sources():
     assert blocked.stdout == result.stdout
 
 
-def test_missing_input_does_not_produce_success_report(tmp_path):
+def test_missing_input_does_not_produce_success_report(tmp_path: Path) -> None:
     missing = tmp_path/'not-here.json'
     result = run(PROTOCOL, missing)
     assert result.returncode != 0

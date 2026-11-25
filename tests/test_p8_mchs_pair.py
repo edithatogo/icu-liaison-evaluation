@@ -1,14 +1,18 @@
 """Consumer-first tests; the real MCHS calculator is NOT simulated or reimplemented."""
 from __future__ import annotations
+from pathlib import Path
+from pytest import MonkeyPatch
+from typing import Any
 
 from decimal import Decimal
+from collections.abc import Callable
 import copy
 import pytest
 
 from icu_liaison.adapters.p8_mchs import MchsPair, run_mchs_pair
 
 
-def example(**changes):
+def example(**changes: object) -> MchsPair:
     data = {
         'schema_version': 1, 'data_class': 'synthetic',
         'episode_id': 'synthetic-icu-episode-01', 'pricing_year': 2025,
@@ -23,8 +27,11 @@ def example(**changes):
     return MchsPair.model_validate(data)
 
 
-def stub_calculator(calls):
-    def run(rows, *, year, ref_dir):
+type CalculatorCall = tuple[list[dict[str, Any]], str, str]
+
+
+def stub_calculator(calls: list[CalculatorCall]) -> Callable[..., list[dict[str, Any]]]:
+    def run(rows: list[dict[str, Any]], *, year: str, ref_dir: str) -> list[dict[str, Any]]:
         calls.append((copy.deepcopy(rows), year, ref_dir))
         hours = Decimal(str(rows[0]['ICU_HOURS']))
         return [{'NWAU25': str(hours / Decimal('100') + Decimal('1.00')),
@@ -32,8 +39,8 @@ def stub_calculator(calls):
     return run
 
 
-def test_paired_mchs_only_changes_icu_hours_and_keeps_funding_separate():
-    calls = []
+def test_paired_mchs_only_changes_icu_hours_and_keeps_funding_separate() -> None:
+    calls: list[CalculatorCall] = []
     out = run_mchs_pair(example(), provider=stub_calculator(calls))
     assert len(calls) == 2
     before, after = calls[0][0][0], calls[1][0][0]
@@ -48,8 +55,8 @@ def test_paired_mchs_only_changes_icu_hours_and_keeps_funding_separate():
     assert out['annual_calculator_parity'] == 'unverified'
 
 
-def test_no_change_is_exact_zero_without_claiming_cash():
-    calls=[]
+def test_no_change_is_exact_zero_without_claiming_cash() -> None:
+    calls: list[CalculatorCall] = []
     out=run_mchs_pair(example(icu_hours_intervention='58.25'),provider=stub_calculator(calls))
     assert out['change_nwau'] == '0.0000'
     assert out['actual_revenue_aud'] is None
@@ -64,12 +71,12 @@ def test_no_change_is_exact_zero_without_claiming_cash():
     {'context': {'DRG': 'altered'}}, {'data_class':'patient_records'},
     {'source_bundle_sha256':'unverified'},
 ])
-def test_reject_unsupported_year_version_and_unqualified_input(changes):
+def test_reject_unsupported_year_version_and_unqualified_input(changes: dict[str, Any] | dict[str, float] | dict[str, int] | dict[str, str]) -> None:
     with pytest.raises((ValueError, TypeError)):
         example(**changes)
 
 
-def test_provider_error_and_wrong_output_column_fail_closed():
+def test_provider_error_and_wrong_output_column_fail_closed() -> None:
     with pytest.raises(ValueError, match='MCHS'):
         run_mchs_pair(example(), provider=lambda rows, **kw:[{'NWAU25_AUD':'123.00'}])
     with pytest.raises(ValueError, match='MCHS'):
@@ -80,7 +87,7 @@ def test_provider_error_and_wrong_output_column_fail_closed():
         run_mchs_pair(example(), provider=lambda rows, **kw:[{'NWAU25':-1,'Error_Code':0}])
 
 
-def _install_fictional_mchs(tmp_path, monkeypatch, body):
+def _install_fictional_mchs(tmp_path: Path, monkeypatch: MonkeyPatch, body: str) -> None:
     package = tmp_path / 'runtime/nwau_py/calculators'
     package.mkdir(parents=True)
     for directory in (package, package.parent):
@@ -90,19 +97,19 @@ def _install_fictional_mchs(tmp_path, monkeypatch, body):
     monkeypatch.syspath_prepend(str(package.parents[1]))
 
 
-def test_missing_mchs_installation_is_explicit_not_a_fake_success(tmp_path, monkeypatch):
+def test_missing_mchs_installation_is_explicit_not_a_fake_success(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     _install_fictional_mchs(tmp_path, monkeypatch, 'raise ImportError("not installed")\n')
     with pytest.raises(RuntimeError,match='MCHS.*not installed'):
         run_mchs_pair(example(),provider=None,ref_dir='/synthetic/reference')
 
 
-def test_native_path_demands_an_explicit_reference_bundle_directory():
+def test_native_path_demands_an_explicit_reference_bundle_directory() -> None:
     with pytest.raises(ValueError,match='reference'):
         run_mchs_pair(example(),provider=None)
 
 
 @pytest.mark.parametrize('change', ['none', 'before', 'during'])
-def test_installed_route_binds_the_sas_table_bytes(tmp_path, monkeypatch, change):
+def test_installed_route_binds_the_sas_table_bytes(tmp_path: Path, monkeypatch: MonkeyPatch, change: str) -> None:
     import icu_liaison.adapters.p8_mchs as module
 
     table = tmp_path / 'nep25_aa_price_weights.sas7bdat'
@@ -135,7 +142,7 @@ def calculate_acute(rows, _params, *, year, ref_dir):
         assert calls.read_text(encoding='utf-8').splitlines() == ['2025', '2025']
 
 
-def test_installed_route_leaves_caller_cache_untouched(tmp_path, monkeypatch):
+def test_installed_route_leaves_caller_cache_untouched(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
 
     refs = tmp_path / 'references'
@@ -167,7 +174,7 @@ def calculate_acute(rows, _params, *, year, ref_dir):
 
 
 @pytest.mark.parametrize('present_table', ['price_weights', 'adj_icu'])
-def test_installed_route_requires_price_weights_and_icu_adjustment(tmp_path, monkeypatch, present_table):
+def test_installed_route_requires_price_weights_and_icu_adjustment(tmp_path: Path, monkeypatch: MonkeyPatch, present_table: str) -> None:
     from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
 
     (tmp_path / f'nep25_aa_{present_table}.sas7bdat').write_bytes(b'fictional reference bytes')
@@ -183,14 +190,14 @@ def calculate_acute(rows, _params, **kwargs):
         run_mchs_pair(case, ref_dir=str(tmp_path))
 
 
-def test_reader_preserves_exact_delta_at_the_supported_precision():
+def test_reader_preserves_exact_delta_at_the_supported_precision() -> None:
     expected = '1.123456789012345678901234567891'
     outputs = iter(([{'NWAU25': '0', 'Error_Code': 0}], [{'NWAU25': expected, 'Error_Code': 0}]))
     result = run_mchs_pair(example(), provider=lambda *_a, **_k: next(outputs))
     assert result['change_nwau'] == expected
 
 
-def test_reference_fingerprint_rejects_linked_tables(tmp_path):
+def test_reference_fingerprint_rejects_linked_tables(tmp_path: Path) -> None:
     from icu_liaison.adapters.p8_mchs import mchs_reference_sha256
 
     table = tmp_path / 'table.txt'
@@ -200,8 +207,8 @@ def test_reference_fingerprint_rejects_linked_tables(tmp_path):
         mchs_reference_sha256(tmp_path)
 
 
-def test_provider_output_requires_single_complete_row_and_keeps_comparator_copy():
-    calls=[]
+def test_provider_output_requires_single_complete_row_and_keeps_comparator_copy() -> None:
+    calls: list[CalculatorCall] = []
     with pytest.raises(ValueError,match='MCHS'):
         run_mchs_pair(example(),provider=lambda *a,**k:[{'NWAU25':'1','Error_Code':0}]*2)
     s=example()

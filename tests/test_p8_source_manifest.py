@@ -1,5 +1,7 @@
 """Repository content and dependency pins must remain independently verifiable."""
 from __future__ import annotations
+from subprocess import CompletedProcess
+from typing import Any
 import hashlib
 import json
 from pathlib import Path
@@ -15,12 +17,12 @@ CONDUCTOR_PIN = '6e8f9a860bcdd6a2c423473c12e745200688c633'
 CONDUCTOR_PATH = 'extensions/conductor'
 
 
-def git(root, *args):
+def git(root: Path, *args: str) -> CompletedProcess[str]:
     return subprocess.run(['git', '-C', str(root), *args], check=True,
                           capture_output=True, text=True)
 
 
-def pinned_repository(root):
+def pinned_repository(root: Path) -> dict[str, Any]:
     git(root, 'init', '-q')
     (root/'.gitmodules').write_text(
         '[submodule "conductor"]\n'
@@ -32,7 +34,7 @@ def pinned_repository(root):
     return {'git_submodules': {CONDUCTOR_PATH: CONDUCTOR_PIN}}
 
 
-def test_manifest_rejects_tampering_and_untracked_payloads(tmp_path):
+def test_manifest_rejects_tampering_and_untracked_payloads(tmp_path: Path) -> None:
     p=tmp_path/'synthetic.txt';p.write_text('safe')
     h=hashlib.sha256(p.read_bytes()).hexdigest()
     manifest={'file_sha256':{'synthetic.txt':h}}
@@ -44,7 +46,7 @@ def test_manifest_rejects_tampering_and_untracked_payloads(tmp_path):
     assert any('unexpected' in s for s in verify_manifest(tmp_path,manifest))
 
 
-def test_source_manifest_is_current_and_has_no_private_material():
+def test_source_manifest_is_current_and_has_no_private_material() -> None:
     base=Path(__file__).resolve().parents[1]
     manifest=json.loads((base/'SOURCE_MANIFEST.json').read_text())
     assert verify_manifest(base,manifest)==[]
@@ -55,17 +57,17 @@ def test_source_manifest_is_current_and_has_no_private_material():
     assert not any(p.startswith('private/') or p.endswith('.xlsx') for p in manifest['file_sha256'])
 
 
-def test_conductor_registry_links_every_track_in_the_plugin_format():
+def test_conductor_registry_links_every_track_in_the_plugin_format() -> None:
     conductor = Path(__file__).resolve().parents[1] / 'conductor'
     entries = re.split(r'(?m)^- \[[ x~]\] \*\*Track: ', (conductor / 'tracks.md').read_text())[1:]
     links = [re.search(r'\(tracks/([^/]+)/index\.md\)', entry) for entry in entries]
     assert all(links)
     expected = {plan.parent.name for plan in (conductor / 'tracks').glob('*/plan.md')}
     assert len(links) == len(expected)
-    assert {link.group(1) for link in links} == expected
+    assert {link.group(1) for link in links if link is not None} == expected
 
 
-def test_build_metadata_does_not_hide_unexpected_project_files(tmp_path):
+def test_build_metadata_does_not_hide_unexpected_project_files(tmp_path: Path) -> None:
     source = tmp_path/'src'
     source.mkdir()
     (source/'model.py').write_text('source')
@@ -78,7 +80,7 @@ def test_build_metadata_does_not_hide_unexpected_project_files(tmp_path):
     assert 'unexpected file: src/unexpected.py' in verify_manifest(tmp_path, manifest)
 
 
-def test_snakemake_scheduler_metadata_does_not_change_source_inventory(tmp_path):
+def test_snakemake_scheduler_metadata_does_not_change_source_inventory(tmp_path: Path) -> None:
     (tmp_path/'source.py').write_text('source')
     manifest = {'file_sha256': source_files(tmp_path)}
     metadata = tmp_path/'.snakemake'/'metadata'
@@ -89,7 +91,7 @@ def test_snakemake_scheduler_metadata_does_not_change_source_inventory(tmp_path)
     assert 'unexpected file: unreviewed.py' in verify_manifest(tmp_path, manifest)
 
 
-def test_submodule_inventory_is_stable_with_or_without_checkout(tmp_path):
+def test_submodule_inventory_is_stable_with_or_without_checkout(tmp_path: Path) -> None:
     manifest = pinned_repository(tmp_path)
     manifest['file_sha256'] = source_files(tmp_path, submodule_paths=frozenset({CONDUCTOR_PATH}))
     assert verify_manifest(tmp_path, manifest) == []
@@ -103,7 +105,7 @@ def test_submodule_inventory_is_stable_with_or_without_checkout(tmp_path):
 
 
 @pytest.mark.parametrize('mode,sha', [('160000', 'a'*40), ('100644', None)])
-def test_submodule_requires_exact_gitlink_mode_and_commit(tmp_path, mode, sha):
+def test_submodule_requires_exact_gitlink_mode_and_commit(tmp_path: Path, mode: str, sha: str | None) -> None:
     manifest = pinned_repository(tmp_path)
     if sha is None:
         file = tmp_path/'ordinary.txt'
@@ -113,7 +115,7 @@ def test_submodule_requires_exact_gitlink_mode_and_commit(tmp_path, mode, sha):
     assert any('gitlink mode or commit mismatch' in p for p in verify_git_submodules(tmp_path, manifest))
 
 
-def test_missing_gitlink_or_replaced_upstream_is_rejected(tmp_path):
+def test_missing_gitlink_or_replaced_upstream_is_rejected(tmp_path: Path) -> None:
     manifest = pinned_repository(tmp_path)
     git(tmp_path, 'update-index', '--force-remove', CONDUCTOR_PATH)
     assert any('gitlink' in p for p in verify_git_submodules(tmp_path, manifest))
@@ -123,7 +125,7 @@ def test_missing_gitlink_or_replaced_upstream_is_rejected(tmp_path):
     assert any('unexpected submodule URL' in p for p in verify_git_submodules(tmp_path, manifest))
 
 
-def test_staged_manifest_validates_gitmodules_and_the_gitlink(tmp_path):
+def test_staged_manifest_validates_gitmodules_and_the_gitlink(tmp_path: Path) -> None:
     from tools.verify_source_manifest import verify_staged_manifest
 
     manifest = pinned_repository(tmp_path)
@@ -131,7 +133,7 @@ def test_staged_manifest_validates_gitmodules_and_the_gitlink(tmp_path):
     approved = modules.read_bytes()
     manifest_file = tmp_path / 'SOURCE_MANIFEST.json'
 
-    def stage():
+    def stage() -> None:
         manifest['file_sha256'] = source_files(tmp_path, submodule_paths=frozenset({CONDUCTOR_PATH}))
         manifest_file.write_text(json.dumps(manifest))
         git(tmp_path, 'add', '.gitmodules', 'SOURCE_MANIFEST.json')
@@ -148,7 +150,7 @@ def test_staged_manifest_validates_gitmodules_and_the_gitlink(tmp_path):
     assert any('gitlink mode or commit mismatch' in error for error in verify_staged_manifest(tmp_path)[1])
 
 
-def test_manifest_cannot_hide_an_arbitrary_directory_as_a_dependency(tmp_path):
+def test_manifest_cannot_hide_an_arbitrary_directory_as_a_dependency(tmp_path: Path) -> None:
     unexpected = tmp_path/'src'
     unexpected.mkdir()
     (unexpected/'hidden.py').write_text('must be inventoried')
@@ -158,7 +160,7 @@ def test_manifest_cannot_hide_an_arbitrary_directory_as_a_dependency(tmp_path):
     assert 'unexpected submodule path: src' in errors
 
 
-def test_unpinned_and_duplicate_submodule_paths_are_rejected(tmp_path):
+def test_unpinned_and_duplicate_submodule_paths_are_rejected(tmp_path: Path) -> None:
     manifest = pinned_repository(tmp_path)
     assert verify_git_submodules(tmp_path, {}) == ['.gitmodules paths do not match manifest pins']
     modules = tmp_path/'.gitmodules'

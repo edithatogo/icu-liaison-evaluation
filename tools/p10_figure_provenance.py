@@ -38,13 +38,13 @@ def _canonical(payload: Any) -> bytes:
                       ensure_ascii=True, allow_nan=False).encode("utf-8")
 
 
-def _validate_provenance(payload: dict) -> None:
+def _validate_provenance(payload: dict[str, Any]) -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(payload)
 
 
-def compile_receipt(report: Path, scenario_file: Path) -> dict:
+def compile_receipt(report: Path, scenario_file: Path) -> dict[str, Any]:
     """Independently recompute hashes; do not trust an existing receipt or flag."""
     folder = Path(report)
     source = Path(scenario_file)
@@ -137,7 +137,7 @@ def compile_receipt(report: Path, scenario_file: Path) -> dict:
     }
 
 
-def verify_receipt(report: Path, scenario: Path, receipt: dict) -> dict:
+def verify_receipt(report: Path, scenario: Path, receipt: dict[str, Any]) -> dict[str, Any]:
     """A forged receipt cannot override source, figure or model hashes."""
     expected = compile_receipt(report, scenario)
     if receipt != expected:

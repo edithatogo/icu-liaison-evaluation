@@ -6,9 +6,11 @@ platform qualification remain separately required. Injection tests cannot pass
 this script. Use a separate CPython 3.15.2+ environment for Voiage 3.1.0.
 """
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import hashlib
+from importlib import import_module
 from importlib.machinery import ExtensionFileLoader, ModuleSpec, PathFinder
 from importlib.metadata import PackageNotFoundError, distribution
 from importlib.util import find_spec
@@ -41,7 +43,7 @@ def _extension_origin(spec: ModuleSpec | None) -> Path | None:
     return None
 
 
-def _inspect_installation(provider: str, expected: str) -> tuple[dict, Path]:
+def _inspect_installation(provider: str, expected: str) -> tuple[dict[str, Any], Path]:
     try:
         dist = distribution(provider)
     except PackageNotFoundError as exc:
@@ -55,7 +57,7 @@ def _inspect_installation(provider: str, expected: str) -> tuple[dict, Path]:
     if (
         package_file is None or package is None or not package.origin
         or package.submodule_search_locations is None
-        or Path(package.origin).resolve() != Path(dist.locate_file(package_file)).resolve()
+        or Path(package.origin).resolve() != Path(str(dist.locate_file(package_file))).resolve()
     ):
         raise RuntimeError(f'{provider}: import does not resolve to the installed distribution package')
 
@@ -67,7 +69,7 @@ def _inspect_installation(provider: str, expected: str) -> tuple[dict, Path]:
         raise RuntimeError(f'{provider}: expected native extension {module} is unavailable')
     extension = f'{provider}/{path.name}'
     record = files.get(extension)
-    if record is None or path.resolve() != Path(dist.locate_file(record)).resolve():
+    if record is None or path.resolve() != Path(str(dist.locate_file(record))).resolve():
         raise RuntimeError(f'{provider}: native extension {module} does not match the installed distribution')
     return {
         'distribution': provider,
@@ -78,7 +80,7 @@ def _inspect_installation(provider: str, expected: str) -> tuple[dict, Path]:
     }, path.resolve()
 
 
-def _require_reviewed_extension(entry: dict, installed: dict) -> None:
+def _require_reviewed_extension(entry: dict[str, Any], installed: dict[str, Any]) -> None:
     machine = platform.machine().lower()
     if sys.platform == 'darwin' and machine == 'arm64':
         reviewed = entry.get('reviewed_wheel', {})
@@ -99,7 +101,7 @@ def _require_reviewed_extension(entry: dict, installed: dict) -> None:
     installed['reviewed_extension_matched'] = True
 
 
-def _verify_loaded_extension(installed: dict, expected: Path) -> None:
+def _verify_loaded_extension(installed: dict[str, Any], expected: Path) -> None:
     module = sys.modules.get(installed['native_module'])
     path = _extension_origin(getattr(module, '__spec__', None))
     if path is None or path.resolve() != expected:
@@ -109,7 +111,7 @@ def _verify_loaded_extension(installed: dict, expected: Path) -> None:
         raise RuntimeError(f'{installed["distribution"]}: native extension changed during qualification')
 
 
-def dapane_oracle() -> dict:
+def dapane_oracle() -> dict[str, Any]:
     """Exercise the real installed Rust-backed Python provider, not a fake."""
     request = make_request('p1-independent-reference', [
         CostLine('one', 'staff_time', 'minute', '2', '50.00', ['salary']),
@@ -137,10 +139,10 @@ def dapane_oracle() -> dict:
     }
 
 
-def voiage_oracle() -> dict:
+def voiage_oracle() -> dict[str, Any]:
     """Exercise released Voiage 3.1.0 EVPI on an independent two-state oracle."""
-    from voiage.analysis import DecisionAnalysis
-    from voiage.schema import ValueArray
+    DecisionAnalysis = import_module("voiage.analysis").DecisionAnalysis
+    ValueArray = import_module("voiage.schema").ValueArray
 
     vals = np.asarray([[0.0, 10.0], [0.0, -10.0]], dtype=np.float64)
     analysis = DecisionAnalysis(ValueArray.from_numpy(vals, ['current_care', 'liaison_service']))

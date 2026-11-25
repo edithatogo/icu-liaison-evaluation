@@ -1,9 +1,12 @@
 """Independent tests for local CI/CD runner, Git hooks, and Conductor audit."""
 from __future__ import annotations
+from subprocess import CompletedProcess
+from typing import Any
 
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -94,7 +97,7 @@ def _start_publication_fixture(root: Path) -> None:
         {"source": "https://example." + "sharepoint.com/sites/fictional"},
     ],
 )
-def test_publication_guard_reads_staged_blob_instead_of_working_file(tmp_path: Path, payload: dict) -> None:
+def test_publication_guard_reads_staged_blob_instead_of_working_file(tmp_path: Path, payload: dict[str, Any]) -> None:
     from tools.publication_guard import index_violations
 
     _start_publication_fixture(tmp_path)
@@ -159,7 +162,7 @@ def test_pending_push_checks_intermediate_commit_even_with_clean_tip(tmp_path: P
     assert pending_push_violations(tmp_path, [clean]) == []
 
     # Use the real pre-push hook against an isolated bare repository.
-    for name in [".githooks/pre-push", "tools/publication_guard.py"]:
+    for name in [".githooks/pre-push", "tools/publication_guard.py", "tools/run_git_hook.py"]:
         f = tmp_path / name
         f.parent.mkdir(exist_ok=True)
         f.write_bytes((ROOT / name).read_bytes())
@@ -180,16 +183,99 @@ def test_pending_push_checks_intermediate_commit_even_with_clean_tip(tmp_path: P
     assert not _temporary_git(remote, "for-each-ref", "--format=%(refname)")
 
 
+def test_ordinary_git_hooks_check_the_index_merge_and_exact_outgoing_ref(tmp_path: Path) -> None:
+    repo = tmp_path / "source"
+    repo.mkdir()
+    _start_publication_fixture(repo)
+    _temporary_git(repo, "checkout", "-q", "-b", "baseline")
+    for relative in (".githooks/pre-commit", ".githooks/pre-merge-commit", ".githooks/pre-push",
+                     "tools/run_git_hook.py", "tools/publication_guard.py"):
+        target = repo / relative
+        target.parent.mkdir(exist_ok=True)
+        shutil.copy2(ROOT / relative, target)
+    (repo / ".gitignore").write_text(".venv/\nprivate/\n")
+    (repo / ".pre-commit-config.yaml").write_text(
+        "repos:\n- repo: local\n  hooks:\n  - id: strict-fixture\n    name: Check fictional source\n"
+        "    language: system\n    entry: .venv/bin/python -m mypy --strict --cache-dir private/check sample.py\n"
+        "    pass_filenames: false\n    always_run: true\n"
+        "    stages: [pre-commit, pre-merge-commit, pre-push]\n"
+    )
+    sample = repo / "sample.py"
+    accepted = "count: int = 3\n"
+    rejected = "count: int = 'fictional'\n"
+    sample.write_text(accepted)
+    _temporary_git(repo, "add", ".")
+    _temporary_git(repo, "commit", "-qm", "Fictional baseline")
+    _temporary_git(repo, "checkout", "-qb", "incompatible")
+    sample.write_text(rejected)
+    _temporary_git(repo, "commit", "-qam", "Incompatible historical fixture")
+    _temporary_git(repo, "checkout", "-q", "baseline")
+    (repo / ".venv").symlink_to(ROOT / ".venv", target_is_directory=True)
+    (repo / "private").mkdir()
+    (repo / "private/venv-quality").symlink_to(ROOT / "private/venv-quality", target_is_directory=True)
+    _temporary_git(repo, "config", "core.hooksPath", ".githooks")
+
+    def attempt(*args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(["git", "-C", str(repo), *args], capture_output=True, text=True)
+
+    metadata = repo / "metadata.json"
+    metadata.write_text(json.dumps({"data_class": "restricted", "example": "fictional"}))
+    _temporary_git(repo, "add", "metadata.json")
+    metadata.write_text(json.dumps({"data_class": "synthetic"}))
+    denied = attempt("commit", "-m", "Reject a restricted fixture")
+    assert denied.returncode and "Public-data check rejected" in denied.stderr
+    assert "metadata.json" not in denied.stderr
+    _temporary_git(repo, "restore", "--staged", "metadata.json")
+    metadata.unlink()
+
+    # Stage a type error, then fix only the working copy.
+    sample.write_text(rejected)
+    _temporary_git(repo, "add", "sample.py")
+    sample.write_text(accepted)
+    blocked = attempt("commit", "-m", "Unqualified candidate")
+    assert blocked.returncode and "Incompatible types" in blocked.stdout + blocked.stderr
+    assert _temporary_git(repo, "show", ":sample.py") == rejected.strip()
+    assert sample.read_text() == accepted
+
+    # A valid index must succeed even if an unstaged edit would fail.
+    candidate = accepted + "# Reviewed change.\n"
+    sample.write_text(candidate)
+    _temporary_git(repo, "add", "sample.py")
+    sample.write_text(rejected)
+    _temporary_git(repo, "commit", "-qm", "Qualified fictional source")
+    assert sample.read_text() == rejected
+    assert _temporary_git(repo, "show", "HEAD:sample.py") == candidate.strip()
+
+    # Force an actual merge commit on a clean base; the hook sees its prospective tree.
+    _temporary_git(repo, "restore", "sample.py")
+    _temporary_git(repo, "checkout", "-qb", "merge-base", "HEAD^")
+    head = _temporary_git(repo, "rev-parse", "HEAD")
+    merged = attempt("merge", "--no-ff", "--no-edit", "incompatible")
+    assert merged.returncode and "Incompatible types" in merged.stdout + merged.stderr
+    assert _temporary_git(repo, "rev-parse", "HEAD") == head
+    _temporary_git(repo, "merge", "--abort")
+    _temporary_git(repo, "merge", "--no-ff", "--no-edit", "baseline")
+
+    remote = tmp_path / "remote.git"
+    _temporary_git(repo, "init", "-q", "--bare", str(remote))
+    pushed = attempt("push", str(remote), "incompatible:refs/heads/check")
+    assert pushed.returncode and "Incompatible types" in pushed.stdout + pushed.stderr
+    assert not _temporary_git(remote, "for-each-ref", "--format=%(refname)")
+    _temporary_git(repo, "push", str(remote), "HEAD:refs/heads/check")
+    assert _temporary_git(remote, "rev-parse", "refs/heads/check") == _temporary_git(repo, "rev-parse", "HEAD")
+
+
 def test_build_steps_matches_modes() -> None:
     manifest_steps = [s["name"] for s in build_steps(ROOT, sys.executable, "manifest-only")]
     assert manifest_steps == ["verify_source_manifest"]
 
     pre_commit_steps = [s["name"] for s in build_steps(ROOT, sys.executable, "pre-commit")]
-    assert pre_commit_steps == ["verify_source_manifest", "pytest", "ci_smoke"]
+    assert pre_commit_steps == ["verify_source_manifest", "strict_types", "pytest", "ci_smoke"]
 
     full_steps = [s["name"] for s in build_steps(ROOT, sys.executable, "full")]
     assert full_steps == [
         "verify_source_manifest",
+        "strict_types",
         "pytest",
         "ci_smoke",
         "qualify_current_portable",
@@ -362,8 +448,8 @@ def test_git_hooks_and_pre_commit_config_exist_and_are_executable() -> None:
     pre_commit_cfg = (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
     assert "tools/run_local_ci.py" in pre_commit_cfg
     assert "--gitleaks" in pre_commit_cfg
-    assert "--gitleaks" in (ROOT / ".githooks/pre-commit").read_text(encoding="utf-8")
-    assert "--gitleaks" in (ROOT / ".githooks/pre-merge-commit").read_text(encoding="utf-8")
+    for stage in ("pre-commit", "pre-merge-commit", "pre-push"):
+        assert f"run_git_hook.py\" {stage}" in (ROOT / ".githooks" / stage).read_text()
 
 
 def test_run_gitleaks_staged_fails_closed_when_missing_and_handles_exit_codes(
@@ -374,9 +460,9 @@ def test_run_gitleaks_staged_fails_closed_when_missing_and_handles_exit_codes(
     assert code_missing == 2
     assert rec_missing["status"] == "missing_binary"
 
-    seen: dict = {}
+    seen: dict[str, Any] = {}
 
-    def fake_run_pass(cmd, **kwargs):
+    def fake_run_pass(cmd: list[str], **kwargs: object) -> CompletedProcess[str]:
         seen["cmd"] = cmd
         return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
 
@@ -386,7 +472,7 @@ def test_run_gitleaks_staged_fails_closed_when_missing_and_handles_exit_codes(
     assert rec_ok["status"] == "passed"
     assert seen["cmd"] == ["/fake/gitleaks", "protect", "--staged", "--no-banner", "--redact"]
 
-    def fake_run_leak(cmd, **kwargs):
+    def fake_run_leak(cmd: list[str], **kwargs: object) -> CompletedProcess[str]:
         return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="leaks found: 1")
 
     monkeypatch.setattr("tools.run_local_ci.subprocess.run", fake_run_leak)

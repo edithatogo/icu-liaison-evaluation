@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
+from numpy.typing import ArrayLike, NDArray
+from typing import Any
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -11,17 +14,18 @@ UNSIGNED = r'(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?'
 NUMBER = rf'[+-]?{UNSIGNED}'
 
 
-def _label(group):
+def _label(group: ET.Element) -> str:
     # Matplotlib stores original accessible text as an XML comment when it
     # embeds glyph outlines. Text-mode SVGs retain ordinary text nodes.
     for node in group.iter():
-        if node.tag in (ET.Comment, f'{SVG}text'):
-            label = node.text if node.tag is ET.Comment else ''.join(node.itertext())
-            return label.strip().replace('−', '-')
+        tag: object = node.tag  # Comment-preserving XML parsers also emit callable sentinel tags.
+        if tag in (ET.Comment, f'{SVG}text'):
+            label = node.text if tag is ET.Comment else ''.join(node.itertext())
+            return (label or '').strip().replace('−', '-')
     return ''
 
 
-def _axis_ticks(axis, direction):
+def _axis_ticks(axis: ET.Element, direction: str) -> dict[str, float]:
     ticks = {}
     for group in axis.findall(f'{SVG}g'):
         if group.get('id', '').startswith(f'{direction}tick_'):
@@ -33,19 +37,19 @@ def _axis_ticks(axis, direction):
     return ticks
 
 
-def _vertices(path):
+def _vertices(path: ET.Element) -> NDArray[np.float64]:
     commands = path.get('d', '').strip()
     if not re.fullmatch(rf'(?:[ML]\s*{NUMBER}\s+{NUMBER}\s*)+[zZ]?', commands):
         raise ValueError('F01 mark has unexpected geometry')
     return np.array([float(n) for n in re.findall(NUMBER, commands)]).reshape(-1, 2)
 
 
-def _matches(actual, expected):
+def _matches(actual: ArrayLike, expected: ArrayLike) -> None:
     if np.shape(actual) != np.shape(expected) or not np.allclose(actual, expected, atol=.015, rtol=0):
         raise ValueError('F01 mark differs from its labelled strategy or model summary')
 
 
-def review_f01(path, model):
+def review_f01(path: Path, model: dict[str, Any]) -> dict[str, int]:
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
     root = ET.parse(path, parser=parser).getroot()
     axes = root.find(f'.//{SVG}g[@id="axes_1"]')
@@ -74,8 +78,8 @@ def review_f01(path, model):
     if slope >= 0:
         raise ValueError('F01 mark has a reversed axis')
 
-    def ordinate(value):
-        return positions[0] + (np.asarray(value) - values[0]) * slope
+    def ordinate(value: ArrayLike) -> NDArray[np.float64]:
+        return np.asarray(positions[0] + (np.asarray(value) - values[0]) * slope, dtype=np.float64)
 
     _matches(positions, ordinate(values))
     bars, lines = [], []

@@ -1,5 +1,6 @@
 """P8 entrypoints must never imply installed-provider qualification."""
 from __future__ import annotations
+from subprocess import CompletedProcess
 
 import json
 import os
@@ -16,13 +17,13 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT/'model-inputs'/'p8'
 
 
-def execute(*args):
+def execute(*args: object) -> CompletedProcess[str]:
     env = {**os.environ, 'PYTHONPATH':str(ROOT/'src')}
     return subprocess.run([sys.executable, '-m','icu_liaison.p8_cli',*map(str,args)],
                           text=True, capture_output=True, env=env, timeout=20)
 
 
-def test_mchs_fixture_schema_and_model_agree():
+def test_mchs_fixture_schema_and_model_agree() -> None:
     payload=json.loads((DATA/'synthetic-mchs-pair.json').read_text())
     schema=json.loads((DATA/'mchs-paired-episode.schema.json').read_text())
     Draft202012Validator.check_schema(schema)
@@ -30,7 +31,7 @@ def test_mchs_fixture_schema_and_model_agree():
     assert MchsPair.model_validate(payload).pricing_year == 2025
 
 
-def test_roster_fixture_schema_and_model_agree():
+def test_roster_fixture_schema_and_model_agree() -> None:
     payload=json.loads((DATA/'synthetic-nursing-roster.json').read_text())
     schema=json.loads((DATA/'nursing-roster.schema.json').read_text())
     Draft202012Validator.check_schema(schema)
@@ -38,7 +39,7 @@ def test_roster_fixture_schema_and_model_agree():
     assert RosterScenario.model_validate(payload).completeness_status=='partial'
 
 
-def test_inspection_commands_require_no_provider_installs():
+def test_inspection_commands_require_no_provider_installs() -> None:
     for kind,path in [('mchs','synthetic-mchs-pair.json'),('roster','synthetic-nursing-roster.json')]:
         run=execute('inspect-'+kind, DATA/path)
         assert run.returncode==0,run.stderr
@@ -49,7 +50,7 @@ def test_inspection_commands_require_no_provider_installs():
         assert 'source_artifact_json' not in run.stdout
 
 
-def test_native_commands_fail_closed_without_installed_providers():
+def test_native_commands_fail_closed_without_installed_providers() -> None:
     for kind,path in [('mchs','synthetic-mchs-pair.json'),('roster','synthetic-nursing-roster.json')]:
         command='run-mchs' if kind=='mchs' else 'build-roster'
         args=[command, DATA/path]
@@ -62,7 +63,7 @@ def test_native_commands_fail_closed_without_installed_providers():
         assert 'source_artifact_json' not in run.stdout
 
 
-def test_invalid_or_duplicate_object_keys_fail_validation(tmp_path):
+def test_invalid_or_duplicate_object_keys_fail_validation(tmp_path: Path) -> None:
     p=tmp_path/'bad.json'
     p.write_text('{"pricing_year":2025,"pricing_year":2024}')
     run=execute('inspect-mchs',p)
@@ -71,7 +72,7 @@ def test_invalid_or_duplicate_object_keys_fail_validation(tmp_path):
     assert result['status']=='INVALID'
 
 
-def test_conductor_p8_phase_receipts_do_not_claim_native_acceptance():
+def test_conductor_p8_phase_receipts_do_not_claim_native_acceptance() -> None:
     meta=json.loads((ROOT/'conductor/tracks/P8-abf-workforce-interop/metadata.json').read_text())
     assert meta['native_integrations_qualified'] is False
     assert meta['finance_validation'] is False
@@ -80,7 +81,7 @@ def test_conductor_p8_phase_receipts_do_not_claim_native_acceptance():
     assert (ROOT/'docs/P8-implemented-consumer-contracts.md').exists()
 
 
-def test_committed_schema_matches_generated_contracts_and_rejects_binary_float():
+def test_committed_schema_matches_generated_contracts_and_rejects_binary_float() -> None:
     from icu_liaison.p8_contract_schema import schema_for
     for kind,name in [('mchs','mchs-paired-episode.schema.json'),('roster','nursing-roster.schema.json')]:
         schema=json.loads((DATA/name).read_text())

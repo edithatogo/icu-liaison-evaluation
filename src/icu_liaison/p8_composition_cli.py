@@ -1,5 +1,6 @@
 """P8.4 auditable source-only composition; never a CHHHS investment admission."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import json
@@ -12,7 +13,7 @@ from .p4_model import EconomicScenario, evaluate_scenarios
 from .p8_composition import FictionalFundingPrice, compose_p8_shadow
 
 
-def _unique(pairs: list[tuple[str, object]]) -> dict:
+def _unique(pairs: list[tuple[str, object]]) -> dict[str, Any]:
     out={}
     for k,v in pairs:
         if k in out:
@@ -21,7 +22,7 @@ def _unique(pairs: list[tuple[str, object]]) -> dict:
     return out
 
 
-def _load(path: Path) -> dict:
+def _load(path: Path) -> dict[str, Any]:
     if path.stat().st_size > 2_000_000:
         raise ValueError('oversized scenario or provider output')
     content=json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=_unique,

@@ -4,6 +4,7 @@ This is not a native-provider or CHHHS clinical qualification runner. It cannot
 promote status beyond SOURCE_ORACLES_PASSED_SYNTHETIC_ONLY.
 """
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from datetime import UTC, datetime
@@ -29,7 +30,7 @@ def _sha256(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
-def qualify(*, publisher_document: Path | None = None) -> dict:
+def qualify(*, publisher_document: Path | None = None) -> dict[str, Any]:
     scenario_bytes = (ROOT / 'model-inputs/p4/illustrative.json').read_bytes()
     scenario = EconomicScenario.model_validate_json(scenario_bytes)
     if scenario.data_class != 'synthetic':

@@ -5,6 +5,7 @@ scenario bindings; only a signed/independently verified source snapshot could
 justify claiming that external PDF content was authenticated.
 """
 from __future__ import annotations
+from typing import Any
 
 from collections.abc import Mapping
 from math import isfinite, isclose
@@ -21,7 +22,7 @@ def _check(condition: bool, message: str) -> None:
         raise ValueError(message)
 
 
-def verify_public_benchmarks(register: Mapping, contract: Mapping, protocol: Mapping) -> dict:
+def verify_public_benchmarks(register: Mapping[str, Any], contract: Mapping[str, Any], protocol: Mapping[str, Any]) -> dict[str, Any]:
     """Validate all ten locked public aggregate rows and declared denominator roles.
 
     This detects drift between the P2 source register, P3 external benchmark
@@ -61,7 +62,8 @@ def verify_public_benchmarks(register: Mapping, contract: Mapping, protocol: Map
         _check(srcid in (ANZICS_CCR, ANZICS_APD), 'unexpected source identity')
         registered = next((x for x in by_source[srcid].get('outcomes', [])
                            if x.get('name') == item.get('name')), None)
-        _check(registered is not None, 'public source metric not found')
+        if registered is None:
+            raise ValueError('public source metric not found')
         for key in ('unit', 'denominator', 'page', 'contributors'):
             if key in item or key in registered:
                 _check(item.get(key) == registered.get(key), f'public source {key} mismatch')

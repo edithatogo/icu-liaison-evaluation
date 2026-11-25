@@ -1,5 +1,7 @@
 """Roster input and provider transport: no salary/award formulas in this project."""
 from __future__ import annotations
+from pytest import MonkeyPatch
+from typing import Any
 
 import copy
 from datetime import date
@@ -10,21 +12,21 @@ import pytest
 from icu_liaison.adapters.p8_workforce import RosterScenario, prepare_workforce_dapane_request
 
 
-def use_record(**changes):
+def use_record(**changes: object) -> dict[str, Any]:
     return {'id': 'synthetic-1-base', 'quote_id': 'nursing-base-hour', 'unit': 'hour',
             'service_date': '2026-09-12', 'quantity': '8', 'source': {'evidence': 'synthetic'},
             **changes}
 
 
-def quote_record(**changes):
+def quote_record(**changes: object) -> dict[str, Any]:
     return {'id': 'nursing-base-hour', 'unit': 'hour', 'basis': 'financial_cost',
             'components': ['base_salary'], 'valid_from': '2026-01-01', 'valid_to': '2027-01-01',
             'known_from': '2026-01-01', **changes}
 
 
 
-def shift(**changes):
-    a = {'quantity_id':'synthetic-1-base', 'shift_id':'shift1',
+def shift(**changes: object) -> dict[str, Any]:
+    a: dict[str, Any] = {'quantity_id':'synthetic-1-base', 'shift_id':'shift1',
         'quote_id':'nursing-base-hour', 'unit':'hour', 'quantity':'8',
         'kind':'analyst_assumption','component':'base_salary',
         'segment_start':'2026-09-12T07:00:00+10:00',
@@ -34,7 +36,7 @@ def shift(**changes):
     return a
 
 
-def example(lines=None, **changes):
+def example(lines: list[dict[str, Any]] | None=None, /, **changes: object) -> RosterScenario:
     raw = {'schema_version':1, 'data_class':'synthetic',
         'scenario_id':'synthetic-nurse-roster',
         'jurisdiction':'Queensland',
@@ -56,11 +58,11 @@ def example(lines=None, **changes):
     return RosterScenario.model_validate(raw)
 
 
-def test_uses_provider_existing_quantities_and_dapane_builder_without_price_math():
+def test_uses_provider_existing_quantities_and_dapane_builder_without_price_math() -> None:
     args=[]
     class FakeQuantity:
-        def __init__(self, **kw): self.kw=kw
-    def builder(artifact_json,quantities,*,expected_sha256,run_id,knowledge_cutoff):
+        def __init__(self, **kw: object) -> None: self.kw=kw
+    def builder(artifact_json: str,quantities: list[FakeQuantity],*,expected_sha256: str,run_id: str,knowledge_cutoff: date) -> dict[str, Any]:
         args.append((artifact_json, quantities,expected_sha256,run_id,knowledge_cutoff))
         return {'schema_version':'0.1','policy':{'basis':'financial_cost','currency':'AUD','price_year':2026}, 'quotes':[quote_record()],'usage':[use_record()], 'run_id':run_id}
     res=prepare_workforce_dapane_request(example(),builder=builder,quantity_type=FakeQuantity)
@@ -82,28 +84,28 @@ def test_uses_provider_existing_quantities_and_dapane_builder_without_price_math
   {'segment_end':'2026-09-12T15:00:00'},
   {'valued_on':'2026-09-13'},
 ])
-def test_reject_bad_shift_quantities_dates_and_units(changes):
+def test_reject_bad_shift_quantities_dates_and_units(changes: dict[str, float] | dict[str, str]) -> None:
     with pytest.raises((ValueError, TypeError)):
         example([shift(**changes)])
 
 
-def test_reject_duplicate_cost_component_for_same_time_and_shift():
+def test_reject_duplicate_cost_component_for_same_time_and_shift() -> None:
     with pytest.raises(ValueError,match='overlap'):
         example([shift(),shift(quantity_id='synthetic-2-base',quote_id='duplicate-base')])
 
 
-def test_allows_penalty_layer_with_distinct_component_but_does_not_infer_entitlement():
+def test_allows_penalty_layer_with_distinct_component_but_does_not_infer_entitlement() -> None:
     v=example([shift(),shift(quantity_id='synthetic-2-night',component='night_penalty',quote_id='nursing-night-hour',quantity='3')])
     assert len(v.exposures)==2
     assert v.classification_status=='candidate_unverified'
 
 
-def test_reject_roster_that_claims_full_conditions_when_incomplete():
+def test_reject_roster_that_claims_full_conditions_when_incomplete() -> None:
     with pytest.raises(ValueError,match='completeness'):
         example(completeness_status='full',contains_superannuation=False)
 
 
-def test_requires_release_source_digest_and_does_not_accept_local_claims():
+def test_requires_release_source_digest_and_does_not_accept_local_claims() -> None:
     for change in ({'expected_artifact_sha256':'fake'}, {'data_class':'patient_records'},
                    {'classification_status':'chhhs_hr_approved'},
                    {'source_artifact_json':''}, {'jurisdiction':'SA'}):
@@ -111,22 +113,23 @@ def test_requires_release_source_digest_and_does_not_accept_local_claims():
             example(**change)
 
 
-def test_missing_workforce_package_fails_closed(monkeypatch):
+def test_missing_workforce_package_fails_closed(monkeypatch: MonkeyPatch) -> None:
     import icu_liaison.adapters.p8_workforce as adapter
     monkeypatch.setattr(adapter,'import_module',lambda _: (_ for _ in ()).throw(ImportError()))
     with pytest.raises(RuntimeError,match='workforce.*not installed'):
         prepare_workforce_dapane_request(example())
 
 
-def test_reject_dapane_financial_policy_mismatch():
-    def wrong(*a,**kw):
+def test_reject_dapane_financial_policy_mismatch() -> None:
+    def wrong(*a: object,**kw: object) -> dict[str, Any]:
         return {'schema_version':'0.1','run_id':'synthetic-nurse-roster','policy':{'basis':'economic_cost','currency':'AUD','price_year':2026},'quotes':[],'usage':[]}
     with pytest.raises(ValueError, match='financial_cost'):
         prepare_workforce_dapane_request(example(),builder=wrong,quantity_type=lambda **kw:kw)
 
 
-def test_injected_builder_must_not_drop_use_or_change_component():
-    ok = lambda quote: {
+def test_injected_builder_must_not_drop_use_or_change_component() -> None:
+    def ok(quote: dict[str, Any]) -> dict[str, Any]:
+        return {
         'schema_version':'0.1','run_id':'synthetic-nurse-roster',
         'policy':{'basis':'financial_cost','currency':'AUD','price_year':2026},
         'quotes':[quote],
@@ -148,8 +151,8 @@ def test_injected_builder_must_not_drop_use_or_change_component():
     ({'quantity': 8.0}, 'exact decimal'),
     ({'source': {'evidence': 'observed'}}, 'synthetic exposure'),
 ])
-def test_bridge_preserves_exact_quantity_and_synthetic_evidence(changes, error):
-    def returned_request(*_args, **kwargs):
+def test_bridge_preserves_exact_quantity_and_synthetic_evidence(changes: dict[str, Any] | dict[str, float] | dict[str, str], error: str) -> None:
+    def returned_request(*_args: object, **kwargs: object) -> dict[str, Any]:
         return {
             'schema_version': '0.1', 'run_id': kwargs['run_id'],
             'policy': {'basis': 'financial_cost', 'currency': 'AUD', 'price_year': 2026},
@@ -161,7 +164,7 @@ def test_bridge_preserves_exact_quantity_and_synthetic_evidence(changes, error):
         prepare_workforce_dapane_request(example(), builder=returned_request, quantity_type=lambda **kw: kw)
 
 
-def test_bridge_cannot_use_health_practitioner_quotes_for_a_nursing_roster():
+def test_bridge_cannot_use_health_practitioner_quotes_for_a_nursing_roster() -> None:
     roster = example(source_artifact_json=json.dumps({'release_snapshot': {
         'classification': 'HP3', 'jurisdiction': 'QLD',
     }}))
@@ -172,8 +175,8 @@ def test_bridge_cannot_use_health_practitioner_quotes_for_a_nursing_roster():
 @pytest.mark.parametrize('changes', [
     {'valid_to': '2026-09-12'}, {'valid_from': '2026-09-13'}, {'known_from': '2026-11-19'},
 ])
-def test_bridge_rejects_quotes_outside_effective_or_knowledge_window(changes):
-    def returned_request(*_args, **kwargs):
+def test_bridge_rejects_quotes_outside_effective_or_knowledge_window(changes: dict[str, str]) -> None:
+    def returned_request(*_args: object, **kwargs: object) -> dict[str, Any]:
         return {
             'schema_version': '0.1', 'run_id': kwargs['run_id'],
             'policy': {'basis': 'financial_cost', 'currency': 'AUD', 'price_year': 2026},
@@ -184,7 +187,7 @@ def test_bridge_rejects_quotes_outside_effective_or_knowledge_window(changes):
         prepare_workforce_dapane_request(example(), builder=returned_request, quantity_type=lambda **kw: kw)
 
 
-def test_requires_explicit_segmentation_at_fiscal_year_boundary():
+def test_requires_explicit_segmentation_at_fiscal_year_boundary() -> None:
     # Pricing-year here is a single annual quotation basis, not a payroll calendar.
     with pytest.raises(ValueError, match='price-year boundary'):
         example([shift(segment_start='2026-12-31T23:00:00+10:00',segment_end='2027-01-01T07:00:00+10:00',valued_on='2026-12-31')])

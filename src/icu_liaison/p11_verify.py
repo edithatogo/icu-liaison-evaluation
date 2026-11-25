@@ -1,5 +1,6 @@
 """Verify the current P11 pointers, immutable objects and paired summary."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import csv
@@ -15,8 +16,8 @@ from .p11_records import digest_file, read_json, valid_digest
 from .p11_summary import validate_suite, verify_summary
 
 
-def _figure_lineage(output: Path, model: Path, f01_folder: Path, f01: dict,
-                    p9_folder: Path, p9: dict) -> dict:
+def _figure_lineage(output: Path, model: Path, f01_folder: Path, f01: dict[str, Any],
+                    p9_folder: Path, p9: dict[str, Any]) -> dict[str, Any]:
     """Describe the inputs, marks and reviews of already-verified artifacts."""
     bundle = p9_folder / 'bundle'
     manifest = read_json(bundle / 'manifest.json')
@@ -26,7 +27,7 @@ def _figure_lineage(output: Path, model: Path, f01_folder: Path, f01: dict,
     denominators = {entry['id']: entry['denominator_id'] for entry in metrics['metrics']}
     run = read_json(model / 'run.json')
 
-    def file_ref(path: Path, sha256: str) -> dict:
+    def file_ref(path: Path, sha256: str) -> dict[str, Any]:
         return {'path': path.relative_to(output).as_posix(), 'sha256': sha256}
 
     f01_source = 'p5-report/model-summary.json'
@@ -76,7 +77,7 @@ def _figure_lineage(output: Path, model: Path, f01_folder: Path, f01: dict,
     }
 
 
-def verify_output(output: Path, *, include_provenance: bool = False) -> dict:
+def verify_output(output: Path, *, include_provenance: bool = False) -> dict[str, Any]:
     output = Path(output)
     summary_pointer = read_json(output / 'state/summary.json')
     summary_id = summary_pointer.get('summary_id')

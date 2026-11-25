@@ -1,4 +1,6 @@
 """End-to-end Snakemake rerun and recovery checks for synthetic scenarios."""
+from typing import Any
+from collections.abc import Sequence
 import csv
 import hashlib
 import json
@@ -24,14 +26,15 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def pointer_set(root, category, cases):
+def pointer_set(root: Path, category: str, cases: Sequence[str]) -> dict[str, dict[str, Any]]:
     return {
         case: json.loads((root / 'state' / category / f'{case}.json').read_text())
         for case in cases
     }
 
 
-def invoke(tmp_path, output, cases, style, *extra, expected=0, env_update=None):
+def invoke(tmp_path: Path, output: Path, cases: Path, style: Path, *extra: str,
+           expected: int = 0, env_update: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     directory = tmp_path / 'scheduler'
     directory.mkdir(exist_ok=True)
     env = os.environ.copy()
@@ -53,7 +56,7 @@ def invoke(tmp_path, output, cases, style, *extra, expected=0, env_update=None):
     return result
 
 
-def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
+def test_reruns_and_failed_case_recover_without_overwriting(tmp_path: Path) -> None:
     output, cases = tmp_path / 'store', tmp_path / 'cases'
     cases.mkdir()
     names = json.loads(SUITE.read_text())['cases']
@@ -160,7 +163,7 @@ def test_reruns_and_failed_case_recover_without_overwriting(tmp_path):
 
 
 @pytest.mark.skipif(os.name != 'posix', reason='process-group interruption requires POSIX signals')
-def test_interrupted_snakemake_run_recovers_existing_versions(tmp_path):
+def test_interrupted_snakemake_run_recovers_existing_versions(tmp_path: Path) -> None:
     import signal
     import time
 

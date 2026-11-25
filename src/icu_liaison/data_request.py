@@ -5,11 +5,12 @@ import csv
 from io import StringIO
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(strict=True, extra='forbid')
 
 
 class FieldSpec(_Strict):
@@ -40,7 +41,7 @@ class Dataset(_Strict):
 
 
 class DataRequestCatalogue(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     status: Literal['request_only_no_local_data_obtained']
     intended_facility: Literal['Cairns Hospital / CHHHS']
     requested_time_window: str = Field(min_length=8)

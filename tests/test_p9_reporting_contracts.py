@@ -1,33 +1,37 @@
 """P9 negative admission and Clinical Director request regression."""
+from pathlib import Path
+from typing import Any
 import json
 import pytest
 from tools.validate_reporting_contracts import ROOT, CATALOGUE, validate_catalogue
 
-def load():
-    return json.loads(CATALOGUE.read_text())
+def load() -> dict[str, Any]:
+    value = json.loads(CATALOGUE.read_text())
+    assert isinstance(value, dict)
+    return value
 
-def test_catalogue_structural_contract():
+def test_catalogue_structural_contract() -> None:
     c=load();validate_catalogue(c)
     assert len(c["tables"])==7 and len(c["figures"])==24
 
-def test_fake_plot_rejected():
+def test_fake_plot_rejected() -> None:
     c=load()
     next(x for x in c["figures"] if x["id"]=="F03")["artifact"]="pretend.svg"
     with pytest.raises(ValueError,match="placeholder"):
         validate_catalogue(c)
 
-def test_wrong_nwau_financial_classification_rejected():
+def test_wrong_nwau_financial_classification_rejected() -> None:
     c=load()
     next(x for x in c["tables"] if x["id"]=="T06")["perspective"]="actual_revenue"
     with pytest.raises(ValueError,match="NWAU"):
         validate_catalogue(c)
 
-def test_missing_figure_source_rejected():
+def test_missing_figure_source_rejected() -> None:
     c=load();c["figures"][0]["source_table"]="absent"
     with pytest.raises(ValueError,match="source table"):
         validate_catalogue(c)
 
-def test_director_two_tables_source_consistent():
+def test_director_two_tables_source_consistent() -> None:
     d=(ROOT/"docs/clinical-director-data-request.md").read_text()
     src=json.loads((ROOT/"model-inputs/chhhs-data-request.json").read_text())
     assert len(src["datasets"])==11
@@ -36,7 +40,7 @@ def test_director_two_tables_source_consistent():
     assert "72" in d and "NWAU" in d
 
 
-def test_p5_generated_report_matches_p9_table_contract(tmp_path):
+def test_p5_generated_report_matches_p9_table_contract(tmp_path: Path) -> None:
     """Exercise the registered table schema on a real synthetic report bundle."""
     from icu_liaison.p4_model import EconomicScenario
     from icu_liaison.p5_reporting import build_report
@@ -53,7 +57,7 @@ def test_p5_generated_report_matches_p9_table_contract(tmp_path):
     assert "T05" not in result["checked"] and "T06" not in result["checked"]
 
 
-def test_p9_contract_rejects_unregistered_report_artifact(tmp_path):
+def test_p9_contract_rejects_unregistered_report_artifact(tmp_path: Path) -> None:
     """Report-file membership rejects a fabricated clinical results table."""
     from icu_liaison.p4_model import EconomicScenario
     from icu_liaison.p5_reporting import build_report
@@ -71,7 +75,7 @@ def test_p9_contract_rejects_unregistered_report_artifact(tmp_path):
         validate_report(report, load())
 
 
-def test_reporting_schema_is_valid_and_admits_existing_catalogue():
+def test_reporting_schema_is_valid_and_admits_existing_catalogue() -> None:
     from jsonschema import Draft202012Validator
     from tools.validate_reporting_contracts import SCHEMA
 
@@ -80,28 +84,28 @@ def test_reporting_schema_is_valid_and_admits_existing_catalogue():
     assert list(Draft202012Validator(schema).iter_errors(load())) == []
 
 
-def test_reporting_schema_rejects_unrecognised_table_metadata():
+def test_reporting_schema_rejects_unrecognised_table_metadata() -> None:
     c = load()
     c["tables"][0]["claimed_clinical_approval"] = True
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
 
 
-def test_reporting_schema_rejects_path_traversal():
+def test_reporting_schema_rejects_path_traversal() -> None:
     c = load()
     c["tables"][0]["artifact"] = "../../private/patient-records.csv"
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
 
 
-def test_reporting_schema_requires_figure_axis():
+def test_reporting_schema_requires_figure_axis() -> None:
     c = load()
     del c["figures"][0]["x"]
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
 
 
-def test_reporting_schema_rejects_falsely_promoted_placeholder():
+def test_reporting_schema_rejects_falsely_promoted_placeholder() -> None:
     c = load()
     c["tables"][4].update(status="implemented", artifact="invented.csv", required_columns=["value"])
     with pytest.raises(ValueError, match="schema"):
@@ -109,7 +113,7 @@ def test_reporting_schema_rejects_falsely_promoted_placeholder():
 
 
 @pytest.mark.parametrize("table_id", ["T05", "T06", "T07"])
-def test_existing_synthetic_csv_cannot_promote_a_blocked_table(table_id):
+def test_existing_synthetic_csv_cannot_promote_a_blocked_table(table_id: str) -> None:
     catalogue = load()
     table = next(row for row in catalogue["tables"] if row["id"] == table_id)
     table.update(status="implemented", privacy="synthetic_only",
@@ -118,7 +122,7 @@ def test_existing_synthetic_csv_cannot_promote_a_blocked_table(table_id):
         validate_catalogue(catalogue)
 
 
-def test_registered_table_cannot_claim_another_report_csv():
+def test_registered_table_cannot_claim_another_report_csv() -> None:
     catalogue = load()
     sensitivity = next(row for row in catalogue["tables"] if row["id"] == "T03")
     sensitivity["artifact"] = "paired-comparisons.csv"
@@ -126,21 +130,21 @@ def test_registered_table_cannot_claim_another_report_csv():
         validate_catalogue(catalogue)
 
 
-def test_optional_f01_cannot_point_to_an_unproduced_file():
+def test_optional_f01_cannot_point_to_an_unproduced_file() -> None:
     catalogue = load()
     catalogue["figures"][0]["artifact"] = "invented.svg"
     with pytest.raises(ValueError, match="F01"):
         validate_catalogue(catalogue)
 
 
-def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthetic_output():
+def test_reporting_schema_prohibits_approved_aggregate_classification_of_synthetic_output() -> None:
     c = load()
     c["tables"][0]["privacy"] = "approved_aggregates_only"
     with pytest.raises(ValueError, match="schema"):
         validate_catalogue(c)
 
 
-def test_generated_svg_metadata_matches_registered_accessibility_text(tmp_path):
+def test_generated_svg_metadata_matches_registered_accessibility_text(tmp_path: Path) -> None:
     from xml.etree import ElementTree
     from icu_liaison.p4_model import EconomicScenario
     from icu_liaison.p5_reporting import build_report
@@ -158,7 +162,7 @@ def test_generated_svg_metadata_matches_registered_accessibility_text(tmp_path):
     assert 'F01' in validate_report(folder, load())['checked']
 
 
-def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path):
+def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path: Path) -> None:
     import hashlib
     from icu_liaison.p4_model import EconomicScenario
     from icu_liaison.p5_reporting import build_report
@@ -185,7 +189,7 @@ def test_rehashed_svg_cannot_fake_its_accessibility_description(tmp_path):
         validate_report(folder, load())
 
 
-def test_p9_expanded_figure_programme_and_priorities():
+def test_p9_expanded_figure_programme_and_priorities() -> None:
     c = load()
     validate_catalogue(c)
     assert [f["id"] for f in c["figures"]] == [f"F{i:02d}" for i in range(1, 25)]
@@ -194,7 +198,7 @@ def test_p9_expanded_figure_programme_and_priorities():
         "F05", "F06", "F07", "F08", "F09", "F13", "F18"}
 
 
-def test_external_figures_cannot_be_falsely_promoted():
+def test_external_figures_cannot_be_falsely_promoted() -> None:
     c = load()
     f = c["figures"][4]
     assert f["artifact"] == "f05.svg" and f["exploratory_reference"]["in_repo"] is False
@@ -204,14 +208,14 @@ def test_external_figures_cannot_be_falsely_promoted():
         validate_catalogue(c)
 
 
-def test_missing_empirical_followup_cannot_be_assumed_complete():
+def test_missing_empirical_followup_cannot_be_assumed_complete() -> None:
     c = load()
     c["figures"][16]["missingness"] = "synthetic_no_observed_missingness"
     with pytest.raises(ValueError, match="schema|unknown"):
         validate_catalogue(c)
 
 
-def test_future_figure_denominator_is_required():
+def test_future_figure_denominator_is_required() -> None:
     c = load()
     del c["figures"][10]["denominator"]
     with pytest.raises(ValueError, match="schema"):
@@ -219,7 +223,7 @@ def test_future_figure_denominator_is_required():
 
 
 @pytest.mark.parametrize('key', ['F03', 'F04', 'F12', 'F14', 'F16', 'F17', 'F19', 'F21', 'F22', 'F23'])
-def test_site_and_provider_outputs_require_admitted_sources(key):
+def test_site_and_provider_outputs_require_admitted_sources(key: str) -> None:
     catalogue = load()
     figure = next(f for f in catalogue['figures'] if f['id'] == key)
     figure.update(artifact=f'{key.lower()}.svg', status='implemented_optional',
@@ -228,7 +232,7 @@ def test_site_and_provider_outputs_require_admitted_sources(key):
         validate_catalogue(catalogue)
 
 
-def test_joint_figure_inventory_preserves_contract_status():
+def test_joint_figure_inventory_preserves_contract_status() -> None:
     from tools.validate_reporting_contracts import DECK_PROFILE, figure_inventory
 
     result = figure_inventory(load(), json.loads(DECK_PROFILE.read_text()))
@@ -242,7 +246,7 @@ def test_joint_figure_inventory_preserves_contract_status():
     assert by_id["E04"]["status"] == "private_deck_chart"
 
 
-def test_joint_figure_inventory_rejects_unknown_reference():
+def test_joint_figure_inventory_rejects_unknown_reference() -> None:
     from tools.validate_reporting_contracts import DECK_PROFILE, figure_inventory
 
     deck = json.loads(DECK_PROFILE.read_text())

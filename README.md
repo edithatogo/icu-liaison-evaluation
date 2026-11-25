@@ -49,7 +49,7 @@ uv venv --python "$(cat .python-version)" .venv
 .venv/bin/python --version
 test "$(.venv/bin/python --version)" = "Python $(cat .python-version)"
 uv pip install --python .venv/bin/python -c requirements-ci.txt \
-  --build-constraints requirements-ci.txt '.[test,report]'
+  --build-constraints requirements-ci.txt '.[test,report,check]'
 .venv/bin/python -m pytest -q
 mkdir -p outputs
 .venv/bin/python -m icu_liaison.cli model-inputs/illustrative.json > outputs/illustrative.json
@@ -74,17 +74,18 @@ environment, scenario definitions, output verification and interruption
 recovery. These outputs do not establish clinical safety, provider qualification
 or an investment case.
 
-## Optional shell and text checks
+## Git hooks and local quality checks
 
-The repository's existing Git hooks already run synthetic checks and a staged
-gitleaks scan. To run the additional ShellCheck and text-format checks locally,
-install ShellCheck and create the separately pinned, repository-local quality
-environment. These commands do not replace or install Git hooks.
+Install ShellCheck and Gitleaks on the host. The ordinary Git hooks use the
+pinned pre-commit client below to check the exact staged tree or pushed commit.
+The same strict mypy check covers production code, tools and tests on Python
+3.15. Run it directly with `.venv/bin/python -m mypy`.
 
 ```sh
 uv venv --python "$(cat .python-version)" private/venv-quality
 uv pip install --python private/venv-quality/bin/python -r requirements-quality.txt \
   --build-constraints requirements-p11-build.txt
+bash tools/install_git_hooks.sh
 private/venv-quality/bin/python -m pre_commit run quality-shellcheck --all-files
 private/venv-quality/bin/python -m pre_commit run quality-eof --all-files
 private/venv-quality/bin/python -m pre_commit run quality-whitespace --all-files

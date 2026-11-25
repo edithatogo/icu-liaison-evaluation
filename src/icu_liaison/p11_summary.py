@@ -1,5 +1,6 @@
 """Review and combine the versioned P11 scenario comparisons."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import csv
@@ -17,7 +18,7 @@ from .p11_records import atomic_json, digest_file, digest_json, inventory, read_
 from tools.p10_falsification import run_suite
 
 
-def validate_suite(path: Path) -> dict:
+def validate_suite(path: Path) -> dict[str, Any]:
     suite = read_json(path)
     if set(suite) != {'schema_version', 'data_class', 'cases'}:
         raise ValueError('unexpected scenario suite fields')
@@ -30,7 +31,7 @@ def validate_suite(path: Path) -> dict:
     return suite
 
 
-def verify_summary(folder: Path) -> dict:
+def verify_summary(folder: Path) -> dict[str, Any]:
     folder = Path(folder)
     if folder.is_symlink() or not folder.is_dir():
         raise ValueError('synthetic summary directory is missing or unsafe')
@@ -47,7 +48,7 @@ def verify_summary(folder: Path) -> dict:
 
 
 def build_summary(suite_file: Path, output: Path, pointers: list[Path], audit_file: Path,
-                  pointer: Path) -> dict:
+                  pointer: Path) -> dict[str, Any]:
     suite_file, output, audit_file, pointer = map(Path, (suite_file, output, audit_file, pointer))
     suite = validate_suite(suite_file)
     audit = read_json(audit_file)

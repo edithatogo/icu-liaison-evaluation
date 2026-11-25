@@ -5,12 +5,22 @@ source document actually supports a claimed local value.
 """
 from __future__ import annotations
 
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from typing import Annotated, Literal
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, model_validator
+
+
+def _integer_version(value: object) -> object:
+    # Literal comparisons alone equate True and 1.0 with version 1.
+    if type(value) is not int:
+        raise ValueError("schema version must be a JSON integer")
+    return value
+
+
+SchemaVersion = Annotated[Literal[1], BeforeValidator(_integer_version)]
 
 
 class Parameter(BaseModel):
-    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
+    model_config = ConfigDict(strict=True, extra='forbid', allow_inf_nan=False)
     value: float
     low: float
     high: float
@@ -33,7 +43,7 @@ class Parameter(BaseModel):
 
 
 class Inputs(BaseModel):
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(strict=True, extra='forbid')
     delayed_discharge_ge12h_rate: Parameter
     delayed_cases_addressable_fraction: Parameter
     addressable_cases_improved_fraction: Parameter
@@ -65,8 +75,8 @@ class Inputs(BaseModel):
 
 
 class Scenario(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-    schema_version: Literal[1]
+    model_config = ConfigDict(strict=True, extra='forbid')
+    schema_version: SchemaVersion
     scenario_id: str = Field(min_length=1)
     data_class: Literal['synthetic']
     seed: int = Field(ge=0, le=2**64 - 1)

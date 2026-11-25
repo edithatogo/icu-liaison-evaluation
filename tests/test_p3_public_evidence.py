@@ -9,7 +9,7 @@ from icu_liaison.public_evidence import load_benchmark_catalogue, select_externa
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_public_rates_preserve_source_populations_and_denominators():
+def test_public_rates_preserve_source_populations_and_denominators() -> None:
     data = load_benchmark_catalogue(ROOT / 'model-inputs/anzics-benchmarks.json',
                                      ROOT / 'conductor/evidence/source-register.json')
     exit_rate = select_external_benchmark(data, 'CCR_2024_25_EXIT_BLOCK')
@@ -23,7 +23,7 @@ def test_public_rates_preserve_source_populations_and_denominators():
     assert select_external_benchmark(data, 'CCR_2023_24_EXIT_BLOCK')['value'] == 0.198
 
 
-def test_unverified_source_cannot_be_promoted_to_verified():
+def test_unverified_source_cannot_be_promoted_to_verified() -> None:
     data = load_benchmark_catalogue(ROOT / 'model-inputs/anzics-benchmarks.json',
                                      ROOT / 'conductor/evidence/source-register.json')
     with pytest.raises(ValueError, match='unverified'):
@@ -36,7 +36,7 @@ def test_unverified_source_cannot_be_promoted_to_verified():
         select_external_benchmark(data, 'CCR_2024_25_EXIT_BLOCK', require_document_verified=True)
 
 
-def test_wrong_source_or_denominator_is_rejected(tmp_path):
+def test_wrong_source_or_denominator_is_rejected(tmp_path: Path) -> None:
     orig = json.loads((ROOT / 'model-inputs/anzics-benchmarks.json').read_text())
     orig['metrics'][0]['denominator_key'] = 'eligible_index_discharges'
     p = tmp_path / 'wrong.json'
@@ -51,7 +51,7 @@ def test_wrong_source_or_denominator_is_rejected(tmp_path):
 
 
 @pytest.mark.parametrize('change', ['different_edition', 'wrong_period', 'duplicate_source'])
-def test_benchmark_is_bound_to_one_report_and_reporting_period(tmp_path, change):
+def test_benchmark_is_bound_to_one_report_and_reporting_period(tmp_path: Path, change: str) -> None:
     catalogue = json.loads((ROOT / 'model-inputs/anzics-benchmarks.json').read_text())
     registry = json.loads((ROOT / 'conductor/evidence/source-register.json').read_text())
     if change == 'different_edition':
@@ -70,14 +70,14 @@ def test_benchmark_is_bound_to_one_report_and_reporting_period(tmp_path, change)
         load_benchmark_catalogue(catalogue_file, register_file)
 
 
-def test_clinical_72h_risk_cannot_be_inferred_from_ccr_or_apd():
+def test_clinical_72h_risk_cannot_be_inferred_from_ccr_or_apd() -> None:
     data = load_benchmark_catalogue(ROOT / 'model-inputs/anzics-benchmarks.json',
                                      ROOT / 'conductor/evidence/source-register.json')
     with pytest.raises(ValueError, match='unavailable'):
         select_external_benchmark(data, 'UNPLANNED_72H_RETURN')
 
 
-def test_source_register_cannot_silently_change_rate_or_verification(tmp_path):
+def test_source_register_cannot_silently_change_rate_or_verification(tmp_path: Path) -> None:
     source = json.loads((ROOT / 'conductor/evidence/source-register.json').read_text())
     source['sources'][0]['outcomes'][0]['value'] = 0.275
     altered = tmp_path/'source.json'

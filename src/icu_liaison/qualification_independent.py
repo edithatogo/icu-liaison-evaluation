@@ -4,6 +4,11 @@ Never upgrades observed-data authority, causal identification, clinical safety o
 provider-binary qualification. Does not infer an event from an unknown follow-up.
 """
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .p4_model import P4Run
+from typing import Any
 
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
@@ -13,7 +18,7 @@ import re
 from scipy.stats import binomtest
 
 
-def _bounded_count(counts: Mapping, name: str, limit: int) -> int:
+def _bounded_count(counts: Mapping[str, Any], name: str, limit: int) -> int:
     value = counts.get(name)
     if type(value) is not int or not (0 <= value <= limit):
         raise ValueError(f'{name}: inconsistent aggregate count')
@@ -24,7 +29,7 @@ def _is_sha256(value: object) -> bool:
     return isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None
 
 
-def audit_local_aggregate(audit: Mapping) -> dict:
+def audit_local_aggregate(audit: Mapping[str, Any]) -> dict[str, Any]:
     """Admit P3 aggregate descriptions and expose actual ascertainment denominators.
 
     Exact intervals are *conditional on documented observations*. They cannot
@@ -132,31 +137,30 @@ def _reference_one_draw(n: int, sample: Mapping[str, Decimal], arm: str) -> dict
     This deliberately calculates cost components from resource identities; it
     does not test the statistical validity of priors or causal intervention effects.
     """
-    k = lambda key: sample[key]
-    cover = k(f'strategy.{arm}.coverage_fraction')
-    delayed_eligible = Decimal(n) * k('baseline.exit_block_rate') * k('resource.addressable_delay_fraction')
-    improved = delayed_eligible * cover * k(f'strategy.{arm}.delay_success_fraction')
-    days = improved * k('resource.hours_released_per_improved_case') / Decimal(24)
-    baseline_risk = k('baseline.unplanned_72h_return_rate')
-    effect = k(f'strategy.{arm}.relative_return_effect')
+    cover = sample[f'strategy.{arm}.coverage_fraction']
+    delayed_eligible = Decimal(n) * sample['baseline.exit_block_rate'] * sample['resource.addressable_delay_fraction']
+    improved = delayed_eligible * cover * sample[f'strategy.{arm}.delay_success_fraction']
+    days = improved * sample['resource.hours_released_per_improved_case'] / Decimal(24)
+    baseline_risk = sample['baseline.unplanned_72h_return_rate']
+    effect = sample[f'strategy.{arm}.relative_return_effect']
     treated_covered = max(Decimal(0), min(Decimal(1), baseline_risk * (1 - effect)))
     new_risk = (1 - cover) * baseline_risk + cover * treated_covered
     returns_avoided = Decimal(n) * (baseline_risk - new_risk)
-    index_cost = days * k('resource.net_index_delay_cost_aud_per_day')
-    future_cost = returns_avoided * k('resource.incremental_return_cost_aud_per_return')
-    service = k(f'strategy.{arm}.annual_incremental_cost_aud')
+    index_cost = days * sample['resource.net_index_delay_cost_aud_per_day']
+    future_cost = returns_avoided * sample['resource.incremental_return_cost_aud_per_return']
+    service = sample[f'strategy.{arm}.annual_incremental_cost_aud']
     return {
         'icu_bed_days_released': days,
-        'usable_bed_days': days * k('resource.usable_released_capacity_fraction'),
+        'usable_bed_days': days * sample['resource.usable_released_capacity_fraction'],
         'readmissions_avoided': returns_avoided,
         'gross_resource_benefit_aud': index_cost + future_cost,
         'net_resource_benefit_aud': index_cost + future_cost - service,
-        'net_budget_impact_aud': index_cost * k('resource.index_cash_realisability_fraction')
-                                 + future_cost * k('resource.return_cash_realisability_fraction') - service,
+        'net_budget_impact_aud': index_cost * sample['resource.index_cash_realisability_fraction']
+                                 + future_cost * sample['resource.return_cash_realisability_fraction'] - service,
     }
 
 
-def audit_p4_draws(run, sampled_indices: Sequence[int] | None = None, tolerance_aud: float = 1e-6) -> dict:
+def audit_p4_draws(run: P4Run, sampled_indices: Sequence[int] | None = None, tolerance_aud: float = 1e-6) -> dict[str, Any]:
     """Cross-check sampled P4 outputs against a separately implemented decimal oracle.
 
     Uses immutable draw selections, not a new RNG or independent clinical model.

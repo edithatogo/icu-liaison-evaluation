@@ -1,4 +1,7 @@
 """Native Kairos adapter tests: contract/independent oracle, not binary execution."""
+from pytest import CaptureFixture, MonkeyPatch
+from subprocess import CompletedProcess
+from typing import Any
 import copy
 import hashlib
 import json
@@ -22,15 +25,19 @@ QUEUE_INPUT = REFERENCE.with_name('queue-scenario.json')
 QUEUE_REFERENCE = REFERENCE.with_name('queue-reference.json')
 
 
-def scenario():
-    return json.loads(INPUT.read_text())
+def scenario() -> dict[str, Any]:
+    value = json.loads(INPUT.read_text())
+    assert isinstance(value, dict)
+    return value
 
 
-def expected():
-    return json.loads(REFERENCE.read_text())
+def expected() -> dict[str, Any]:
+    value = json.loads(REFERENCE.read_text())
+    assert isinstance(value, dict)
+    return value
 
 
-def test_native_scenario_is_fully_externalised_and_synthetic():
+def test_native_scenario_is_fully_externalised_and_synthetic() -> None:
     model = KairosScenario.model_validate(scenario())
     assert model.horizon_minutes == 240
     assert model.strategies[0].initial_departure_minute == 120
@@ -44,14 +51,14 @@ def test_native_scenario_is_fully_externalised_and_synthetic():
     ('staffed_beds', True),
     ('schema_version', 1.0),
 ])
-def test_native_input_rejects_noninteger_json_fields(field, value):
+def test_native_input_rejects_noninteger_json_fields(field: str, value: bool | float | str) -> None:
     source = scenario()
     source[field] = value
     with pytest.raises(ValueError, match=field):
         KairosScenario.model_validate_json(json.dumps(source))
 
 
-def test_native_input_rejects_duration_outside_rust_unsigned_range():
+def test_native_input_rejects_duration_outside_rust_unsigned_range() -> None:
     source = scenario()
     source['arrivals'][0]['occupied_duration_minutes'] = 2**64
     with pytest.raises(ValueError, match='occupied_duration_minutes'):
@@ -59,7 +66,7 @@ def test_native_input_rejects_duration_outside_rust_unsigned_range():
 
 
 @pytest.fixture
-def native_files(tmp_path):
+def native_files(tmp_path: Path) -> tuple[Path, Path]:
     binary = tmp_path / 'fictional-consumer'
     binary.write_bytes(b'\x7fELFfictional consumer bytes')
     binary.chmod(0o700)
@@ -68,13 +75,13 @@ def native_files(tmp_path):
     return binary, source
 
 
-def test_native_run_uses_checked_file_bytes(native_files, monkeypatch):
+def test_native_run_uses_checked_file_bytes(native_files: tuple[Path, Path], monkeypatch: MonkeyPatch) -> None:
     binary, source = native_files
     original_binary = binary.read_bytes()
     original_input = source.read_bytes()
-    invoked_paths = []
+    invoked_paths: list[Path] = []
 
-    def observe_invocation(argv, **kwargs):
+    def observe_invocation(argv: list[str], **kwargs: object) -> CompletedProcess[bytes]:
         binary.write_bytes(b'updated fictional consumer')
         source.write_bytes(b'{}')
         invoked_paths.extend(Path(arg) for arg in argv)
@@ -90,12 +97,12 @@ def test_native_run_uses_checked_file_bytes(native_files, monkeypatch):
     assert all(not path.exists() for path in invoked_paths)
 
 
-def test_native_run_rejects_noninteger_output_times(native_files, monkeypatch):
+def test_native_run_rejects_noninteger_output_times(native_files: tuple[Path, Path], monkeypatch: MonkeyPatch) -> None:
     binary, source = native_files
     output = expected()
     output['strategies'][0]['requests'][0]['admitted_minute'] = '120'
 
-    def fictional_result(argv, **kwargs):
+    def fictional_result(argv: list[str], **kwargs: object) -> CompletedProcess[bytes]:
         return subprocess.CompletedProcess(argv, 0, stdout=json.dumps(output).encode())
 
     monkeypatch.setattr(subprocess, 'run', fictional_result)
@@ -104,12 +111,12 @@ def test_native_run_rejects_noninteger_output_times(native_files, monkeypatch):
                              provider_lock=json.loads(LOCK.read_bytes()))
 
 
-def test_native_cli_rejects_malformed_lock_before_execution(native_files, monkeypatch, tmp_path, capsys):
+def test_native_cli_rejects_malformed_lock_before_execution(native_files: tuple[Path, Path], monkeypatch: MonkeyPatch, tmp_path: Path, capsys: CaptureFixture[str]) -> None:
     binary, source = native_files
     lock = tmp_path / 'invalid-lock.json'
     lock.write_text('[]', encoding='utf-8')
 
-    def unexpected_run(*args, **kwargs):
+    def unexpected_run(*args: object, **kwargs: object) -> None:
         pytest.fail('a malformed provider lock must be rejected before process startup')
 
     monkeypatch.setattr(subprocess, 'run', unexpected_run)
@@ -121,10 +128,10 @@ def test_native_cli_rejects_malformed_lock_before_execution(native_files, monkey
     assert 'UNVERIFIED' in captured.err
 
 
-def test_native_cli_reports_a_timeout_without_traceback(native_files, monkeypatch, capsys):
+def test_native_cli_reports_a_timeout_without_traceback(native_files: tuple[Path, Path], monkeypatch: MonkeyPatch, capsys: CaptureFixture[str]) -> None:
     binary, source = native_files
 
-    def timeout(argv, **kwargs):
+    def timeout(argv: list[str], **kwargs: object) -> None:
         raise subprocess.TimeoutExpired(argv, timeout=45)
 
     monkeypatch.setattr(subprocess, 'run', timeout)
@@ -136,7 +143,7 @@ def test_native_cli_reports_a_timeout_without_traceback(native_files, monkeypatc
     assert 'Traceback' not in captured.err
 
 
-def test_reference_bridge_audits_one_bed_conservation_without_native_claim():
+def test_reference_bridge_audits_one_bed_conservation_without_native_claim() -> None:
     actual = KairosProducerOutput.model_validate(expected())
     review = inspect_native_output(actual, scenario=KairosScenario.model_validate(scenario()),
                                    provider_lock=json.loads(LOCK.read_text()))
@@ -148,7 +155,7 @@ def test_reference_bridge_audits_one_bed_conservation_without_native_claim():
     assert review['investment_ready'] is False
 
 
-def test_queue_reference_demonstrates_reuse_with_the_same_demand():
+def test_queue_reference_demonstrates_reuse_with_the_same_demand() -> None:
     review = inspect_native_output(
         KairosProducerOutput.model_validate_json(QUEUE_REFERENCE.read_bytes()),
         scenario=KairosScenario.model_validate_json(QUEUE_INPUT.read_bytes()),
@@ -164,7 +171,7 @@ def test_queue_reference_demonstrates_reuse_with_the_same_demand():
     }
 
 
-def test_native_trace_rejects_reversed_order_for_simultaneous_arrivals():
+def test_native_trace_rejects_reversed_order_for_simultaneous_arrivals() -> None:
     output = json.loads(QUEUE_REFERENCE.read_bytes())
     baseline = output['strategies'][0]
     baseline['occupancies'][1:] = [
@@ -181,7 +188,7 @@ def test_native_trace_rejects_reversed_order_for_simultaneous_arrivals():
         )
 
 
-def test_native_trace_rejects_waiting_with_a_vacant_staffed_bed():
+def test_native_trace_rejects_waiting_with_a_vacant_staffed_bed() -> None:
     output = expected()
     arm = output['strategies'][1]
     arm['occupancies'][1].update(start_minute=95, end_minute=155)
@@ -196,7 +203,7 @@ def test_native_trace_rejects_waiting_with_a_vacant_staffed_bed():
     ('declined', 'does not decline'),
     ('censored', 'vacant staffed bed'),
 ])
-def test_native_trace_rejects_inconsistent_unadmitted_demand(disposition, message):
+def test_native_trace_rejects_inconsistent_unadmitted_demand(disposition: str, message: str) -> None:
     output = expected()
     arm = output['strategies'][1]
     arm['occupancies'].pop()
@@ -207,13 +214,13 @@ def test_native_trace_rejects_inconsistent_unadmitted_demand(disposition, messag
                               provider_lock=json.loads(LOCK.read_text()))
 
 
-def test_independent_reference_is_explicitly_not_native_execution():
+def test_independent_reference_is_explicitly_not_native_execution() -> None:
     same = compare_native_with_reference(expected(), expected(), scenario())
     assert same['matches_reference'] is True
     assert same['native_binary_executed'] is False
 
 
-def test_rejects_tampered_or_mismatched_provider_revision():
+def test_rejects_tampered_or_mismatched_provider_revision() -> None:
     e = expected()
     e['provider']['source_commit'] = '0' * 40
     with pytest.raises(ValueError, match='revision'):
@@ -222,7 +229,7 @@ def test_rejects_tampered_or_mismatched_provider_revision():
                               provider_lock=json.loads(LOCK.read_text()))
 
 
-def test_rejects_unpaired_request_time_even_if_each_arm_physically_valid():
+def test_rejects_unpaired_request_time_even_if_each_arm_physically_valid() -> None:
     e = expected()
     e['strategies'][1]['requests'][0]['request_minute'] = 61
     with pytest.raises(ValueError, match='paired'):
@@ -231,7 +238,7 @@ def test_rejects_unpaired_request_time_even_if_each_arm_physically_valid():
                               provider_lock=json.loads(LOCK.read_text()))
 
 
-def test_rejects_fake_admission_and_ghost_occupancy():
+def test_rejects_fake_admission_and_ghost_occupancy() -> None:
     e = expected()
     e['strategies'][1]['requests'][0]['admitted_minute'] = 80
     with pytest.raises(ValueError, match='matching occupancy'):
@@ -240,21 +247,21 @@ def test_rejects_fake_admission_and_ghost_occupancy():
                               provider_lock=json.loads(LOCK.read_text()))
 
 
-def test_rejects_real_id_even_with_synthetic_data_label():
+def test_rejects_real_id_even_with_synthetic_data_label() -> None:
     e = expected()
     e['strategies'][0]['occupancies'][0]['episode_id'] = 'MRN-123456'
     with pytest.raises(ValueError):
         KairosProducerOutput.model_validate(e)
 
 
-def test_native_provider_gate_fails_closed_without_compiler_or_binary():
+def test_native_provider_gate_fails_closed_without_compiler_or_binary() -> None:
     capability = check_native_binary_capability(ROOT / 'native/kairos-icu-liaison')
     assert capability['native_execution_qualified'] is False
     if capability['rustc_present'] is False:
         assert capability['blocking_reason'] == 'rust_toolchain_unavailable'
 
 
-def test_native_cli_refuses_unqualified_input_without_executable():
+def test_native_cli_refuses_unqualified_input_without_executable() -> None:
     p = subprocess.run([sys.executable, '-m', 'icu_liaison.p6_native_cli', str(INPUT)],
                        capture_output=True, text=True, cwd=ROOT,
                        env={'PYTHONPATH': str(ROOT / 'src')})
@@ -263,7 +270,7 @@ def test_native_cli_refuses_unqualified_input_without_executable():
     assert 'admitted_requests' not in p.stdout
 
 
-def test_scenario_rejects_duplicate_and_non_synthetic_request():
+def test_scenario_rejects_duplicate_and_non_synthetic_request() -> None:
     s = scenario(); s['arrivals'].append(copy.deepcopy(s['arrivals'][0]))
     with pytest.raises(ValueError, match='duplicate'):
         KairosScenario.model_validate(s)

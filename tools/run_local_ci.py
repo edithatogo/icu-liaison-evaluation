@@ -1,5 +1,6 @@
 """Run local CI/CD validation mirroring .github/workflows/ci.yml and AGENTS.md."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from datetime import datetime
@@ -13,10 +14,9 @@ import sys
 import time
 from typing import Literal
 
-if __package__:
-    from .publication_guard import find_forbidden_paths, index_violations
-else:
-    from publication_guard import find_forbidden_paths, index_violations
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from tools.publication_guard import find_forbidden_paths as find_forbidden_paths, index_violations
 
 Mode = Literal["pre-commit", "full", "manifest-only"]
 
@@ -58,7 +58,7 @@ def _python_version(python_exe: str) -> str:
     return proc.stdout.strip()
 
 
-def build_steps(root: Path, python_exe: str, mode: Mode) -> list[dict]:
+def build_steps(root: Path, python_exe: str, mode: Mode) -> list[dict[str, Any]]:
     """Construct the ordered CI step descriptors for the requested mode."""
     manifest_step = {
         "name": "verify_source_manifest",
@@ -71,6 +71,12 @@ def build_steps(root: Path, python_exe: str, mode: Mode) -> list[dict]:
 
     pre_commit_steps = [
         manifest_step,
+        {
+            "name": "strict_types",
+            "command": [python_exe, "-m", "mypy"],
+            "pythonpath_src": False,
+            "validator": "exit_status",
+        },
         {
             "name": "pytest",
             "command": [python_exe, "-m", "pytest", "-q"],
@@ -110,9 +116,9 @@ def build_steps(root: Path, python_exe: str, mode: Mode) -> list[dict]:
     ]
 
 
-def _validate_step_output(step: dict, stdout: str) -> dict:
+def _validate_step_output(step: dict[str, Any], stdout: str) -> dict[str, Any]:
     validator = step.get("validator")
-    details: dict = {}
+    details: dict[str, Any] = {}
     if validator == "manifest":
         parsed = json.loads(stdout)
         if parsed.get("status") != "VERIFIED" or parsed.get("errors"):
@@ -153,7 +159,7 @@ def _validate_step_output(step: dict, stdout: str) -> dict:
     return details
 
 
-def run_gitleaks_staged(root: Path, *, gitleaks_bin: str | None = None) -> tuple[int, dict]:
+def run_gitleaks_staged(root: Path, *, gitleaks_bin: str | None = None) -> tuple[int, dict[str, Any]]:
     """Run gitleaks staged-changes secret scan, failing closed if missing or leaks found."""
     exe = gitleaks_bin or shutil.which("gitleaks")
     if exe is None:
@@ -180,7 +186,7 @@ def run_gitleaks_staged(root: Path, *, gitleaks_bin: str | None = None) -> tuple
             "exit_code": 0,
             "elapsed_seconds": elapsed,
         }
-    record: dict = {
+    record: dict[str, Any] = {
         "name": "gitleaks_staged",
         "status": "failed",
         "exit_code": proc.returncode,
@@ -201,7 +207,7 @@ def run_local_ci(
     check_gitleaks: bool = False,
     python_exe: str | None = None,
     quiet: bool = False,
-) -> tuple[int, dict]:
+) -> tuple[int, dict[str, Any]]:
     """Execute forbidden-path checks and local CI steps; return (exit_code, summary)."""
     repo_root = Path(root).resolve()
     exe = python_exe or sys.executable
@@ -215,7 +221,7 @@ def run_local_ci(
 
     forbidden = index_violations(repo_root)
 
-    summary: dict = {
+    summary: dict[str, Any] = {
         "schema_version": 1,
         "date": datetime.now().astimezone().date().isoformat(),
         "scope": "local_synthetic_ci_not_hosted_or_native",
@@ -280,7 +286,7 @@ def run_local_ci(
         )
         elapsed = round(time.monotonic() - started, 3)
 
-        step_record: dict = {
+        step_record: dict[str, Any] = {
             "name": step["name"],
             "exit_code": proc.returncode,
             "elapsed_seconds": elapsed,
