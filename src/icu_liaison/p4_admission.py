@@ -13,7 +13,7 @@ from .protocol import EvaluationProtocol
 from .public_evidence import Catalogue, reconcile_catalogue, select_external_benchmark
 
 
-def admit_p4(scenario: EconomicScenario, protocol: dict, catalogue: dict, register: dict) -> dict[str, Any]:
+def admit_p4(scenario: EconomicScenario, protocol: dict[str, Any], catalogue: dict[str, Any], register: dict[str, Any]) -> dict[str, Any]:
     s = EconomicScenario.model_validate(scenario.model_dump(mode='json'))
     if any(prior.evidence_status == 'local_aggregate_unvalidated' for prior in s.all_priors().values()):
         raise ValueError('local aggregate priors cannot enter a fictional P4 run')

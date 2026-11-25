@@ -1,5 +1,6 @@
 """Build source rows for the six priority fictional P9 figures."""
 from __future__ import annotations
+from typing import Any
 
 from dataclasses import replace
 import csv
@@ -9,9 +10,11 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import numpy as np
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field
 
-from .local_data import DatasetManifest, _read_feed
+from .local_data import Episode, DatasetManifest, _read_feed
+from .p4_model import Strategy
 from .p4_model import (
     EconomicScenario, P4Run, _calculate_arrays, financial_decision_surface, nominal_counterfactual,
 )
@@ -52,20 +55,20 @@ class CoverageWeek(_SyntheticInput):
 
 
 class Fixtures(_SyntheticInput):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal['synthetic']
     journeys: list[Journey] = Field(min_length=1, max_length=6)
     week: CoverageWeek
 
 
-def _intervention(scenario: EconomicScenario):
+def _intervention(scenario: EconomicScenario) -> Strategy:
     for strategy in scenario.strategies:
         if strategy.id == ARM and strategy.role == 'proposed':
             return strategy
     raise ValueError('priority figures require the proposed liaison_service arm')
 
 
-def resource_waterfall(scenario: EconomicScenario) -> list[dict]:
+def resource_waterfall(scenario: EconomicScenario) -> list[dict[str, Any]]:
     """Separate nominal resource contributions and count programme staffing once."""
     arm = _intervention(scenario)
     nominal = nominal_counterfactual(scenario)[ARM]
@@ -76,7 +79,7 @@ def resource_waterfall(scenario: EconomicScenario) -> list[dict]:
          * scenario.resource.incremental_return_cost_aud_per_return.nominal()),
         ('annual_service_cost', -arm.annual_incremental_cost_aud.nominal()),
     ]
-    rows = []
+    rows: list[dict[str, Any]] = []
     total = 0.
     for name, value in components:
         rows.append({'component': name, 'start_aud': total, 'end_aud': total + value, 'value_aud': value})
@@ -87,7 +90,7 @@ def resource_waterfall(scenario: EconomicScenario) -> list[dict]:
     return rows
 
 
-def break_even_grid(scenario: EconomicScenario) -> list[dict]:
+def break_even_grid(scenario: EconomicScenario) -> list[dict[str, Any]]:
     """Vary effectiveness and annual service cost over their finite P4 supports."""
     arm = _intervention(scenario)
     axes = []
@@ -102,7 +105,7 @@ def break_even_grid(scenario: EconomicScenario) -> list[dict]:
     sampled[f'strategy.{ARM}.delay_success_fraction'] = success
     sampled[f'strategy.{ARM}.annual_incremental_cost_aud'] = cost
     net = _calculate_arrays(scenario.annual_eligible_discharges, sampled, ARM).net_resource_benefit_aud
-    rows = []
+    rows: list[dict[str, Any]] = []
     for idx, (x, y, value) in enumerate(zip(success, cost, net, strict=True)):
         decimal_sample = {key: Decimal(str(float(values[idx]))) for key, values in sampled.items()}
         expected = _reference_one_draw(scenario.annual_eligible_discharges, decimal_sample, ARM)
@@ -112,7 +115,7 @@ def break_even_grid(scenario: EconomicScenario) -> list[dict]:
     return rows
 
 
-def paired_capacity(run: P4Run, decision_surface: Path) -> list[dict]:
+def paired_capacity(run: P4Run, decision_surface: Path) -> list[dict[str, Any]]:
     """Assign draw IDs only after matching each ordered export row to its P4 replay."""
     _intervention(run.scenario)
     expected, strategies = financial_decision_surface(run)
@@ -133,16 +136,16 @@ def paired_capacity(run: P4Run, decision_surface: Path) -> list[dict]:
     ]
 
 
-def journey_rows(journeys: list[Journey], manifest_file: Path) -> list[dict]:
+def journey_rows(journeys: list[Journey], manifest_file: Path) -> list[dict[str, Any]]:
     """Link fictional milestones to audited P3 episode times; retain unknown stages."""
     manifest = DatasetManifest.model_validate_json(manifest_file.read_bytes())
     if manifest.data_class != 'synthetic':
         raise ValueError('journey requires the fictional P3 episode feed')
-    records = _read_feed(manifest_file.parent, 'episodes', manifest.files['episodes'])
+    records = _read_feed(manifest_file.parent, 'episodes', manifest.files['episodes'], Episode)
     episodes = {record.index_icu_episode_id: record for record in records}
     if len(episodes) != len(records) or len({row.episode_id for row in journeys}) != len(journeys):
         raise ValueError('duplicate episode in journey source')
-    output = []
+    output: list[dict[str, Any]] = []
     for idx, journey in enumerate(journeys):
         episode = episodes.get(journey.episode_id)
         if episode is None or episode.destination_category != 'ward_same_hospital':
@@ -166,6 +169,7 @@ def journey_rows(journeys: list[Journey], manifest_file: Path) -> list[dict]:
         if referral is None and bed is None:
             spans = [(0, departure, 'unresolved_stage')]
         elif referral is None:
+            assert bed is not None
             spans = [(0, bed, 'unresolved_stage'), (bed, departure, 'bed_to_departure')]
         elif bed is None:
             spans = [(0, referral, 'ready_to_referral'), (referral, departure, 'unresolved_stage')]
@@ -178,9 +182,10 @@ def journey_rows(journeys: list[Journey], manifest_file: Path) -> list[dict]:
     return output
 
 
-def coverage_rows(week: CoverageWeek) -> list[dict]:
+def coverage_rows(week: CoverageWeek) -> list[dict[str, Any]]:
     """Account for a single fictional nursing post in each complete weekly hour."""
-    paid, productive = set(), set()
+    paid: set[tuple[int, int]] = set()
+    productive: set[tuple[int, int]] = set()
     for shift in week.shifts:
         if not shift.start < shift.end:
             raise ValueError('paid shift requires increasing endpoints')
@@ -198,7 +203,7 @@ def coverage_rows(week: CoverageWeek) -> list[dict]:
     ]
 
 
-def sensitivity_grid(run: P4Run) -> list[dict]:
+def sensitivity_grid(run: P4Run) -> list[dict[str, Any]]:
     """Stress shared P4 draws with fixed effect pairs, including joint null and harm."""
     scenario = run.scenario
     arm = _intervention(scenario)
@@ -210,7 +215,7 @@ def sensitivity_grid(run: P4Run) -> list[dict]:
     return_values = sorted({adverse, 0., returns.nominal(), ref_high})
     if not all(0 <= value <= 1 for value in delay_values) or not all(-1 <= value <= 1 for value in return_values):
         raise ValueError('clinical stress effects outside bounded risk support')
-    rows = []
+    rows: list[dict[str, Any]] = []
     for success in delay_values:
         for effect in return_values:
             sampled = {

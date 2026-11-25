@@ -1,5 +1,6 @@
 """Publish and verify the P9 figures for each synthetic P11 model run."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from datetime import datetime, timezone
@@ -55,7 +56,7 @@ def input_files() -> dict[str, Path]:
     }
 
 
-def runtime() -> dict:
+def runtime() -> dict[str, Any]:
     return {'python': platform.python_version(), 'system': platform.system(),
             'machine': platform.machine(), 'versions': {
                 name: metadata.version(name)
@@ -63,13 +64,13 @@ def runtime() -> dict:
             }}
 
 
-def fingerprint() -> dict:
+def fingerprint() -> dict[str, Any]:
     return {'sources_sha256': source_hashes(),
             'inputs_sha256': {name: digest_file(path) for name, path in input_files().items()},
             'runtime': runtime()}
 
 
-def _bundle_inputs(identity: dict, run: dict) -> dict:
+def _bundle_inputs(identity: dict[str, Any], run: dict[str, Any]) -> dict[str, Any]:
     """Reconstruct the inner manifest's source hashes from the frozen outer records."""
     names = {'catalogue': 'p9_catalogue', 'metrics': 'p10_metrics'}
     expected = {names.get(Path(name).stem, Path(name).stem): digest
@@ -91,7 +92,7 @@ def _bundle_inputs(identity: dict, run: dict) -> dict:
     return expected
 
 
-def verify_p9(folder: Path, model: Path) -> dict:
+def verify_p9(folder: Path, model: Path) -> dict[str, Any]:
     folder, model = Path(folder), Path(model)
     if folder.is_symlink() or not folder.is_dir():
         raise ValueError('P9 figure revision is missing or unsafe')
@@ -168,7 +169,7 @@ def verify_p9(folder: Path, model: Path) -> dict:
     return record
 
 
-def build_p9(model_pointer: Path, output: Path, pointer: Path) -> dict:
+def build_p9(model_pointer: Path, output: Path, pointer: Path) -> dict[str, Any]:
     output = Path(output)
     link = read_json(model_pointer)
     model_id = link.get('model_run_id')

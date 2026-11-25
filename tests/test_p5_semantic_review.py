@@ -13,7 +13,7 @@ from icu_liaison.p5_reporting import build_report, review_report
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _scenario():
+def _scenario() -> EconomicScenario:
     return EconomicScenario.model_validate_json((ROOT/'model-inputs/p4/illustrative.json').read_text())
 
 
@@ -23,7 +23,7 @@ def _rehash(directory: Path, file: str) -> None:
     (directory/'manifest.json').write_text(json.dumps(manifest))
 
 
-def test_independent_report_reader_accepts_unmodified_generated_bundle(tmp_path):
+def test_independent_report_reader_accepts_unmodified_generated_bundle(tmp_path: Path) -> None:
     target = tmp_path/'report'
     build_report(_scenario(),target)
     reviewed = review_report(target)
@@ -33,7 +33,7 @@ def test_independent_report_reader_accepts_unmodified_generated_bundle(tmp_path)
     assert reviewed['provider_qualification'] is False
 
 
-def test_reader_rejects_rehashed_unregistered_attachment(tmp_path):
+def test_reader_rejects_rehashed_unregistered_attachment(tmp_path: Path) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     attachment = target / 'unregistered.csv'
@@ -43,7 +43,7 @@ def test_reader_rejects_rehashed_unregistered_attachment(tmp_path):
         review_report(target)
 
 
-def test_reader_requires_manifest_to_be_a_regular_bundle_file(tmp_path):
+def test_reader_requires_manifest_to_be_a_regular_bundle_file(tmp_path: Path) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     manifest = target / 'manifest.json'
@@ -53,7 +53,7 @@ def test_reader_requires_manifest_to_be_a_regular_bundle_file(tmp_path):
         review_report(target)
 
 
-def test_reader_rejects_rehashed_contradictory_decision_brief(tmp_path):
+def test_reader_rejects_rehashed_contradictory_decision_brief(tmp_path: Path) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     brief = target / 'report.md'
@@ -65,7 +65,7 @@ def test_reader_rejects_rehashed_contradictory_decision_brief(tmp_path):
         review_report(target)
 
 
-def test_reader_rejects_rehashed_inconsistent_sensitivity_swing(tmp_path):
+def test_reader_rejects_rehashed_inconsistent_sensitivity_swing(tmp_path: Path) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     table = target / 'one-way-sensitivity.csv'
@@ -82,7 +82,7 @@ def test_reader_rejects_rehashed_inconsistent_sensitivity_swing(tmp_path):
         review_report(target)
 
 
-def test_rehashing_tampered_mean_does_not_evade_semantic_review(tmp_path):
+def test_rehashing_tampered_mean_does_not_evade_semantic_review(tmp_path: Path) -> None:
     target=tmp_path/'report';build_report(_scenario(),target)
     f=target/'model-summary.json'
     model=json.loads(f.read_text())
@@ -93,7 +93,7 @@ def test_rehashing_tampered_mean_does_not_evade_semantic_review(tmp_path):
         review_report(target)
 
 
-def test_rehashing_paired_probability_does_not_evade_semantic_review(tmp_path):
+def test_rehashing_paired_probability_does_not_evade_semantic_review(tmp_path: Path) -> None:
     target=tmp_path/'report';build_report(_scenario(),target)
     file=target/'paired-comparisons.csv'
     with file.open(newline='') as f:rows=list(csv.DictReader(f))
@@ -111,7 +111,7 @@ def test_rehashing_paired_probability_does_not_evade_semantic_review(tmp_path):
     ('paired-comparisons.csv', 'net_budget_impact_aud', 'p50', '10000'),
     ('paired-comparisons.csv', 'net_budget_impact_aud', 'probability_strictly_better', '0.9'),
 ])
-def test_reader_rejects_rehashed_cash_and_capacity_disagreements(tmp_path, filename, measure, field, value):
+def test_reader_rejects_rehashed_cash_and_capacity_disagreements(tmp_path: Path, filename: str, measure: str, field: str, value: str) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     file = target / filename
@@ -128,7 +128,7 @@ def test_reader_rejects_rehashed_cash_and_capacity_disagreements(tmp_path, filen
         review_report(target)
 
 
-def test_reader_rejects_an_admission_claim_changed_in_both_files(tmp_path):
+def test_reader_rejects_an_admission_claim_changed_in_both_files(tmp_path: Path) -> None:
     target = tmp_path / 'report'
     build_report(_scenario(), target)
     admission_file = target / 'evidence-admission.json'
@@ -145,7 +145,7 @@ def test_reader_rejects_an_admission_claim_changed_in_both_files(tmp_path):
         review_report(target)
 
 
-def test_mislabelled_readiness_cannot_be_accepted_with_new_manifest(tmp_path):
+def test_mislabelled_readiness_cannot_be_accepted_with_new_manifest(tmp_path: Path) -> None:
     target=tmp_path/'report';build_report(_scenario(),target)
     file=target/'model-summary.json'
     model=json.loads(file.read_text());model['investment_ready']=True

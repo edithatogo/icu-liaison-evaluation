@@ -1,4 +1,6 @@
 """Check each SVG's actual data marks against the independently loaded source rows."""
+from typing import Any
+from numpy.typing import ArrayLike, NDArray
 from pathlib import Path
 import re
 from xml.etree import ElementTree as ET
@@ -12,14 +14,14 @@ DC = '{http://purl.org/dc/elements/1.1/}'
 NUMBER = re.compile(r'[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?')
 
 
-def _points(node):
+def _points(node: ET.Element) -> NDArray[np.float64]:
     path = node.find(f'.//{SVG}path')
     if path is None or not path.get('d'):
         raise ValueError('SVG mark has no vector path')
-    return np.array([float(value) for value in NUMBER.findall(path.get('d'))]).reshape(-1, 2)
+    return np.array([float(value) for value in NUMBER.findall(path.attrib['d'])]).reshape(-1, 2)
 
 
-def _affine(values, positions, direction):
+def _affine(values: ArrayLike, positions: ArrayLike, direction: int) -> float | None:
     """A linear chart axis may change across renderers; positions must follow it."""
     data = np.asarray(values, dtype=float)
     pixels = np.asarray(positions, dtype=float)
@@ -34,19 +36,20 @@ def _affine(values, positions, direction):
     origin = pixels[first] - data[first] * scale
     if scale * direction <= 0 or not np.allclose(pixels, origin + data * scale, atol=.01, rtol=0):
         raise ValueError('SVG mark positions differ from ordered source values')
-    return origin
+    return float(origin)
 
 
-def _text(nodes, gid, expected):
+def _text(nodes: dict[str, ET.Element], gid: str, expected: str) -> tuple[float, float]:
     node = nodes.get(gid)
     visible = node.find(f'.//{SVG}text') if node is not None else None
     if visible is None or ''.join(visible.itertext()) != expected:
         raise ValueError(f'SVG mark label differs from source: {gid}')
-    return float(visible.get('x')), float(visible.get('y'))
+    return float(visible.attrib['x']), float(visible.attrib['y'])
 
 
-def _bars(nodes, rows, prefix, x0, x1):
-    values, positions = [], []
+def _bars(nodes: dict[str, ET.Element], rows: list[dict[str, Any]], prefix: str, x0: str, x1: str) -> float | None:
+    values = []
+    positions: list[float] = []
     for idx, row in enumerate(rows):
         if row[x0] is None:
             continue
@@ -59,7 +62,7 @@ def _bars(nodes, rows, prefix, x0, x1):
     return _affine(values, positions, 1) if values else None
 
 
-def _zero(nodes, origin, dimension):
+def _zero(nodes: dict[str, ET.Element], origin: float | None, dimension: int) -> None:
     node = nodes.get('resource-zero')
     if node is None:
         raise ValueError('SVG mark is missing its resource zero reference')
@@ -67,7 +70,7 @@ def _zero(nodes, origin, dimension):
         raise ValueError('SVG resource zero mark differs from the data axis')
 
 
-def _rectangle(node):
+def _rectangle(node: ET.Element | None) -> NDArray[np.float64]:
     if node is None:
         raise ValueError('SVG coverage mark is missing its rectangle')
     points = _points(node)
@@ -82,14 +85,14 @@ def _rectangle(node):
     return np.array([x0, x1, y0, y1])
 
 
-def _cell_bounds(bounds, day, hour):
+def _cell_bounds(bounds: NDArray[np.float64], day: int, hour: int) -> NDArray[np.float64]:
     x0, x1, y0, y1 = bounds
     dx, dy = (x1 - x0) / 24, (y1 - y0) / 7
     return np.array([x0 + hour * dx, x0 + (hour + 1) * dx,
                      y0 + day * dy, y0 + (day + 1) * dy])
 
 
-def read_accessible_svg(path: Path, figure: dict) -> ET.Element:
+def read_accessible_svg(path: Path, figure: dict[str, Any]) -> ET.Element:
     """Verify the SVG title and description against the figure's catalogue entry."""
     try:
         svg = ET.parse(path).getroot()
@@ -106,11 +109,11 @@ def read_accessible_svg(path: Path, figure: dict) -> ET.Element:
     return svg
 
 
-def review_svg(path, figure, rows):
+def review_svg(path: Path, figure: dict[str, Any], rows: list[dict[str, Any]]) -> None:
     svg = read_accessible_svg(path, figure)
-    nodes = {node.get('id'): node for node in svg.iter() if node.get('id')}
-    marks = [node.get('id') for node in svg.iter() if node.get('id', '').startswith('data-')]
-    if len(set(marks)) != len(marks):
+    nodes = {gid: node for node in svg.iter() if (gid := node.get('id'))}
+    mark_ids = [node.get('id') for node in svg.iter() if node.get('id', '').startswith('data-')]
+    if len(set(mark_ids)) != len(mark_ids):
         raise ValueError('duplicate SVG data mark')
     figure_id = figure['id']
     if figure_id == 'F02':
@@ -137,8 +140,8 @@ def review_svg(path, figure, rows):
                 shape = nodes.get(reference.removeprefix('#')) if reference.startswith('#') else None
                 if shape is None or shape.tag != f'{SVG}path' or not shape.get('d'):
                     raise ValueError('SVG fixed-prior mark has no visible shape')
-                xpos, ypos = float(mark.get('x')), float(mark.get('y'))
-                vertices = np.array([float(v) for v in NUMBER.findall(shape.get('d'))]).reshape(-1, 2)
+                xpos, ypos = float(mark.attrib['x']), float(mark.attrib['y'])
+                vertices = np.array([float(v) for v in NUMBER.findall(shape.attrib['d'])]).reshape(-1, 2)
                 bounds = _rectangle(nodes.get('breakeven-background'))
                 if (vertices.shape != (4, 2)
                         or not bounds[0] <= xpos + vertices[:, 0].min() < xpos + vertices[:, 0].max() <= bounds[1]
@@ -162,9 +165,9 @@ def review_svg(path, figure, rows):
     elif figure_id == 'F11':
         scatter = nodes.get('paired-scatter')
         dots = list(scatter.iter(f'{SVG}use')) if scatter is not None else []
-        _affine([row['released_icu_bed_days'] for row in rows], [dot.get('x') for dot in dots], 1)
+        _affine([row['released_icu_bed_days'] for row in rows], [dot.get('x', 'nan') for dot in dots], 1)
         _zero(nodes, _affine([row['net_resource_aud'] for row in rows],
-                             [dot.get('y') for dot in dots], -1), 1)
+                             [dot.get('y', 'nan') for dot in dots], -1), 1)
     elif figure_id == 'F15':
         _bars(nodes, rows, 'journey-bar', 'start_minute', 'end_minute')
         for idx, row in enumerate(rows):
@@ -175,13 +178,13 @@ def review_svg(path, figure, rows):
     elif figure_id == 'F20':
         coverage_grid = _rectangle(nodes.get('coverage-grid-background'))
         demand_grid = _rectangle(nodes.get('demand-grid-background'))
-        view = np.asarray([float(v) for v in svg.get('viewBox', '').split()])
-        if (view.shape != (4,) or not np.isfinite(view).all()
-                or view[2] <= 0 or view[3] <= 0):
+        view_bounds = np.asarray([float(v) for v in svg.get('viewBox', '').split()])
+        if (view_bounds.shape != (4,) or not np.isfinite(view_bounds).all()
+                or view_bounds[2] <= 0 or view_bounds[3] <= 0):
             raise ValueError('SVG coverage chart has invalid view bounds')
         for x0, x1, y0, y1 in (coverage_grid, demand_grid):
-            if x0 < view[0] or x1 > view[0] + view[2] or y0 < view[1] or y1 > view[1] + view[3]:
-                raise ValueError('SVG coverage chart grid is outside the view')
+            if x0 < view_bounds[0] or x1 > view_bounds[0] + view_bounds[2] or y0 < view_bounds[1] or y1 > view_bounds[1] + view_bounds[3]:
+                raise ValueError('SVG coverage chart grid is outside the view_bounds')
         for row in rows:
             suffix = f"{row['day']}-{row['hour']}"
             paid = nodes.get(f'coverage-{suffix}')
@@ -191,8 +194,10 @@ def review_svg(path, figure, rows):
                 if not np.allclose(_rectangle(paid), _cell_bounds(coverage_grid, row['day'], row['hour']),
                                    atol=.01, rtol=0):
                     raise ValueError('SVG paid coverage geometry differs from its source hour')
-                mark = paid.find(f'.//{SVG}path')
-                style = mark.get('style', '')
+                coverage_path = paid.find(f'.//{SVG}path')
+                if coverage_path is None:
+                    raise ValueError('SVG paid coverage path is missing')
+                style = coverage_path.get('style', '')
                 hatched = 'fill: url(' in style
                 if hatched == bool(row['productive_staff_hours']):
                     raise ValueError('SVG productive coverage hatch differs from fixture')
@@ -205,7 +210,8 @@ def review_svg(path, figure, rows):
                 bounds = _cell_bounds(demand_grid, row['day'], row['hour'])
                 if not np.allclose(_rectangle(cell), bounds, atol=.01, rtol=0):
                     raise ValueError('SVG demand cell geometry differs from its source hour')
-                if 'fill: #dce9ec' not in cell.find(f'.//{SVG}path').get('style', ''):
+                cell_path = cell.find(f'.//{SVG}path') if cell is not None else None
+                if cell_path is None or 'fill: #dce9ec' not in cell_path.get('style', ''):
                     raise ValueError('SVG demand mark is not visible')
                 x, y = _text(nodes, f'demand-{suffix}', str(count))
                 if not np.isclose(x, (bounds[0] + bounds[1]) / 2, atol=.01, rtol=0) or not bounds[2] <= y <= bounds[3]:

@@ -2,6 +2,9 @@
 
 import argparse
 from datetime import date
+from collections.abc import Callable
+from typing import Any
+from matplotlib.figure import Figure
 from hashlib import sha256
 import json
 from math import isfinite
@@ -11,9 +14,9 @@ from tempfile import TemporaryDirectory
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from matplotlib.ticker import PercentFormatter, StrMethodFormatter
+import matplotlib.dates as mdates
+from matplotlib.ticker import Formatter, PercentFormatter, StrMethodFormatter
 
 CONTRACT = Path(__file__).resolve().parents[1] / "contracts/reporting/evaluation-deck.json"
 COLORS = ("#174467", "#526579", "#AB551F", "#725387")
@@ -25,18 +28,18 @@ SCENARIOS = {
 }
 
 
-def keys(row, expected):
+def keys(row: object, expected: str) -> None:
     if not isinstance(row, dict) or set(row) != set(expected.split()):
         raise ValueError(f"Expected aggregate fields: {expected}")
 
 
-def number(value, *, count=False, minimum=0, maximum=float("inf")):
-    if (type(value) not in (int, float) or not isfinite(value)
+def number(value: object, *, count: bool=False, minimum: float=0, maximum: float=float("inf")) -> None:
+    if (not isinstance(value, (int, float)) or isinstance(value, bool) or not isfinite(value)
             or not minimum <= value <= maximum or (count and type(value) is not int)):
         raise ValueError("Invalid aggregate number")
 
 
-def validate(data):
+def validate(data: dict[str, Any]) -> None:
     keys(data, "input_class period_months activity pathways funding")
     if data["input_class"] not in ("synthetic_only", "private_aggregate"):
         raise ValueError("Unknown aggregate input class")
@@ -77,7 +80,7 @@ def validate(data):
             number(value, minimum=-float("inf"))
 
 
-def activity(data, _spec):
+def activity(data: dict[str, Any], _spec: dict[str, Any]) -> Figure:
     rows = data["activity"]
     dates = [date.fromisoformat(row["month"] + "-01") for row in rows]
     fig, (counts, occupancy) = plt.subplots(2, 1, figsize=(12, 4.35), sharex=True, layout="constrained")
@@ -98,14 +101,15 @@ def activity(data, _spec):
     if (dates[-1] - tick_dates[-1]).days >= 30 * max(1, step - 1):
         tick_dates.append(dates[-1])
     occupancy.set_xticks(tick_dates)
-    occupancy.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    date_formatter: Callable[[str], Formatter] = mdates.DateFormatter
+    occupancy.xaxis.set_major_formatter(date_formatter("%b %Y"))
     for axis in (counts, occupancy):
         axis.grid(axis="y", color="#D8DFE4", linewidth=.75)
         axis.set_axisbelow(True)
     return fig
 
 
-def pathways(data, _spec):
+def pathways(data: dict[str, Any], _spec: dict[str, Any]) -> Figure:
     row = data["pathways"]
     fig, panels = plt.subplots(2, 1, figsize=(12, 4.15), layout="constrained")
     panels_data = (
@@ -132,7 +136,7 @@ def pathways(data, _spec):
     return fig
 
 
-def funding(data, spec):
+def funding(data: dict[str, Any], spec: dict[str, Any]) -> Figure:
     first, last = spec["payment_range_percent"]
     fig, axis = plt.subplots(figsize=(12, 4.32), layout="constrained")
     for index, (key, label) in enumerate(SCENARIOS.items()):
@@ -154,7 +158,7 @@ def funding(data, spec):
 RENDER = {"activity": activity, "pathways": pathways, "funding": funding}
 
 
-def build(inputs: Path, destination: Path, contract_path: Path = CONTRACT):
+def build(inputs: Path, destination: Path, contract_path: Path = CONTRACT) -> dict[str, Any]:
     raw = inputs.read_bytes()
     contract_raw = contract_path.read_bytes()
     data = json.loads(raw)
@@ -193,8 +197,7 @@ def build(inputs: Path, destination: Path, contract_path: Path = CONTRACT):
                     for extension in ("png", "svg"):
                         name = f"{spec['artifact_stem']}.{extension}"
                         artifact = staging / name
-                        options = {"metadata": {"Date": None}} if extension == "svg" else {}
-                        fig.savefig(artifact, dpi=155, **options)
+                        fig.savefig(artifact, dpi=155, metadata={"Date": None} if extension == "svg" else None)
                         artifact.chmod(0o600)
                         record["files"][name] = sha256(artifact.read_bytes()).hexdigest()
                 finally:
@@ -209,7 +212,7 @@ def build(inputs: Path, destination: Path, contract_path: Path = CONTRACT):
     return report
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inputs", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)

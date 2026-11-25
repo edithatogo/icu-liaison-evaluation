@@ -24,3 +24,12 @@ The [migration comparison](../../../docs/pr215-migration-comparison.md)
 links the preserved exploratory revision to the standalone merge and its
 passing synthetic CI. The repository owner approved release of that migration.
 [Portable source release](../../../docs/pr215-migration-comparison.md#portable-source-release)
+
+## Strict source and Git checks
+
+| Entry point | Acceptance evidence |
+| --- | --- |
+| `.venv/bin/python -m mypy` | Every active Python file under `src`, `tools` and `tests` passes strict checks on the pinned interpreter. |
+| `.venv/bin/python -m pytest -q` | Strict pytest rejects duplicate parameter IDs. Fictional inputs exercise unexpected keys, invalid types, missing authority and favourable financial outcomes. |
+| Ordinary commit, merge and push | A staged type error is rejected even with a repaired working file. A valid staged revision succeeds with a failing unstaged edit. The merge and push fixtures check each proposed tree and ref. |
+| Hosted privacy checks | The egress audit, Gitleaks, Presidio and TruffleHog jobs retain their own run receipts. |

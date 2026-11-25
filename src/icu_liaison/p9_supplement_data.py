@@ -4,13 +4,14 @@ from __future__ import annotations
 import csv
 from math import isclose
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field
 
 from .local_data import DatasetManifest, load_and_audit
-from .p4_model import nominal_counterfactual, one_way_sensitivity
+from .p4_model import P4Run, nominal_counterfactual, one_way_sensitivity
 from .p6_capacity import TraceBundle, audit_trace_bundle
 
 SUPPLEMENT_IDS = ('F05', 'F06', 'F07', 'F08', 'F09', 'F13', 'F18')
@@ -20,18 +21,19 @@ DESIGN = ROOT / 'model-inputs/p9/event-study.json'
 DICTIONARY = ROOT / 'model-inputs/clinical-data-dictionary.json'
 
 
-def _table(path):
+def _table(path: Path) -> list[dict[str, str]]:
     with path.open(encoding='utf-8', newline='') as stream:
         return list(csv.DictReader(stream))
 
 
-def economic_rows(run, p5, paired_liaison):
+def economic_rows(run: P4Run, p5: Path, paired_liaison: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     reference = run.strategies['current_care']
     consequences = {(row['strategy_id'], row['measure']): float(row['mean'])
                     for row in _table(p5 / 'cost-consequence.csv')}
     comparisons = {(row['strategy_id'], row['measure']): row
                    for row in _table(p5 / 'paired-comparisons.csv')}
-    amounts, signs = [], []
+    amounts = []
+    signs: list[dict[str, Any]] = []
     for arm, result in run.strategies.items():
         if arm == 'current_care':
             continue
@@ -54,9 +56,9 @@ def economic_rows(run, p5, paired_liaison):
     scenario = run.scenario
     arm = 'liaison_service'
     pivot = nominal_counterfactual(scenario)[arm]['net_resource_benefit_aud']
-    published = [r for r in _table(p5 / 'one-way-sensitivity.csv') if r['strategy_id'] == arm]
+    published_sensitivity = [r for r in _table(p5 / 'one-way-sensitivity.csv') if r['strategy_id'] == arm]
     sensitivity = []
-    for r, p in zip(one_way_sensitivity(scenario, arm), published, strict=True):
+    for r, p in zip(one_way_sensitivity(scenario, arm), published_sensitivity, strict=True):
         fields = ('low_net_resource_aud', 'high_net_resource_aud')
         if p['parameter'] != r['parameter'] or any(
             not isclose(float(p[k]), r[k], abs_tol=1e-7, rel_tol=1e-12) for k in fields
@@ -74,7 +76,7 @@ def economic_rows(run, p5, paired_liaison):
     return {'F05': amounts, 'F06': signs, 'F07': sensitivity, 'F08': hist}
 
 
-def capacity_rows(trace_file):
+def capacity_rows(trace_file: Path) -> list[dict[str, Any]]:
     trace = TraceBundle.model_validate_json(trace_file.read_bytes())
     audit = audit_trace_bundle(trace)
     rows = []
@@ -99,7 +101,7 @@ def capacity_rows(trace_file):
     return rows
 
 
-def flow_rows(p3_manifest):
+def flow_rows(p3_manifest: Path) -> list[dict[str, Any]]:
     if DatasetManifest.model_validate_json(p3_manifest.read_bytes()).data_class != 'synthetic':
         raise ValueError('flow figure requires a synthetic P3 cohort')
     audit = load_and_audit(p3_manifest, data_dictionary_path=DICTIONARY)
@@ -123,14 +125,14 @@ class Period(BaseModel):
 
 class Design(BaseModel):
     model_config = ConfigDict(strict=True, extra='forbid')
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal['synthetic_design']
     reference_week: Literal[-1]
     rollout_week: Literal[0]
     periods: list[Period] = Field(min_length=4, max_length=104)
 
 
-def event_rows(design_file):
+def event_rows(design_file: Path) -> list[dict[str, Any]]:
     design = Design.model_validate_json(design_file.read_bytes())
     periods = design.periods
     weeks = [p.week for p in periods]

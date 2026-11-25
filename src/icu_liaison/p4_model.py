@@ -6,6 +6,10 @@ P4 runs only synthetic scenarios; no clinical outcome, budget, resource or
 capacity estimate has been approved by CHHHS.
 """
 from __future__ import annotations
+from .adapters.voiage import AnalysisFactory, ValueArrayFactory, make_voiage_decision
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any
 
 from dataclasses import dataclass
 import hashlib
@@ -13,13 +17,14 @@ import json
 from typing import Literal
 
 import numpy as np
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from scipy.stats import beta as beta_distribution
 from scipy.stats import lognorm, norm, triang
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', allow_inf_nan=False, validate_assignment=True)
+    model_config = ConfigDict(strict=True, extra='forbid', allow_inf_nan=False, validate_assignment=True)
 
 
 # Cost quantities and cash-realisability use entirely separate measures.
@@ -98,7 +103,7 @@ class Prior(_Strict):
             return p['alpha'] / (p['alpha'] + p['beta'])
         return p['median']
 
-    def sample(self, quantiles: np.ndarray) -> np.ndarray:
+    def sample(self, quantiles: NDArray[float64]) -> NDArray[float64]:
         if self.family == 'fixed':
             return np.full(len(quantiles), self.params['value'], dtype=np.float64)
         # The lower-level library owns the numerical inverse CDF. Endpoint
@@ -189,7 +194,7 @@ class Safety(_Strict):
 
 
 class EconomicScenario(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     scenario_id: str = Field(min_length=1)
     data_class: Literal['synthetic']
     currency: Literal['AUD']
@@ -255,24 +260,24 @@ class EconomicScenario(_Strict):
 
 @dataclass(frozen=True)
 class StrategyDraws:
-    icu_bed_days_released: np.ndarray
-    usable_bed_days: np.ndarray
-    readmissions_avoided: np.ndarray
-    gross_resource_benefit_aud: np.ndarray
-    net_resource_benefit_aud: np.ndarray
-    net_budget_impact_aud: np.ndarray
+    icu_bed_days_released: NDArray[float64]
+    usable_bed_days: NDArray[float64]
+    readmissions_avoided: NDArray[float64]
+    gross_resource_benefit_aud: NDArray[float64]
+    net_resource_benefit_aud: NDArray[float64]
+    net_budget_impact_aud: NDArray[float64]
 
 
 @dataclass(frozen=True)
 class P4Run:
     scenario: EconomicScenario
     input_digest_sha256: str
-    sampled_inputs: dict[str, np.ndarray]
+    sampled_inputs: dict[str, NDArray[float64]]
     strategies: dict[str, StrategyDraws]
 
 
-def _calculate_arrays(n: int, parameters: dict[str, np.ndarray], arm: str) -> StrategyDraws:
-    def read(path: str) -> np.ndarray:
+def _calculate_arrays(n: int, parameters: dict[str, NDArray[float64]], arm: str) -> StrategyDraws:
+    def read(path: str) -> NDArray[float64]:
         return parameters[path]
     coverage = read(f'strategy.{arm}.coverage_fraction')
     days = (n * read('baseline.exit_block_rate') * read('resource.addressable_delay_fraction')
@@ -347,7 +352,7 @@ def nominal_counterfactual(scenario: EconomicScenario) -> dict[str, dict[str, fl
             for arm_id, result in outcomes.items()}
 
 
-def financial_decision_surface(run: P4Run, *, objective: Literal['net_resource', 'budget'] = 'net_resource') -> tuple[np.ndarray, list[str]]:
+def financial_decision_surface(run: P4Run, *, objective: Literal['net_resource', 'budget'] = 'net_resource') -> tuple[NDArray[float64], list[str]]:
     """Produce Voiage's row-draw/column-strategy input; **not EVPI code**."""
     if objective == 'net_resource':
         field = 'net_resource_benefit_aud'
@@ -362,21 +367,17 @@ def financial_decision_surface(run: P4Run, *, objective: Literal['net_resource',
     return array, labels
 
 
-def make_p4_voiage_analysis(run: P4Run, *, value_array_factory=None, analysis_factory=None):
-    """Call the *installed* Voiage v3.1 API, never a bespoke VOI solver."""
-    if value_array_factory is None or analysis_factory is None:
-        try:
-            from voiage.schema import ValueArray
-            from voiage.analysis import DecisionAnalysis
-        except ImportError as exc:
-            raise RuntimeError('Voiage 3.1 provider unavailable; use >=Python 3.15.2') from exc
-        value_array_factory = value_array_factory or ValueArray.from_numpy
-        analysis_factory = analysis_factory or DecisionAnalysis
+def make_p4_voiage_analysis(
+    run: P4Run, *, value_array_factory: ValueArrayFactory | None = None,
+    analysis_factory: AnalysisFactory | None = None,
+) -> Any:
+    """Run the provider on the paired P4 economic decision surface."""
     values, labels = financial_decision_surface(run)
-    return analysis_factory(value_array_factory(values, labels))
+    return make_voiage_decision(values, labels, value_array_factory=value_array_factory,
+                                analysis_factory=analysis_factory)
 
 
-def _stats(values: np.ndarray) -> dict[str, float]:
+def _stats(values: NDArray[float64]) -> dict[str, float]:
     p05, p50, p95 = np.quantile(values, [0.05, 0.50, 0.95])
     return {'mean': float(np.mean(values)), 'p05': float(p05),
             'p50': float(p50), 'p95': float(p95)}
@@ -410,7 +411,7 @@ def _thresholds(scenario: EconomicScenario, arm: Strategy) -> dict[str, float | 
     }
 
 
-def one_way_sensitivity(scenario: EconomicScenario, strategy_id: str) -> list[dict]:
+def one_way_sensitivity(scenario: EconomicScenario, strategy_id: str) -> list[dict[str, Any]]:
     """One-at-a-time 5th/95th marginal parameter diagnostic.
 
     This is NOT a conditional posterior, variance decomposition, causal
@@ -448,9 +449,9 @@ def one_way_sensitivity(scenario: EconomicScenario, strategy_id: str) -> list[di
     return sorted(rows, key=lambda row: row['absolute_net_resource_swing_aud'], reverse=True)
 
 
-def summarise_p4(run: P4Run) -> dict:
+def summarise_p4(run: P4Run) -> dict[str, Any]:
     """Report conditional financial and operational outcomes, not clinical approval."""
-    outcomes = {}
+    outcomes: dict[str, dict[str, Any]] = {}
     for arm in run.scenario.strategies:
         result = run.strategies[arm.id]
         outcomes[arm.id] = {

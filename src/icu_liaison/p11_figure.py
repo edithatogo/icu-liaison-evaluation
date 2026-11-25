@@ -1,5 +1,6 @@
 """Render a versioned F01 companion from an existing synthetic P5 report."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from datetime import datetime, timezone
@@ -24,7 +25,7 @@ DESCRIPTION = (
 )
 
 
-def verify_figure(folder: Path, *, model: Path | None = None) -> dict:
+def verify_figure(folder: Path, *, model: Path | None = None) -> dict[str, Any]:
     folder = Path(folder)
     if folder.is_symlink() or not folder.is_dir():
         raise ValueError('synthetic figure directory is missing or unsafe')
@@ -60,7 +61,7 @@ def verify_figure(folder: Path, *, model: Path | None = None) -> dict:
     return record
 
 
-def build_figure(model_pointer: Path, style_file: Path, output: Path, pointer: Path) -> dict:
+def build_figure(model_pointer: Path, style_file: Path, output: Path, pointer: Path) -> dict[str, Any]:
     import matplotlib
     from cycler import cycler
 

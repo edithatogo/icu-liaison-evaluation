@@ -8,12 +8,14 @@ revenue used in a model draw. In particular, prospective staffing costs must
 REPLACE the appropriate P4 prior component after reconciliation, not be added.
 """
 from __future__ import annotations
+from .adapters.voiage import AnalysisFactory, ValueArrayFactory
 
 from datetime import date
 from decimal import Decimal, InvalidOperation, localcontext
 import re
 from typing import Any, Literal, Mapping
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field
 
 from .adapters.p8_mchs import exact_nwau_change
@@ -72,7 +74,7 @@ class VoiageComparison(_Strict):
 
 
 class P8Composition(_Strict):
-    schema_version: Literal[1] = 1
+    schema_version: SchemaVersion = 1
     data_class: Literal['synthetic'] = 'synthetic'
     admission: Literal['planning_only'] = 'planning_only'
     scenario_id: str
@@ -211,8 +213,8 @@ def _admit_workforce(
         if installed or any(key in quote for key in ('valid_from', 'valid_to', 'known_from')):
             try:
                 service_date = date.fromisoformat(use.get('service_date'))
-                cutoff = date.fromisoformat(request.get('knowledge_cutoff'))
-            except (TypeError, ValueError) as exc:
+                cutoff = date.fromisoformat(request['knowledge_cutoff'])
+            except (KeyError, TypeError, ValueError) as exc:
                 raise ValueError('workforce trace requires a service date and knowledge cutoff') from exc
             validate_workforce_quote_dates(quote, service_date, cutoff)
     return WorkforceShadow(
@@ -239,7 +241,7 @@ def _episode_funding(mchs: MchsShadow, price: FictionalFundingPrice) -> EpisodeF
 
 def _voiage_comparison(
     run: P4Run, strategy_id: str, objective: DecisionObjective, *,
-    value_array_factory=None, analysis_factory=None,
+    value_array_factory: ValueArrayFactory | None = None, analysis_factory: AnalysisFactory | None = None,
 ) -> VoiageComparison:
     values, labels = financial_decision_surface(run, objective=objective)
     chosen = ['current_care', strategy_id]
@@ -265,8 +267,8 @@ def compose_p8_shadow(
     expected_roster_scenario_id: str | None = None,
     fictional_funding_price: FictionalFundingPrice | None = None,
     voiage_objective: DecisionObjective | None = None,
-    value_array_factory=None,
-    analysis_factory=None,
+    value_array_factory: ValueArrayFactory | None = None,
+    analysis_factory: AnalysisFactory | None = None,
 ) -> dict[str, Any]:
     """Attach source-only context to one strategy without changing financial draws.
 

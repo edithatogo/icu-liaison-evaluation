@@ -1,10 +1,13 @@
 """Executable acceptance for placeholder-backed progress, without false site admission."""
 from __future__ import annotations
+from icu_liaison.placeholders import PlaceholderRegistry
+from pytest import CaptureFixture, MonkeyPatch
 
 import copy
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 import shutil
 import subprocess
 import sys
@@ -16,12 +19,12 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / 'model-inputs/placeholders/registry.json'
 
 
-def registry():
+def registry() -> PlaceholderRegistry:
     from icu_liaison.placeholders import load_registry
     return load_registry(REGISTRY)
 
 
-def test_registry_covers_replacement_gates_and_is_explicitly_unresolved():
+def test_registry_covers_replacement_gates_and_is_explicitly_unresolved() -> None:
     from icu_liaison.placeholders import REQUIRED_IDS, audit_placeholders
 
     record = registry()
@@ -37,7 +40,7 @@ def test_registry_covers_replacement_gates_and_is_explicitly_unresolved():
     assert report['external_gates_pending']
 
 
-def test_scoped_voiage_artifact_does_not_accept_broader_qualification(tmp_path):
+def test_scoped_voiage_artifact_does_not_accept_broader_qualification(tmp_path: Path) -> None:
     from shutil import copyfile, copytree
 
     from icu_liaison.placeholders import audit_placeholders
@@ -63,7 +66,7 @@ def test_scoped_voiage_artifact_does_not_accept_broader_qualification(tmp_path):
         audit_placeholders(record, root=tmp_path)
 
 
-def test_known_repository_url_does_not_satisfy_hosted_ci_evidence(tmp_path):
+def test_known_repository_url_does_not_satisfy_hosted_ci_evidence(tmp_path: Path) -> None:
     import shutil
     from icu_liaison.placeholders import audit_placeholders
 
@@ -87,7 +90,7 @@ def test_known_repository_url_does_not_satisfy_hosted_ci_evidence(tmp_path):
         audit_placeholders(record, root=project)
 
 
-def test_registry_rejects_any_false_resolution_or_unsupported_status():
+def test_registry_rejects_any_false_resolution_or_unsupported_status() -> None:
     from icu_liaison.placeholders import PlaceholderRegistry
 
     raw = registry().model_dump(mode='json')
@@ -100,7 +103,7 @@ def test_registry_rejects_any_false_resolution_or_unsupported_status():
         PlaceholderRegistry.model_validate(raw)
 
 
-def test_registry_rejects_missing_binding_and_silent_observed_p4_promotion(tmp_path):
+def test_registry_rejects_missing_binding_and_silent_observed_p4_promotion(tmp_path: Path) -> None:
     from icu_liaison.placeholders import audit_placeholders
 
     record = registry()
@@ -120,7 +123,7 @@ def test_registry_rejects_missing_binding_and_silent_observed_p4_promotion(tmp_p
         audit_placeholders(record, root=tmp)
 
 
-def test_source_binding_rejects_absolute_parent_symlink_or_bad_pointer(tmp_path):
+def test_source_binding_rejects_absolute_parent_symlink_or_bad_pointer(tmp_path: Path) -> None:
     from icu_liaison.placeholders import PlaceholderRegistry, audit_placeholders
 
     raw=registry().model_dump(mode='json')
@@ -134,7 +137,7 @@ def test_source_binding_rejects_absolute_parent_symlink_or_bad_pointer(tmp_path)
 
 
 @pytest.mark.parametrize('location', ['private_binding', 'binding_alias', 'private_feed'])
-def test_public_audit_rejects_sources_in_private_storage(tmp_path, location):
+def test_public_audit_rejects_sources_in_private_storage(tmp_path: Path, location: str) -> None:
     from icu_liaison.placeholders import PlaceholderRegistry, audit_placeholders
 
     shutil.copytree(ROOT / 'model-inputs', tmp_path / 'model-inputs')
@@ -164,7 +167,7 @@ def test_public_audit_rejects_sources_in_private_storage(tmp_path, location):
         audit_placeholders(PlaceholderRegistry.model_validate(record), root=tmp_path)
 
 
-def test_private_replacement_candidate_hash_is_checked_but_not_approved(tmp_path):
+def test_private_replacement_candidate_hash_is_checked_but_not_approved(tmp_path: Path) -> None:
     from icu_liaison.placeholders import inspect_replacement_candidates
 
     record=registry()
@@ -174,7 +177,7 @@ def test_private_replacement_candidate_hash_is_checked_but_not_approved(tmp_path
     artifact.write_text('NON-CLINICAL-CONTRACT-EXAMPLE', encoding='utf-8')
     sha=hashlib.sha256(artifact.read_bytes()).hexdigest()
     entry=next(e for e in record.entries if e.id=='local_icu_episodes')
-    submission={
+    submission: dict[str, Any] = {
         'schema_version':1,
         'status':'candidates_for_independent_review',
         'entries':[{ 'id':entry.id,'evidence_type':entry.replacement.evidence_type,
@@ -195,7 +198,7 @@ def test_private_replacement_candidate_hash_is_checked_but_not_approved(tmp_path
         inspect_replacement_candidates(submission,record,project_root=ROOT)
 
 
-def test_replacement_cannot_be_satisfied_with_a_synthetic_test_fixture(tmp_path):
+def test_replacement_cannot_be_satisfied_with_a_synthetic_test_fixture(tmp_path: Path) -> None:
     from icu_liaison.placeholders import inspect_replacement_candidates
 
     record=registry()
@@ -210,7 +213,7 @@ def test_replacement_cannot_be_satisfied_with_a_synthetic_test_fixture(tmp_path)
         inspect_replacement_candidates(body,record,project_root=ROOT)
 
 
-def test_cli_requires_a_private_candidate_submission(tmp_path, monkeypatch, capsys):
+def test_cli_requires_a_private_candidate_submission(tmp_path: Path, monkeypatch: MonkeyPatch, capsys: CaptureFixture[str]) -> None:
     from icu_liaison import placeholders_cli
 
     checkout = tmp_path / 'checkout'
@@ -255,7 +258,7 @@ def test_cli_requires_a_private_candidate_submission(tmp_path, monkeypatch, caps
 
 @pytest.mark.parametrize('checked_file', ['submission', 'artifact'])
 @pytest.mark.parametrize('tracked', [False, True])
-def test_candidate_files_in_other_checkout_require_ignored_storage(tmp_path, checked_file, tracked):
+def test_candidate_files_in_other_checkout_require_ignored_storage(tmp_path: Path, checked_file: str, tracked: bool) -> None:
     from icu_liaison.placeholders import review_candidate_submission
 
     checkout = tmp_path / 'other-checkout'
@@ -293,7 +296,7 @@ def test_candidate_files_in_other_checkout_require_ignored_storage(tmp_path, che
         review_candidate_submission(submission, record, project_root=ROOT)
 
 
-def test_synthetic_progress_builds_reproducible_existing_p3_p4_p5_p6_assets(tmp_path):
+def test_synthetic_progress_builds_reproducible_existing_p3_p4_p5_p6_assets(tmp_path: Path) -> None:
     from icu_liaison.placeholders import build_synthetic_progress_bundle
     from icu_liaison.p5_reporting import review_report,verify_manifest
 
@@ -317,7 +320,7 @@ def test_synthetic_progress_builds_reproducible_existing_p3_p4_p5_p6_assets(tmp_
         build_synthetic_progress_bundle(root=ROOT, registry_path=REGISTRY, output_dir=target)
 
 
-def test_dry_run_fails_closed_on_missing_synthetic_input_without_partial_output(tmp_path):
+def test_dry_run_fails_closed_on_missing_synthetic_input_without_partial_output(tmp_path: Path) -> None:
     from icu_liaison.placeholders import build_synthetic_progress_bundle
     import shutil
     project=tmp_path/'project'
@@ -332,7 +335,7 @@ def test_dry_run_fails_closed_on_missing_synthetic_input_without_partial_output(
     assert not destination.exists()
 
 
-def test_cli_audit_and_site_readiness_gate(tmp_path):
+def test_cli_audit_and_site_readiness_gate(tmp_path: Path) -> None:
     cmd=[sys.executable,'-m','icu_liaison.placeholders_cli','audit','--registry',str(REGISTRY)]
     p=subprocess.run(cmd,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
     assert p.returncode==0,p.stderr
@@ -343,7 +346,7 @@ def test_cli_audit_and_site_readiness_gate(tmp_path):
     assert json.loads(p.stdout)['investment_ready'] is False
 
 
-def test_versioned_registry_and_candidate_json_schemas_reject_malicious_status():
+def test_versioned_registry_and_candidate_json_schemas_reject_malicious_status() -> None:
     from jsonschema import Draft202012Validator
     record=registry().model_dump(mode='json')
     schema=json.loads((ROOT/'model-inputs/placeholders/registry.schema.json').read_text())
@@ -360,7 +363,7 @@ def test_versioned_registry_and_candidate_json_schemas_reject_malicious_status()
     assert list(Draft202012Validator(cand_schema).iter_errors(cand))
 
 
-def test_registered_native_receipts_remain_unverified_and_p4_core_unmodified():
+def test_registered_native_receipts_remain_unverified_and_p4_core_unmodified() -> None:
     record=registry()
     registered={x.id:x for x in record.entries}
     assert registered['native_kairos_receipt'].status=='placeholder'
@@ -373,7 +376,7 @@ def test_registered_native_receipts_remain_unverified_and_p4_core_unmodified():
     assert hashlib.sha256((ROOT/'src/icu_liaison/p4_model.py').read_bytes()).hexdigest()==original
 
 
-def test_progress_manifest_rejects_modified_source_without_rehash(tmp_path):
+def test_progress_manifest_rejects_modified_source_without_rehash(tmp_path: Path) -> None:
     from icu_liaison.placeholders import build_synthetic_progress_bundle, verify_progress_manifest
     dest=tmp_path/'receipt'
     build_synthetic_progress_bundle(root=ROOT,registry_path=REGISTRY,output_dir=dest)
@@ -384,7 +387,7 @@ def test_progress_manifest_rejects_modified_source_without_rehash(tmp_path):
         verify_progress_manifest(dest)
 
 
-def test_progress_manifest_requires_bundle_files(tmp_path):
+def test_progress_manifest_requires_bundle_files(tmp_path: Path) -> None:
     from icu_liaison.placeholders import verify_progress_manifest
 
     (tmp_path / 'manifest.json').write_text(json.dumps({
@@ -398,7 +401,7 @@ def test_progress_manifest_requires_bundle_files(tmp_path):
         verify_progress_manifest(tmp_path)
 
 
-def test_progress_manifest_requires_complete_nested_p5_report(tmp_path):
+def test_progress_manifest_requires_complete_nested_p5_report(tmp_path: Path) -> None:
     from icu_liaison.placeholders import build_synthetic_progress_bundle, verify_progress_manifest
 
     dest = tmp_path / 'receipt'
@@ -415,7 +418,7 @@ def test_progress_manifest_requires_complete_nested_p5_report(tmp_path):
 
 
 @pytest.mark.parametrize('change', ['readiness_claim', 'closed_placeholder', 'empty_checklist'])
-def test_progress_verifier_rejects_inconsistent_contents_even_with_matching_hashes(tmp_path, change):
+def test_progress_verifier_rejects_inconsistent_contents_even_with_matching_hashes(tmp_path: Path, change: str) -> None:
     from icu_liaison.placeholders import build_synthetic_progress_bundle, verify_progress_manifest
 
     dest = tmp_path / 'receipt'
@@ -443,7 +446,7 @@ def test_progress_verifier_rejects_inconsistent_contents_even_with_matching_hash
         verify_progress_manifest(dest)
 
 
-def test_duplicate_candidate_fails_without_any_approval(tmp_path):
+def test_duplicate_candidate_fails_without_any_approval(tmp_path: Path) -> None:
     from icu_liaison.placeholders import inspect_replacement_candidates
     private=tmp_path/'private';private.mkdir()
     f=private/'witness.bin';f.write_bytes(b'NON-PATIENT-CANDIDATE')
@@ -457,7 +460,7 @@ def test_duplicate_candidate_fails_without_any_approval(tmp_path):
         inspect_replacement_candidates(body,registry(),project_root=ROOT)
 
 
-def test_p7_track_metadata_retains_all_external_gates():
+def test_p7_track_metadata_retains_all_external_gates() -> None:
     x=json.loads((ROOT/'conductor/tracks/P7-placeholder-assisted-qualification/metadata.json').read_text())
     assert x['status']=='in_progress'
     assert x['accepted_phases']==['P7.1','P7.2','P7.3']

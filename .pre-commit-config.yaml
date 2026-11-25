@@ -2,14 +2,21 @@ repos:
   - repo: local
     hooks:
       - id: icu-liaison-local-ci
-        name: ICU liaison local pre-commit CI (manifest, pytest, smoke, forbidden paths)
+        name: Check staged source, types and fictional tests
         entry: .venv/bin/python tools/run_local_ci.py --mode pre-commit --check-staged --gitleaks
         language: system
         pass_filenames: false
         always_run: true
         stages: [pre-commit]
+      - id: icu-liaison-merge-ci
+        name: Full validation of the merge result
+        entry: .venv/bin/python tools/run_local_ci.py --mode full --check-staged --gitleaks
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-merge-commit]
       - id: icu-liaison-local-ci-full
-        name: ICU liaison full local CI (manifest, pytest, smoke, portable oracles, CLI)
+        name: Validate the outgoing source and fictional workflow
         entry: .venv/bin/python tools/run_local_ci.py --mode full
         language: system
         pass_filenames: false

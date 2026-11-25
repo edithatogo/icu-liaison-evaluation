@@ -4,6 +4,9 @@ This is not an ICU discrete-event simulation, causal estimate, QALY model,
 or valuation ledger. All model-effect and cost assumptions remain in JSON.
 """
 from __future__ import annotations
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any
 from dataclasses import dataclass
 import hashlib
 import json
@@ -17,13 +20,13 @@ class PSADraws:
     scenario_id: str
     seed: int
     input_digest: str
-    icu_bed_days_released: np.ndarray
-    readmissions_avoided: np.ndarray
-    gross_resource_benefit_aud: np.ndarray
-    net_resource_benefit_aud: np.ndarray
+    icu_bed_days_released: NDArray[float64]
+    readmissions_avoided: NDArray[float64]
+    gross_resource_benefit_aud: NDArray[float64]
+    net_resource_benefit_aud: NDArray[float64]
 
 
-def _sample(p: Parameter, rng: np.random.Generator, count: int) -> np.ndarray:
+def _sample(p: Parameter, rng: np.random.Generator, count: int) -> NDArray[float64]:
     if p.low == p.high:
         return np.full(count, p.value)
     # scipy.stats.triang is a maintained distribution implementation;
@@ -60,7 +63,7 @@ def simulate(scenario: Scenario) -> PSADraws:
     )
 
 
-def _stats(values: np.ndarray) -> dict[str, float]:
+def _stats(values: NDArray[float64]) -> dict[str, float]:
     with np.errstate(over='ignore', invalid='ignore'):
         mean = np.mean(values)
         p05, p50, p95 = np.quantile(values, [0.05, 0.5, 0.95])
@@ -69,7 +72,7 @@ def _stats(values: np.ndarray) -> dict[str, float]:
     return dict(mean=float(mean), p05=float(p05), p50=float(p50), p95=float(p95))
 
 
-def summarise(draws: PSADraws) -> dict:
+def summarise(draws: PSADraws) -> dict[str, Any]:
     return dict(
         schema_version=1,
         scenario_id=draws.scenario_id,

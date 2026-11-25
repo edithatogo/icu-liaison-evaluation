@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 
-def test_project_policy_disables_automatic_dependency_promotion():
+def test_project_policy_disables_automatic_dependency_promotion() -> None:
     root = Path(__file__).resolve().parents[1]
     config = json.loads((root / 'renovate.json').read_text())
     assert config['extends'] == [

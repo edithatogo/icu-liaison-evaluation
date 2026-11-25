@@ -5,15 +5,15 @@ Dapane owns quotation arithmetic and half-even rounding. There is no fallback
 provider, and an injected unit-test fake never establishes native qualification.
 """
 from __future__ import annotations
+from typing import Any
 
 from decimal import Decimal
-from typing import Callable
 
-from .dapane import CostLine, _admit_valuation_report, evaluate_request, make_request
-from ..p4_model import EconomicScenario
+from .dapane import CostLine, ValuationProvider, _admit_valuation_report, evaluate_request, make_request
+from ..p4_model import EconomicScenario, Prior
 
 
-def _nominal(p) -> Decimal:
+def _nominal(p: Prior) -> Decimal:
     """Retain user-written decimal modes/medians and exact beta mean ratios."""
     v = p.params
     if p.family == 'fixed':
@@ -29,7 +29,7 @@ def _number(value: Decimal) -> str:
     return format(value, 'f')
 
 
-def make_p4_nominal_requests(scenario: EconomicScenario, strategy_id: str) -> dict[str, dict | None]:
+def make_p4_nominal_requests(scenario: EconomicScenario, strategy_id: str) -> dict[str, dict[str, Any] | None]:
     """Build incremental current-care and proposed-care ledgers for one arm.
 
     A wholly empty source-use side returns None. We do not fabricate a zero-use
@@ -41,22 +41,21 @@ def make_p4_nominal_requests(scenario: EconomicScenario, strategy_id: str) -> di
     if not eligible:
         raise ValueError('requested strategy must be a declared intervention')
     arm = eligible[0]
-    p = lambda obj, key: _nominal(getattr(obj, key))
     n = Decimal(s.annual_eligible_discharges)
-    coverage = p(arm, 'coverage_fraction')
+    coverage = _nominal(arm.coverage_fraction)
     delay_days = (
-        n * p(s.baseline, 'exit_block_rate')
-        * p(s.resource, 'addressable_delay_fraction')
-        * coverage * p(arm, 'delay_success_fraction')
-        * p(s.resource, 'hours_released_per_improved_case') / Decimal(24)
+        n * _nominal(s.baseline.exit_block_rate)
+        * _nominal(s.resource.addressable_delay_fraction)
+        * coverage * _nominal(arm.delay_success_fraction)
+        * _nominal(s.resource.hours_released_per_improved_case) / Decimal(24)
     )
-    baseline_risk = p(s.baseline, 'unplanned_72h_return_rate')
+    baseline_risk = _nominal(s.baseline.unplanned_72h_return_rate)
     return_risk = ((Decimal(1)-coverage) * baseline_risk
-                   + coverage * max(Decimal(0), min(Decimal(1), baseline_risk * (1-p(arm,'relative_return_effect')))))
+                   + coverage * max(Decimal(0), min(Decimal(1), baseline_risk * (1-_nominal(arm.relative_return_effect)))))
     returns_avoided = n * (baseline_risk-return_risk)
-    day_price = _number(p(s.resource, 'net_index_delay_cost_aud_per_day'))
-    return_price = _number(p(s.resource, 'incremental_return_cost_aud_per_return'))
-    annual_service = p(arm, 'annual_incremental_cost_aud')
+    day_price = _number(_nominal(s.resource.net_index_delay_cost_aud_per_day))
+    return_price = _number(_nominal(s.resource.incremental_return_cost_aud_per_return))
+    annual_service = _nominal(arm.annual_incremental_cost_aud)
     current: list[CostLine] = []
     proposed: list[CostLine] = []
     if delay_days > 0:
@@ -79,16 +78,15 @@ def make_p4_nominal_requests(scenario: EconomicScenario, strategy_id: str) -> di
             f'{strategy_id}-additional-returns', 'post_icu_unplanned_return',
             'return', _number(-returns_avoided), return_price, ['post_icu_readmission'],
         ))
-    opts = {'price_year':s.price_year, 'perspective':'provider', 'basis':'economic_cost'}
     return {
-        'current_care': make_request(f'{s.scenario_id}-{strategy_id}-counterfactual-current', current, **opts)
+        'current_care': make_request(f'{s.scenario_id}-{strategy_id}-counterfactual-current', current, price_year=s.price_year, perspective='provider', basis='economic_cost')
         if current else None,
-        'liaison_service': make_request(f'{s.scenario_id}-{strategy_id}-counterfactual-proposed', proposed, **opts)
+        'liaison_service': make_request(f'{s.scenario_id}-{strategy_id}-counterfactual-proposed', proposed, price_year=s.price_year, perspective='provider', basis='economic_cost')
         if proposed else None,
     }
 
 
-def evaluate_p4_nominal_valuation(requests: dict[str, dict | None], *, provider: Callable | None = None) -> dict:
+def evaluate_p4_nominal_valuation(requests: dict[str, dict[str, Any] | None], *, provider: ValuationProvider | None = None) -> dict[str, Any]:
     """Use actual Dapane, or an explicitly identified boundary-test stub.
 
     Optional empty sides mean zero declared incremental resource use, not a

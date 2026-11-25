@@ -1,10 +1,14 @@
 """Check supplementary SVG positions against source values and the visible axes."""
 import numpy as np
+from collections.abc import Callable
+from typing import Any
+from numpy.typing import ArrayLike, NDArray
+from xml.etree import ElementTree as ET
 
 from .p9_figure_review import SVG, _points
 
 
-def _axis(ax, dimension):
+def _axis(ax: ET.Element, dimension: str) -> Callable[[ArrayLike], NDArray[np.float64]]:
     """Recover data-to-page coordinates from labelled major tick marks."""
     ticks = []
     for group in ax.iter(f'{SVG}g'):
@@ -18,7 +22,7 @@ def _axis(ax, dimension):
             value = float(''.join(label.itertext()).replace('−', '-').replace(',', ''))
         except ValueError:
             continue
-        ticks.append((value, float(mark.get(dimension))))
+        ticks.append((value, float(mark.attrib[dimension])))
     if len(ticks) < 2 or ticks[0][0] == ticks[-1][0]:
         raise ValueError('SVG mark axis lacks numeric references')
     a, b = ticks[0], ticks[-1]
@@ -26,12 +30,12 @@ def _axis(ax, dimension):
     return lambda values: a[1] + slope * (np.asarray(values) - a[0])
 
 
-def _check(actual, expected):
+def _check(actual: ArrayLike, expected: ArrayLike) -> None:
     if np.shape(actual) != np.shape(expected) or not np.allclose(actual, expected, atol=.015, rtol=0):
         raise ValueError('SVG mark differs from source and labelled axis')
 
 
-def check_supplement(nodes, key, rows):
+def check_supplement(nodes: dict[str, ET.Element], key: str, rows: list[dict[str, Any]]) -> None:
     arms = list(dict.fromkeys(r['strategy'] for r in rows if 'strategy' in r))
     count = {'F07': min(5, len(rows)), 'F09': 3 * len(arms), 'F18': 1}.get(key, len(rows))
     if {k for k in nodes if k.startswith('data-')} != {f'data-{i}' for i in range(count)}:

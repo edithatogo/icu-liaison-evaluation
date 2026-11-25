@@ -1,4 +1,7 @@
 """P4 RED behavioural and boundary tests; no provider substitutions."""
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any
 import copy
 import json
 from pathlib import Path
@@ -12,13 +15,15 @@ from icu_liaison.p4_model import (EconomicScenario, evaluate_scenarios,
 
 SOURCE = Path(__file__).resolve().parents[1] / 'model-inputs/p4/illustrative.json'
 
-def example():
-    return json.loads(SOURCE.read_text(encoding='utf-8'))
+def example() -> dict[str, Any]:
+    value = json.loads(SOURCE.read_text(encoding='utf-8'))
+    assert isinstance(value, dict)
+    return value
 
-def fixed(value, unit='proportion'):
+def fixed(value: float, unit: str='proportion') -> dict[str, Any]:
     return {'family':'fixed','params':{'value':value},'unit':unit,'evidence_status':'illustrative_assumption','source_ref':'TEST-ILLUSTRATIVE'}
 
-def deterministic(data):
+def deterministic(data: dict[str, Any]) -> dict[str, Any]:
     # Convert all probabilistic draws to their nominal modes/medians/beta means.
     for section in ('baseline','resource'):
         for key, prior in data[section].items():
@@ -40,14 +45,14 @@ def deterministic(data):
     return data
 
 
-def test_scenario_requires_real_current_care_and_at_least_one_intervention():
+def test_scenario_requires_real_current_care_and_at_least_one_intervention() -> None:
     s=EconomicScenario.model_validate(example())
     assert [x.id for x in s.strategies]==['current_care','liaison_service','extended_cover']
     z=example();z['strategies']=z['strategies'][:1]
     with pytest.raises(ValidationError): EconomicScenario.model_validate(z)
 
 
-def test_nominal_reproduces_existing_p1_accounting_without_cash_conflation():
+def test_nominal_reproduces_existing_p1_accounting_without_cash_conflation() -> None:
     x=EconomicScenario.model_validate(deterministic(example()))
     r=nominal_counterfactual(x)['liaison_service']
     assert r['icu_bed_days_released']==pytest.approx(7.65)
@@ -58,7 +63,7 @@ def test_nominal_reproduces_existing_p1_accounting_without_cash_conflation():
     assert r['net_budget_impact_aud']==pytest.approx(7.65*1800*.2+4.5*15000*.4-250000)
 
 
-def test_current_care_is_zero_incremental_and_shared_draws_preserve_comparison():
+def test_current_care_is_zero_incremental_and_shared_draws_preserve_comparison() -> None:
     result=evaluate_scenarios(EconomicScenario.model_validate(example()))
     assert np.all(result.strategies['current_care'].net_resource_benefit_aud==0)
     assert len(result.strategies['extended_cover'].net_resource_benefit_aud)==5000
@@ -68,7 +73,7 @@ def test_current_care_is_zero_incremental_and_shared_draws_preserve_comparison()
     assert np.array_equal(matrix[:,1],result.strategies['liaison_service'].net_resource_benefit_aud)
 
 
-def test_financial_decision_surface_rejects_an_unknown_objective():
+def test_financial_decision_surface_rejects_an_unknown_objective() -> None:
     run = evaluate_scenarios(EconomicScenario.model_validate(example()))
     budget, labels = financial_decision_surface(run, objective='budget')
     assert np.array_equal(
@@ -76,10 +81,10 @@ def test_financial_decision_surface_rejects_an_unknown_objective():
         run.strategies['liaison_service'].net_budget_impact_aud,
     )
     with pytest.raises(ValueError, match='decision surface objective'):
-        financial_decision_surface(run, objective='net_resouce')
+        financial_decision_surface(run, objective=json.loads('"net_resouce"'))
 
 
-def test_full_run_is_repeatable_and_safeguards_not_silent_success():
+def test_full_run_is_repeatable_and_safeguards_not_silent_success() -> None:
     scenario=EconomicScenario.model_validate(example())
     a=summarise_p4(evaluate_scenarios(scenario))
     b=summarise_p4(evaluate_scenarios(scenario))
@@ -90,7 +95,7 @@ def test_full_run_is_repeatable_and_safeguards_not_silent_success():
     assert a['monetised_capacity_beyond_resource_cost'] is False
 
 
-def test_no_service_effect_does_not_create_benefit():
+def test_no_service_effect_does_not_create_benefit() -> None:
     z=deterministic(example())
     arm=z['strategies'][1]
     arm['delay_success_fraction']=fixed(0)
@@ -101,7 +106,7 @@ def test_no_service_effect_does_not_create_benefit():
     assert np.all(out.usable_bed_days==0)
 
 
-def test_more_appropriate_returns_can_worsen_finances():
+def test_more_appropriate_returns_can_worsen_finances() -> None:
     z=deterministic(example())
     arm=z['strategies'][1]
     arm['relative_return_effect']=fixed(-.2,'signed_proportion')
@@ -110,7 +115,7 @@ def test_more_appropriate_returns_can_worsen_finances():
     assert np.all(out.net_resource_benefit_aud<0)
 
 
-def test_independent_cash_fraction_does_not_change_resource_consequences():
+def test_independent_cash_fraction_does_not_change_resource_consequences() -> None:
     z=deterministic(example());s=EconomicScenario.model_validate(z)
     before=evaluate_scenarios(s).strategies['liaison_service']
     z['resource']['index_cash_realisability_fraction']=fixed(0)
@@ -120,7 +125,7 @@ def test_independent_cash_fraction_does_not_change_resource_consequences():
     assert np.all(after.net_budget_impact_aud==-250000)
 
 
-def test_capacity_reuse_is_not_double_counted_as_cash_or_resource():
+def test_capacity_reuse_is_not_double_counted_as_cash_or_resource() -> None:
     z=deterministic(example())
     z['resource']['usable_released_capacity_fraction']=fixed(0)
     a=evaluate_scenarios(EconomicScenario.model_validate(z)).strategies['liaison_service']
@@ -128,7 +133,7 @@ def test_capacity_reuse_is_not_double_counted_as_cash_or_resource():
     assert a.net_resource_benefit_aud[0]==pytest.approx(-168730)
 
 
-def test_gaussian_dependence_is_supported_and_rejects_non_psd():
+def test_gaussian_dependence_is_supported_and_rejects_non_psd() -> None:
     result=evaluate_scenarios(EconomicScenario.model_validate(example()))
     a=result.sampled_inputs['baseline.unplanned_72h_return_rate']
     b=result.sampled_inputs['resource.incremental_return_cost_aud_per_return']
@@ -138,7 +143,7 @@ def test_gaussian_dependence_is_supported_and_rejects_non_psd():
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
 
 
-def test_invalid_correlation_identifiers_overlapping_groups_or_matrix_rejected():
+def test_invalid_correlation_identifiers_overlapping_groups_or_matrix_rejected() -> None:
     z=example();z['dependence_groups'][0]['variables'][0]='absent.rate'
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
     z=example();z['dependence_groups'].append(copy.deepcopy(z['dependence_groups'][0]))
@@ -147,7 +152,7 @@ def test_invalid_correlation_identifiers_overlapping_groups_or_matrix_rejected()
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
 
 
-def test_semantic_input_units_and_public_72h_misuse_are_rejected():
+def test_semantic_input_units_and_public_72h_misuse_are_rejected() -> None:
     z=example();z['baseline']['unplanned_72h_return_rate']['evidence_status']='public_proxy'
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
     z=example();z['resource']['hours_released_per_improved_case']['unit']='days_per_case'
@@ -156,33 +161,33 @@ def test_semantic_input_units_and_public_72h_misuse_are_rejected():
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
 
 
-def test_current_care_cannot_contain_nonzero_cost_or_effect():
+def test_current_care_cannot_contain_nonzero_cost_or_effect() -> None:
     z=example();z['strategies'][0]['annual_incremental_cost_aud']=fixed(1000,'AUD_per_year')
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
     z=example();z['strategies'][0]['coverage_fraction']=fixed(.25)
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
 
 
-def test_safety_missingness_cannot_be_mislabeled_as_noninferiority():
+def test_safety_missingness_cannot_be_mislabeled_as_noninferiority() -> None:
     z=example();z['safety']['assessment_status']='validated_safe'
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
     z=example();z['safety']['required_outcomes']=['post_icu_death']
     with pytest.raises(ValidationError):EconomicScenario.model_validate(z)
 
 
-def test_multiple_strategies_can_feed_voiage_but_only_via_provider():
+def test_multiple_strategies_can_feed_voiage_but_only_via_provider() -> None:
     run=evaluate_scenarios(EconomicScenario.model_validate(example()))
     calls=[]
     class Stub:
-        def __init__(self,v): self.v=v
-    def value_factory(array,labels):calls.append((array.shape,labels));return Stub(array)
-    def analysis_factory(value):return {'matrix':value.v}
+        def __init__(self,v: NDArray[float64]) -> None: self.v=v
+    def value_factory(array: NDArray[float64],labels: list[str]) -> Stub:calls.append((array.shape,labels));return Stub(array)
+    def analysis_factory(value: Stub) -> dict[str, Any]:return {'matrix':value.v}
     x=make_p4_voiage_analysis(run,value_array_factory=value_factory,analysis_factory=analysis_factory)
     assert x['matrix'].shape==(5000,3)
     assert calls[0][1]==['current_care','liaison_service','extended_cover']
 
 
-def test_numerical_distributions_bounded_and_positive():
+def test_numerical_distributions_bounded_and_positive() -> None:
     run=evaluate_scenarios(EconomicScenario.model_validate(example()))
     x=run.sampled_inputs
     assert np.all((x['resource.addressable_delay_fraction']>=.2)&(x['resource.addressable_delay_fraction']<=.65))
@@ -190,7 +195,7 @@ def test_numerical_distributions_bounded_and_positive():
     assert np.all((x['baseline.unplanned_72h_return_rate']>=0)&(x['baseline.unplanned_72h_return_rate']<=1))
 
 
-def test_summary_reports_strategy_specific_threshold_without_recommendation():
+def test_summary_reports_strategy_specific_threshold_without_recommendation() -> None:
     x=EconomicScenario.model_validate(deterministic(example()))
     s=summarise_p4(evaluate_scenarios(x))
     i=s['strategies']['liaison_service']
@@ -199,7 +204,7 @@ def test_summary_reports_strategy_specific_threshold_without_recommendation():
     assert s['financially_best_mean_strategy_not_clinical_recommendation'] in {None,'current_care','liaison_service','extended_cover'}
 
 
-def test_break_even_threshold_respects_the_cap_on_adverse_readmissions():
+def test_break_even_threshold_respects_the_cap_on_adverse_readmissions() -> None:
     data = deterministic(example())
     data['baseline']['unplanned_72h_return_rate'] = fixed(0.75)
     data['resource'].update(
@@ -223,7 +228,7 @@ def test_break_even_threshold_respects_the_cap_on_adverse_readmissions():
     assert result['break_even_coverage_feasible_at_point_inputs'] is True
 
 
-def test_break_even_threshold_for_a_free_neutral_strategy():
+def test_break_even_threshold_for_a_free_neutral_strategy() -> None:
     data = deterministic(example())
     data['strategies'][1].update(
         delay_success_fraction=fixed(0),
@@ -237,14 +242,14 @@ def test_break_even_threshold_for_a_free_neutral_strategy():
     assert outcome['current_care']['break_even_coverage_fraction'] is None
 
 
-def test_finite_inputs_cannot_overflow_into_invalid_financial_results():
+def test_finite_inputs_cannot_overflow_into_invalid_financial_results() -> None:
     z=deterministic(example())
     z['resource']['net_index_delay_cost_aud_per_day']=fixed(1e308,'AUD_per_icu_day')
     with pytest.raises(ValueError,match='nonfinite model outcome'):
         evaluate_scenarios(EconomicScenario.model_validate(z))
 
 
-def test_one_way_sensitivity_is_versioned_and_sorted_without_hidden_baseline_substitution():
+def test_one_way_sensitivity_is_versioned_and_sorted_without_hidden_baseline_substitution() -> None:
     from icu_liaison.p4_model import one_way_sensitivity
     scenario=EconomicScenario.model_validate(example())
     rows=one_way_sensitivity(scenario,'liaison_service')

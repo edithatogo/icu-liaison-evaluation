@@ -1,4 +1,5 @@
 """RED: P4 must admit P2/P3 contracts before producing a decision report."""
+from typing import Any
 import copy
 import json
 from pathlib import Path
@@ -8,14 +9,14 @@ from icu_liaison.p4_model import EconomicScenario
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def inputs():
+def inputs() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     return (json.loads((ROOT/'model-inputs/p4/illustrative.json').read_text()),
             json.loads((ROOT/'model-inputs/clinical-economic-protocol.json').read_text()),
             json.loads((ROOT/'model-inputs/anzics-benchmarks.json').read_text()),
             json.loads((ROOT/'conductor/evidence/source-register.json').read_text()))
 
 
-def test_accepts_valid_synthetic_p4_with_unverified_public_source():
+def test_accepts_valid_synthetic_p4_with_unverified_public_source() -> None:
     from icu_liaison.p4_admission import admit_p4
     s,p,c,r=inputs()
     report=admit_p4(EconomicScenario.model_validate(s),p,c,r)
@@ -25,7 +26,7 @@ def test_accepts_valid_synthetic_p4_with_unverified_public_source():
     assert report['local_CHHHS_inputs_verified'] is False
 
 
-def test_rejects_wrong_price_year_and_horizon():
+def test_rejects_wrong_price_year_and_horizon() -> None:
     from icu_liaison.p4_admission import admit_p4
     s,p,c,r=inputs()
     p['economics']['price_year']=2025
@@ -36,7 +37,7 @@ def test_rejects_wrong_price_year_and_horizon():
         admit_p4(EconomicScenario.model_validate(s),p,c,r)
 
 
-def test_rejects_changed_external_benchmark_and_source_registry():
+def test_rejects_changed_external_benchmark_and_source_registry() -> None:
     from icu_liaison.p4_admission import admit_p4
     s,p,c,r=inputs();c['metrics'][0]['value']=0.211
     with pytest.raises(ValueError,match='source|benchmark|proxy'):
@@ -46,7 +47,7 @@ def test_rejects_changed_external_benchmark_and_source_registry():
         admit_p4(EconomicScenario.model_validate(s),p,c,r)
 
 
-def test_rejects_protocol_benchmark_period_that_disagrees_with_p3():
+def test_rejects_protocol_benchmark_period_that_disagrees_with_p3() -> None:
     from icu_liaison.p4_admission import admit_p4
 
     scenario, protocol, catalogue, register = inputs()
@@ -60,7 +61,7 @@ def test_rejects_protocol_benchmark_period_that_disagrees_with_p3():
     'resource.net_index_delay_cost_aud_per_day',
     'strategy.liaison_service.annual_incremental_cost_aud',
 ])
-def test_rejects_local_aggregate_priors_in_fictional_admission(parameter):
+def test_rejects_local_aggregate_priors_in_fictional_admission(parameter: str) -> None:
     from icu_liaison.p4_admission import admit_p4
 
     scenario_data, protocol, catalogue, register = inputs()
@@ -70,7 +71,7 @@ def test_rejects_local_aggregate_priors_in_fictional_admission(parameter):
         admit_p4(scenario, protocol, catalogue, register)
 
 
-def test_rejects_missing_required_safety_and_unapproved_source_promotion():
+def test_rejects_missing_required_safety_and_unapproved_source_promotion() -> None:
     from icu_liaison.p4_admission import admit_p4
     s,p,c,r=inputs();p['safety']['required_endpoints'].remove('ward_workload')
     with pytest.raises(ValueError,match='safety'):
@@ -84,7 +85,7 @@ def test_rejects_missing_required_safety_and_unapproved_source_promotion():
     {'evidence_status': 'locally_verified', 'funded_fte': 1, 'site_source_reference': 'fictional-roster'},
     {'site_source_reference': 'fictional-site-reference'},
 ])
-def test_rejects_protocol_with_local_strategy_evidence(strategy_evidence):
+def test_rejects_protocol_with_local_strategy_evidence(strategy_evidence: dict[str, Any]) -> None:
     from icu_liaison.p4_admission import admit_p4
 
     scenario, protocol, catalogue, register = inputs()
@@ -93,7 +94,7 @@ def test_rejects_protocol_with_local_strategy_evidence(strategy_evidence):
         admit_p4(EconomicScenario.model_validate(scenario), protocol, catalogue, register)
 
 
-def test_p4_cli_reports_evidence_admission_and_rejects_tampered_protocol(tmp_path):
+def test_p4_cli_reports_evidence_admission_and_rejects_tampered_protocol(tmp_path: Path) -> None:
     import subprocess
     import sys
     root=ROOT

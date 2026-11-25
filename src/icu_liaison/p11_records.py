@@ -1,5 +1,7 @@
 """Shared integrity and atomic-publication helpers for synthetic P11 runs."""
 from __future__ import annotations
+from typing import TypeGuard
+from typing import Any
 
 from datetime import datetime, timezone
 import hashlib
@@ -32,7 +34,7 @@ def digest_json(value: object) -> str:
     return digest_bytes(canonical(value))
 
 
-def read_json(path: Path) -> dict:
+def read_json(path: Path) -> dict[str, Any]:
     path = Path(path)
     if path.is_symlink() or not path.is_file():
         raise ValueError('missing or unsafe synthetic JSON')
@@ -52,7 +54,7 @@ def inventory(directory: Path, *, exclude: str) -> dict[str, str]:
     return result
 
 
-def atomic_json(path: Path, value: dict) -> None:
+def atomic_json(path: Path, value: dict[str, Any]) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     data = json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + '\n'
@@ -72,7 +74,7 @@ def atomic_json(path: Path, value: dict) -> None:
             temporary.unlink()
 
 
-def attempt(root: Path, case_id: str) -> tuple[Path, dict]:
+def attempt(root: Path, case_id: str) -> tuple[Path, dict[str, Any]]:
     record = {
         'attempt_id': uuid.uuid4().hex,
         'case_id': case_id,
@@ -85,5 +87,5 @@ def attempt(root: Path, case_id: str) -> tuple[Path, dict]:
     return path, record
 
 
-def valid_digest(value: str) -> bool:
+def valid_digest(value: object) -> TypeGuard[str]:
     return isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None

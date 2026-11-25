@@ -4,6 +4,7 @@ No network access, no implicit source fetch, no rows output. A local approval
 acknowledgement records an operator assertion, not authority granted by software.
 """
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import json
@@ -15,7 +16,7 @@ from .local_data import LocalDatasetError, load_and_audit
 from .public_evidence import Catalogue, audit_publisher_receipt, reconcile_catalogue
 
 
-def _write_report(report: dict, output: Path | None) -> None:
+def _write_report(report: dict[str, Any], output: Path | None) -> None:
     data=json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False)+'\n'
     if output is None:
         print(data, end='')

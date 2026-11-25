@@ -1,5 +1,6 @@
 """Generate and review the P9 companion bundle without altering a P5 report."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 import csv
@@ -35,26 +36,29 @@ DEFAULT_P3 = ROOT / 'model-inputs/placeholders/p3-synthetic/manifest.json'
 class SourceFigures:
     scenario: EconomicScenario
     model_input_sha256: str
-    rows: dict[str, list[dict]]
-    descriptions: dict[str, dict]
-    figure_records: list[dict]
+    rows: dict[str, list[dict[str, Any]]]
+    descriptions: dict[str, dict[str, Any]]
+    figure_records: list[dict[str, Any]]
     inputs_sha256: dict[str, str]
-    numerical_review: dict
+    numerical_review: dict[str, Any]
 
 
-def _hash(file: Path):
+def _hash(file: Path) -> str:
     if file.is_symlink() or not file.is_file():
         raise ValueError('figure input or artifact is missing or symlinked')
     return hashlib.sha256(file.read_bytes()).hexdigest()
 
 
-def _load(file: Path):
-    return json.loads(file.read_text(encoding='utf-8'))
+def _load(file: Path) -> dict[str, Any]:
+    value = json.loads(file.read_text(encoding='utf-8'))
+    if not isinstance(value, dict):
+        raise ValueError('expected a figure JSON object')
+    return value
 
 
 def figure_contract_records(
-    catalogue: dict, metrics: dict, *, price_year: int, supplementary_feeds: tuple[str, ...] | None,
-) -> tuple[dict[str, dict], list[dict]]:
+    catalogue: dict[str, Any], metrics: dict[str, Any], *, price_year: int, supplementary_feeds: tuple[str, ...] | None,
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
     """Build the figure manifest records from versioned reporting inputs."""
     include_supplement = supplementary_feeds is not None
     bundles = {'p9', 'p9_supplement'} if include_supplement else {'p9'}
@@ -169,14 +173,14 @@ def _source_figures(scenario_file: Path, p5: Path, include_supplement: bool) -> 
     })
 
 
-def _table(file: Path, rows: list[dict]) -> None:
+def _table(file: Path, rows: list[dict[str, Any]]) -> None:
     with file.open('w', encoding='utf-8', newline='') as stream:
         writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 
 
-def _check_table(file: Path, rows: list[dict]) -> None:
+def _check_table(file: Path, rows: list[dict[str, Any]]) -> None:
     with file.open(encoding='utf-8', newline='') as stream:
         reader = csv.DictReader(stream)
         if reader.fieldnames != list(rows[0]):
@@ -241,7 +245,7 @@ Clinical safety and suitability for local investment remain unverified.</p>
 """
 
 
-def _manifest(sources: SourceFigures, files: dict[str, str]) -> dict:
+def _manifest(sources: SourceFigures, files: dict[str, str]) -> dict[str, Any]:
     return {
         'schema_version': 1, 'data_class': 'synthetic', 'investment_ready': False,
         'scenario_id': sources.scenario.scenario_id, 'scenario_seed': sources.scenario.seed,
@@ -255,7 +259,7 @@ def _manifest(sources: SourceFigures, files: dict[str, str]) -> dict:
     }
 
 
-def _review(folder: Path, sources: SourceFigures) -> dict:
+def _review(folder: Path, sources: SourceFigures) -> dict[str, Any]:
     from .p9_figure_review import review_svg
 
     if folder.is_symlink() or not folder.is_dir():
@@ -284,7 +288,7 @@ def _review(folder: Path, sources: SourceFigures) -> dict:
     }
 
 
-def build_figures(scenario: Path, p5: Path, destination: Path, *, include_supplement=False) -> dict:
+def build_figures(scenario: Path, p5: Path, destination: Path, *, include_supplement: bool=False) -> dict[str, Any]:
     from .p9_figure_render import render_svg
 
     if destination.exists() or destination.is_symlink():
@@ -314,7 +318,7 @@ def build_figures(scenario: Path, p5: Path, destination: Path, *, include_supple
     return receipt
 
 
-def review_figures(scenario: Path, p5: Path, folder: Path, *, include_supplement=False) -> dict:
+def review_figures(scenario: Path, p5: Path, folder: Path, *, include_supplement: bool=False) -> dict[str, Any]:
     sources = _source_figures(scenario, p5, include_supplement)
     receipt = _review(folder, sources)
     if include_supplement:

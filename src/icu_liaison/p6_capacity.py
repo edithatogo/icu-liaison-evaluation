@@ -6,16 +6,20 @@ using NumPy's interval-search primitives; Kairos-native trace production remains
 an independent unqualified consumer contract.
 """
 from __future__ import annotations
+from numpy import int64
+from numpy.typing import NDArray
+from typing import Any
 
 from collections import Counter
 from typing import Literal
 
 import numpy as np
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', frozen=True)
+    model_config = ConfigDict(strict=True, extra='forbid', frozen=True)
 
 
 class CapacityWindow(_Strict):
@@ -53,7 +57,7 @@ class ArmTrace(_Strict):
 
 
 class TraceBundle(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal['synthetic']
     source_engine: Literal['not_kairos']
     trace_source: Literal['synthetic_fixture']
@@ -72,7 +76,7 @@ class TraceBundle(_Strict):
         return self
 
 
-def _capacity(bundle: TraceBundle) -> tuple[int, np.ndarray]:
+def _capacity(bundle: TraceBundle) -> tuple[int, NDArray[int64]]:
     windows = bundle.capacity
     if windows[0].start_minute != 0 or windows[-1].end_minute != bundle.horizon_minutes:
         raise ValueError('capacity calendar must cover the full horizon')
@@ -85,7 +89,7 @@ def _capacity(bundle: TraceBundle) -> tuple[int, np.ndarray]:
     return total, np.asarray([w.start_minute for w in windows], dtype=np.int64)
 
 
-def _arm(bundle: TraceBundle, arm: ArmTrace, staffed: int, cap_starts: np.ndarray) -> dict:
+def _arm(bundle: TraceBundle, arm: ArmTrace, staffed: int, cap_starts: NDArray[int64]) -> dict[str, Any]:
     horizon = bundle.horizon_minutes
     episodes = arm.occupancies
     requests = arm.requests
@@ -138,7 +142,7 @@ def _arm(bundle: TraceBundle, arm: ArmTrace, staffed: int, cap_starts: np.ndarra
         raise ValueError('staffed capacity conservation failed')
 
     count = Counter(r.disposition for r in requests)
-    waits = [r.admitted_minute - r.request_minute for r in requests if r.disposition == 'admitted']
+    waits = [r.admitted_minute - r.request_minute for r in requests if r.disposition == 'admitted' and r.admitted_minute is not None]
     mean_wait = sum(waits) / len(waits) if waits else None
     return {
         'occupied_bed_minutes': occupied_bed_minutes,
@@ -167,7 +171,7 @@ def _paired_request_access(
     return transitions, mean_change
 
 
-def audit_trace_bundle(bundle: TraceBundle) -> dict:
+def audit_trace_bundle(bundle: TraceBundle) -> dict[str, Any]:
     """Admit a paired synthetic trace and report physical/access consequences.
 
     No admission decisions are generated. Outcomes and their causal validity

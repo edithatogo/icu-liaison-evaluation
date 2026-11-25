@@ -1,5 +1,6 @@
 """Check fictional P8.4 valuations with the reviewed macOS Dapane wheel."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from copy import deepcopy
@@ -29,7 +30,7 @@ def _digest(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
 
-def _reviewed_runtime(wheel: Path) -> dict:
+def _reviewed_runtime(wheel: Path) -> dict[str, Any]:
     provider = load_provider_lock(ROOT / LOCK)['providers']['dapane']
     review = provider['reviewed_wheel']
     python = platform.python_version()
@@ -55,7 +56,7 @@ def _reviewed_runtime(wheel: Path) -> dict:
     }
 
 
-def _paired_requests(case: dict, basis: str, rate: str) -> dict[str, dict]:
+def _paired_requests(case: dict[str, Any], basis: str, rate: str) -> dict[str, dict[str, Any]]:
     def care_line(hours: str) -> CostLine:
         return CostLine('episode-icu', 'icu_care', 'hour', hours, rate, ['icu_care'])
 
@@ -72,9 +73,9 @@ def _paired_requests(case: dict, basis: str, rate: str) -> dict[str, dict]:
     return {'current_care': current, 'liaison_service': proposed}
 
 
-def run_check(wheel: Path) -> dict:
+def run_check(wheel: Path) -> dict[str, Any]:
     runtime = _reviewed_runtime(wheel)
-    from dapane import DapaneError
+    DapaneError = __import__("dapane").DapaneError
 
     activity = json.loads((ROOT / ACTIVITY_RECEIPT).read_text())
     case = json.loads((ROOT / FIXTURE).read_text())

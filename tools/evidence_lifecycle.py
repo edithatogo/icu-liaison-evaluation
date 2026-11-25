@@ -1,5 +1,6 @@
 """P10 source-date freshness checks, never external provenance admission."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from datetime import date
@@ -19,7 +20,7 @@ def _date(value: str | None) -> date | None:
     return date.fromisoformat(value) if value is not None else None
 
 
-def validate_registry(value: dict | None = None) -> dict:
+def validate_registry(value: dict[str, Any] | None = None) -> dict[str, Any]:
     r = value if value is not None else json.loads(REGISTRY.read_text())
     schema = json.loads(SCHEMA.read_text())
     Draft202012Validator.check_schema(schema)
@@ -42,7 +43,7 @@ def validate_registry(value: dict | None = None) -> dict:
     return r
 
 
-def assess_source(source: dict, as_of: date, *, price_year: int | None = None) -> dict:
+def assess_source(source: dict[str, Any], as_of: date, *, price_year: int | None = None) -> dict[str, Any]:
     """Report temporal metadata without treating it as approved or authenticated."""
     start = _date(source["valid_from"])
     end = _date(source["valid_until_exclusive"])
@@ -70,7 +71,7 @@ def assess_source(source: dict, as_of: date, *, price_year: int | None = None) -
 
 
 def assess_registry(as_of: date, *, price_year: int | None = None,
-                    registry: dict | None = None) -> dict:
+                    registry: dict[str, Any] | None = None) -> dict[str, Any]:
     if price_year is not None and not 2000 <= price_year <= 2100:
         raise ValueError("invalid price year")
     record = validate_registry(registry)

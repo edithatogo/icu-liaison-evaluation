@@ -1,10 +1,12 @@
 """Versioned fictional scenario definitions using the existing P10 variants."""
 from __future__ import annotations
+from typing import Any
 
 import json
 from pathlib import Path
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field
 
 from .p4_model import EconomicScenario
@@ -14,7 +16,7 @@ from tools.p10_falsification import _variant
 class ScenarioCase(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True)
 
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     case_id: str = Field(pattern=r'^[a-z][a-z0-9_]{0,47}$')
     variant: Literal[
         'base', 'no_effect', 'harmful_returns', 'zero_addressable_delay',
@@ -24,7 +26,7 @@ class ScenarioCase(BaseModel):
     data_class: Literal['synthetic']
     seed: int | None = Field(default=None, ge=0, le=2**64 - 1)
     iterations: int | None = Field(default=None, ge=2, le=100_000)
-    overrides: dict[str, dict] = Field(default_factory=dict)
+    overrides: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
 
 def materialise(case_bytes: bytes, base_bytes: bytes) -> tuple[ScenarioCase, EconomicScenario]:

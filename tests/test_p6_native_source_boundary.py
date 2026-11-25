@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / 'native/kairos-icu-liaison'
 
 
-def test_native_manifest_reuses_one_pinned_kairos_provider_without_new_scheduler():
+def test_native_manifest_reuses_one_pinned_kairos_provider_without_new_scheduler() -> None:
     content = (SRC / 'Cargo.toml').read_text()
     lock = json.loads((ROOT / 'model-inputs/p6/kairos-provider-lock.json').read_text())
     assert lock['source_commit'] in content
@@ -15,7 +15,7 @@ def test_native_manifest_reuses_one_pinned_kairos_provider_without_new_scheduler
     assert '[patch.crates-io]' not in content
 
 
-def test_native_domain_source_uses_staged_resource_leases():
+def test_native_domain_source_uses_staged_resource_leases() -> None:
     text = (SRC / 'src/main.rs').read_text()
     for needle in ('StagedResourceRuntime', 'StagedRequestState', '.submit(', '.release(',
                    '.run_for(', '.request('):
@@ -25,7 +25,7 @@ def test_native_domain_source_uses_staged_resource_leases():
     assert 'VecDeque' not in text
 
 
-def test_native_guide_requires_the_locked_build_and_independent_attestation():
+def test_native_guide_requires_the_locked_build_and_independent_attestation() -> None:
     guide = (SRC / 'README.md').read_text()
     assert 'Independent build attestation' in guide
     assert 'cargo fetch --locked' in guide

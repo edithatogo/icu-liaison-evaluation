@@ -1,5 +1,7 @@
 """P2 independent negative and positive clinical/economic contract oracles."""
 from __future__ import annotations
+from typing import Any
+from dataclasses import replace
 
 from datetime import datetime, timedelta, timezone
 import json
@@ -18,11 +20,13 @@ SCENARIO = ROOT / 'model-inputs' / 'illustrative.json'
 DICTIONARY = ROOT / 'model-inputs' / 'clinical-data-dictionary.json'
 
 
-def original() -> dict:
-    return json.loads(PROTOCOL.read_text(encoding='utf-8'))
+def original() -> dict[str, Any]:
+    value = json.loads(PROTOCOL.read_text(encoding='utf-8'))
+    assert isinstance(value, dict)
+    return value
 
 
-def test_protocol_and_scenario_admit_illustrative_only():
+def test_protocol_and_scenario_admit_illustrative_only() -> None:
     proto = EvaluationProtocol.model_validate(original())
     sim = Scenario.model_validate_json(SCENARIO.read_text(encoding='utf-8'))
     result = admit_protocol(proto, sim)
@@ -36,21 +40,21 @@ def test_protocol_and_scenario_admit_illustrative_only():
     assert result['public_rate_role'] == 'external_comparator_not_CHHHS_observed'
 
 
-def test_comparator_requires_distinct_incremental_strategies():
+def test_comparator_requires_distinct_incremental_strategies() -> None:
     proto = original()
     proto['strategies'][1]['id'] = 'current_care'
     with pytest.raises(ValueError):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_baseline_must_not_be_assumed_zero_current_liaison_coverage():
+def test_baseline_must_not_be_assumed_zero_current_liaison_coverage() -> None:
     proto = original()
     proto['strategies'][0]['funded_fte'] = 0
     with pytest.raises(ValueError, match='verified'):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_protocol_rejects_nonfinite_staffing_even_with_a_source_reference():
+def test_protocol_rejects_nonfinite_staffing_even_with_a_source_reference() -> None:
     proto = original()
     proto['strategies'][0].update(
         funded_fte=float('inf'), evidence_status='locally_verified', site_source_reference='fictional-source',
@@ -59,7 +63,7 @@ def test_protocol_rejects_nonfinite_staffing_even_with_a_source_reference():
         EvaluationProtocol.model_validate(proto)
 
 
-def test_eligibility_index_discharge_and_denominator_are_pinned():
+def test_eligibility_index_discharge_and_denominator_are_pinned() -> None:
     proto = original()
     proto['eligibility']['analysis_unit'] = 'all_icu_admissions'
     with pytest.raises(ValueError):
@@ -70,7 +74,7 @@ def test_eligibility_index_discharge_and_denominator_are_pinned():
         EvaluationProtocol.model_validate(proto)
 
 
-def test_wrong_icu_return_window_and_clock_rejected():
+def test_wrong_icu_return_window_and_clock_rejected() -> None:
     proto = original()
     proto['endpoints']['unplanned_72h_return']['window_hours'] = 48
     with pytest.raises(ValueError):
@@ -86,21 +90,21 @@ def test_wrong_icu_return_window_and_clock_rejected():
     ('unplanned_72h_return', 'threshold_hours', 12),
     ('ready_to_physical_departure_hours', 'window_hours', 48),
 ])
-def test_required_endpoint_roles_and_optional_clocks_are_pinned(endpoint, field, value):
+def test_required_endpoint_roles_and_optional_clocks_are_pinned(endpoint: str, field: str, value: int | str) -> None:
     proto = original()
     proto['endpoints'][endpoint][field] = value
     with pytest.raises(ValueError, match=endpoint):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_extra_endpoint_cannot_reuse_a_required_endpoint_identity():
+def test_extra_endpoint_cannot_reuse_a_required_endpoint_identity() -> None:
     proto = original()
     proto['endpoints']['context_metric'] = dict(proto['endpoints']['post_icu_death'], role='context')
     with pytest.raises(ValueError, match='endpoint identity'):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_missing_safety_endpoint_or_guardrail_is_rejected():
+def test_missing_safety_endpoint_or_guardrail_is_rejected() -> None:
     proto = original()
     del proto['endpoints']['post_icu_death']
     with pytest.raises(ValueError, match='missing'):
@@ -111,35 +115,35 @@ def test_missing_safety_endpoint_or_guardrail_is_rejected():
         EvaluationProtocol.model_validate(proto)
 
 
-def test_duplicate_required_safety_endpoint_is_rejected():
+def test_duplicate_required_safety_endpoint_is_rejected() -> None:
     proto = original()
     proto['safety']['required_endpoints'].append('ward_cardiac_arrest')
     with pytest.raises(ValueError, match='clinical safety endpoints'):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_safety_thresholds_cannot_be_silently_invented():
+def test_safety_thresholds_cannot_be_silently_invented() -> None:
     proto = original()
     proto['safety']['approved_noninferiority_margins'] = {'post_icu_death': 0.01}
     with pytest.raises(ValueError):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_economic_resource_segments_cannot_overlap():
+def test_economic_resource_segments_cannot_overlap() -> None:
     proto = original()
     proto['economics']['cost_components'][1]['resource_segment'] = 'index_ready_to_departure'
     with pytest.raises(ValueError, match='overlap'):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_average_annual_bed_cost_not_accepted_as_incremental_unit_cost():
+def test_average_annual_bed_cost_not_accepted_as_incremental_unit_cost() -> None:
     proto = original()
     proto['economics']['index_delay_valuation'] = 'annual_average_cost_per_available_icu_bed'
     with pytest.raises(ValueError):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_cash_and_opportunity_cost_remain_separate():
+def test_cash_and_opportunity_cost_remain_separate() -> None:
     proto = original()
     proto['economics']['capacity_monetisation'] = 'assume_cash_savings'
     with pytest.raises(ValueError):
@@ -150,7 +154,7 @@ def test_cash_and_opportunity_cost_remain_separate():
         EvaluationProtocol.model_validate(proto)
 
 
-def test_protocol_and_scenario_cost_year_and_units_must_match():
+def test_protocol_and_scenario_cost_year_and_units_must_match() -> None:
     proto = EvaluationProtocol.model_validate(original())
     sim = Scenario.model_validate_json(SCENARIO.read_text(encoding='utf-8'))
     sim.inputs.net_avoidable_cost_per_icu_day_aud.unit = 'dollars_per_admission'
@@ -162,7 +166,7 @@ def test_protocol_and_scenario_cost_year_and_units_must_match():
         EvaluationProtocol.model_validate(proto_data)
 
 
-def test_data_dictionary_has_required_fields_with_no_identifiable_examples():
+def test_data_dictionary_has_required_fields_with_no_identifiable_examples() -> None:
     dictionary = load_data_dictionary(DICTIONARY)
     assert dictionary['status'] == 'unvalidated_local_source_mapping'
     required = {x['name'] for x in dictionary['fields']}
@@ -181,20 +185,19 @@ def test_data_dictionary_has_required_fields_with_no_identifiable_examples():
 AEST = timezone(timedelta(hours=10))
 
 
-def observation(**patch):
+def observation(**patch: Any) -> TransitionObservation:
     depart = datetime(2026, 7, 1, 18, 0, tzinfo=AEST)
-    record = dict(
+    record = TransitionObservation(
         clinically_ready_at=depart - timedelta(hours=12),
         physical_departure_at=depart,
         observed_until=depart + timedelta(hours=72),
         returns=[],
         censor_reason='completed_72h',
     )
-    record.update(patch)
-    return TransitionObservation(**record)
+    return replace(record, **patch)
 
 
-def test_threshold_12_hours_and_after_hours_boundaries():
+def test_threshold_12_hours_and_after_hours_boundaries() -> None:
     out = classify_transition(observation())
     assert out.delay_hours == pytest.approx(12.0)
     assert out.exit_block_ge12h is True
@@ -206,7 +209,7 @@ def test_threshold_12_hours_and_after_hours_boundaries():
     assert out2.after_hours_departure is False
 
 
-def test_72h_return_window_exact_boundary_excluded():
+def test_72h_return_window_exact_boundary_excluded() -> None:
     depart = observation().physical_departure_at
     returns=[ReturnEvent(at=depart+timedelta(hours=72), planned='unplanned')]
     out=classify_transition(observation(returns=returns, observed_until=depart+timedelta(hours=73)))
@@ -215,7 +218,7 @@ def test_72h_return_window_exact_boundary_excluded():
     assert out2.unplanned_return_within_72h is True
 
 
-def test_planned_return_excluded_but_unplanned_later_in_window_counts():
+def test_planned_return_excluded_but_unplanned_later_in_window_counts() -> None:
     depart = observation().physical_departure_at
     vals=[ReturnEvent(at=depart+timedelta(hours=3),planned='planned'),
           ReturnEvent(at=depart+timedelta(hours=12),planned='unplanned')]
@@ -225,7 +228,7 @@ def test_planned_return_excluded_but_unplanned_later_in_window_counts():
     assert out2.unplanned_return_within_72h is False
 
 
-def test_incomplete_followup_and_unknown_planning_are_not_false_negatives():
+def test_incomplete_followup_and_unknown_planning_are_not_false_negatives() -> None:
     depart=observation().physical_departure_at
     out=classify_transition(observation(observed_until=depart+timedelta(hours=24),censor_reason='hospital_discharge'))
     assert out.unplanned_return_within_72h is None
@@ -237,7 +240,7 @@ def test_incomplete_followup_and_unknown_planning_are_not_false_negatives():
     assert out3.competing_death is True
 
 
-def test_missing_readiness_stays_missing_and_timestamps_aware():
+def test_missing_readiness_stays_missing_and_timestamps_aware() -> None:
     out=classify_transition(observation(clinically_ready_at=None))
     assert out.delay_hours is None and out.exit_block_ge12h is None
     with pytest.raises(ValueError):
@@ -246,14 +249,14 @@ def test_missing_readiness_stays_missing_and_timestamps_aware():
         classify_transition(observation(clinically_ready_at=observation().physical_departure_at+timedelta(minutes=1)))
 
 
-def test_utc_timestamps_respect_australia_brisbane_evening():
+def test_utc_timestamps_respect_australia_brisbane_evening() -> None:
     depart=datetime(2026, 7, 1, 8, 0, tzinfo=timezone.utc) # 18:00 Brisbane
     out=classify_transition(observation(physical_departure_at=depart,
         clinically_ready_at=depart-timedelta(hours=1),observed_until=depart+timedelta(hours=72)))
     assert out.after_hours_departure is True
 
 
-def test_readiness_delay_uses_elapsed_hours_through_a_clock_change():
+def test_readiness_delay_uses_elapsed_hours_through_a_clock_change() -> None:
     sydney = ZoneInfo('Australia/Sydney')
     ready = datetime(2026, 10, 3, 21, 30, tzinfo=sydney)
     depart = datetime(2026, 10, 4, 9, 30, tzinfo=sydney)
@@ -265,7 +268,7 @@ def test_readiness_delay_uses_elapsed_hours_through_a_clock_change():
     assert result.exit_block_ge12h is False
 
 
-def test_return_exactly_72_elapsed_hours_after_departure_is_excluded_across_clock_change():
+def test_return_exactly_72_elapsed_hours_after_departure_is_excluded_across_clock_change() -> None:
     sydney = ZoneInfo('Australia/Sydney')
     depart = datetime(2026, 4, 4, 18, tzinfo=sydney)
     event = datetime(2026, 4, 7, 17, tzinfo=sydney)
@@ -277,7 +280,7 @@ def test_return_exactly_72_elapsed_hours_after_departure_is_excluded_across_cloc
     assert result.unplanned_return_within_72h is False
 
 
-def test_completed_followup_requires_72_elapsed_hours_across_clock_change():
+def test_completed_followup_requires_72_elapsed_hours_across_clock_change() -> None:
     sydney = ZoneInfo('Australia/Sydney')
     depart = datetime(2026, 10, 3, 18, tzinfo=sydney)
     with pytest.raises(ValueError, match='at least 72 hours observed'):
@@ -287,7 +290,7 @@ def test_completed_followup_requires_72_elapsed_hours_across_clock_change():
         ))
 
 
-def test_invalid_return_precedes_discharge_and_missing_censor_reason_rejected():
+def test_invalid_return_precedes_discharge_and_missing_censor_reason_rejected() -> None:
     depart=observation().physical_departure_at
     with pytest.raises(ValueError):
         classify_transition(observation(returns=[ReturnEvent(at=depart-timedelta(minutes=1),planned='unplanned')]))
@@ -297,7 +300,7 @@ def test_invalid_return_precedes_discharge_and_missing_censor_reason_rejected():
         classify_transition(observation(censor_reason=None))
 
 
-def test_published_exit_block_proxy_must_match_explicit_source_and_value():
+def test_published_exit_block_proxy_must_match_explicit_source_and_value() -> None:
     proto = EvaluationProtocol.model_validate(original())
     sim = Scenario.model_validate_json(SCENARIO.read_text(encoding='utf-8'))
     sim.inputs.delayed_discharge_ge12h_rate.value = 0.25
@@ -307,7 +310,7 @@ def test_published_exit_block_proxy_must_match_explicit_source_and_value():
         admit_protocol(proto, sim)
 
 
-def test_other_model_effects_cannot_be_relabelled_public_benchmarks():
+def test_other_model_effects_cannot_be_relabelled_public_benchmarks() -> None:
     proto = EvaluationProtocol.model_validate(original())
     sim = Scenario.model_validate_json(SCENARIO.read_text(encoding='utf-8'))
     sim.inputs.relative_readmission_reduction.status = 'public_benchmark'
@@ -316,7 +319,7 @@ def test_other_model_effects_cannot_be_relabelled_public_benchmarks():
         admit_protocol(proto, sim)
 
 
-def test_death_after_observed_unplanned_return_is_not_a_competing_pre_event_death():
+def test_death_after_observed_unplanned_return_is_not_a_competing_pre_event_death() -> None:
     depart = observation().physical_departure_at
     result = classify_transition(observation(
         observed_until=depart+timedelta(hours=40),censor_reason='death',
@@ -326,21 +329,21 @@ def test_death_after_observed_unplanned_return_is_not_a_competing_pre_event_deat
     assert result.competing_death is False
 
 
-def test_safety_endpoint_role_must_not_be_downgraded_to_context():
+def test_safety_endpoint_role_must_not_be_downgraded_to_context() -> None:
     proto = original()
     proto['endpoints']['ward_cardiac_arrest']['role'] = 'context'
     with pytest.raises(ValueError):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_duplicate_required_scenario_binding_is_rejected():
+def test_duplicate_required_scenario_binding_is_rejected() -> None:
     proto = original()
     proto['required_local_scenario_inputs'].append('unplanned_72h_readmission_risk')
     with pytest.raises(ValueError):
         EvaluationProtocol.model_validate(proto)
 
 
-def test_age_below_adult_registry_threshold_is_rejected():
+def test_age_below_adult_registry_threshold_is_rejected() -> None:
     proto = original()
     proto['eligibility']['minimum_age_years'] = 14
     with pytest.raises(ValueError):

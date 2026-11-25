@@ -1,5 +1,6 @@
 """Machine-readable strict P8 input contracts derived from the consumer types."""
 from __future__ import annotations
+from typing import Any
 
 from .adapters.p8_mchs import MchsPair
 from .adapters.p8_workforce import RosterScenario
@@ -7,7 +8,7 @@ from .adapters.p8_workforce import RosterScenario
 EXACT = {"type": "string", "pattern": r"^(0|[1-9][0-9]*)(\.[0-9]+)?$"}
 
 
-def schema_for(kind: str) -> dict:
+def schema_for(kind: str) -> dict[str, Any]:
     if kind not in ("mchs", "roster"):
         raise ValueError("unsupported schema kind")
     model = MchsPair if kind == "mchs" else RosterScenario

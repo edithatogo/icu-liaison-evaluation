@@ -1,4 +1,6 @@
 """P3 RED: synthetic admissions, linkage, ascertainment, and PHI prevention."""
+from typing import Any
+from collections.abc import Callable
 import csv
 import hashlib
 import json
@@ -12,13 +14,13 @@ from icu_liaison.local_data import load_and_audit, LocalDatasetError
 FIX = Path(__file__).parent / 'fixtures/p3_episodes'
 
 
-def fixture(tmp_path):
+def fixture(tmp_path: Path) -> Path:
     target = tmp_path / 'synthetic'
     shutil.copytree(FIX, target)
     return target
 
 
-def rewrite_csv(directory, filename, change):
+def rewrite_csv(directory: Path, filename: str, change: Callable[[list[dict[str, str]]], object]) -> None:
     path = directory / filename
     with path.open(newline='', encoding='utf-8') as f:
         table = list(csv.DictReader(f))
@@ -35,7 +37,7 @@ def rewrite_csv(directory, filename, change):
     manifest_path.write_text(json.dumps(manifest, indent=2))
 
 
-def test_index_uses_first_eligible_live_ward_discharge_per_hospitalisation():
+def test_index_uses_first_eligible_live_ward_discharge_per_hospitalisation() -> None:
     result = load_and_audit(FIX / 'manifest.json')
     counts = result['cohort']
     assert counts['all_icu_episodes'] == 7
@@ -53,7 +55,7 @@ def test_index_uses_first_eligible_live_ward_discharge_per_hospitalisation():
     assert result['quality']['field_completeness']['icu_medically_ready_at']['missing'] >= 1
 
 
-def test_raw_person_fields_and_unsigned_source_files_fail_closed(tmp_path):
+def test_raw_person_fields_and_unsigned_source_files_fail_closed(tmp_path: Path) -> None:
     x = fixture(tmp_path)
     rewrite_csv(x, 'episodes.csv', lambda rows: rows[0].update({'hospitalisation_pseudonym': '123456789'}))
     with pytest.raises(LocalDatasetError, match='pseudonym'):
@@ -65,7 +67,7 @@ def test_raw_person_fields_and_unsigned_source_files_fail_closed(tmp_path):
         load_and_audit(x / 'manifest.json')
 
 
-def test_duplicate_episode_and_overlapping_episode_fail_closed(tmp_path):
+def test_duplicate_episode_and_overlapping_episode_fail_closed(tmp_path: Path) -> None:
     x = fixture(tmp_path)
     rewrite_csv(x, 'episodes.csv', lambda rows: rows[1].update({'index_icu_episode_id': rows[0]['index_icu_episode_id']}))
     with pytest.raises(LocalDatasetError, match='duplicate'):
@@ -76,7 +78,7 @@ def test_duplicate_episode_and_overlapping_episode_fail_closed(tmp_path):
         load_and_audit(x / 'manifest.json')
 
 
-def test_local_readiness_unknown_is_not_zero_and_missing_censor_not_no_event(tmp_path):
+def test_local_readiness_unknown_is_not_zero_and_missing_censor_not_no_event(tmp_path: Path) -> None:
     x = fixture(tmp_path)
     rewrite_csv(x, 'episodes.csv',lambda rows: rows[0].update({'icu_medically_ready_at': ''}))
     res = load_and_audit(x / 'manifest.json')
@@ -86,14 +88,14 @@ def test_local_readiness_unknown_is_not_zero_and_missing_censor_not_no_event(tmp
     assert res['cohort']['early_return_unknown'] == 1
 
 
-def test_unplanned_return_at_exactly_72h_not_a_positive(tmp_path):
+def test_unplanned_return_at_exactly_72h_not_a_positive(tmp_path: Path) -> None:
     x = fixture(tmp_path)
     rewrite_csv(x, 'episodes.csv',lambda rows: rows[1].update({'icu_admission_at': '2026-01-04T10:00:00+10:00'}))
     res = load_and_audit(x / 'manifest.json')
     assert res['cohort']['unplanned_return_within_72h'] == 0
 
 
-def test_restricted_requires_specific_attestation_and_private_output(tmp_path):
+def test_restricted_requires_specific_attestation_and_private_output(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     m=json.loads((x/'manifest.json').read_text())
     m['data_class']='restricted'
@@ -110,7 +112,7 @@ def test_restricted_requires_specific_attestation_and_private_output(tmp_path):
     assert result['data_class'] == 'restricted'
 
 
-def test_unknown_columns_or_cost_component_duplicates_fail_closed(tmp_path):
+def test_unknown_columns_or_cost_component_duplicates_fail_closed(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     with (x/'episodes.csv').open('a',encoding='utf-8') as f:f.write('')
     rewrite_csv(x,'cost_lines.csv',lambda rows: rows[1].update({'cost_use_id':rows[0]['cost_use_id'],'cost_component_id':rows[0]['cost_component_id']}))
@@ -118,14 +120,14 @@ def test_unknown_columns_or_cost_component_duplicates_fail_closed(tmp_path):
         load_and_audit(x/'manifest.json')
 
 
-def test_missing_followup_for_eligible_hospitalisation_rejected(tmp_path):
+def test_missing_followup_for_eligible_hospitalisation_rejected(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'followup.csv',lambda rows: rows.pop(0))
     with pytest.raises(LocalDatasetError,match='followup'):
         load_and_audit(x/'manifest.json')
 
 
-def test_report_contains_no_pseudonyms_or_patient_rows():
+def test_report_contains_no_pseudonyms_or_patient_rows() -> None:
     result=load_and_audit(FIX/'manifest.json')
     s=json.dumps(result)
     assert 'SYNHOSP' not in s and 'SYNICU' not in s
@@ -133,7 +135,7 @@ def test_report_contains_no_pseudonyms_or_patient_rows():
     assert 'rows' not in result
 
 
-def test_local_source_header_mapping_works_without_changing_source(tmp_path):
+def test_local_source_header_mapping_works_without_changing_source(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     path=x/'episodes.csv'
     with path.open(newline='',encoding='utf-8') as handle:
@@ -152,7 +154,7 @@ def test_local_source_header_mapping_works_without_changing_source(tmp_path):
     assert result['cohort']['index_exit_block_ge12h']==1
 
 
-def test_unmapped_source_header_fails_without_echoing_sensitive_values(tmp_path):
+def test_unmapped_source_header_fails_without_echoing_sensitive_values(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     path=x/'episodes.csv'
     with path.open(newline='',encoding='utf-8') as handle:
@@ -169,14 +171,14 @@ def test_unmapped_source_header_fails_without_echoing_sensitive_values(tmp_path)
     assert 'Fictional' not in str(err.value)
 
 
-def test_cost_basis_and_price_year_required_for_audit(tmp_path):
+def test_cost_basis_and_price_year_required_for_audit(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'cost_lines.csv',lambda rows: rows[0].update({'cost_basis':''}))
     with pytest.raises(LocalDatasetError,match='validation'):
         load_and_audit(x/'manifest.json')
 
 
-def test_timestamp_requires_offset_and_death_record_is_complete(tmp_path):
+def test_timestamp_requires_offset_and_death_record_is_complete(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'episodes.csv',lambda rows: rows[0].update({'icu_actual_departure_at':'2026-01-01T10:00:00'}))
     with pytest.raises(LocalDatasetError,match='validation'):
@@ -187,7 +189,7 @@ def test_timestamp_requires_offset_and_death_record_is_complete(tmp_path):
         load_and_audit(x/'manifest.json')
 
 
-def test_observation_cannot_extend_past_final_hospital_separation(tmp_path):
+def test_observation_cannot_extend_past_final_hospital_separation(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'followup.csv',lambda rows: rows[0].update({
         'hospitalisation_final_departure_at':'2026-01-02T09:00:00+10:00',
@@ -197,14 +199,14 @@ def test_observation_cannot_extend_past_final_hospital_separation(tmp_path):
         load_and_audit(x/'manifest.json')
 
 
-def test_death_cannot_be_reported_without_death_censor(tmp_path):
+def test_death_cannot_be_reported_without_death_censor(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'followup.csv',lambda rows: rows[1].update({'censor_reason':'hospital_discharge'}))
     with pytest.raises(LocalDatasetError,match='validation'):
         load_and_audit(x/'manifest.json')
 
 
-def test_all_zero_endpoint_counts_are_explicit(tmp_path):
+def test_all_zero_endpoint_counts_are_explicit(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     rewrite_csv(x,'episodes.csv',lambda rows: [
        row.update({'icu_medically_ready_at':''}) for row in rows
@@ -214,7 +216,7 @@ def test_all_zero_endpoint_counts_are_explicit(tmp_path):
     assert result['cohort']['index_exit_block_ge12h']==0
 
 
-def test_extract_provenance_and_age_are_explicit_not_freshness_approval():
+def test_extract_provenance_and_age_are_explicit_not_freshness_approval() -> None:
     report=load_and_audit(FIX/'manifest.json')
     freshness=report['quality']['source_freshness']
     assert freshness['source_extracted_at'].startswith('2026-11-18')
@@ -222,7 +224,7 @@ def test_extract_provenance_and_age_are_explicit_not_freshness_approval():
     assert freshness['freshness_admission']=='threshold_not_approved'
 
 
-def test_extraction_cannot_predate_observed_episode_departure(tmp_path):
+def test_extraction_cannot_predate_observed_episode_departure(tmp_path: Path) -> None:
     x=fixture(tmp_path)
     mf=x/'manifest.json';m=json.loads(mf.read_text())
     m['extracted_at']='2026-01-01T00:00:00+10:00'
@@ -232,11 +234,11 @@ def test_extraction_cannot_predate_observed_episode_departure(tmp_path):
 
 
 @pytest.mark.parametrize('future_field', ['followup_observation_end_at', 'hospitalisation_final_departure_at'])
-def test_extraction_cannot_predate_observed_followup_or_separation(tmp_path, future_field):
+def test_extraction_cannot_predate_observed_followup_or_separation(tmp_path: Path, future_field: str) -> None:
     directory = fixture(tmp_path)
     future = '2026-11-19T08:00:00+10:00'
 
-    def edit(rows):
+    def edit(rows: list[dict[str, Any]]) -> None:
         rows[0][future_field] = future
         if future_field == 'followup_observation_end_at':
             rows[0]['hospitalisation_final_departure_at'] = ''
@@ -246,7 +248,7 @@ def test_extraction_cannot_predate_observed_followup_or_separation(tmp_path, fut
         load_and_audit(directory / 'manifest.json')
 
 
-def test_identifier_completeness_uses_the_dictionary_grain():
+def test_identifier_completeness_uses_the_dictionary_grain() -> None:
     report = load_and_audit(FIX / 'manifest.json')
     fields = report['quality']['field_completeness']
     assert fields['hospitalisation_pseudonym']['source_feed'] == 'followup'
@@ -255,7 +257,7 @@ def test_identifier_completeness_uses_the_dictionary_grain():
     assert fields['index_icu_episode_id']['present'] == report['cohort']['all_icu_episodes']
 
 
-def test_index_delay_mean_excludes_repeats_home_and_unknown_readiness(tmp_path):
+def test_index_delay_mean_excludes_repeats_home_and_unknown_readiness(tmp_path: Path) -> None:
     directory = fixture(tmp_path)
     metric = load_and_audit(directory / 'manifest.json')['index_ready_delay']
     assert metric == {'metric_id': 'M31', 'population_id': 'D03', 'denominator_id': 'D14',

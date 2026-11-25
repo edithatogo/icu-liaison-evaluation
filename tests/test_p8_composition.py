@@ -1,5 +1,10 @@
 """P8.4 TDD: ICU economic, funding and workforce perspectives never conflate."""
 from __future__ import annotations
+from icu_liaison.p4_model import P4Run
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any, Literal
+from collections.abc import Callable
 
 from copy import deepcopy
 from decimal import Decimal
@@ -17,12 +22,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope='module')
-def run():
+def run() -> P4Run:
     source = (ROOT / 'model-inputs/p4/illustrative.json').read_text()
     return evaluate_scenarios(EconomicScenario.model_validate_json(source))
 
 
-def mchs_record():
+def mchs_record() -> dict[str, Any]:
     return {
         'schema_version': 1, 'episode_id': 'synthetic-episode-001',
         'data_class': 'synthetic', 'provider': 'mchs', 'pricing_year': 2025,
@@ -36,7 +41,7 @@ def mchs_record():
     }
 
 
-def roster_record():
+def roster_record() -> dict[str, Any]:
     return {
         'provider_evidence': 'injected_contract_test_only',
         'scenario_id': 'synthetic-nurse-roster',
@@ -55,7 +60,7 @@ def roster_record():
     }
 
 
-def test_source_only_shadow_keeps_p4_draws_and_cash_claim_unchanged(run):
+def test_source_only_shadow_keeps_p4_draws_and_cash_claim_unchanged(run: P4Run) -> None:
     before = summarise_p4(run)
     out = compose_p8_shadow(run, strategy_id='liaison_service')
     assert out['p4_input_sha256'] == run.input_digest_sha256
@@ -71,7 +76,7 @@ def test_source_only_shadow_keeps_p4_draws_and_cash_claim_unchanged(run):
     assert before == summarise_p4(run)
 
 
-def test_mchs_case_level_shadow_remains_outside_financial_draws(run):
+def test_mchs_case_level_shadow_remains_outside_financial_draws(run: P4Run) -> None:
     base = compose_p8_shadow(run, strategy_id='liaison_service')
     joined = compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=mchs_record())
     assert joined['mchs']['case_change_nwau'] == '-0.1000'
@@ -90,19 +95,19 @@ def test_mchs_case_level_shadow_remains_outside_financial_draws(run):
     ('data_class', 'patient_records'), ('unit','AUD'),
     ('source_bundle_sha256_declared','xyz'), ('provider','other')
 ])
-def test_invalid_mchs_provider_result_is_rejected(run, field, value):
+def test_invalid_mchs_provider_result_is_rejected(run: P4Run, field: str, value: str) -> None:
     a=mchs_record();a[field]=value
     with pytest.raises(ValueError):
         compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=a)
 
 
-def test_inconsistent_nwau_difference_is_rejected(run):
+def test_inconsistent_nwau_difference_is_rejected(run: P4Run) -> None:
     a=mchs_record();a['change_nwau']='-0.09'
     with pytest.raises(ValueError, match='NWAU'):
         compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=a)
 
 
-def test_case_sensitivity_rejects_rounded_difference_even_at_high_precision(run):
+def test_case_sensitivity_rejects_rounded_difference_even_at_high_precision(run: P4Run) -> None:
     provider = mchs_record()
     provider.update(current_nwau='0', proposed_nwau='1.123456789012345678901234567891',
                     change_nwau='1.123456789012345678901234568')
@@ -111,7 +116,7 @@ def test_case_sensitivity_rejects_rounded_difference_even_at_high_precision(run)
                           fictional_funding_price=FictionalFundingPrice(pricing_year=2025, aud_per_nwau='1000'))
 
 
-def test_fictional_episode_money_keeps_the_annual_cost_ledgers_unchanged(run):
+def test_fictional_episode_money_keeps_the_annual_cost_ledgers_unchanged(run: P4Run) -> None:
     base = compose_p8_shadow(run, strategy_id='liaison_service', mchs_result=mchs_record())
     priced = compose_p8_shadow(
         run, strategy_id='liaison_service', mchs_result=mchs_record(),
@@ -128,7 +133,7 @@ def test_fictional_episode_money_keeps_the_annual_cost_ledgers_unchanged(run):
     (None, 2025, '1000'), (mchs_record(), 2024, '1000'),
     (mchs_record(), 2025, '-1'), (mchs_record(), 2025, 'NaN'),
 ])
-def test_episode_price_requires_compatible_mchs_year_and_exact_assumption(run, result, year, rate):
+def test_episode_price_requires_compatible_mchs_year_and_exact_assumption(run: P4Run, result: dict[str, Any] | None, year: Literal[2024, 2025], rate: str) -> None:
     with pytest.raises(ValueError, match='fictional'):
         compose_p8_shadow(
             run, strategy_id='liaison_service', mchs_result=result,
@@ -139,12 +144,12 @@ def test_episode_price_requires_compatible_mchs_year_and_exact_assumption(run, r
 @pytest.mark.parametrize('objective, field', [
     ('net_resource', 'net_resource_benefit_aud'), ('budget', 'net_budget_impact_aud'),
 ])
-def test_voiage_only_sees_the_selected_pair_and_perspective(run, objective, field):
+def test_voiage_only_sees_the_selected_pair_and_perspective(run: P4Run, objective: Literal["net_resource", "budget"], field: str) -> None:
     class ExampleAnalysis:
-        def evpi(self):
+        def evpi(self) -> float:
             return 4.25
 
-    def inspect_surface(values, labels):
+    def inspect_surface(values: NDArray[float64], labels: list[str]) -> ExampleAnalysis:
         assert labels == ['current_care', 'extended_cover']
         expected = np.column_stack([getattr(run.strategies[arm], field) for arm in labels])
         np.testing.assert_array_equal(values, expected)
@@ -164,14 +169,14 @@ def test_voiage_only_sees_the_selected_pair_and_perspective(run, objective, fiel
     assert out['extra_workforce_cost_applied_to_p4'] is False
 
 
-def test_non_strategic_comparison_rejected(run):
+def test_non_strategic_comparison_rejected(run: P4Run) -> None:
     with pytest.raises(ValueError):
         compose_p8_shadow(run, strategy_id='current_care')
     with pytest.raises(ValueError):
         compose_p8_shadow(run, strategy_id='unknown_strategy')
 
 
-def test_workforce_request_requires_explicit_scenario_link_and_adds_no_cost(run):
+def test_workforce_request_requires_explicit_scenario_link_and_adds_no_cost(run: P4Run) -> None:
     workforce=roster_record()
     with pytest.raises(ValueError):
         compose_p8_shadow(run, strategy_id='liaison_service', workforce_result=workforce)
@@ -194,8 +199,8 @@ def test_workforce_request_requires_explicit_scenario_link_and_adds_no_cost(run)
     lambda v:v['request']['usage'].append(deepcopy(v['request']['usage'][0])),
     lambda v:v['request']['usage'][0].update({'quote_id':'missing'}),
     lambda v:v['request']['quotes'].append(deepcopy(v['request']['quotes'][0])),
-])
-def test_unqualified_roster_or_corrupt_dapane_request_fails_closed(run,mutate):
+], ids=["unapproved-cost", "valued", "scenario", "basis", "year", "currency", "duplicate-use", "orphan-quote", "duplicate-quote"])
+def test_unqualified_roster_or_corrupt_dapane_request_fails_closed(run: P4Run, mutate: Callable[[dict[str, Any]], object]) -> None:
     v=roster_record();mutate(v)
     with pytest.raises(ValueError):
         compose_p8_shadow(run,strategy_id='liaison_service',workforce_result=v,
@@ -203,7 +208,7 @@ def test_unqualified_roster_or_corrupt_dapane_request_fails_closed(run,mutate):
 
 
 @pytest.mark.parametrize('change', ['none', 'quantity', 'observed', 'expired', 'missing_date'])
-def test_installed_roster_trace_preserves_dated_synthetic_quantities(run, change):
+def test_installed_roster_trace_preserves_dated_synthetic_quantities(run: P4Run, change: str) -> None:
     workforce = roster_record()
     workforce['provider_evidence'] = 'unqualified_installed_workforce_source'
     request = workforce['request']
@@ -220,16 +225,17 @@ def test_installed_roster_trace_preserves_dated_synthetic_quantities(run, change
         quote['valid_to'] = usage['service_date']
     elif change == 'missing_date':
         del quote['valid_from']
-    kwargs = dict(strategy_id='liaison_service', workforce_result=workforce,
-                  expected_roster_scenario_id='synthetic-nurse-roster')
+    def compose() -> dict[str, Any]:
+        return compose_p8_shadow(run, strategy_id='liaison_service', workforce_result=workforce,
+                                 expected_roster_scenario_id='synthetic-nurse-roster')
     if change == 'none':
-        assert compose_p8_shadow(run, **kwargs)['workforce']['request_line_count'] == 1
+        assert compose()['workforce']['request_line_count'] == 1
     else:
         with pytest.raises(ValueError, match='workforce'):
-            compose_p8_shadow(run, **kwargs)
+            compose()
 
 
-def test_generated_schema_matches_pydantic_and_fixture(run):
+def test_generated_schema_matches_pydantic_and_fixture(run: P4Run) -> None:
     schema=P8Composition.model_json_schema()
     Draft202012Validator.check_schema(schema)
     fixture=compose_p8_shadow(run,strategy_id='liaison_service')
@@ -237,7 +243,7 @@ def test_generated_schema_matches_pydantic_and_fixture(run):
     assert P8Composition.model_validate(fixture).strategy_id=='liaison_service'
 
 
-def test_byte_identical_output_for_same_model_and_evidence(run):
+def test_byte_identical_output_for_same_model_and_evidence(run: P4Run) -> None:
     a=compose_p8_shadow(run,strategy_id='liaison_service',mchs_result=mchs_record())
     b=compose_p8_shadow(run,strategy_id='liaison_service',mchs_result=mchs_record())
     assert json.dumps(a,sort_keys=True)==json.dumps(b,sort_keys=True)

@@ -1,5 +1,6 @@
 """P8 red/green: the portable Conductor must preserve separated economic views."""
 from __future__ import annotations
+from typing import Any
 
 import json
 from pathlib import Path
@@ -12,17 +13,19 @@ TRACK = ROOT / 'conductor/tracks/P8-abf-workforce-interop'
 DATA = ROOT / 'model-inputs/p8'
 
 
-def _load(path: Path):
-    return json.loads(path.read_text(encoding='utf-8'))
+def _load(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding='utf-8'))
+    assert isinstance(value, dict)
+    return value
 
 
-def _schema():
+def _schema() -> Draft202012Validator:
     schema = _load(DATA / 'funding-workforce-shadow.schema.json')
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
 
-def test_p8_has_complete_conductor_contract_without_premature_acceptance():
+def test_p8_has_complete_conductor_contract_without_premature_acceptance() -> None:
     for name in ('index.md', 'spec.md', 'plan.md', 'metadata.json', 'agent-contract.md',
                  'test-matrix.md', 'risk-register.md', 'handoff.md'):
         assert (TRACK / name).is_file(), name
@@ -35,7 +38,7 @@ def test_p8_has_complete_conductor_contract_without_premature_acceptance():
     assert 'P8-abf-workforce-interop/index.md' in (ROOT / 'conductor/tracks.md').read_text()
 
 
-def test_provider_capability_register_separates_owners_and_does_not_claim_installed_parity():
+def test_provider_capability_register_separates_owners_and_does_not_claim_installed_parity() -> None:
     doc = _load(DATA / 'provider-capabilities.json')
     by_id = {p['id']: p for p in doc['providers']}
     assert len(by_id) == len(doc['providers'])
@@ -52,7 +55,7 @@ def test_provider_capability_register_separates_owners_and_does_not_claim_instal
         assert p['owner_reuses_existing_track']
 
 
-def test_synthetic_null_shadow_admits_but_never_claims_hospital_revenue():
+def test_synthetic_null_shadow_admits_but_never_claims_hospital_revenue() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     assert list(_schema().iter_errors(doc)) == []
     assert doc['data_class'] == 'synthetic'
@@ -66,13 +69,13 @@ def test_synthetic_null_shadow_admits_but_never_claims_hospital_revenue():
     ('data_class', 'clinical_records'),
     ('admission', 'investment_ready'),
 ])
-def test_wrong_promotion_flags_are_rejected(field, value):
+def test_wrong_promotion_flags_are_rejected(field: str, value: str) -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     doc[field] = value
     assert list(_schema().iter_errors(doc))
 
 
-def test_no_revenue_projection_without_actual_contract():
+def test_no_revenue_projection_without_actual_contract() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     doc['funding']['actual_incremental_revenue_aud'] = '12000.00'
     assert list(_schema().iter_errors(doc))
@@ -81,7 +84,7 @@ def test_no_revenue_projection_without_actual_contract():
     assert list(_schema().iter_errors(doc))
 
 
-def test_no_nursing_cost_without_classification_and_rate_approval():
+def test_no_nursing_cost_without_classification_and_rate_approval() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     doc['workforce']['incremental_annual_labour_cost_aud'] = '123000.00'
     assert list(_schema().iter_errors(doc))
@@ -90,7 +93,7 @@ def test_no_nursing_cost_without_classification_and_rate_approval():
     assert list(_schema().iter_errors(doc))
 
 
-def test_separate_resource_and_funding_units_and_no_unknown_fields():
+def test_separate_resource_and_funding_units_and_no_unknown_fields() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     doc['funding']['unit'] = 'AUD'
     assert list(_schema().iter_errors(doc))
@@ -102,21 +105,21 @@ def test_separate_resource_and_funding_units_and_no_unknown_fields():
     assert list(_schema().iter_errors(doc))
 
 
-def test_nwau_pay_year_edition_and_provider_are_required_for_any_calculation():
+def test_nwau_pay_year_edition_and_provider_are_required_for_any_calculation() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     doc['funding']['qualification_status'] = 'calculated_paired'
     doc['funding']['shadow_modelled_nwau_change'] = '0.15'
     assert list(_schema().iter_errors(doc))  # no DRG edition, source validation or pair
 
 
-def test_candidate_notes_identify_2026_27_as_not_parity_qualified():
+def test_candidate_notes_identify_2026_27_as_not_parity_qualified() -> None:
     matrix = _load(DATA / 'provider-capabilities.json')
     m = next(x for x in matrix['providers'] if x['id'] == 'mchs')
     assert m['year_2026_27_full_parity'] is False
     assert 'nwau' in m['domain_scope'].lower()
 
 
-def test_funding_calculator_and_financial_year_are_separate_from_cost_price_year():
+def test_funding_calculator_and_financial_year_are_separate_from_cost_price_year() -> None:
     doc = _load(DATA / 'synthetic-null-shadow.json')
     assert doc['funding']['calculator_year'] is None
     assert doc['funding']['financial_year_label'] is None

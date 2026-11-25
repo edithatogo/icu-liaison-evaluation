@@ -1,5 +1,6 @@
 """P2.5 governance sign-off pack and 32-to-115 CHHHS field crosswalk validators."""
 from __future__ import annotations
+from typing import Any
 
 from collections import Counter
 from datetime import date
@@ -9,6 +10,7 @@ from pathlib import Path
 import re
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .data_request import DataRequestCatalogue
@@ -68,7 +70,7 @@ class FieldCrosswalkEntry(_StrictModel):
 class FieldCrosswalk(_StrictModel):
     """Complete mapping between P2 dictionary fields and the CHHHS data request pack."""
 
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     status: Literal["planning_crosswalk_no_local_data"]
     p2_dictionary_path: str = Field(min_length=1)
     chhhs_request_path: str = Field(min_length=1)
@@ -120,7 +122,7 @@ class GovernanceGate(_StrictModel):
 class GovernanceSignoffPack(_StrictModel):
     """Reviewer declarations for the P2.5 stakeholder sign-off form."""
 
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     status: Literal["template_unapproved_no_site_signoff", "in_review", "site_approved"]
     protocol_id: str = Field(min_length=1)
     protocol_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -168,7 +170,7 @@ def validate_p2_chhhs_crosswalk(
     crosswalk_path: Path,
     dictionary_path: Path,
     request_path: Path,
-) -> dict:
+) -> dict[str, Any]:
     """Validate 1:1 coverage of all P2 dictionary fields against CHHHS request datasets."""
     crosswalk_bytes = Path(crosswalk_path).read_bytes()
     dictionary_bytes = Path(dictionary_path).read_bytes()
@@ -217,7 +219,7 @@ def audit_governance_signoff(
     signoff_path: Path,
     protocol_path: Path,
     dictionary_path: Path,
-) -> dict:
+) -> dict[str, Any]:
     """Check the sign-off document and its source bindings without authenticating decisions."""
     signoff_bytes = Path(signoff_path).read_bytes()
     protocol_bytes = Path(protocol_path).read_bytes()

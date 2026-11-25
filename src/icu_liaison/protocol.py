@@ -4,6 +4,7 @@ This is a *specification* and an admission gate for illustrative P1 inputs,
 not a clinical service-approval, causal estimator, data reader or costing engine.
 """
 from __future__ import annotations
+from typing import Any
 
 from collections.abc import Mapping
 import hashlib
@@ -12,13 +13,14 @@ from math import isclose
 from pathlib import Path
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .schemas import Inputs, Scenario
 
 
 class StrictContract(BaseModel):
-    model_config = ConfigDict(extra='forbid', validate_assignment=True)
+    model_config = ConfigDict(strict=True, extra='forbid', validate_assignment=True)
 
 
 class Strategy(StrictContract):
@@ -77,7 +79,7 @@ class Endpoint(StrictContract):
 
 # Fixed observation semantics, not hospital-specific baseline rates.
 # Keep P1 cost and denominator claims pinned to this local measurement design.
-REQUIRED_ENDPOINTS = {
+REQUIRED_ENDPOINTS: dict[str, dict[str, str | int]] = {
     'ready_to_physical_departure_hours': {
         'role': 'primary_operational',
         'denominator': 'eligible_index_live_ward_discharges',
@@ -187,7 +189,7 @@ class Economics(StrictContract):
             raise ValueError('overlap: resource segments must not be priced twice')
         if scope != {'index_ready_to_departure', 'post_departure_return', 'incremental_service'}:
             raise ValueError('exactly three nonoverlapping prototype cost segments required')
-        by_scope = {c.resource_segment: c for c in self.cost_components}
+        by_scope: dict[str, CostComponent] = {c.resource_segment: c for c in self.cost_components}
         for segment, (role, valuation, cash) in {
             'index_ready_to_departure': ('avoided_index_delay', 'incremental_net_of_ward', 'not_assumed_realisable'),
             'post_departure_return': ('avoided_readmission', 'incremental_net_of_otherwise_care', 'not_assumed_realisable'),
@@ -223,7 +225,7 @@ class ExternalBenchmark(StrictContract):
 
 
 class EvaluationProtocol(StrictContract):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     protocol_id: str = Field(min_length=1)
     status: Literal['draft_unapproved']
     setting: str = Field(min_length=1)
@@ -254,8 +256,8 @@ class EvaluationProtocol(StrictContract):
             raise ValueError('endpoint identity must match its protocol key')
         for identifier, fields in REQUIRED_ENDPOINTS.items():
             endpoint = self.endpoints[identifier]
-            expected = {'window_hours': None, 'threshold_hours': None, **fields}
-            if any(getattr(endpoint, field) != value for field, value in expected.items()):
+            expected_fields = {'window_hours': None, 'threshold_hours': None, **fields}
+            if any(getattr(endpoint, field) != value for field, value in expected_fields.items()):
                 raise ValueError(f'{identifier}: endpoint role, denominator, clock or unit mismatch')
         safety_endpoints = self.safety.required_endpoints
         if (
@@ -278,7 +280,7 @@ class EvaluationProtocol(StrictContract):
         return self
 
 
-def admit_protocol(protocol: EvaluationProtocol, scenario: Scenario) -> dict:
+def admit_protocol(protocol: EvaluationProtocol, scenario: Scenario) -> dict[str, Any]:
     """Admit an illustrative P1 run, NEVER an observed CHHHS claim.
 
     The P1 Scenario schema currently permits synthetic input only. Missing local
@@ -338,7 +340,7 @@ MINIMUM_LOCAL_FIELDS = {
 }
 
 
-def load_data_dictionary(source: str | Path | Mapping) -> dict:
+def load_data_dictionary(source: str | Path | Mapping[str, Any]) -> dict[str, Any]:
     """Read source *requirements*, not actual CHHHS patient or workforce data."""
     obj = json.loads(Path(source).read_text(encoding='utf-8')) if isinstance(source, (str, Path)) else dict(source)
     if obj.get('schema_version') != 1 or obj.get('status') != 'unvalidated_local_source_mapping':

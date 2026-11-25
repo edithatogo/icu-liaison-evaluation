@@ -5,6 +5,7 @@ statistical, patient-flow, readmission, or clinical approval engine. No locally
 restricted rows or assertion of observed CHHHS effects may be published here.
 """
 from __future__ import annotations
+from typing import Any
 
 from collections import Counter
 from collections.abc import Mapping
@@ -19,6 +20,7 @@ import subprocess
 import tempfile
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 REQUIRED_IDS = frozenset({
@@ -123,7 +125,7 @@ class Placeholder(_Strict):
 
 
 class PlaceholderRegistry(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     project_id: Literal['icu-liaison-evaluation']
     policy: Literal['synthetic_development_only_never_site_approved']
     scope: str = Field(min_length=1)
@@ -150,7 +152,7 @@ class Candidate(_Strict):
 
 
 class CandidateEnvelope(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     status: Literal['candidates_for_independent_review']
     entries: list[Candidate] = Field(min_length=1)
 
@@ -203,7 +205,7 @@ def _json_pointer(doc: object, pointer: str) -> object:
     return current
 
 
-def audit_placeholders(registry: PlaceholderRegistry, *, root: Path) -> dict:
+def audit_placeholders(registry: PlaceholderRegistry, *, root: Path) -> dict[str, Any]:
     """Validate every source binding, but **never** close an evidence gate."""
     reg = PlaceholderRegistry.model_validate(registry.model_dump(mode='json'))
     root = Path(root)
@@ -293,7 +295,7 @@ def _private_evidence_file(path: Path, project_root: Path) -> Path:
 
 def review_candidate_submission(
     path: Path, registry: PlaceholderRegistry, *, project_root: Path
-) -> dict:
+) -> dict[str, Any]:
     """Check a submission's location before reading its private contents."""
     source = _private_evidence_file(path, project_root)
     return inspect_replacement_candidates(
@@ -302,8 +304,8 @@ def review_candidate_submission(
 
 
 def inspect_replacement_candidates(
-    envelope: Mapping, registry: PlaceholderRegistry, *, project_root: Path
-) -> dict:
+    envelope: Mapping[str, Any], registry: PlaceholderRegistry, *, project_root: Path
+) -> dict[str, Any]:
     """Hash-check private evidence candidates, but never confer clinical approval.
 
     Even all 33 hash matches cannot satisfy a clinical, privacy, causal or
@@ -414,7 +416,7 @@ def verify_progress_manifest(directory: Path) -> bool:
     return verify_p5_manifest(root / 'p5-report')
 
 
-def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_dir: Path) -> dict:
+def build_synthetic_progress_bundle(*, root: Path, registry_path: Path, output_dir: Path) -> dict[str, Any]:
     """Generate synthetic QA + P4/P5 economic + P6 trace/holdout receipts.
 
     All computational engines are imported from the existing tracks. Publication

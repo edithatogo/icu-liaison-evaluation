@@ -1,5 +1,6 @@
 """P10 clinical safety gate for illustrative ICU liaison economics."""
 from __future__ import annotations
+from typing import Any
 
 import argparse
 from decimal import Decimal, InvalidOperation
@@ -15,7 +16,7 @@ PROTOCOL = ROOT / "model-inputs/clinical-economic-protocol.json"
 METRICS = ROOT / "contracts/reporting/metrics.json"
 
 
-def validate_policy(value: dict | None = None) -> dict:
+def validate_policy(value: dict[str, Any] | None = None) -> dict[str, Any]:
     policy = value if value is not None else json.loads(POLICY.read_text())
     schema = json.loads(SCHEMA.read_text())
     Draft202012Validator.check_schema(schema)
@@ -43,7 +44,7 @@ def validate_policy(value: dict | None = None) -> dict:
 
 
 def evaluate_decision(synthetic_net_resource_benefit_aud: object | None = None,
-                      policy: dict | None = None) -> dict:
+                      policy: dict[str, Any] | None = None) -> dict[str, Any]:
     """Compute the sign only; refuse ALL clinical and investment acceptance."""
     defined = validate_policy(policy)
     if synthetic_net_resource_benefit_aud is None:

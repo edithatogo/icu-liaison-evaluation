@@ -12,7 +12,8 @@ from importlib import import_module
 import json
 from typing import Any, Callable, Literal, Mapping
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from ..schemas import SchemaVersion
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
 
 class _Strict(BaseModel):
@@ -59,7 +60,7 @@ class RosterExposure(_Strict):
 
 
 class RosterScenario(_Strict):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     data_class: Literal["synthetic"]
     scenario_id: str = Field(min_length=2, max_length=128, pattern=r"^synthetic-[a-zA-Z0-9_-]+$")
     jurisdiction: Literal["Queensland"]
@@ -67,12 +68,12 @@ class RosterScenario(_Strict):
     classification_status: Literal["candidate_unverified"]
     expected_artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     source_artifact_json: str = Field(min_length=2, max_length=2_000_000)
-    financial_price_year: int = Field(ge=2024, le=2100)
+    financial_price_year: int = Field(strict=True, ge=2024, le=2100)
     knowledge_cutoff: date
     exposures: tuple[RosterExposure, ...] = Field(min_length=1, max_length=5000)
-    contains_superannuation: bool
-    contains_leave_relief: bool
-    contains_penalties: bool
+    contains_superannuation: StrictBool
+    contains_leave_relief: StrictBool
+    contains_penalties: StrictBool
     completeness_status: Literal["partial", "full"]
 
     @model_validator(mode="after")
@@ -104,10 +105,10 @@ def validate_workforce_quote_dates(
 ) -> None:
     """Require a dated quote to apply on the service date and at the cutoff."""
     try:
-        starts_on = date.fromisoformat(quote.get("valid_from"))
-        ends_on = date.fromisoformat(quote.get("valid_to"))
-        known_from = date.fromisoformat(quote.get("known_from"))
-    except (TypeError, ValueError) as exc:
+        starts_on = date.fromisoformat(quote["valid_from"])
+        ends_on = date.fromisoformat(quote["valid_to"])
+        known_from = date.fromisoformat(quote["known_from"])
+    except (KeyError, TypeError, ValueError) as exc:
         raise ValueError("workforce quote requires explicit effective and knowledge dates") from exc
     if not starts_on <= service_date < ends_on:
         raise ValueError("workforce quote is outside its effective window on the service date")

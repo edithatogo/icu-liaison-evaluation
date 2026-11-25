@@ -5,6 +5,7 @@ local run is evidence of executed program behaviour, NOT an independent build
 attestation or CHHHS clinical/operational acceptance.
 """
 from __future__ import annotations
+from typing import Any
 
 from collections.abc import Mapping
 import hashlib
@@ -41,7 +42,7 @@ def _call(argv: list[str], *, timeout: int = 240) -> subprocess.CompletedProcess
     return p
 
 
-def _verify_resolved_provider(metadata: Mapping, lock: Mapping) -> None:
+def _verify_resolved_provider(metadata: Mapping[str, Any], lock: Mapping[str, Any]) -> None:
     pinned = lock['source_commit']
     source = f"git+{lock['repository']}?rev={pinned}#{pinned}"
     packages = [package for package in metadata['packages'] if (package.get('source') or '').startswith('git+')]

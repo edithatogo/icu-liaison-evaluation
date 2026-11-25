@@ -22,10 +22,13 @@ CLAIM_POLICY_STATUS = {
     "2026-11-25-P10-source-claims-v2": "verified_run_assessment",
 }
 
-def _read(name: str) -> dict:
-    return json.loads((CONTRACTS / name).read_text(encoding="utf-8"))
+def _read(name: str) -> dict[str, Any]:
+    value = json.loads((CONTRACTS / name).read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("contract must be a JSON object")
+    return value
 
-def _validate_schema(value: dict, name: str) -> None:
+def _validate_schema(value: dict[str, Any], name: str) -> None:
     schema = _read(name)
     Draft202012Validator.check_schema(schema)
     issues = sorted(Draft202012Validator(schema).iter_errors(value),
@@ -34,7 +37,7 @@ def _validate_schema(value: dict, name: str) -> None:
         i = issues[0]
         raise ValueError(f"{name} schema violation at {list(i.path)}: {i.message}")
 
-def _claim_rules(policy: dict) -> dict[str, dict]:
+def _claim_rules(policy: dict[str, Any]) -> dict[str, dict[str, Any]]:
     _validate_schema(policy, "claim-policy.schema.json")
     rules = {rule["id"]: rule for rule in policy["claim_classes"]}
     if set(rules) != CLAIM_IDS or len(rules) != len(policy["claim_classes"]):
@@ -50,11 +53,11 @@ def _claim_rules(policy: dict) -> dict[str, dict]:
             raise ValueError("external claim cannot be granted by JSON")
     return rules
 
-def validate_assurance(*, catalogue: dict | None = None,
-                       registry: dict | None = None,
-                       policy: dict | None = None,
-                       visual: dict | None = None,
-                       taxonomy: dict | None = None) -> dict[str, Any]:
+def validate_assurance(*, catalogue: dict[str, Any] | None = None,
+                       registry: dict[str, Any] | None = None,
+                       policy: dict[str, Any] | None = None,
+                       visual: dict[str, Any] | None = None,
+                       taxonomy: dict[str, Any] | None = None) -> dict[str, Any]:
     c = catalogue if catalogue is not None else _read("catalogue.json")
     m = registry if registry is not None else _read("metrics.json")
     p = policy if policy is not None else _read("claim-policy.json")
@@ -116,7 +119,7 @@ def validate_assurance(*, catalogue: dict | None = None,
             "tables":len(c["tables"]),"figures":len(c["figures"]),
             "authorities_verified":0,"visual_checks_executed":0}
 
-def _p5_report_reproduces(inputs: Path, model_record: dict) -> bool:
+def _p5_report_reproduces(inputs: Path, model_record: dict[str, Any]) -> bool:
     """Replay the P5 bundle from its verified inputs without writing to the run."""
     from icu_liaison.p4_model import EconomicScenario
     from icu_liaison.p5_reporting import build_report
@@ -137,12 +140,13 @@ def _p5_report_reproduces(inputs: Path, model_record: dict) -> bool:
         replay = frozen / "p5-report"
         build_report(scenario, replay, protocol=frozen / "protocol.json",
                      catalogue=frozen / "benchmarks.json", source_register=frozen / "source-register.json")
-        return digest_file(replay / "manifest.json") == hashes["p5-report/manifest.json"]
+        expected_digest = hashes["p5-report/manifest.json"]
+        return isinstance(expected_digest, str) and digest_file(replay / "manifest.json") == expected_digest
 
 
 def _assess_synthetic_artifact(
     run: Path, case_id: str, artifact_id: str, disclosure: str, policy_sha256: str,
-) -> dict:
+) -> dict[str, Any]:
     from icu_liaison.p11_model import _runtime, _source_hashes
     from icu_liaison.p11_p9 import fingerprint
     from icu_liaison.p11_records import digest_file, digest_json, read_json
@@ -211,7 +215,7 @@ def _assess_synthetic_artifact(
 def assess_claim(
     claim_id: str, evidence: Any = None, *, run: Path | None = None,
     case_id: str | None = None, artifact_id: str | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Assess an artifact from source files. Caller-supplied evidence carries no approval."""
     raw_policy = (CONTRACTS / "claim-policy.json").read_bytes()
     policy = json.loads(raw_policy)
@@ -229,7 +233,7 @@ def assess_claim(
     except (OSError, RuntimeError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
         return {"permitted": False, "reason": "run_verification_failed", "error_type": type(exc).__name__}
 
-def validate_provenance(record: dict) -> dict:
+def validate_provenance(record: dict[str, Any]) -> dict[str, Any]:
     _validate_schema(record, "provenance-record.schema.json")
     return {"admitted":False,"reason":(
         "figure_unproduced" if record["status"] == "unproduced"

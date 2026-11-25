@@ -1,12 +1,15 @@
 """Deterministic accessible SVGs for the six priority synthetic figures."""
 from __future__ import annotations
+from typing import Any
 
 from pathlib import Path
 from xml.sax.saxutils import escape
 
 import matplotlib as mpl
+from matplotlib.collections import Collection
 from matplotlib.colors import Normalize, TwoSlopeNorm
 from matplotlib.figure import Figure
+from matplotlib.axes import Axes
 from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import FuncFormatter, PercentFormatter
 import numpy as np
@@ -19,7 +22,8 @@ RUST = '#9c4128'
 PALE = '#dce9ec'
 
 
-def _panel(title, subtitle, *, height=4.55, bottom=.18, left=.18, right=.94):
+def _panel(title: str, subtitle: str, *, height: float=4.55, bottom: float=.18,
+           left: float=.18, right: float=.94) -> tuple[Figure, Axes]:
     fig = Figure(figsize=(5.7, height), facecolor='white')
     ax = fig.add_subplot()
     fig.subplots_adjust(left=left, right=right, bottom=bottom, top=.742)
@@ -27,17 +31,17 @@ def _panel(title, subtitle, *, height=4.55, bottom=.18, left=.18, right=.94):
     return fig, ax
 
 
-def _heading(fig, title, subtitle):
+def _heading(fig: Figure, title: str, subtitle: str) -> None:
     fig.text(.055, .954, title, va='top', fontsize=18, weight='bold')
     fig.text(.055, .865, subtitle, va='top', fontsize=11, linespacing=1.35)
     fig.text(.055, .035, 'FICTIONAL ILLUSTRATION', fontsize=10, color=INK, weight='bold')
 
 
-def _money_label(value):
+def _money_label(value: float) -> str:
     return f'{value / 1000:+,.1f}'
 
 
-def _resource_waterfall(rows, year, cohort):
+def _resource_waterfall(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     fig, ax = _panel('Incremental annual resources',
                      f'Liaison versus current care · {cohort:,} eligible discharges\n'
                      'Nominal inputs · service cost counted once',
@@ -63,7 +67,7 @@ def _resource_waterfall(rows, year, cohort):
     return fig
 
 
-def _break_even_grid(rows, year, cohort):
+def _break_even_grid(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     x = sorted({row['delay_success'] for row in rows})
     y = sorted({row['annual_cost_aud'] / 1000 for row in rows})
     z = np.array([row['net_resource_aud'] / 1000 for row in rows]).reshape(len(y), len(x))
@@ -84,6 +88,7 @@ def _break_even_grid(rows, year, cohort):
     ax.patch.set_gid('breakeven-background')
     padding = max(.1, abs(low) * .01) if low == high else 0.
     norm = Normalize(vmin=low - padding, vmax=high + padding)
+    mesh: Collection
     if fixed:
         fig.subplots_adjust(top=.69)
         mesh = ax.scatter([row['delay_success'] for row in rows],
@@ -132,7 +137,7 @@ def _break_even_grid(rows, year, cohort):
     return fig
 
 
-def _paired_scatter(rows, year, cohort):
+def _paired_scatter(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     fig, ax = _panel('Resources and released capacity',
                      f'Liaison versus current care · {len(rows):,} paired draws\n'
                      f'{cohort:,} eligible discharges per year',
@@ -160,7 +165,7 @@ JOURNEY_STYLES = {
 }
 
 
-def _journey(rows, _year, _cohort):
+def _journey(rows: list[dict[str, Any]], _year: int, _cohort: int) -> Figure:
     fig, ax = _panel('Time from readiness to departure',
                      'Selected fictional ICU-to-ward journeys\n'
                      'Addressable time requires separate evidence',
@@ -190,7 +195,7 @@ def _journey(rows, _year, _cohort):
     return fig
 
 
-def _coverage(rows, _year, _cohort):
+def _coverage(rows: list[dict[str, Any]], _year: int, _cohort: int) -> Figure:
     fig = Figure(figsize=(5.7, 6.3), facecolor='white')
     paid, productive, demand = (sum(row[key] for row in rows) for key in
                                 ('paid_staff_hours', 'productive_staff_hours',
@@ -237,14 +242,14 @@ def _coverage(rows, _year, _cohort):
     return fig
 
 
-def _cell_text_color(rgb):
+def _cell_text_color(rgb: tuple[float, float, float, float]) -> str:
     srgb = np.asarray(rgb[:3])
     linear = np.where(srgb <= .04045, srgb / 12.92, ((srgb + .055) / 1.055) ** 2.4)
     luminance = linear @ np.array([.2126, .7152, .0722])
     return 'white' if luminance < .179 else 'black'
 
 
-def _effect_sensitivity(rows, year, cohort):
+def _effect_sensitivity(rows: list[dict[str, Any]], year: int, cohort: int) -> Figure:
     fig = Figure(figsize=(5.7, 6.8), facecolor='white')
     _heading(fig, 'Sensitivity to assumed clinical effects',
              f'Liaison · shared draws for {cohort:,} eligible discharges per year\n'
@@ -288,19 +293,18 @@ _RENDERERS = {
 }
 
 
-def render_svg(path: Path, figure: dict, rows: list[dict], price_year: int, cohort: int) -> None:
+def render_svg(path: Path, figure: dict[str, Any], rows: list[dict[str, Any]], price_year: int, cohort: int) -> None:
     from .p9_supplement_render import RENDERERS
     from matplotlib.ticker import ScalarFormatter
 
     render = _RENDERERS.get(figure['id']) or RENDERERS[figure['id']]
-    rc = {
+    with mpl.rc_context({
         'font.family': 'DejaVu Sans', 'font.size': 11, 'text.color': INK,
         'axes.labelcolor': INK, 'axes.edgecolor': INK,
         'axes.spines.top': False, 'axes.spines.right': False,
         'xtick.color': INK, 'ytick.color': INK, 'svg.fonttype': 'none',
         'svg.hashsalt': 'icu-liaison-p9-v1', 'path.simplify': False,
-    }
-    with mpl.rc_context(rc):
+    }):
         canvas = render(rows, price_year, cohort)
         if figure['id'] in RENDERERS:
             for axes in canvas.axes:

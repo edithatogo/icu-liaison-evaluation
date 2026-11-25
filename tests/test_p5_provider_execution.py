@@ -1,10 +1,15 @@
 """P5 Dapane: RED tests for actual opt-in valuation and fail-closed publication."""
 from __future__ import annotations
+from pytest import MonkeyPatch
+from typing import Any
 
 from decimal import Decimal, ROUND_HALF_EVEN
 import json
 import os
 import builtins
+from collections.abc import Mapping, Sequence
+from types import ModuleType
+from typing import Never
 from pathlib import Path
 import subprocess
 import sys
@@ -23,7 +28,7 @@ def scenario() -> EconomicScenario:
     )
 
 
-def exact_reference_provider(request: dict) -> dict:
+def exact_reference_provider(request: dict[str, Any]) -> dict[str, Any]:
     quotes = {
         q['id']: Decimal(q['amount']) / Decimal(q['per_quantity'])
         for q in request['quotes']
@@ -42,7 +47,7 @@ def exact_reference_provider(request: dict) -> dict:
     }
 
 
-def test_provider_mode_emits_qualified_narrow_nominal_reconciliation(tmp_path):
+def test_provider_mode_emits_qualified_narrow_nominal_reconciliation(tmp_path: Path) -> None:
     target = tmp_path / 'p5'
     build_report(scenario(), target, dapane_mode='provider', dapane_provider=exact_reference_provider)
     assert verify_manifest(target)
@@ -56,8 +61,8 @@ def test_provider_mode_emits_qualified_narrow_nominal_reconciliation(tmp_path):
 
 
 @pytest.mark.parametrize('injected', [False, True])
-def test_empty_nominal_ledgers_do_not_claim_provider_execution(tmp_path, injected):
-    def unexpected_call(request):
+def test_empty_nominal_ledgers_do_not_claim_provider_execution(tmp_path: Path, injected: bool) -> None:
+    def unexpected_call(request: dict[str, Any]) -> Never:
         pytest.fail('empty nominal ledgers do not require a provider call')
 
     data = scenario().model_dump()
@@ -77,9 +82,9 @@ def test_empty_nominal_ledgers_do_not_claim_provider_execution(tmp_path, injecte
         assert value['provider_evidence'] == 'no_provider_call_no_resource_use'
 
 
-def test_p5_refuses_incorrect_provider_arithmetic_before_publication(tmp_path):
+def test_p5_refuses_incorrect_provider_arithmetic_before_publication(tmp_path: Path) -> None:
     target = tmp_path / 'should-not-exist'
-    def faulty(request: dict) -> dict:
+    def faulty(request: dict[str, Any]) -> dict[str, Any]:
         report = exact_reference_provider(request)
         report['totals']['rounded'] = '0.00'
         return report
@@ -88,7 +93,7 @@ def test_p5_refuses_incorrect_provider_arithmetic_before_publication(tmp_path):
     assert not target.exists()
 
 
-def test_p5_no_implicit_provider_and_bad_mode_rejected(tmp_path):
+def test_p5_no_implicit_provider_and_bad_mode_rejected(tmp_path: Path) -> None:
     build_report(scenario(), tmp_path / 'default')
     model = json.loads((tmp_path / 'default/model-summary.json').read_text())
     assert model['dapane_valuation']['status'] == 'not_executed'
@@ -98,14 +103,16 @@ def test_p5_no_implicit_provider_and_bad_mode_rejected(tmp_path):
     assert not (tmp_path / 'bad').exists()
 
 
-def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path, monkeypatch):
+def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     # Exercise the missing-provider branch even when native Dapane is installed.
     original_import = builtins.__import__
 
-    def without_dapane(name, *args, **kwargs):
+    def without_dapane(name: str, globals: Mapping[str, object] | None = None,
+                       locals: Mapping[str, object] | None = None,
+                       fromlist: Sequence[str] | None = None, level: int = 0) -> ModuleType:
         if name == 'dapane' or name.startswith('dapane.'):
             raise ImportError('simulated missing Dapane provider')
-        return original_import(name, *args, **kwargs)
+        return original_import(name, globals, locals, fromlist, level)
 
     monkeypatch.setattr(builtins, '__import__', without_dapane)
     target = tmp_path / 'missing'
@@ -114,7 +121,7 @@ def test_p5_real_provider_missing_fails_closed_without_directory(tmp_path, monke
     assert not target.exists()
 
 
-def test_p5_cli_dapane_required_is_fail_closed(tmp_path):
+def test_p5_cli_dapane_required_is_fail_closed(tmp_path: Path) -> None:
     # Shadow site-packages deterministically for the subprocess only.
     unavailable = tmp_path / 'unavailable'
     unavailable.mkdir()

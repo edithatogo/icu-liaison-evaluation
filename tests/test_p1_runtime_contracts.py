@@ -3,6 +3,10 @@
 Injected providers are boundary fakes, NOT evidence of installed Dapane/Voiage.
 """
 from __future__ import annotations
+from numpy import float64
+from numpy.typing import NDArray
+from typing import Any, TypedDict
+from collections.abc import Callable
 
 from dataclasses import replace
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -52,7 +56,7 @@ def fixed_scenario() -> Scenario:
     return scenario
 
 
-def independent_ledger_provider(request: dict) -> dict:
+def independent_ledger_provider(request: dict[str, Any]) -> dict[str, Any]:
     """An elementary two-line independent test oracle, never a production fallback."""
     prices = {quote["id"]: Decimal(quote["amount"]) for quote in request["quotes"]}
     total = sum(
@@ -115,11 +119,11 @@ def test_dapane_comparison_matches_independent_nominal_cost_identity() -> None:
     lambda report: report["totals"].update(rounded="NaN"),
     lambda report: report.update(method_version="unknown"),
     lambda report: report["totals"].update(rounded="-10.00"),
-])
-def test_unqualified_dapane_report_fails_closed(mutation) -> None:
+], ids=["partial", "wrong-run", "currency", "nonfinite", "method", "negative"])
+def test_unqualified_dapane_report_fails_closed(mutation: Callable[[dict[str, Any]], object]) -> None:
     bridge = make_nominal_cost_bridge(fixed_scenario())
 
-    def broken_provider(request):
+    def broken_provider(request: dict[str, Any]) -> dict[str, Any]:
         report = independent_ledger_provider(request)
         mutation(report)
         return report
@@ -132,26 +136,30 @@ def test_nominal_bridge_rejects_non_synthetic_and_non_economic_benefit_claim() -
     scenario = fixed_scenario()
     bridge = make_nominal_cost_bridge(scenario, basis="financial_cost")
     assert all(r["policy"]["basis"] == "financial_cost" for r in bridge.values())
-    invalid = fixed_scenario()
-    invalid.data_class = "patient_records"
+    invalid = fixed_scenario().model_copy(update={"data_class": "patient_records"})
     with pytest.raises(ValueError):
         make_nominal_cost_bridge(invalid)
 
 
 def test_voiage_information_adapter_calls_provider_without_homegrown_evpi() -> None:
     draws = simulate(fixed_scenario())
-    seen = {}
+    class ObservedCalls(TypedDict, total=False):
+        array: NDArray[float64]
+        labels: list[str]
+        array_arg: tuple[NDArray[float64], list[str]]
 
-    def value_array_factory(data, labels):
+    seen: ObservedCalls = {}
+
+    def value_array_factory(data: NDArray[float64], labels: list[str]) -> tuple[NDArray[float64], list[str]]:
         seen["array"] = data
         seen["labels"] = labels
         return (data, labels)
 
     class FakeAnalysis:
-        def __init__(self, value_array):
+        def __init__(self, value_array: tuple[NDArray[float64], list[str]]) -> None:
             seen["array_arg"] = value_array
 
-        def evpi(self):
+        def evpi(self) -> float:
             return 12.5
 
     result = evaluate_financial_information(
@@ -167,8 +175,8 @@ def test_voiage_information_adapter_calls_provider_without_homegrown_evpi() -> N
 def test_voiage_adapter_rejects_invalid_provider_evpi() -> None:
     draws = simulate(fixed_scenario())
     class Bad:
-        def __init__(self, value_array): pass
-        def evpi(self): return float("nan")
+        def __init__(self, value_array: str) -> None: pass
+        def evpi(self) -> float: return float("nan")
     with pytest.raises(ValueError):
         evaluate_financial_information(draws, value_array_factory=lambda *args: "placeholder", analysis_factory=Bad)
 
@@ -176,7 +184,7 @@ def test_voiage_adapter_rejects_invalid_provider_evpi() -> None:
 def test_voiage_rejects_empty_draws_before_calling_provider() -> None:
     draws = replace(simulate(fixed_scenario()), net_resource_benefit_aud=np.array([]))
 
-    def must_not_call_provider(*args):
+    def must_not_call_provider(*args: object) -> None:
         pytest.fail("Voiage should not receive an empty decision surface")
 
     with pytest.raises(ValueError, match="nonempty"):
@@ -245,7 +253,7 @@ def test_native_qualifier_checks_import_identity_before_executing_provider(
 
 def test_native_qualifier_requires_the_oracle_to_load_the_expected_extension(
     native_qualifier: ModuleType, monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture, tmp_path: Path,
+    capsys: pytest.CaptureFixture[str], tmp_path: Path,
 ) -> None:
     installed = {'distribution': 'dapane', 'native_module': 'dapane._native'}
     monkeypatch.delitem(sys.modules, 'dapane._native', raising=False)
@@ -285,7 +293,7 @@ def test_reviewed_extension_uses_the_selected_platform_pin(
         native_qualifier._require_reviewed_extension(entry, installed)
 
 
-def test_missing_provider_lock_returns_machine_readable_unverified(tmp_path) -> None:
+def test_missing_provider_lock_returns_machine_readable_unverified(tmp_path: Path) -> None:
     """No uncaught traceback or false PASS for a missing contract lock."""
     process = subprocess.run(
         [sys.executable, str(ROOT / 'tools/qualify_providers.py'), '--provider', 'dapane',

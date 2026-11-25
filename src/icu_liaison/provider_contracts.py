@@ -5,16 +5,17 @@ qualification: the executing wheel, interpreter, numeric oracle and ABI must
 also be recorded by the operational qualification tool.
 """
 from __future__ import annotations
+from typing import Any
 import json
 from pathlib import Path
 from typing import Callable
 
 
-def load_provider_lock(path: str | Path) -> dict:
+def load_provider_lock(path: str | Path) -> dict[str, Any]:
     return parse_provider_lock(Path(path).read_bytes())
 
 
-def parse_provider_lock(contents: bytes) -> dict:
+def parse_provider_lock(contents: bytes) -> dict[str, Any]:
     """Validate the same lock bytes that will be identified in the receipt."""
     data = json.loads(contents)
     if not isinstance(data, dict) or data.get('schema_version') != 1:
@@ -37,9 +38,9 @@ def require_provider_python(python_version: tuple[int, int, int]) -> None:
 
 
 def qualify_runtime_versions(
-    lock: dict, installed_version: Callable[[str], str | None],
+    lock: dict[str, Any], installed_version: Callable[[str], str | None],
     python_version: tuple[int, int, int],
-) -> dict:
+) -> dict[str, Any]:
     """Fail closed on incompatible interpreter or distribution versions.
 
     This does not claim native numerical validation. Pass the separately executed

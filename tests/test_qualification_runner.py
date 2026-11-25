@@ -1,4 +1,5 @@
 """The full portability runner cannot claim provider, CHHHS or clinical acceptance."""
+from pytest import MonkeyPatch
 from datetime import UTC, datetime
 import hashlib
 import json
@@ -11,7 +12,7 @@ from tools.qualify_current_portable import qualify
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_synthetic_qualification_runner_is_fail_closed():
+def test_synthetic_qualification_runner_is_fail_closed() -> None:
     before = datetime.now(UTC).date().isoformat()
     result = qualify()
     assert result['status']=='SOURCE_ORACLES_PASSED_SYNTHETIC_ONLY'
@@ -41,20 +42,20 @@ def test_synthetic_qualification_runner_is_fail_closed():
     assert publisher['independent_source_admission'] == 'pending'
 
 
-def test_qualification_rejects_a_nonmatching_saved_publisher_document(tmp_path):
+def test_qualification_rejects_a_nonmatching_saved_publisher_document(tmp_path: Path) -> None:
     candidate = tmp_path / 'fictional-report.pdf'
     candidate.write_bytes(b'Fictional document bytes')
     with pytest.raises(ValueError, match='document size mismatch'):
         qualify(publisher_document=candidate)
 
 
-def test_qualification_can_audit_the_shortest_supported_scenario(monkeypatch):
+def test_qualification_can_audit_the_shortest_supported_scenario(monkeypatch: MonkeyPatch) -> None:
     path = ROOT / 'model-inputs/p4/illustrative.json'
     scenario = json.loads(path.read_bytes())
     scenario['iterations'] = 2
     original_read = Path.read_bytes
 
-    def read_scenario(candidate):
+    def read_scenario(candidate: Path) -> bytes:
         if candidate == path:
             return json.dumps(scenario).encode('utf-8')
         return original_read(candidate)

@@ -5,10 +5,11 @@ this utility sees it. This module cannot validate clinical coding or confer
 privacy/governance authority. No raw patient/event rows leave its output.
 """
 from __future__ import annotations
+from typing import Any
 
 import csv
 from collections import Counter, defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from decimal import Decimal
 import hashlib
@@ -16,6 +17,7 @@ from pathlib import Path
 import re
 from typing import Literal
 
+from .schemas import SchemaVersion
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from .endpoints import ReturnEvent, TransitionObservation, classify_transition
@@ -35,19 +37,22 @@ class _Strict(BaseModel):
 
 
 class Governance(_Strict):
+    model_config = ConfigDict(strict=True)
     status: Literal['not_applicable_synthetic', 'approved_local_processing']
     approval_reference: str | None = None
     custodian_role: str | None = None
 
 
 class FileSpec(_Strict):
+    model_config = ConfigDict(strict=True)
     path: str = Field(min_length=1)
     sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
     column_map: dict[str, str] = Field(default_factory=dict)
 
 
 class DatasetManifest(_Strict):
-    schema_version: Literal[1]
+    model_config = ConfigDict(strict=True)
+    schema_version: SchemaVersion
     data_class: Literal['synthetic', 'restricted']
     description: str = Field(min_length=1)
     source_id: str = Field(min_length=1)
@@ -137,7 +142,7 @@ class CostLine(_Strict):
     cost_component_id: str
 
 
-FEED_MODELS = {
+FEED_MODELS: dict[str, type[_Strict]] = {
     'episodes': Episode,
     'followup': Followup,
     'liaison_contacts': Contact,
@@ -152,7 +157,7 @@ def _validate_token(value: str, role: str) -> None:
         raise LocalDatasetError(f'{role}: invalid pseudonym or key syntax; reject raw numeric IDs')
 
 
-def _read_feed(root: Path, name: str, spec: FileSpec) -> list:
+def _read_feed[T: _Strict](root: Path, name: str, spec: FileSpec, model: type[T]) -> list[T]:
     if Path(spec.path).is_absolute() or '..' in Path(spec.path).parts:
         raise LocalDatasetError(f'{name}: unsafe relative source path')
     file = root / spec.path
@@ -169,7 +174,6 @@ def _read_feed(root: Path, name: str, spec: FileSpec) -> list:
         text = raw.decode('utf-8-sig')
     except UnicodeDecodeError as e:
         raise LocalDatasetError(f'{name}: invalid UTF-8') from e
-    model = FEED_MODELS[name]
     expected = set(model.model_fields)
     from io import StringIO
     reader = csv.DictReader(StringIO(text), restkey='__unexpected_values__', restval=None)
@@ -200,7 +204,7 @@ def load_and_audit(
     manifest_path: Path, *, restricted_acknowledged: bool = False,
     data_dictionary_path: Path | None = None,
     before_restricted_read: Callable[[], None] | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Derive aggregate clinical and source-quality counts from versioned feeds.
 
     Fails closed on invalid source lineage, unknown columns, episode overlaps,
@@ -224,9 +228,17 @@ def load_and_audit(
         if before_restricted_read is not None:
             before_restricted_read()
     root = path.resolve().parent
-    feeds = {name: _read_feed(root, name, spec) for name, spec in manifest.files.items()}
-    ep: list[Episode] = feeds['episodes']
-    fu: list[Followup] = feeds['followup']
+    ep = _read_feed(root, 'episodes', manifest.files['episodes'], Episode)
+    fu = _read_feed(root, 'followup', manifest.files['followup'], Followup)
+    contacts = (_read_feed(root, 'liaison_contacts', manifest.files['liaison_contacts'], Contact)
+                if 'liaison_contacts' in manifest.files else [])
+    costs = (_read_feed(root, 'cost_lines', manifest.files['cost_lines'], CostLine)
+             if 'cost_lines' in manifest.files else [])
+    feeds: dict[str, Sequence[_Strict]] = {'episodes': ep, 'followup': fu}
+    if 'liaison_contacts' in manifest.files:
+        feeds['liaison_contacts'] = contacts
+    if 'cost_lines' in manifest.files:
+        feeds['cost_lines'] = costs
     if not ep or not fu:
         raise LocalDatasetError('episodes and followup must be nonempty')
     last_departure = max(e.icu_actual_departure_at for e in ep)
@@ -259,13 +271,13 @@ def load_and_audit(
         for left, right in zip(timeline, timeline[1:]):
             if right.icu_admission_at < left.icu_actual_departure_at:
                 raise LocalDatasetError('overlap between ICU episodes in same hospitalisation')
-        observed = followup[h].followup_observation_end_at
-        if timeline[-1].icu_actual_departure_at > observed:
+        observation_end = followup[h].followup_observation_end_at
+        if timeline[-1].icu_actual_departure_at > observation_end:
             raise LocalDatasetError('ICU episode outside hospital followup interval')
         ordered[h] = timeline
 
     seen_contacts = set()
-    for contact in feeds.get('liaison_contacts', []):
+    for contact in contacts:
         ep_ref = by_episode.get(contact.index_icu_episode_id)
         if ep_ref is None or ep_ref.hospitalisation_pseudonym != contact.hospitalisation_pseudonym:
             raise LocalDatasetError('orphaned liaison contact episode')
@@ -278,8 +290,8 @@ def load_and_audit(
 
     seen_lines = set()
     seen_components = set()
-    use_segments = {}
-    for cost in feeds.get('cost_lines', []):
+    use_segments: dict[str, str] = {}
+    for cost in costs:
         ep_ref = by_episode.get(cost.index_icu_episode_id)
         if ep_ref is None or ep_ref.hospitalisation_pseudonym != cost.hospitalisation_pseudonym:
             raise LocalDatasetError('orphaned cost ledger episode')
@@ -306,7 +318,7 @@ def load_and_audit(
     })
     cohort['all_icu_episodes']=len(ep)
     cohort['hospitalisations']=len(by_hosp)
-    reasons=Counter()
+    reasons: Counter[str] = Counter()
     expected=0
     index_delay_hours = 0.0
     for hospital, episodes in ordered.items():
@@ -350,7 +362,7 @@ def load_and_audit(
     # All field names are registered from the P2 dictionary. Missing feeds are
     # explicitly not observed; these counts are audit indicators, not approval.
     identity_feeds = {'hospitalisation_pseudonym': 'followup', 'index_icu_episode_id': 'episodes'}
-    observed_by_field: dict[str, dict[str,int|str]]={}
+    observed_by_field: dict[str, dict[str,int|str|None]]={}
     for name, model in FEED_MODELS.items():
         if name in feeds:
             for field in model.model_fields:
